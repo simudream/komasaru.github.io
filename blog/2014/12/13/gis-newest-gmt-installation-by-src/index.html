@@ -1,0 +1,788 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>GMT - 5.1 系をソースからインストール！ - mk-mode BLOG</title>
+  <meta name="author" content="mk-mode.com">
+
+  
+  <meta name="description" content="松江をこよなく愛する mk-mode の BLOGページです。主にIT系(Tips、サーバ構築)等について記録しています。">
+  <meta name="keywords" content="PC_TipsGIS地図GMT">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://komasaru.github.io/blog/2014/12/13/gis-newest-gmt-installation-by-src">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="mk-mode BLOG" type="application/atom+xml">
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Gorditas' rel='stylesheet' type='text/css'>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/javascripts/my_custom.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18154748-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">mk-mode BLOG</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://www.mk-mode.com/rails/" title="My homepage made by Ruby on Rails" target="_blank">Site</a></li>
+  <li><a href="http://www.mk-mode.com/rails/calendar/calendar/" title="The Calendar page on my homepage" target="_blank">Calendar</a></li>
+  <li><a href="http://twitter.com/ko_masaru" title="Go to my Twitter page" target="_blank">Twitter</a></li>
+  <li><a href="http://www.facebook.com/masaru.koizumi.5" title="Go to my Facebook page" target="_blank">Facebook</a></li>
+  <li><a href="https://github.com/komasaru" title="Go to my GitHub page." target="_blank">GitHub</a></li>
+  <li><a href="http://www.youtube.com/user/komasaru888" title="Go to my YouTube page" target="_blank">YouTube</a></li>
+  <li><a href="http://www.mk-mode.com/rails/jmaxml" title="The JMA XML page on my homepage" target="_blank">JMA XML</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+        <form class="pull-right navbar-search" action="http://www.google.co.jp/cse" id="cse-search-box">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-7320193476057758:6328726109" />
+            <input type="hidden" name="ie" value="UTF-8" />
+            <input class="search" type="text" name="q" placeholder="Google Custom Search" />
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      
+<article class="hentry span9" role="article">
+
+  
+  <header class="page-header">
+    
+      <h1 class="entry-title">GMT - 5.1 系をソースからインストール！</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-12-13T00:20:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/gis/'>GIS</a>, <a class='tag' href='/blog/tags/gmt/'>GMT</a>, <a class='tag' href='/blog/tags/地図/'>地図</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>こんばんは。</p>
+
+<p>&ldquo;<a href="http://gmt.soest.hawaii.edu/projects/gmt/wiki/Installing" title="Wiki - GMT - GMT - The Generic Mapping Tools">Installing - GMT - GMT - The Generic Mapping Tools</a>&rdquo; に「4 系の Ubuntu/Debian パッケージには大きな問題があるため、問題のないソースをビルドする方法で」旨の注意書きがあるので、ソースをビルドしてインストールすることにしました。（4 系ではなく 最新の 5 系を）</p>
+
+<p>実際、パッケージでインストールした GMT 4.5.11 では <code>pscoast</code> した際に、余分な線が描画されることがありました。（4 系のバグが原因かどうかは不明ですが）</p>
+
+<p>以下、インストール作業の記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17(64bit) で QGIS 2.6.1 を使用して作業することを想定。</li>
+<li>GMT 5.1.1 （当記事執筆時点で最新）をインストールする。</li>
+<li>GMT 4 系と共存させることは考えない。（共存を考えるのであれば、インストール Prefix を変えるなどの設定が必要）</li>
+<li>ドキュメントのインストール、 CPack パーケージング(プラットフォーム固有のインストーラの作成）は行わない。</li>
+<li>下記で紹介する記録は、ほぼ公式サイトの説明通り。</li>
+</ul>
+
+
+<h3>1. 依存パッケージのインストール</h3>
+
+<p>依存するパッケージが未インストールなら、インストールしておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install ghostscript build-essential cmake libnetcdf-dev libgdal1-dev libfftw3-dev libpcre3-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. アーカイブファイルのダウンロード＆展開</h3>
+
+<p>アーカイブファイル(約128MB)をダンロードする。<br/>
+（ダウンロード先はユーザホームディレクトリ、ダウンロード元は近場の東海大学のサイトを選んだ）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ wget ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/gmt-5.1.1-src.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、展開する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ tar zxvf gmt-5.1.1-src.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>【補足】もしも、開発中の GMT のソースが欲しければ、 SVN でバージョン管理されているので以下のように <code>svn</code> コマンドでチェックアウトする。（当記事執筆時点で、開発中のバージョンは 5.1.2）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ svn checkout svn://gmtserver.soest.hawaii.edu/gmt5/trunk gmt5-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. 海岸線データのダウンロード＆展開</h3>
+
+<p>GMT が用意している海岸線データ(GSHHG)(約54MB)をダウンロードする。<br/>
+（ダウンロード先は &ldquo;/usr/local/share/gmt"、ダウンロード元は近場の東海大学のサイトを選んだ）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo mkdir /usr/local/share/gmt
+</span><span class='line'>$ cd /usr/local/share/gmt
+</span><span class='line'>$ sudo wget ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/gshhg-gmt-2.3.0.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、展開＆リネームする。（リネームしたくなければ、しなくてよい）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo tar zxvf gshhg-gmt-2.3.0.tar.gz
+</span><span class='line'>$ sudo mv gshhg-gmt-2.3.0 gshhg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. 国別ポリゴンデータのダウンロード＆展開</h3>
+
+<p>GMT が用意しているポリゴンデータ(約20MB)をダウンロードする。<br/>
+（ダウンロード先は &ldquo;/usr/local/share/gmt"、ダウンロード元は近場の東海大学のサイトを選んだ）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo wget ftp://ftp.scc.u-tokai.ac.jp/pub/gmt/dcw-gmt-1.1.1.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、展開＆リネームする。（リネームしたくなければ、しなくてよい）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo tar zxvf dcw-gmt-1.1.1.tar.gz
+</span><span class='line'>$ sudo mv dcw-gmt-1.1.1 dcw
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. CMake ファイルの編集</h3>
+
+<p>GMT 5 系は <code>configure</code> ではなく <code>cmake</code> を使用する。<br/>
+まず、用意されている cmake テンプレートを複製する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd ~/gmt-5.1.1
+</span><span class='line'>$ cp cmake/ConfigUser{Template,}.cmake
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、以下のように編集（コメント解除＆変更、<code>FLOCK</code> の行は追加）する。</p>
+
+<figure class='code'><figcaption><span>cmake/ConfigUser.cmake</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>set (CMAKE_INSTALL_PREFIX /usr/local)
+</span><span class='line'>set (GSHHG_ROOT /usr/local/share/gmt/gshhg)
+</span><span class='line'>set (DCW_ROOT /usr/local/share/gmt/dcw)
+</span><span class='line'>set (FLOCK TRUE)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. GMT のビルド＆インストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ mkdir build
+</span><span class='line'>$ cd build
+</span><span class='line'>$ cmake ..
+</span><span class='line'>$ make
+</span><span class='line'>$ sudo make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. 動作確認</h3>
+
+<p>GMT のパラメータデフォルト値の一覧を表示してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ gmtdefaults -D
+</span><span class='line'>#
+</span><span class='line'># GMT 5.1.1 Defaults file
+</span><span class='line'># vim:sw=8:ts=8:sts=8
+</span><span class='line'># $Revision: 12822 $
+</span><span class='line'># $LastChangedDate: 2014-02-01 00:39:56 +0100 (Sat, 01 Feb 2014) $
+</span><span class='line'>#
+</span><span class='line'># COLOR Parameters
+</span><span class='line'>#
+</span><span class='line'>COLOR_BACKGROUND                = black
+</span><span class='line'>COLOR_FOREGROUND                = white
+</span><span class='line'>COLOR_NAN                       = 127.5
+</span><span class='line'>COLOR_MODEL                     = none
+</span><span class='line'>COLOR_HSV_MIN_S                 = 1
+</span><span class='line'>COLOR_HSV_MAX_S                 = 0.1
+</span><span class='line'>COLOR_HSV_MIN_V                 = 0.3
+</span><span class='line'>COLOR_HSV_MAX_V                 = 1
+</span><span class='line'>
+</span><span class='line'>         :
+</span><span class='line'>====&lt; 以下省略 &gt;====
+</span><span class='line'>         :
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>8. 地図描画の確認</h3>
+
+<p>試しに地図を描画してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd ~/
+</span><span class='line'>$ gmtset PS_MEDIA = CUSTOM_18cx20c
+</span><span class='line'>$ pscoast -P -JM15c -R126/149/25/46 -Dh -Wthinnest,black -Gwheat -S240/255/255 -Bg5a10f5::WSen -X2 -Y1.5 &gt; MAP_TEST.ps
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>１行目の <code>gmtset</code> コマンドでは、各種初期設定を行っている。</p>
+
+<ul>
+<li><code>PS_MEDIA</code> で出力する用紙のサイズを指定。<br/>
+上記の場合は、横18cm, 縦20cm ということ。<br/>
+<code>a4</code> のようにも指定可能。 eps ファイルを出力したい場合は <code>a4+</code> のように <code>+</code> を付与する。<br/>
+ちなみに、4 系では <code>PAPER_MEDIA</code> で用紙サイズをしていした。</li>
+<li>デフォルトに戻すには、 <code>gmtdefaults -D &gt; .gmtdefaults4</code> とする。</li>
+</ul>
+
+
+<p>２行目の <code>pscoast</code> コマンドでは、大陸の描画を行っている。（GMT の持っている地図データ使用）</p>
+
+<ul>
+<li><code>-P</code> は、ポートレート（縦長）に指定するオプション。</li>
+<li><code>-J</code> は、地図の種類と大きさを指定するオプションで、 <code>-JM15c</code> はメルカトル図法で15cm四方の図。<br/>
+１度単位でサイズを指定したい場合は、 <code>-Jm1c</code> のように小文字の <code>m</code> を使用する。<br/>
+縦横異なる比率で指定したい場合は、 <code>-Jm2cx1.8c</code> 等のように指定する。</li>
+<li><code>-R</code> は、描画領域を指定するオプションで、 <code>-R西端/東端/南端/北端</code> で指定。</li>
+<li><code>-D</code> は、地図データの分解能を指定するオプションで、 <code>-Dh</code> は高解像度。（中： <code>i</code>, 低： <code>l</code> 等)</li>
+<li><code>-W</code> は、海岸線を描画するオプションで、 <code>-Wthinnest,black</code> は極細(0.25p)の黒線。（様々な指定方法あり）</li>
+<li><code>-G</code> は、陸域の塗りつぶし色を指定するオプションで、 <code>-Gwheat</code> は小麦色。</li>
+<li><code>-S</code> は、海域の塗りつぶし色を指定するオプションで、 <code>-S200/255/255</code> は白色がやや青みがかった色。</li>
+<li><code>-B</code> は、枠線を描画するオプションで、 <code>g5</code> は5度間隔で経緯度線、 <code>a10</code> は10度間隔でラベル、 <code>f5</code> は5度間隔で枠線塗り分け。</li>
+<li><code>-X</code> は、x 軸方向へ移動（単位:cm）するオプションで、 <code>-X2</code> は縦軸の目盛の値のために 2cm 移動。</li>
+<li><code>-Y</code> は、y 軸方向へ移動（単位:cm）するオプションで、 <code>-Y1.5</code> は横軸の目盛の値のために 1.5cm 移動。</li>
+</ul>
+
+
+<p>以下が出力された地図。（公開の都合上、 JPEG に変換している）</p>
+
+<p><img src="/images/2014/12/13/MAP_TEST.jpg" title="MAP_TEST" alt="MAP_TEST" /></p>
+
+<p>ちなみに、パッケージでインストールした GMT 4.5.11 で描画した場合、以下のように余分な線が描画されることがあった。（オプションの指定の仕方によってはこの現象は発生しない）</p>
+
+<p><img src="/images/2014/12/13/MAP_TEST_4.jpg" title="MAP_TEST_4" alt="MAP_TEST_4" /></p>
+
+<h3>9. その他</h3>
+
+<p>環境変数は特に設定する必要はないようだ。</p>
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://gmt.soest.hawaii.edu/projects/gmt/wiki/BuildingGMT" title="BuildingGMT - GMT - GMT - The Generic Mapping Tools">BuildingGMT - GMT - GMT - The Generic Mapping Tools</a></li>
+</ul>
+
+
+<hr />
+
+<p>パッケージでインストールした GMT 4.5.11 では余分な線が描画されることがありましたが、 5.1.1 ではそれが解消されました。</p>
+
+<p>以上。</p>
+</div>
+
+
+  <!-- Google AdSense -->
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7320193476057758";
+/* 468x15 枠線-背景_ｸﾞﾚｰ */
+google_ad_slot = "9411005151";
+google_ad_width = 468;
+google_ad_height = 15;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mk-mode.com</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-12-13T00:20:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>00:20</span></time>
+      [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+      [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/gis/'>GIS</a>, <a class='tag' href='/blog/tags/gmt/'>GMT</a>, <a class='tag' href='/blog/tags/地図/'>地図</a>
+  
+</span>
+
+ ]
+    </p>
+    
+      <div class="sharing">
+  
+  <div class="tweet-button">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://komasaru.github.io/blog/2014/12/13/gis-newest-gmt-installation-by-src/" data-via="ko_masaru" data-counturl="http://komasaru.github.io/blog/2014/12/13/gis-newest-gmt-installation-by-src/" data-lang="ja" data-related="ko_masaru">ツイート</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  <div class="hatena-button">
+    <a href="http://b.hatena.ne.jp/entry/http://komasaru.github.io/blog/2014/12/13/gis-newest-gmt-installation-by-src/" class="hatena-bookmark-button" data-hatena-bookmark-layout="simple-balloon" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+  </div>
+  
+  
+  <div class="google-plusone-button">
+    <div class="g-plusone" data-size="medium"></div>
+  </div>
+  
+  
+  <div class="fb-like-button">
+    <div class="fb-like" data-layout="button_count" data-send="false" data-show-faces="false"></div>
+  </div>
+  
+
+  <div class="blog-rank">
+    <a href="http://www.blogmura.com/" target="_blank"><img src="http://www.blogmura.com/img/www80_15_gold_2.gif" alt="ブログランキング・にほんブログ村へ" /></a>
+    <a href="http://blog.with2.net/link.php?746409" target="_blank"><img src="http://image.with2.net/img/banner/banner_12.gif" alt="人気ブログランキング・投票お願い！" /></a>
+    <a href="http://www.blogpeople.net/genre/genre2_1.html?key=0f0d42575b5b124a&amp;u=http%3A%2F%2Fwww.mk-mode.com%2Foctopress%2F" target="_blank"><img src="http://www.blogpeople.net/ranking/images/ranking-banner/ranking-small-blue.gif" alt="BlogPeople・投票お願い！" /></a>
+    <a href="http://www.doramix.com/rank/vote.php?id=53044" target="_blank"><img src="/images/bnr80_15_02.gif" alt="ブログ王・投票お願い！" /></a>
+  </div>
+</div>
+
+    
+    <div class="google-ad-1">
+  <!-- Google AdSense -->
+  <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- 468x15 枠線-背景_白 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:468px;height:15px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="8125126105"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- 468x60 枠線202020-背景202020 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:468px;height:60px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9593057202"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+    
+      <div class="related_posts">
+<h2>Related Posts</h2>
+<ul>
+
+  <li><a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
+
+  <li><a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a></li>
+
+  <li><a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a></li>
+
+  <li><a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a></li>
+
+  <li><a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a></li>
+
+</ul>
+</div>
+
+
+    
+    <div class="amazon-ad">
+<!-- Amazon Associate -->
+<script type="text/javascript"><!--
+amazon_ad_tag = "komasaru-22"; amazon_ad_width = "728"; amazon_ad_height = "90"; amazon_ad_link_target = "new"; amazon_ad_categories = "ace";//--></script>
+<script type="text/javascript" src="http://www.assoc-amazon.jp/s/ads.js"></script>
+</div>
+
+    
+    <section>
+      <h2>Comments</h2>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+    
+    <ul class="pager">
+      
+      <li class="previous"><a class="basic-alignment left"
+        href="/blog/2014/12/11/linux-bash-process-check/" title="Previous Post:
+        Bash - プロセス起動中・CPU 時間チェック！">&laquo; Bash - プロセス起動中・CPU 時間チェック！</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+      <li class="next"><a class="basic-alignment right" href="/blog/2014/12/15/gis-conversion-shapefile-gmt/"
+        title="Next Post: GIS - Shapefile を GMT フォーマットに変換！">GIS - Shapefile を GMT フォーマットに変換！
+        &raquo;</a></li>
+      
+    </ul>
+  </footer>
+  <!-- Google AdSense -->
+<script type="text/javascript"><!--
+google_ad_client = "pub-7320193476057758";
+/* 468x60 枠線6699CC-背景000000 */
+google_ad_slot = "5558274164";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</article>
+
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <span class="nav-header">Access Counter</span>
+  <table class="access">
+    <tr>
+     <td>ブログ開設日</td><td class="access-val">2009-01-05</td>
+    </tr>
+    <tr>
+      <td>サーバ連続稼働時間</td><td class="access-val"><div id="uptime">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">Page View 合計</td>
+      <td class="access-val"><div id="pv-total">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">今日</td>
+      <td class="access-val"><div id="pv-today">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">昨日</td>
+      <td class="access-val"><div id="pv-yesterday">Reading... </div></td>
+    </tr>
+  </table>
+</section>
+<section class="well">
+  <ul class="nav nav-list">
+    <li class="nav-header">Information</li>
+  </ul>
+  <a href="http://www.pref.shimane.lg.jp/" target="_blank"><img class="information" src="/images/shimanekoL.jpg" alt="島根県" title="「島根県」へのリンクです。" /></a>
+  <a href="http://shimane-goen.jp/" target="_blank"><img class="information" src="/images/goen_2015_234_60.png" alt="ご縁の国しまね" title="「ご縁の国しまね」へのリンクです。" /></a>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- mk-mode BLOG Sidebar-2 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:200px;height:90px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9601859305"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</section>
+<section class="well">
+  <ul id="sponsord-link" class="nav nav-list">
+    <li class="nav-header">About Me</li>
+  </ul>
+  <p>趣味で自作の自宅Linuxサーバ運用。ブログではIT系(サーバ構築(Linux etc)、PG(Ruby etc)、PC Tips)についての話題を中心に公開。ルービックキューブも人生何回目かのマイブームで、今は非公式ながら Sub25！</p>
+  <a href="http://www.mk-mode.com/" target="_blank">Site</a>
+  <a href="http://twitter.com/ko_masaru/" target="_blank">Twitter</a>
+  <a href="http://www.facebook.com/masaru.koizumi.5" target="_blank">Facebook</a>
+  <a href="https://github.com/komasaru" target="_blank">GitHub</a>
+  <a href="http://www.youtube.com/user/komasaru888" target="_blank">YouTube</a>
+</section>
+<section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a>
+      </li>
+    
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Categories</li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (251)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (524)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (199)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (334)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Tag Cloud</li>
+  </ul>
+  <a href='/blog/tags/ajax' style='font-size: 100.58064516129032%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.16129032258064%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.64516129032258%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.58064516129032%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.16129032258064%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19354838709677%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.48387096774194%'>bash(18)</a> <a href='/blog/tags/bash' style='font-size: 100.19354838709677%'>Bash(1)</a> <a href='/blog/tags/bitly' style='font-size: 100.38709677419355%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19354838709677%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38709677419355%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.67741935483872%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19354838709677%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19354838709677%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19354838709677%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.74193548387096%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 106.0%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.96774193548387%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.58064516129032%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.83870967741936%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38709677419355%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19354838709677%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.74193548387096%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.70967741935483%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19354838709677%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7741935483871%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.35483870967742%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.80645161290323%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.16129032258064%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.96774193548387%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.64516129032258%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19354838709677%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.12903225806451%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.58064516129032%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.2258064516129%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.12903225806451%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38709677419355%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.96774193548387%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19354838709677%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.93548387096774%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.58064516129032%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38709677419355%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.51612903225806%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7741935483871%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19354838709677%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.54838709677419%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.70967741935483%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.58064516129032%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.58064516129032%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38709677419355%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.58064516129032%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.06451612903226%'>Linux(300)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.2258064516129%'>LinuxMint(58)</a> <a href='/blog/tags/lokka' style='font-size: 100.38709677419355%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 105.03225806451613%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.38709677419355%'>MariaDB(33)</a> <a href='/blog/tags/markdown' style='font-size: 101.16129032258064%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.58064516129032%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19354838709677%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.90322580645162%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 130.96774193548387%'>MySQL(160)</a> <a href='/blog/tags/namazu' style='font-size: 100.19354838709677%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.48387096774194%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.16129032258064%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.58064516129032%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38709677419355%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.35483870967742%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7741935483871%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19354838709677%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.41935483870968%'>Octopress(59)</a> <a href='/blog/tags/office' style='font-size: 100.19354838709677%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19354838709677%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.16129032258064%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19354838709677%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.38709677419355%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.0%'>Postfix(31)</a> <a href='/blog/tags/proxy' style='font-size: 100.38709677419355%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38709677419355%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.16129032258064%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.74193548387096%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.3225806451613%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.61290322580645%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38709677419355%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19354838709677%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19354838709677%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.16129032258064%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(310)</a> <a href='/blog/tags/samba' style='font-size: 101.74193548387096%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.58064516129032%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.54838709677419%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19354838709677%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38709677419355%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19354838709677%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38709677419355%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19354838709677%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.16129032258064%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.93548387096774%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7741935483871%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19354838709677%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.96774193548387%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19354838709677%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7741935483871%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.61290322580645%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38709677419355%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.96774193548387%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.54838709677419%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19354838709677%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.74193548387096%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.96774193548387%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.35483870967742%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.58064516129032%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7741935483871%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19354838709677%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.35483870967742%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.12903225806451%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19354838709677%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.93548387096774%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.7741935483871%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.74193548387098%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.58064516129032%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.74193548387098%'>XML(40)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38709677419355%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19354838709677%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.16129032258064%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.51612903225806%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19354838709677%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.16129032258064%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19354838709677%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.6774193548387%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.16129032258064%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38709677419355%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19354838709677%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.96774193548387%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.16129032258064%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.58064516129032%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19354838709677%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.74193548387096%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.6774193548387%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.09677419354838%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38709677419355%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19354838709677%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.54838709677419%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19354838709677%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19354838709677%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.16129032258064%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.96774193548387%'>端末(5)</a> 
+</section>
+<section class="well">
+  <ul id="month-list" class="nav nav-list">
+    <li class="nav-header">Monthly Archives</li>
+  </ul>
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/08/'>2015-08 (7)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1397 posts
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/komasaru">@komasaru</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'komasaru',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="well">
+  <ul id="twitter-timeline" class="nav">
+    <li class="nav-header">Latest Tweets</li>
+  </ul>
+  <a class="twitter-timeline"  href="https://twitter.com/ko_masaru"  data-widget-id="293992385095016448">@ko_masaru からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+
+
+<section class="well">
+  <ul id="sponsord-link" class="nav">
+    <li class="nav-header">Sponsored Link</li>
+  </ul>
+  <span id="sponsored-link">
+    <object data="http://komasaru.github.io/obj_sponsored_link.html" type="text/html" width="254" height="200"></object>
+  </span>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p id="page-top">
+  <a href="#wrapper">
+    <img src="/images/pagetop.png" alt="PAGE TOP" />
+  </a>
+</p>
+<p>
+  Copyright &copy; 2015 - mk-mode.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mkmodeblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://komasaru.github.io/blog/2014/12/13/gis-newest-gmt-installation-by-src/';
+        var disqus_url = 'http://komasaru.github.io/blog/2014/12/13/gis-newest-gmt-installation-by-src/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

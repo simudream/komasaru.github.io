@@ -1,0 +1,1006 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 玄箱 | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/玄箱/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[* 玄箱HG - 電源ボタンで正規シャットダウン！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/11/16/16002013/"/>
+    <updated>2012-11-16T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/11/16/16002013</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Debian 6.0(squeeze) 化した「玄箱/HG」のシャットダウンを電源ボタン長押しで行う方法についてのメモです。</p>
+
+<p>Telnet や SSH 接続しなくても、電源ボタンの長押しで正規の <code>shutdown</code> コマンドでシャットダウンしたのと同じことする、ということです。
+単純に電源ボタンを長押ししただけでは「強制電源オフ」となってしまうからです。</p>
+
+<p>当方、玄箱/HG でサーバ構築した際にいつもやっていることですが、記録として残していなかったので記事にした次第です。</p>
+
+<!--more-->
+
+
+<p>ちなみに、玄箱/HG の Debian 化については、以下の過去記事等を参照ください。</p>
+
+<ul>
+<li><a href="/2012/11/14/14002031/" title="玄箱HG - Debian 5.0(lenny) 化！">玄箱HG - Debian 5.0(lenny) 化！</a></li>
+<li><a href="/2012/11/15/15002004/" title="玄箱HG - Debian 6.0(squeeze) 化！">玄箱HG - Debian 6.0(squeeze) 化！</a></li>
+</ul>
+
+
+<h3>作業メモ</h3>
+
+<h4>0. 前提条件</h4>
+
+<ul>
+<li>「玄箱/HG」へ Debian 6.0(squeeze) が構築されている。
+別のバージョンでも同様だと思われる。
+別のディストリビューションは不明。</li>
+</ul>
+
+
+<h4>1. シェルスクリプトの編集</h4>
+
+<p>&ldquo;/etc/kuroevtd/powerpress&rdquo; というシェルスクリプトを編集する。
+既存の <code>halt</code> は効かないので削除（もしくはコメントアウト）して、以下のように追記する。
+<code>ttyS1</code> の部分はカーネルのバージョンによって異なるかも知れません。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;! /bin/sh&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;halt  <span class="c"># &amp;lt;- コメントアウト&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;echo -n <span class="p">&amp;</span>ldquo<span class="p">;</span>EEEE<span class="p">&amp;</span>rdquo<span class="p">;</span> &gt; /dev/ttyS1
+</span><span class='line'>/sbin/shutdown -h now
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. 動作確認</h4>
+
+<p>玄箱/HG の POWER ボタンを長押しして、電源が落ちるのを確認する。
+強制的な電源オフと異なるのは、いかにも裏で <code>shutdown</code> コマンドが動いているようなディスクアクセスがあるということでしょうか？</p>
+
+<hr />
+
+<p>これだけです。</p>
+
+<p>これで、いちいち SSH 接続等しなくてよくなります。
+ファイルサーバとして使いたい時だけ起動する場合などで便利になります。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4899770987&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4756146287&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4839918031&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* 玄箱HG - Debian 6.0(squeeze) 化！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/11/15/15002004/"/>
+    <updated>2012-11-15T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/11/15/15002004</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>前回は、「玄箱/HG」を Debian 5.0(lenny) 化しました。</p>
+
+<p>Debian lenny はセキュリティアップデートの提供が終了していることもあり、今回 Debian 6.0(squeeze) 化しました。</p>
+
+<!--more-->
+
+
+<h3>作業記録</h3>
+
+<h4>0. 前提条件</h4>
+
+<ul>
+<li>「玄箱/HG」へ次の手順で Debian 5.0(lenny) が構築されている。
+( <a href="/2012/11/14/14002031/" title="玄箱HG - Debian 5.0(lenny) 化！">玄箱HG - Debian 5.0(lenny) 化！</a> )</li>
+<li>「玄箱/HG」への Debian 6.0(squeeze) の構築を想定。</li>
+<li>シリアルコンソールは使用しない。</li>
+<li>U-Boot 導入済みである。</li>
+<li>作業を行うマシンは Linux Mint 13 Maya
+Telnet 接続ができれば、OS はなんでもよい。
+ファームウェアに Windows 用インストーラがあるからといって、Windows である必要もない。</li>
+<li>構築された squeeze のカーネルが古くてもカーネルのリコンパイルはしない。</li>
+</ul>
+
+
+<h4>1. 起動スクリプトの編集</h4>
+
+<p>Debian は 6.0(squeeze) 以降、起動スクリプトが LSB(= Linux Standard Base) に準拠している必要があるようだ。
+&ldquo;/etc/init.d/kuroevtd"、&rdquo;/etc/init.d/kuro_boot" を編集する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /etc/init.d/kuroevtd&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>!/bin/sh&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Start/stop the KURO-BOX Event Daemon.&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>↓↓ 追加 ↓↓&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Provides:        kuroevtd&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Required-Start:  $network $remote_fs $syslog&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Required-Stop:   $network $remote_fs $syslog&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Default-Start:   2 4 5&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Default-Stop:    0 1 3 6&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Short-Description: Start/stop the KURO-BOX Event daemon&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>↑↑ 追加 ↑↑&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>====&lt; 以下省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /etc/init.d/kuro_boot&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>!/bin/sh&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>↓↓ 追加 ↓↓&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Provides:          kuro_boot&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Required-Start:    $remote_fs $all&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Required-Stop:&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Default-Start:     2 4 5&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Default-Stop:      0 1 3 6&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>Short-Description: Initialize the KUROBOX AVAR&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>↑↑ 追加 ↑↑&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>====&lt; 以下省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. パッケージリスト参照先変更</h4>
+
+<p>squeeze 用に &ldquo;/etc/apt/sources.list&rdquo; を編集する。
+&ldquo;lenny&rdquo; を &ldquo;squeeze&rdquo; に変更するだけ。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /etc/apt/sources.list&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>deb &lt;a href="http://ftp.jp.debian.org/debian/">http://ftp.jp.debian.org/debian/&lt;/a> lenny main&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>deb &lt;a href="http://security.debian.org/">http://security.debian.org/&lt;/a> lenny/updates main&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>↓↓ 変更 ↓↓&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>deb &lt;a href="http://ftp.jp.debian.org/debian/">http://ftp.jp.debian.org/debian/&lt;/a> squeeze main
+</span><span class='line'>deb &lt;a href="http://security.debian.org/">http://security.debian.org/&lt;/a> squeeze/updates main</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>3. パッケージの更新</h4>
+
+<p>パッケージリストの更新、システムの更新、パッケージの更新を行う。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude update&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude safe-upgrade&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude full-upgrade&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+質問には全てデフォルトで応答（"Yes" or &ldquo;No&rdquo; なら &ldquo;Yes"）
+<code>Use dash as the default system shell (/bin/sh)?</code> には "no&rdquo; で応答。</p>
+
+<h4>4. 確認</h4>
+
+<p>玄箱/HG をリブートし、Telnet ログイン時のメッセージを確認する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ telnet 192.168.XXX.XXX
+</span><span class='line'>Trying 192.168.XXX.XXX&hellip;
+</span><span class='line'>Connected to 192.168.11.XXX.
+</span><span class='line'>Escape character is &lsquo;^]&rsquo;.
+</span><span class='line'>Debian GNU/Linux 6.0</span></code></pre></td></tr></table></div></figure>
+もしくは、以下のコマンドでも確認してみる。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>cat /etc/debian_version&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>6.0.6&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>uname -a&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Linux KURO-BOX 2.6.25.1-kuroboxHG #9 Sun May 4 21:29:57 JST 2008 ppc GNU/Linux</span></code></pre></td></tr></table></div></figure>
+Debian は 6.0.6 で、Kernel は 2.6.25.1-kuroboxHG のようです。</p>
+
+<h4>参考サイト</h4>
+
+<ul>
+<li><a href="http://masezou.blogspot.jp/2011/06/hgdebian-601-squeeze.html" title="masezou hacked: 玄箱/玄箱HGにdebian 6.0.1 (Squeeze)をインストール">masezou hacked: 玄箱/玄箱HGにdebian 6.0.1 (Squeeze)をインストール</a></li>
+</ul>
+
+
+<h4>その他</h4>
+
+<p>Kernel のバージョンが古いままであるが、今のところ特に必要性を感じないので、 Kernel 再構築はしなかった。
+以前、i386 マシンでカーネル再構築した際のカーネルパニックを思い出すので。。。</p>
+
+<hr />
+
+<p>これで、玄箱/HG が Debian 6.0(squeeze) 化されました。</p>
+
+<p>あとは、普通に Debian サーバとしていじるだけです。
+（その辺のことはブログ記事にはしないつもり）</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4899770987&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4756146287&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4839918031&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* 玄箱HG - Debian 5.0(lenny) 化！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/11/14/14002031/"/>
+    <updated>2012-11-14T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/11/14/14002031</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>過去にも、何度か記事にしたことのある「玄箱/HG」についてです。</p>
+
+<p>Debian 3.0(woody) 化、Debian 3.1(sarge) 化、Debian 4.0(etch) 化、Fedora 7 化 〜 Fedora 12 化したりしてきました。</p>
+
+<p>今回は、今さらながら Debian 5.0(lenny) 化してみました。
+以前も、Debian 5.0(lenny) 化したことがありましたが、今回の方法が正しい方法です。</p>
+
+<!--more-->
+
+
+<h3>作業記録</h3>
+
+<h4>0. 前提条件</h4>
+
+<ul>
+<li>「玄箱/HG」への Debian 5.0(lenny) の構築を想定。
+「玄箱」への構築も同様だが、一部使用するファイルが異なる。</li>
+<li>シリアルコンソールは使用しない（ハンダ付けしていない）。</li>
+<li>U-Boot 導入済み。</li>
+<li>作業を行うマシンは Linux Mint 13 Maya
+Telnet 接続ができて、ZIP 展開ができて、FTP コマンドが使えれば、OS はなんでもよい。
+ファームウェアに Windows 用インストーラがあるからといって、Windows である必要もない。</li>
+</ul>
+
+
+<h4>1. 事前準備</h4>
+
+<p>以下の計８個のファイルを作業用マシンにダウンロードしておく。
+※「玄箱/HG」ではなく「玄箱」に構築する場合は、使用するファイルが異なる場合があります。各サイトでご確認ください。</p>
+
+<ul>
+<li><p>kuroutoshikou web page</p></li>
+<li><p>玄箱/HGのファームウェア kurog101.zip<br /><a href="http://www.kuroutoshikou.com/products/kuro-box/kurog101.zip">http://www.kuroutoshikou.com/products/kuro-box/kurog101.zip</a></p></li>
+<li><p>Revulo&rsquo;s Laboratory</p></li>
+<li><p>debian-lenny-installer-kuroBOX-20090317.tgz<br /><a href="http://download.revulo.com/kuro-box/debian-lenny-installer-kuroBOX-20090317.tgz">http://download.revulo.com/kuro-box/debian-lenny-installer-kuroBOX-20090317.tgz</a></p></li>
+<li>debian-lenny-kuroBOX-20090317.tgz<br /><a href="http://cid-a95b9af71540ba41.skydrive.live.com/self.aspx/.Public/kuro-box/debian-lenny-kuroBOX-20090317.tgz">http://cid-a95b9af71540ba41.skydrive.live.com/self.aspx/.Public/kuro-box/debian-lenny-kuroBOX-20090317.tgz</a></li>
+<li><p>kuro-bootsel2-debian.tgz<br /><a href="http://download.revulo.com/kuro-box/kuro-bootsel2-debian.tgz">http://download.revulo.com/kuro-box/kuro-bootsel2-debian.tgz</a></p></li>
+<li><p>玄箱でNetBSDを動かす</p></li>
+<li><p>kuro-bootsel2.20080419.tar.gz<br /><a href="http://kurobsd.ki.nu/download/testing/powerpc/selector/bootsel2/kuro-bootsel2.20080419.tar.gz">http://kurobsd.ki.nu/download/testing/powerpc/selector/bootsel2/kuro-bootsel2.20080419.tar.gz</a></p></li>
+<li><p>Genbako kernel collection</p></li>
+<li><p>loader.o<br /><a href="http://www.genbako.com/loader.o/loader.o">http://www.genbako.com/loader.o/loader.o</a></p></li>
+<li>kernelimage-2.6.25.1-kuroHG.tgz<br /><a href="http://www.genbako.com/kernelimage-2.6.25.1-kuroHG.tgz">http://www.genbako.com/kernelimage-2.6.25.1-kuroHG.tgz</a></li>
+<li>modules-2.6.25.1-kuroHG.tgz<br /><a href="http://www.genbako.com/modules-2.6.25.1-kuroHG.tgz">http://www.genbako.com/modules-2.6.25.1-kuroHG.tgz</a></li>
+</ul>
+
+
+<h4>2. 玄箱/HGのEMモード化</h4>
+
+<p>当方の場合、玄箱/HG に U-Boot 導入済みで、シリアルコンソールを使用しない環境なので、"netcat" コマンドで EM モードにする。
+※U-Boot, &ldquo;netcat&rdquo; については <a href="/2010/04/11/11002043/" title="玄箱HG - U-Boot化！">玄箱HG - U-Boot化！</a> を参照。
+U-Boot を使用しない環境なら、
+Kernel 2.4 系なら、
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>echo -n &ldquo;NGNG&rdquo; > /dev/fl3&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+Kernel 2.6 系なら、
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>echo -n &ldquo;NGNG&rdquo; > /dev/mtdblock2&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+でしょうか。
+その他、強制的に EM モード化する方法もあります。</p>
+
+<h4>3. 玄箱/HG へログイン</h4>
+
+<p>EM モードで起動した玄箱/HG へ Telnet で root でログインする。
+パスワードは kuroadmin (玄箱なら kuro)
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>telnet 192.168.11.21&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+IPアドレスはDHCP環境により異なります。</p>
+
+<h4>4. パーティション割り当て</h4>
+
+<p>一旦、パーティションを全削除後、以下の容量で割り当てる。</p>
+
+<table>
+  <tr>
+    <th align="center">パーティション</th><th align="center">容量</th><th align="center">用途</th>
+  </tr>
+  <tr>
+    <td>/dev/hda1</td><td align="right">2 GB</td><td>MontaVista用</td>
+  </tr>
+  <tr>
+    <td>/dev/hda2</td><td align="right">256 MB</td><td>スワップ領域</td>
+  </tr>
+  <tr>
+    <td>/dev/hda3</td><td align="right">4 GB</td><td>Debian(lenny)用</td>
+  </tr>
+  <tr>
+    <td>/dev/hda4</td><td align="right">残り</td><td>データ用</td>
+  </tr>
+</table>
+
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mfdisk -e /dev/hda&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mfdisk -c /dev/hda&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+※ /dev/hda2 のパーティションタイプを &ldquo;82 (Linux swap)&rdquo; にすることに注意。
+※ &ldquo;p&rdquo; とか &ldquo;n&rdquo; とかで設定する。 &ldquo;mfdisk&rdquo; の基本的な使い方なのでここでは説明しない。別途お調べください。</p>
+
+<h4>5. パーティションフォーマット</h4>
+
+<p>割り当てたパーティションをフォーマットし、 /dev/hda1 を /mnt にマウントしておく。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mke2fs -j /dev/hda1&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mke2fs -j /dev/hda3&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mke2fs -j /dev/hda4&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mkswap /dev/hda2&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>mount -t ext3 /dev/hda1 /mnt&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+※ &ldquo;mke2fs&rdquo;, &ldquo;mkswap&rdquo; の基本的な使い方なので詳細はここでは説明しない。別途お調べください。</p>
+
+<h4>6．ファームウェアの展開</h4>
+
+<p>作業用マシンで、玄箱/HG のファームウェア &ldquo;kurog101.zip&rdquo; を展開し、現れた &ldquo;image.zip&rdquo; をさらに展開する。
+現れた &ldquo;tmpimage.tgz&rdquo; だけを、玄箱/HG の &ldquo;/mnt&rdquo; ディレクトリに FTP 転送する。
+※FTP コマンドについては、基本的なことなのでここでは説明しない。
+そして、玄箱/HG 側で &ldquo;/mnt&rdquo; ディレクトリに移動し、"tmpimage.tgz" を展開する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>cd /mnt&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>tar zxvf tmpimage.tgz&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>7. 玄箱/HGのEMモード解除</h4>
+
+<p>当方、U-Boot 導入済みで、シリアルコンソールを使用しない環境なので、"netcat" コマンドで EM モードを解除する。
+一般的には、Kernel 2.4 系なら、
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>echo -n &ldquo;OKOK&rdquo; > /dev/fl3&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+Kernel 2.6 系なら、
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>echo -n &ldquo;OKOK&rdquo; > /dev/mtdblock2&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+でしょうか。</p>
+
+<h4>8. 玄箱/HG のリブート</h4>
+
+<p>玄箱/HG をリブートする。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>reboot&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>9. lenny化用ファイルの転送</h4>
+
+<p>以下の７個のファイルを 玄箱/HG の /tmp ディレクトリに FTP 転送する。</p>
+
+<ul>
+<li>debian-lenny-installer-kuroBOX-20090317.tgz</li>
+<li>debian-lenny-kuroBOX-20090317.tgz</li>
+<li>kuro-bootsel2-debian.tgz</li>
+<li>kuro-bootsel2.20080419.tar.gz</li>
+<li>loader.o</li>
+<li>kernelimage-2.6.25.1-kuroHG.tgz</li>
+<li>modules-2.6.25.1-kuroHG.tgz</li>
+</ul>
+
+
+<h4>10. lenny インストール</h4>
+
+<p>玄箱/HG 側で、"/tmp" ディレクトリに移動し、"debian-lenny-installer-kuroBOX-20090317.tgz" を展開する。
+そして、展開して現れたファイルのうち、玄箱/HG 用のインストールスクリプトを実行する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>cd /tmp&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>tar zxvf debian-lenny-installer-kuroBOX-20090317.tgz&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>sh debian-lenny-installer-kuroHG.sh&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+これで、"/dev/hda3" に Debian(lenny) がインストールされる。
+また、起動時に &ldquo;/dev/hda1&rdquo; ではなく &ldquo;/dev/hda3&rdquo; がルートになるようになる。</p>
+
+<h4>11. ネットワークの設定</h4>
+
+<p>ここで、ネットワークの設定をしておかないと、玄箱/HG をリブートした時に Telnet 接続できなくなる。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /mnt/etc/hostname&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /mnt/etc/hosts&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /mnt/etc/resolve.conf&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>vi /mnt/etc/network/interfaces&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+自分の環境に合わせて修正する。
+各ファイルの内容はよくある Linux でのネットワーク設定なので、ここでは説明しない。各自お調べください。</p>
+
+<h4>12. 玄箱/HG のリブート</h4>
+
+<p>以上の設定が完了したら、玄箱/HG をリブートする。
+Debian lennyが起動する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>reboot&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>13. 玄箱/HG Debian lenny へログイン</h4>
+
+<p>起動したら、Telnet でログインする。
+ユーザ名/パスワードは &ldquo;tmp-kun/tmp-kun&rdquo;
+root ユーザのパスワードは &ldquo;root"。
+仮に、ログインできないようなら、これまでの設定が誤っている可能性があるので、見直してみる。</p>
+
+<h4>14．ユーザ作成等</h4>
+
+<p>新たにユーザを作成したり、tmp-kun ユーザを削除したり、root のパスワードを変更したりする。</p>
+
+<h4>15. パブリックキー設定</h4>
+
+<p>以下のコマンドで、パブリックキーを設定する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude install debian-archive-keyring&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>16. Debian lenny アップデート</h4>
+
+<p>以下のコマンドで、Debian lenny をアップデートする。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude update&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude safe-upgrade&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure>
+これで、lenny 化は完了。
+あとは、通常の Debian GNU/Linux として使用すればよい。
+※しかし、2012/02/06 で Debian Lennyのセキュリティサポートの提供が終了しているので、パッケージリストの更新 &ldquo;apt-get update&rdquo; が効かない。
+※さらに、Debian 6.0(squeeze) へアップグレードした方がよさそう。</p>
+
+<h4>参考サイト</h4>
+
+<ul>
+<li><a href="http://www.revulo.com/kuro-box/Debian/lenny.html" title="玄箱に Debian 5.0 (lenny) をインストールする - Revulo's Laboratory">玄箱に Debian 5.0 (lenny) をインストールする - Revulo&rsquo;s Laboratory</a></li>
+</ul>
+
+
+<h4>その他</h4>
+
+<p>直接 Debian lenny を起動せずに、一旦 MontaVista Linux を経由してから起動するようになっている。
+Kernel バージョンの違いにより直接起動できないからだ。</p>
+
+<p>ちなみに、MontaVista Linux ではなく Debian etch を経由させる方法もあるようだ。
+しかし、当方の場合、etch と lenny が交互に起動するという現象に陥ってしまうので、MontaVista Linux 経由で lenny を起動させるようにした。</p>
+
+<p>また、冒頭にも記載したが、「玄箱/HG」でなく「玄箱」の場合は使用するファイルが異なるものもある。（「玄箱」、「玄箱/HG」共通で使えるファイルもある）
+「玄箱」への構築の場合は、各サイトでご確認ください。</p>
+
+<hr />
+
+<p>RAM 128MB ほどの NAS マシンなので、１台であれこれやろうとするとさすがに重くなって使い物になりませんが、ファイルサーバくらいには十分活用できます。</p>
+
+<p>ちなみに、Debian 5.0(lenny) は 2012/02/06 でセキュリティサポートの提供が終了しているようなので、Debian 6.0(squeeze) 化も目論んでいるところであります。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4899770987&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4756146287&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4839918031&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* 玄箱HG - Fedora 導入後勝手にリブートする件！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/05/19/19002005/"/>
+    <updated>2012-05-19T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/05/19/19002005</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>久方ぶりの玄箱HGについての話題です。</p>
+
+<p>玄箱とは「<a href="http://kuroutoshikou.com/" title="玄人志向">玄人志向</a>」さんが以前販売していた NAS で、ハードディスクを搭載して設定すればファイルサーバとして使用可能のものです。
+Monta Vista Linux を標準で搭載しているのですが、Debian とか Fedora とか Vine、更には NetBSD とかを換装することも可能で、ファンの間では流行っていました。
+当方も、一時期Webサーバ等構築して公開サーバとして使用した時期もありました。
+結局、１台であれこれしようとすると動作が非常に重たくなるので、現在はファイルサーバとしてしか使用していませんでした。。。</p>
+
+<p>ちなみに、玄箱HGの主なスペックは以下の通り。</p>
+
+<ul>
+<li>CPU : PowerPC 266MHz</li>
+<li>RAM : 128MB</li>
+<li>LAN : 1000Base-T/100Base-T/10Base-T×1</li>
+</ul>
+
+
+<!--more-->
+
+
+<p>実際、現在は Fedora を導入しています。
+Fedora7 から順次アップグレードしていった Fedora11 (もちろんPowerPC版) です。
+Fedora は PowerPC 版は 12 までリリースされていますが、当方の場合、現時点では 12 にアップグレードすると起動しなくなってしまうので 11 までとしています。（※また、１回で成功するとも限りません。当方も何回か失敗しています。）
+Fedora11 を導入できる（有志による）パッケージでも導入可能ですが、ブートプロセスの違いにより「ファン回転数」制御ができません。
+なので、Fedora7 を導入できる（有志による）パッケージで導入後徐々にアップグレードしていく方法を採っています。
+ちなみに、その（有志による）パッケージは現在ダウンロード可能なサイトが閉鎖されています。
+※ですから、現在ではそのパッケージを所有している人だけが「玄箱Fedora」を楽しめる事になります。</p>
+
+<p>※当ブログの過去記事もご参照ください（「玄箱」カテゴリ）</p>
+
+<p>そして、ここから本題です。</p>
+
+<p>玄箱HG に Fedora を導入してあれこれと（アップグレード等）作業している最中に、突然勝手にリブートがかかるようになる時期があります。
+そのような現象に陥る詳細なタイミングは覚えていませんが、電源投入後５分位すると勝手にリブートするようになりました。</p>
+
+<p>後学のために対処方法を記録しておく事にします。</p>
+
+<h3>作業記録</h3>
+
+<h4>原因</h4>
+
+<p>マシン自体の日時が９時間進んでしまう（JSTでなくGMTになってしまう）ことが原因のようです。
+NTP サーバを導入して時刻の同期を取っても勝手に元に戻ってしまいます。
+特別な作業が必要のようです。調査した結果は以下の通りです。</p>
+
+<h4>1. タイムゾーン設定</h4>
+
+<p>&ldquo;/etc/localtime&rdquo; を日本のタイムゾーンに設定します。（シンボリックリンクをはる）</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>ln -s /usr/share/zoneinfo/Japan localtime&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. ハードウェアクロックの同期</h4>
+
+<p>ハードウェアクロックを同期させます。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>clock -w&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. ハードウェアクロックの確認</h4>
+
+<p>ハードウェアクロックを確認します。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>hwclock&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>3. リブート</h4>
+
+<p>玄箱HGを再起動させます。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>reboot&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<hr />
+
+<p>今の時代、もう玄箱を使用している人も少ないでしょうが、非力でも意外と使えるので、重宝しています。
+※実は、最近ファイルサーバ以外の別の使用方法を思い付き、現在検討中。</p>
+
+<iframe style="width: 120px; height: 240px;" src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4899770987&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="320" height="240"></iframe>
+
+
+<iframe style="width: 120px; height: 240px;" src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4756146287&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="320" height="240"></iframe>
+
+
+<p>以上です。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* 玄箱ＨＧ - ＤｅｂｉａｎをＬｅｎｎｙ化！]]></title>
+    <link href="http://komasaru.github.io/blog/2010/04/12/12002049/"/>
+    <updated>2010-04-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2010/04/12/12002049</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>前回うちの玄箱HGをU-Boot化したので、今日は玄箱HGにインストール済みのDebian 4.0(etch)を5.0(lenny)にアップグレードしてみました。</p>
+
+<p>【2012.11.03 追記】
+※以下の内容は古いです。
+ ※実際は、玄箱の Debian 5.0(lenny) 化は、Kernel バージョンの違いにより、以下の方法が正当な方法とはなりません。
+ ※あまり信用しないでください。（記録として残してあるだけです）</p>
+
+<!--more-->
+
+
+<h3>作業記録</h3>
+
+<p>【前提条件】</p>
+
+<ul>
+<li><p>玄箱HGにはDebian 4.0(etch)インストール済み。</p></li>
+<li><p>玄箱HGは「U-Boot」化済み。</p></li>
+</ul>
+
+
+<h4>１．「apt-line」の編集</h4>
+
+<p>「/etc/apt/sources.list」を以下のように編集する。
+（基本は「etch」を「lenny」に変更するだけでよいと思います）</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>deb &lt;a href="http://security.debian.org">http://security.debian.org&lt;/a> lenny/updates main contrib
+</span><span class='line'>deb &lt;a href="http://ftp.jp.debian.org/debian">http://ftp.jp.debian.org/debian&lt;/a> lenny main contrib
+</span><span class='line'>deb-src &lt;a href="http://ftp.jp.debian.org/debian">http://ftp.jp.debian.org/debian&lt;/a> lenny main contrib</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>２．アップグレード</h4>
+
+<p>以下のようにコマンドを実行する。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude update&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude install aptitude&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude search &ldquo;?false&rdquo;&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude safe-upgrade&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>aptitude dist-upgrade&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<p>※途中何か聞かれたが全てデフォルトのままにしました。</p>
+
+<h4>３．リブート</h4>
+
+<p>玄箱ＨＧを再起動する。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>reboot&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>４．確認</h4>
+
+<p>Telnet 接続時の表示を確認。
+&ldquo;Debian GNU/Linux 5.0&rdquo;
+と表示されれば「Debian 5.0(lenny)」化成功。</p>
+
+<hr />
+
+<p>作業は以上です。
+個人的な記録なので、詳細は各自調査してください。
+では。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+</feed>

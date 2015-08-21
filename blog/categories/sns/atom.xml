@@ -1,0 +1,1232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sns | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/sns/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Twitter REST API でアカウントの設定！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/01/15/ruby-twitter-setting-by-api/"/>
+    <updated>2015-01-15T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/01/15/ruby-twitter-setting-by-api</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Twitter アカウントを複数（しかも同じ系統のもの）を所有している場合、同時にアカウントの設定を変更したい際に画面を開いて作業するのは大変骨の折れる作業になります。</p>
+
+<p>そこで、当方が普段使用している Ruby スクリプトの重要部分のみ抜粋したもの（テスト用に作成したもの）を紹介します。<br/>
+（実際は、複数アカウントの Twitter Key や設定内容を一覧にした Yaml ファイルを読み込んでループ処理しています）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>Ruby 2.2.0-p0 での作業を想定。</li>
+<li>RubyGems ライブラリ &ldquo;twitter&rdquo;, &ldquo;oauth&rdquo; を使用するので、<code>gem install</code> 済みであること。</li>
+<li>Twitter API を使用するので、 Consumer Key, Secret や Access Token, Secret を取得済みであること。</li>
+<li>設定する Twitter アカウントの項目は以下のとおり。
+
+<ul>
+<li>タイムゾーン</li>
+<li>名前（screen_name でない方）</li>
+<li>URL</li>
+<li>場所</li>
+<li>アカウント説明文</li>
+<li>リンクの色</li>
+<li>背景画像（自アカウントのホーム画面の背景）</li>
+<li>ヘッダ画像</li>
+<li>プロフィール画像</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>1. Ruby スクリプト作成</h3>
+
+<p>以下のような簡単な Ruby スクリプトを作成。</p>
+
+<pre><code class="ruby twitter_settings.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+#
+# ========================
+# Twitter settings
+# ========================
+#
+require 'twitter'
+require 'oauth'
+
+class TwitterSettings
+  # Constants
+  CONS_KEY  = "&lt;your_consumer_key&gt;"
+  CONS_SEC  = "&lt;your_consumer_secret&gt;"
+  ACCS_KEY  = "&lt;your_access_token&gt;"
+  ACCS_SEC  = "&lt;your_access_token_secret&gt;"
+  T_ZONE    = "Tokyo"
+  NAME      = "テストアカウント"
+  URL       = "http://xxx.yyy.zzz/"
+  LOCATION  = "Ruby City MATSUE"
+  DESC      = "これはテストアカウントです。"
+  LN_COLOR  = "FA743E"
+  PR_BGIMG  = "/path/to/background.gif"
+  PR_BANNER = "/path/to/banner.jpg"
+  PR_IMG    = "/path/to/profile.png"
+
+  def initialize
+    @client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = CONS_KEY
+      config.consumer_secret     = CONS_SEC
+      config.access_token        = ACCS_KEY
+      config.access_token_secret = ACCS_SEC
+    end
+  end
+
+  # Main process
+  def exec
+    # account/settings
+    settings
+
+    # account/update_profile
+    update_profile
+
+    # account/update_profile_background_image
+    update_profile_background_image
+
+    # account/update_profile_banner
+    update_profile_banner
+
+    # account/update_profile_image
+    update_profile_image
+  rescue =&gt; e
+    $stderr.puts "[EXCEPTION][#{self.class.name}.#{__method__}] #{e}"
+    exit 1
+  end
+
+private
+
+  # account/settings
+  # - time_zone: The timezone dates and times should be displayed in for the user.
+  #              The timezone must be one of the Rails TimeZone names.
+  def settings
+    puts "* account/settings"
+
+    begin
+      @client.settings({time_zone: T_ZONE})
+    rescue =&gt; e
+      raise
+    end
+  end
+
+  # account/update_profile
+  # - name              : Maximum of 20 characters
+  # - url               : Maximum of 100 characters
+  # - location          : Maximum of 30 characters
+  # - description       : Maximum of 160 characters
+  # - profile_link_color: (ex: F00 or FA743E)
+  def update_profile
+    puts "* account/update_profile"
+
+    begin
+      @client.update_profile(
+        {
+          name:               NAME,
+          url:                URL,
+          location:           LOCATION,
+          description:        DESC,
+          profile_link_color: LN_COLOR
+        }
+      )
+    rescue =&gt; e
+      raise
+    end
+  end
+
+  # account/update_profile_background_image
+  # - The background image for the profile, base64-encoded. Must be a valid GIF,
+  #   JPG, or PNG image of less than 800 kilobytes in size. Images with width
+  #   larger than 2048 pixels will be forcibly scaled down. The image must be
+  #   provided as raw multipart data, not a URL.
+  def update_profile_background_image
+    puts "* account/update_profile_background_image"
+
+    begin
+      @client.update_profile_background_image(
+        File.open(PR_BGIMG), {tile: true, use: true}
+      )
+    rescue =&gt; e
+      raise
+    end
+  end
+
+  # account/update_profile_banner
+  # - banner: The Base64-encoded or raw image data being uploaded as the user’s
+  #           new profile banner.
+  def update_profile_banner
+    puts "* account/update_profile_banner"
+
+    begin
+      @client.update_profile_banner(File.open(PR_BANNER))
+    rescue =&gt; e
+      raise
+    end
+  end
+
+  # account/update_profile_image
+  # - image: The avatar image for the profile, base64-encoded. Must be a valid GIF,
+  #          JPG, or PNG image of less than 700 kilobytes in size. Images with
+  #          width larger than 400 pixels will be scaled down. Animated GIFs will
+  #          be converted to a static GIF of the first frame, removing the animation.
+  def update_profile_image
+    puts "* account/update_profile_image"
+
+    begin
+      @client.update_profile_image(File.open(PR_IMG))
+    rescue =&gt; e
+      raise
+    end
+  end
+end
+
+TwitterSettings.new.exec
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/75b2902a1c87b13b7804" title="Gist - Ruby script to set informations of a twitter account.">Gist - Ruby script to set informations of a twitter account.</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプト実行</h3>
+
+<pre><code class="text">$ ./twitter_settings.rb
+* account/settings
+* account/update_profile
+* account/update_profile_background_image
+* account/update_profile_banner
+* account/update_profile_image
+</code></pre>
+
+<h3>3. 参考サイト</h3>
+
+<ul>
+<li><a href="https://dev.twitter.com/rest/public" title="REST APIs - Twitter Developers">REST APIs - Twitter Developers</a></li>
+<li><a href="http://www.rubydoc.info/gems/twitter" title="File: README — Documentation for twitter (5.13.0)">File: README — Documentation for twitter (5.13.0)</a></li>
+</ul>
+
+
+<hr />
+
+<p>同じシリーズの Twitter Bot を100件以上（当記事執筆時点）所有しているので、いざまとめて変更しようと思った際に重宝しております。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2014年 - ツイート集計！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/01/02/summary-tweet-2014/"/>
+    <updated>2015-01-02T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/01/02/summary-tweet-2014</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>2014年の Twitter でのツイート（メインで使用しているアカウントのみ）を Ruby で集計してみました。（今日気付きましたが、2013 年分の公開は失念していました）</p>
+
+<p>当方は、ツイートは全て自宅サーバ(CentOS)上のデータベース(MariaDB(MySQL))に保存しています。<br/>
+（実際には１時間に１回 Ruby + Twitter API で本家からデータを取得して保存）</p>
+
+<p>ほとんど SQL で集計可能でした。<br/>
+品詞・単語別集計は形態素解析エンジン MeCab を使用しました。</p>
+
+<!--more-->
+
+
+<p>集計内容は以下のとおり。</p>
+
+<ol>
+<li>月別ツイート数</li>
+<li>曜日別ツイート数</li>
+<li>時間別ツイート数</li>
+<li>文字数別ツイート数</li>
+<li>１日当たりツイート数別集計</li>
+<li>品詞別出現回数</li>
+<li>単語別出現回数</li>
+</ol>
+
+
+<h3>1. 月別ツイート数</h3>
+
+<pre><code class="text">[ 年  月 ]  [件数]  [ 比 率 ]
+2014年01月     288  (  6.95%)
+2014年02月     306  (  7.38%)
+2014年03月     387  (  9.33%)
+2014年04月     399  (  9.62%)
+2014年05月     400  (  9.65%)
+2014年06月     284  (  6.85%)
+2014年07月     315  (  7.60%)
+2014年08月     420  ( 10.13%)
+2014年09月     334  (  8.06%)
+2014年10月     344  (  8.30%)
+2014年11月     295  (  7.12%)
+2014年12月     374  (  9.02%)
+[ 合  計 ]   4,146  (100.00%)
+</code></pre>
+
+<p>毎月 300 〜 400 くらいツイートしているようだ。。</p>
+
+<h3>2. 曜日別ツイート数</h3>
+
+<pre><code class="text">[ 曜  日 ]  [件数]  [ 比 率 ]
+  日曜日       546  ( 13.17%)
+  月曜日       685  ( 16.52%)
+  火曜日       586  ( 14.13%)
+  水曜日       606  ( 14.62%)
+  木曜日       564  ( 13.60%)
+  金曜日       584  ( 14.09%)
+  土曜日       575  ( 13.87%)
+[ 合  計 ]   4,146  (100.00%)
+</code></pre>
+
+<p>月曜日が若干多めになっているようだ。</p>
+
+<h3>3. 時間別ツイート数</h3>
+
+<pre><code class="text">[ 時  間 ]  [件数]  [ 比 率 ]
+  00時台     1,021  ( 24.63%)
+  01時台         7  (  0.17%)
+  02時台         8  (  0.19%)
+  03時台         9  (  0.22%)
+  04時台        13  (  0.31%)
+  05時台        40  (  0.96%)
+  06時台        22  (  0.53%)
+  07時台        12  (  0.29%)
+  08時台        11  (  0.27%)
+  09時台        28  (  0.68%)
+  10時台        28  (  0.68%)
+  11時台        26  (  0.63%)
+  12時台       351  (  8.47%)
+  13時台        12  (  0.29%)
+  14時台        29  (  0.70%)
+  15時台        20  (  0.48%)
+  16時台        74  (  1.78%)
+  17時台       101  (  2.44%)
+  18時台       668  ( 16.11%)
+  19時台       832  ( 20.07%)
+  20時台       305  (  7.36%)
+  21時台       295  (  7.12%)
+  22時台       127  (  3.06%)
+  23時台       107  (  2.58%)
+[ 合  計 ]   4,146  (100.00%)
+</code></pre>
+
+<p>通常のツイートは 18時台、19時台が多いようだ。00時台、12時台は Bot によるツイートがほとんど。</p>
+
+<h3>4. 文字数別ツイート数</h3>
+
+<pre><code class="text">[ 文字数 ]  [件数]  [ 比 率 ]
+ 〜 10文字       1  (  0.02%)
+ 〜 20文字      21  (  0.51%)
+ 〜 30文字      54  (  1.30%)
+ 〜 40文字     105  (  2.53%)
+ 〜 50文字     213  (  5.14%)
+ 〜 60文字     414  (  9.99%)
+ 〜 70文字     462  ( 11.14%)
+ 〜 80文字     629  ( 15.17%)
+ 〜 90文字     459  ( 11.07%)
+ 〜100文字     342  (  8.25%)
+ 〜110文字     335  (  8.08%)
+ 〜120文字     206  (  4.97%)
+ 〜130文字     223  (  5.38%)
+ 〜140文字     680  ( 16.40%)
+ 〜150文字       1  (  0.02%)
+ 〜160文字       1  (  0.02%)
+[ 合  計 ]   4,146  (100.00%)
+</code></pre>
+
+<p>文字数の少なすぎるツイートはあまりなく、70〜90文字くらいのツイートが多いようだ。<br/>
+（140文字を超えるツイートが存在するのは、ツイート時に BitLy 短縮の URL だったのが Twitter API で取得し直すと Twitter 標準の t.co 短縮になり文字数が変わるため）</p>
+
+<h3>5. １日当たりツイート数別集計</h3>
+
+<pre><code class="text">[ Tweets ]  [日数]  [ 比 率 ]
+     4           1  (  0.27%)
+     5           4  (  1.10%)
+     6          14  (  3.84%)
+     7          32  (  8.77%)
+     8          40  ( 10.96%)
+     9          41  ( 11.23%)
+    10          42  ( 11.51%)
+    11          39  ( 10.68%)
+    12          37  ( 10.14%)
+    13          24  (  6.58%)
+    14          23  (  6.30%)
+    15          24  (  6.58%)
+    16          12  (  3.29%)
+    17          10  (  2.74%)
+    18           4  (  1.10%)
+    19           4  (  1.10%)
+    20           3  (  0.82%)
+    21           5  (  1.37%)
+    22           1  (  0.27%)
+    23           1  (  0.27%)
+    24           1  (  0.27%)
+    28           1  (  0.27%)
+    29           1  (  0.27%)
+    37           1  (  0.27%)
+[ 合  計 ]     365  (100.00%)
+</code></pre>
+
+<p>１日に10ツイート前後が多いようで、１回もツイートしなかった日は無いようだ。</p>
+
+<h3>6. 品詞別出現回数</h3>
+
+<p>形態素解析エンジン MeCab を使用して品詞別に集計してみた。</p>
+
+<pre><code class="text">[ 品詞   ]  [ 出現回数 ]
+  名詞        115,529
+  記号         33,004
+  助詞         30,877
+  動詞         10,683
+  助動詞        7,523
+  接頭詞        1,797
+  副詞          1,625
+  形容詞        1,490
+  連体詞          463
+  接続詞          303
+  感動詞          104
+  フィラー          9
+  その他            1
+[ 合  計 ]  203,408 語
+</code></pre>
+
+<p>当然ながら、名詞が多い。フィラーとは「えーと」、「あのー」のような、文と文の間を埋めるような単語のこと。<br/>
+いつもながら、全体的に「こういうものなんだ」と実感する程度。</p>
+
+<h3>7. 単語別出現回数</h3>
+
+<p>１年間に出現した単語を集計してみた。（100回以上出現した単語を掲載）</p>
+
+<pre><code class="text">[ 単語               ]  [ 品詞   ]  [ 出現回数 ]
+  の                      助詞           7,364
+  。                      記号           6,937
+  :                       名詞           5,258
+  ▼                       記号           3,842
+  .                       名詞           3,535
+  、                      記号           3,324
+  「                      記号           3,173
+  」                      記号           3,141
+  /                       名詞           3,140
+  は                      助詞           3,138
+  に                      助詞           3,115
+  が                      助詞           2,605
+  日                      名詞           2,539
+  http                    名詞           2,257
+  た                      助動詞         2,236
+  t                       名詞           2,200
+  ://                     名詞           2,185
+  co                      名詞           2,174
+  て                      助詞           2,167
+  月                      名詞           2,159
+  #                       名詞           2,110
+  ：                      記号           1,950
+  で                      助詞           1,937
+  【                      記号           1,797
+  ）                      記号           1,745
+  （                      記号           1,743
+  を                      助詞           1,594
+  】                      記号           1,565
+  し                      動詞           1,446
+  と                      助詞           1,407
+  matsue                  名詞           1,113
+  今日                    名詞           1,049
+  ！                      記号           1,048
+  も                      助詞           1,035
+  ね                      助詞             995
+  だ                      助動詞           946
+  から                    助詞             931
+  (                       名詞             929
+  )                       名詞             868
+  -                       名詞             800
+  2014                    名詞             777
+  自動                    名詞             774
+  松江                    名詞             768
+  市                      名詞             763
+  @                       名詞             748
+  1                       名詞             747
+  ・                      記号             743
+  入                      接頭詞           741
+  ない                    助動詞           734
+  南中                    名詞             731
+  情報                    名詞             695
+  5                       名詞             683
+  12                      名詞             650
+  いる                    動詞             647
+  です                    助動詞           639
+  こと                    名詞             627
+  7                       名詞             621
+  けど                    助詞             618
+  9                       名詞             598
+  な                      助動詞           592
+  年                      名詞             587
+  BLOG                    名詞             585
+  0                       名詞             582
+  か                      助詞             552
+  する                    動詞             552
+  _                       名詞             545
+  １                      名詞             543
+  気象庁                  名詞             543
+  2                       名詞             541
+  4                       名詞             539
+  県                      名詞             520
+  よう                    名詞             512
+  10                      名詞             485
+  3                       名詞             455
+  6                       名詞             445
+  11                      名詞             444
+  ？                      記号             444
+  RT                      名詞             443
+  れ                      動詞             441
+  8                       名詞             436
+  旧暦                    名詞             424
+  い                      動詞             419
+  さ                      動詞             417
+  ]                       名詞             406
+  の                      名詞             394
+  出                      動詞             385
+  日の出                  名詞             377
+  干支                    名詞             370
+  こよみ                  名詞             370
+  六                      名詞             369
+  月齢                    名詞             367
+  曜                      名詞             366
+  18                      名詞             365
+  05                      名詞             361
+  気象                    名詞             355
+  ※                       記号             353
+  う                      助動詞           352
+  17                      名詞             345
+  ある                    動詞             342
+  なる                    動詞             340
+  という                  助詞             329
+  や                      助詞             328
+  16                      名詞             326
+  19                      名詞             323
+  地方                    名詞             321
+  島根                    名詞             304
+  wn                      名詞             299
+  31                      名詞             291
+  でしょ                  助動詞           290
+  06                      名詞             289
+  台風                    名詞             284
+  なっ                    動詞             275
+  21                      名詞             274
+  ので                    助詞             273
+  第                      接頭詞           269
+  的                      名詞             263
+  明日                    名詞             261
+  まで                    助詞             258
+  ^M                      記号             256
+  "                       名詞             255
+  人                      名詞             253
+  14                      名詞             250
+  ２                      名詞             245
+  で                      助動詞           245
+  20                      名詞             243
+  災害                    名詞             240
+  13                      名詞             233
+  】[                     名詞             233
+  22                      名詞             231
+  No                      名詞             230
+  号                      名詞             227
+  15                      名詞             226
+  04                      名詞             226
+  32                      名詞             224
+  shimane                 名詞             217
+  07                      名詞             213
+  時                      名詞             212
+  だっ                    助動詞           212
+  観測                    名詞             212
+  発表                    名詞             209
+  防災                    名詞             204
+  23                      名詞             194
+  発生                    名詞             188
+  ３                      名詞             188
+  頃                      名詞             186
+  等                      名詞             185
+  →                       記号             184
+  L                       名詞             182
+  XnBWJ                   名詞             180
+  hQx                     名詞             180
+  ん                      名詞             178
+  SNK                     名詞             178
+  PrG                     名詞             178
+  09                      名詞             173
+  [                       名詞             172
+  ください                動詞             169
+  だけ                    助詞             168
+  注意                    名詞             168
+  て                      動詞             165
+  中                      名詞             164
+  25                      名詞             163
+  30                      名詞             161
+  選手                    名詞             159
+  警戒                    名詞             158
+  24                      名詞             155
+  CentOS                  名詞             155
+  ます                    助動詞           154
+  00                      名詞             152
+  より                    助詞             149
+  ds                      名詞             148
+  08                      名詞             146
+  ない                    形容詞           146
+  26                      名詞             145
+  あっ                    動詞             144
+  Matsue                  名詞             144
+  かも                    助詞             143
+  27                      名詞             142
+  注意報                  名詞             142
+  地震                    名詞             142
+  なく                    助動詞           141
+  思っ                    動詞             140
+  01                      名詞             139
+  警報                    名詞             138
+  中国                    名詞             138
+  EmWwEqgDPY              名詞             137
+  03                      名詞             136
+  C                       名詞             136
+  xkpHdQhFgf              名詞             135
+  な                      助詞             135
+  Wn                      名詞             135
+  日本                    名詞             134
+  れる                    動詞             134
+  今                      名詞             133
+  28                      名詞             132
+  サーバ                  名詞             132
+  35                      名詞             131
+  たら                    助動詞           131
+  02                      名詞             130
+  Ruby                    名詞             130
+  何                      名詞             129
+  29                      名詞             127
+  まし                    助動詞           127
+  53                      名詞             127
+  気                      名詞             127
+  個人                    名詞             127
+  前                      名詞             127
+  中国地方                名詞             123
+  気圧                    名詞             122
+  お                      接頭詞           121
+  Linux                   名詞             121
+  鳥取                    名詞             117
+  として                  助詞             117
+  そう                    名詞             117
+  でし                    助動詞           116
+  そう                    副詞             115
+  それ                    名詞             115
+  XML                     名詞             115
+  西部                    名詞             113
+  34                      名詞             113
+  にかけて                助詞             113
+  状況                    名詞             111
+  錦織                    名詞             111
+  ,                       名詞             111
+  度                      名詞             110
+  土砂                    名詞             109
+  ば                      助詞             108
+  tennis                  名詞             108
+  以上                    名詞             108
+  ０                      名詞             106
+  50                      名詞             105
+  さん                    名詞             104
+  ６                      名詞             104
+  56                      名詞             102
+  出雲                    名詞             102
+  …                       記号             102
+  一覧                    名詞             102
+  もの                    名詞             100
+  のに                    助詞             100
+   :                       :                :
+   :                       :                :
+   :                       :                :
+[ 合  計 ]  203,408 語
+</code></pre>
+
+<p>MeCab の仕様による分類なので、半角コロン <code>:</code> は名詞になり、全角コロン <code>：</code> は記号になったりと、非常に厳密な分類となっているのがわかる。<br/>
+例年どおり、今年も助詞の「の」が今年最も使われていた。</p>
+
+<hr />
+
+<p>単純に数を集計するだけではなく、品詞別に集計するのも面白いものです。</p>
+
+<p>ブログ記事は当方<a href="http://www.mk-mode.com/rails/" title="mk-mode SITE">Web サイト</a>で随時検索・参照できるようにしたりしているので、あらためて集計はしていません。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[C++ - twitcurl でツイート！]]></title>
+    <link href="http://komasaru.github.io/blog/2014/09/28/cpp-tweet-by-twitcurl/"/>
+    <updated>2014-09-28T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2014/09/28/cpp-tweet-by-twitcurl</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>C++ で twitcurl ライブラリを使用して Twitter へポストする方法についての記録です。</p>
+
+<p>（C++ にそれほど精通している訳でもありません。ご承知おきください）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17 での作業を想定。</li>
+<li>g++(c++) のバージョンは 4.8.2</li>
+<li>Twitter の Consumer Key, Secret, OAuth Access Token, Secrec が取得済みであることを想定。</li>
+<li>Twitter の Consumer Key, Secret, OAuth Access Token, Secrec が未取得の場合の処理やツイート以外の処理を実装することも可能だが、今回はツイートに限定した処理にしている。詳細は参考サイトのコーディング例を参照のこと。</li>
+</ul>
+
+
+<h3>1. 必要パッケージインストール</h3>
+
+<p>twitcurl ライブラリのインストールに必要なパッケージが未インストールならインストールする。</p>
+
+<pre><code class="text">$ sudo apt-get install g++ subversion
+</code></pre>
+
+<p>さらに libcurl4-dev パッケージも必要だが、これは <code>libcurl4-openssl-dev</code>, <code>libcurl4-nss-dev</code>, <code>libcurl4-gnutls-dev</code> が提供する仮想パッケージなので、どれもインストールされてなければ、どれか一つをインストールする。</p>
+
+<pre><code class="text">$ sudo apt-get install libcurl4-openssl-dev
+</code></pre>
+
+<h3>2. twitcurl ライブラリインストール</h3>
+
+<p>ソースを取得しビルド・インストールする。</p>
+
+<pre><code class="text">$ svn co http://twitcurl.googlecode.com/svn/trunk/libtwitcurl
+$ cd libtwitcurl
+$ make
+$ sudo make install
+</code></pre>
+
+<h3>3. C++ ソースコード作成</h3>
+
+<pre><code class="c twitcurl.cpp">/**
+ * Tweet by twitcurl
+ */
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;twitcurl.h&gt;
+
+using namespace std;
+
+/*
+ * [CLASS] Process
+ */
+class Proc
+{
+    twitCurl twitterObj;
+    string strConsumerKey, strConsumerSecret;
+    string strAccessTokenKey, strAccessTokenSecret;
+    string strReplyMsg;
+public:
+    Proc();                 // Constructor
+    bool execMain(string);  // Main Process
+};
+
+/*
+ * Proc - Constructor
+ */
+Proc::Proc()
+{
+    // Initialize
+    strConsumerKey       = "your_consumer_key";
+    strConsumerSecret    = "your_consumer_secret";
+    strAccessTokenKey    = "your_access_token_key";
+    strAccessTokenSecret = "your_access_token_secret";
+}
+
+/*
+ * Main Process
+ */
+bool Proc::execMain(string strString)
+{
+    try {
+        // Set Twitter consumer key and secret,
+        //   OAuth access token key and secret
+        twitterObj.getOAuth().setConsumerKey(strConsumerKey);
+        twitterObj.getOAuth().setConsumerSecret(strConsumerSecret);
+        twitterObj.getOAuth().setOAuthTokenKey(strAccessTokenKey);
+        twitterObj.getOAuth().setOAuthTokenSecret(strAccessTokenSecret);
+
+        // Verify account credentials
+        if (!twitterObj.accountVerifyCredGet()) {
+            twitterObj.getLastCurlError(strReplyMsg);
+            cerr &lt;&lt; "\ntwitCurl::accountVerifyCredGet error:\n"
+                 &lt;&lt; strReplyMsg.c_str() &lt;&lt; endl;
+            return false;
+        }
+
+        // Post a message
+        strReplyMsg = "";
+        if (!twitterObj.statusUpdate(strString)) {
+            twitterObj.getLastCurlError(strReplyMsg);
+            cerr &lt;&lt; "\ntwitCurl::statusUpdate error:\n"
+                 &lt;&lt; strReplyMsg.c_str() &lt;&lt; endl;
+            return false;
+        }
+    } catch (char *e) {
+        cerr &lt;&lt; "[EXCEPTION] " &lt;&lt; e &lt;&lt; endl;
+        return false;
+    }
+    return true;
+}
+
+/*
+ * Execution
+ */
+int main(int argc, char* argv[]){
+    try {
+        if (argc != 2) {
+            cout &lt;&lt; "Usage: ./Twitcurl sentence" &lt;&lt; endl;
+            return true;
+        }
+        Proc objMain;
+        bool bRet = objMain.execMain(argv[1]);
+        if (!bRet) cout &lt;&lt; "ERROR!" &lt;&lt; endl;
+    } catch (char *e) {
+        cerr &lt;&lt; "[EXCEPTION] " &lt;&lt; e &lt;&lt; endl;
+        return 1;
+    }
+    return 0;
+}
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/ffe0397489947af90ae8" title="Gist - C++ source code to tweet by twitcurl library.">Gist - C++ source code to tweet by twitcurl library.</a></li>
+</ul>
+
+
+<h3>4. コンパイル</h3>
+
+<p>作成した C++ ソースコードをコンパイルする。</p>
+
+<pre><code class="text">$ g++ -Wall -O2 -o Twitcurl Twitcurl.cpp -ltwitcurl
+</code></pre>
+
+<p>何も出力されなければ成功。</p>
+
+<h3>5. 動作確認</h3>
+
+<p>以下のようにして実行してみる。<br/>
+第１引数にツイート文を指定するが、半角スペースが間に入る場合はダブルクォーテーションで括ること。</p>
+
+<pre><code class="text">$ ./Twitcurl "これは C++ と TwitCurl によるテストツイートです。"
+</code></pre>
+
+<h3>6. 参考サイト</h3>
+
+<p>ライブラリのインストールについては、</p>
+
+<ul>
+<li><a href="https://code.google.com/p/twitcurl/wiki/WikiHowToUseTwitcurlLibrary" title="WikiHowToUseTwitcurlLibrary - twitcurl - How to use twitcurl library? - twitcurl is a pure C++ twitter API library based on cURL - Google Project Hosting">WikiHowToUseTwitcurlLibrary - twitcurl - How to use twitcurl library? - twitcurl is a pure C++ twitter API library based on cURL - Google Project Hosting</a></li>
+</ul>
+
+
+<p>コーディング例については、</p>
+
+<ul>
+<li><a href="https://code.google.com/p/twitcurl/source/browse/trunk/twitterClient/twitterClient.cpp" title="twitterClient.cpp - twitcurl - twitcurl is a pure C++ twitter API library based on cURL - Google Project Hosting">twitterClient.cpp - twitcurl - twitcurl is a pure C++ twitter API library based on cURL - Google Project Hosting</a></li>
+</ul>
+
+
+<p>Twitter 社推奨の各プログラミング言語用のライブラリ一覧は、</p>
+
+<ul>
+<li><a href="https://dev.twitter.com/docs/twitter-libraries" title="Twitter Libraries - Twitter Developers">Twitter Libraries - Twitter Developers</a></li>
+</ul>
+
+
+<hr />
+
+<p>Twitter Bot を作成する際の参考になれば幸いです。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Twitter アプリの登録済み Consumer Key から Access Token を取得！]]></title>
+    <link href="http://komasaru.github.io/blog/2014/03/17/ruby-get-twitter-access-token/"/>
+    <updated>2014-03-17T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2014/03/17/ruby-get-twitter-access-token</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Twitter アプリを開発する際は Consumer Key, Consumer Secret, Access Token, Access Token Secret が必要です。</p>
+
+<p>Twitter アプリを開発する都度開発者サイトで登録してもよいのですが、その頻度がそれほど頻繁でなくても結構面倒な作業です。<br/>
+（最近（当記事公開時点）では、アプリを新規に登録する際に携帯電話との関連付けも必須になったようなので余計に。。。）</p>
+
+<p>そこで、当方は１組の登録済み Consumer Key, Consumer Secret から Access Token, Access Token Secret を取得する Ruby スクリプトを作成して使用しています。</p>
+
+<p>Web サイトで検索すれば Ruby に限らず色々とヒットするとは思いますが、参考までに当方が使用している Ruby スクリプトを紹介します。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 13(64bit) での作業を想定。</li>
+<li>Ruby 2.1.1-p76 での作業を想定。</li>
+<li>OAuth という RubyGem パッケージが必要なので、未インストールなら <code>gem install oauth</code> でインストールしておく。</li>
+</ul>
+
+
+<h3>1. Ruby スクリプト</h3>
+
+<pre><code class="ruby twitter_access_token.rb"># ***************************************
+# Oauth - Access Token, Secret 取得処理
+# ***************************************
+require 'oauth'
+
+class TwitterAccessToken
+  SITE_URL = "https://twitter.com"
+
+  def get_token
+    # Consumer 情報入力
+    print 'Please input CONSUMER KEY   : '
+    consumer_key    = gets.chomp
+    print 'Please input CONSUMER SECRET: '
+    consumer_secret = gets.chomp
+
+    # Oauth オブジェクト生成
+    oauth = OAuth::Consumer.new(
+      consumer_key,
+      consumer_secret,
+      site: SITE_URL
+    )
+
+    # リクエストトークン取得
+    request_token = oauth.get_request_token
+
+    # PIN コード取得
+    puts  "Please access this URL      : #{request_token.authorize_url}"
+    print "Please enter the PIN code   : "
+    pin_code = gets.to_i
+
+    # アクセストークン取得
+    access_token = request_token.get_access_token(
+      oauth_verifier: pin_code
+    )
+
+    # アクセストークン表示
+    puts "---"
+    puts "ACCESS TOKEN                : #{access_token.token}"
+    puts "ACCESS TOKEN SECRET         : #{access_token.secret}"
+  rescue =&gt; e
+    puts "[#{e.class}] #{e.message}"
+    exit 1
+  end
+end
+
+TwitterAccessToken.new.get_token
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/9461154" title="Gist - Ruby script to get twitter access token from consumer key.">Gist - Ruby script to get twitter access token from consumer key.</a></li>
+</ul>
+
+
+<h3>2. 実行</h3>
+
+<ol>
+<li>コンソールで、作成した Ruby スクリプトを実行する。</li>
+<li>Consumer Key と Cunsumer Secret が問われるので登録したいアプリのものを入力する。</li>
+<li>認証用ページの URL が出力される。</li>
+<li>Web ブラウザで認証用ページへアクセスする。</li>
+<li>認証用ページで「認証」ボタンをクリックする。</li>
+<li>PIN コードが表示されるので、控える。</li>
+<li>コンソールに戻り、控えた PIN コードを入力する。</li>
+<li>取得した Access Token, Access Token Secret が表示される。</li>
+</ol>
+
+
+<pre><code class="text">$ ruby twitter_access_token.rb
+Please input CONSUMER KEY   : XXXXXXXXXXXXXXXXXXXX
+Please input CONSUMER SECRET: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Please access this URL      : https://twitter.com/oauth/authorize?oauth_token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Please enter the PIN code   : 9999999
+---
+ACCESS TOKEN                : 999999999-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ACCESS TOKEN SECRET         : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+</code></pre>
+
+<hr />
+
+<p>これで、アプリ登録の手間がかなり楽になります。<br/>
+同じ仕組みを実装して Web アプリを作ってみてもよいでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - tweetstream で Twitter Streaming API を利用！]]></title>
+    <link href="http://komasaru.github.io/blog/2013/10/04/ruby-twitter-streaming-api-by-tweetstream/"/>
+    <updated>2013-10-04T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2013/10/04/ruby-twitter-streaming-api-by-tweetstream</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>過去には、Twitter REST API で自分のアカウントに関する様々情報を取得したり、ツイートするボットを作成したりして来ました。<br/>
+実際、今でも Ruby 製ボットが快調に動作しています。</p>
+
+<p>今回は、REST API ではなく、Streaming API を Ruby で利用してみました。<br/>
+制限を気にすることなく、どんどんツイートを取得できるのに魅力を感じたからです。</p>
+
+<p>以下、準備とコーディング例の紹介です。</p>
+
+<!--more-->
+
+
+<h4>0. 前提条件</h4>
+
+<ul>
+<li>Linux Mint 14 (64bit) での作業を想定。</li>
+<li>Ruby 2.0.0-p247 での作業を想定。</li>
+<li>Git でダウンロードしてパッチを当てるので、git がインストール済みであること。</li>
+<li>Twitter Streaming API には、本来 Public streams, User streams, Sites streams があるということを認識しておく。
+（今回は、それらのうち Public streams の機能を tweetstream で扱う）</li>
+<li>Twitter Streaming API そのものについては、ここでは説明しない。</li>
+</ul>
+
+
+<h4>1. tweetstream インストール</h4>
+
+<p>RubyGems ライブラリ tweetstream をインストールする。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo gem install tweetstream
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. tweetstream にパッチを当てる</h4>
+
+<p>tweetstream はインストールしただけでは、Ruby 2.0 で使用できないようなので、 em-twitter に「<a href="https://gist.github.com/jfrazee/5400423" title="Fix for Ruby 2.0 tweetstream issue">Fix for Ruby 2.0 tweetstream issue</a>」のパッチを当てる。（<a href="https://github.com/tweetstream/tweetstream/issues/117" title="Ruby 2.0.0 support · Issue #117 · tweetstream/tweetstream">こちら</a>には、2.0.0-p195 では動作するような記述があるが、今回の当方の環境 2.0.0-p247 では動作しなかったのでパッチを適用した）</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">cd</span> /usr/local/lib/ruby/gems/2.0.0/gems/em-twitter-0.2.2/lib/em-twitter
+</span><span class='line'><span class="nv">$ </span>sudo git clone &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;https://gist.github.com/5400423.git&quot;</span>&gt;https://gist.github.com/5400423.git&lt;/a&gt;
+</span><span class='line'><span class="nv">$ </span>sudo mv 5400423/em-twitter-connection.diff ./
+</span><span class='line'><span class="nv">$ </span>sudo patch <span class="p">&amp;</span>lt<span class="p">;</span> em-twitter-connection.diff
+</span><span class='line'><span class="nv">$ </span>sudo rm -rf 5400423/ em-twitter-connection.diff
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>もしも、<code>sudo git clone https:// ...</code> で以下のエラーとなる場合は、<code>sudo git clone git:// ...</code> とすると良いかもしれない。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>error: RPC failed<span class="p">;</span> <span class="nv">result</span><span class="o">=</span>22, HTTP <span class="nv">code</span> <span class="o">=</span> 400
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>3. Ruby スクリプト作成</h4>
+
+<p>&ldquo;<a href="https://github.com/tweetstream/tweetstream" title="tweetstream/tweetstream">tweetstream/tweetstream</a>&rdquo; の説明を参考に、Ruby スクリプトを作成してみる。</p>
+
+<p><figure class='code'><figcaption><span>test_tweetstream.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">tweetstream</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;h1&gt;Consumer key, Secretの設定&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="no">CONSUMER_KEY</span>     <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="no">CONSUMER_SECRET</span>  <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;h1&gt;Access Token Key, Secretの設定&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="no">ACCESS_TOKEN_KEY</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="no">ACCESS_SECRET</span>    <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">xxxxxxxxxxxxxxxxxxxxxxxxxxxx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;TweetStream.configure do |config|</span>
+</span><span class='line'><span class="sr">  config.consumer_key       = CONSUMER_KEY</span>
+</span><span class='line'><span class="sr">  config.consumer_secret    = CONSUMER_SECRET</span>
+</span><span class='line'><span class="sr">  config.oauth_token        = ACCESS_TOKEN_KEY</span>
+</span><span class='line'><span class="sr">  config.oauth_token_secret = ACCESS_SECRET</span>
+</span><span class='line'><span class="sr">  config.auth_method        = :oauth</span>
+</span><span class='line'><span class="sr">end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="no">TweetStream</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">sample</span> <span class="k">do</span> <span class="o">|</span><span class="n">status</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{status.user.screen_name}: #{status.text}&amp;rdquo;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/6568377" title="Gist - Ruby script testing to get tweets by tweetstream.">Gist - Ruby script testing to get tweets by tweetstream.</a></li>
+</ul>
+
+
+<p><code>sample</code> は世界中のランダムに抽出したツイートが取得される。（約１％？）<br/>
+Twitter Streaming API の Public streams の <a href="https://dev.twitter.com/docs/api/1.1/get/statuses/sample" title="GET statuses/sample - Twitter Developers">GET statuses/sample - Twitter Developers</a> に当たるもの。</p>
+
+<h4>4. Ruby スクリプト実行</h4>
+
+<p>作成した Ruby スクリプトを実行してみる。<br/>
+永遠にツイートが表示されるので、終了するには <code>CTRL</code> + <code>C</code> を押下する。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby tweet_stream.rb&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;                 :
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;dl&gt;
+</span><span class='line'>&lt;dt&gt;<span class="o">===</span><span class="p">&amp;</span>lt<span class="p">;</span> 永遠に世界中のツイートが表示される &gt;<span class="o">===</span>&lt;/dt&gt;
+</span><span class='line'>&lt;dd&gt;&lt;pre&gt;&lt;code&gt;             :
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;&lt;/dd&gt;
+</span><span class='line'>&lt;/dl&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>5. その他の例</h4>
+
+<p>上記の例では、 <code>sample</code> で世界中のツイート（ランダムに抽出）が表示された。<br/>
+さらに、言語設定が「日本語」で、リツイート以外のツイートを抽出するには以下のようにする。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">TweetStream</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">sample</span> <span class="k">do</span> <span class="o">|</span><span class="n">status</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">ja</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="o">!</span><span class="n">status</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">RT</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{status.user.screen_name}: #{status.text}&amp;rdquo;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p><code>sample</code> ではなく、キーワードで抽出するには以下のようにする。<br/>
+Twitter Streaming API の Public streams の <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter" title="POST statuses/filter - Twitter Developers">POST statuses/filter - Twitter Developers</a>  のパラメータ <code>track</code> に当たるもの。<br/>
+以下は、"tokyo" または &ldquo;FM&rdquo; という単語を含むツイートから、言語設定が「日本語」でリツイート以外のツイートを取得する例。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">TweetStream</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">tokyo</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;,</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="no">FM</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;)</span> <span class="k">do</span> <span class="o">|</span><span class="n">status</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">ja</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="o">!</span><span class="n">status</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">RT</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{status.user.screen_name}: #{status.text}&amp;rdquo;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>特定のアカウントのツイート、ツイート文内に特定のアカウントを含むツイートを取得するには以下のようにする。<br/>
+Twitter Streaming API の Public streams の <a href="https://dev.twitter.com/docs/api/1.1/post/statuses/filter" title="POST statuses/filter - Twitter Developers">POST statuses/filter - Twitter Developers</a>  のパラメータ <code>follow</code> に当たるもの。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">TweetStream</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="mi">783214</span><span class="p">,</span> <span class="mi">7080152</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">status</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{status.user.screen_name}: #{status.text}&amp;rdquo;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>自分のタイムライン（フォローしているアカウント）を取得するには以下のようにする。<br/>
+Twitter Streaming API の User streams の <a href="https://dev.twitter.com/docs/streaming-apis/streams/user" title="User streams - Twitter Developers">User streams - Twitter Developers</a>  に当たるもの。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">TweetStream</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">userstream</span> <span class="k">do</span> <span class="o">|</span><span class="n">status</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{status.user.screen_name}: #{status.text}&amp;rdquo;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>表示され続けないようにある件数表示さたら終了するようにするには、以下のようにする。<br/>
+以下は、10件表示したら終了する例。</p>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@statuses</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="no">TweetStream</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">sample</span> <span class="k">do</span> <span class="o">|</span><span class="n">status</span><span class="p">,</span> <span class="n">client</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#{status.user.screen_name}: #{status.text}&amp;rdquo;</span>
+</span><span class='line'>  <span class="vi">@statuses</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">status</span>
+</span><span class='line'>  <span class="n">client</span><span class="o">.</span><span class="n">stop</span> <span class="k">if</span> <span class="vi">@statuses</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="mi">10</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>6. 注意</h4>
+
+<p>Twitter API は １アカウント当たり１つしか接続できないようだ。<br/>
+Streaming API の Public streams で接続中に REST API や別の Public streams で接続すると古い方の接続が切断される。tweetstream の <code>on_reconnect</code> を利用したり、 <code>TweetStream::ReconnectError</code> の例外を捕獲するなど、個別に対策する必要あある。<br/>
+ちなみに、Streaming API の User streams で接続した場合は、別の接続と衝突しても切断されないようだ。（別の接続数が多すぎるとどうなるかは未確認。「<a href="https://dev.twitter.com/docs/streaming-apis" title="The Streaming APIs - Twitter Developers">The Streaming APIs - Twitter Developers</a>」中の、Public streams, User streams の接続についての記述を確認すること）</p>
+
+<h4>参考サイト</h4>
+
+<ul>
+<li><a href="https://dev.twitter.com/docs/streaming-apis" title="The Streaming APIs - Twitter Developers">The Streaming APIs - Twitter Developers</a></li>
+<li><a href="http://rubygems.org/gems/tweetstream" title="tweetstream - RubyGems.org - your community gem host">tweetstream - RubyGems.org - your community gem host</a></li>
+<li><a href="https://github.com/tweetstream/tweetstream" title="tweetstream/tweetstream">tweetstream/tweetstream</a></li>
+<li><a href="https://github.com/tweetstream/tweetstream/issues/117" title="Ruby 2.0.0 support · Issue #117 · tweetstream/tweetstream">Ruby 2.0.0 support · Issue #117 · tweetstream/tweetstream</a></li>
+<li><a href="https://gist.github.com/jfrazee/5400423" title="Fix for Ruby 2.0 tweetstream issue">Fix for Ruby 2.0 tweetstream issue</a></li>
+</ul>
+
+
+<hr />
+
+<p>今回の例では、常にアクセスしているのでマシンやネットワークへの負担が気になりますが、改良すれば便利なツールになるでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+</feed>

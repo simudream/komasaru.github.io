@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ルービックキューブ | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/ルービックキューブ/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[* ルービックキューブ - DaYan ZhanChi！]]></title>
+    <link href="http://komasaru.github.io/blog/2011/11/16/16002000/"/>
+    <updated>2011-11-16T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2011/11/16/16002000</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>当ブログでは久々の「ルービックキューブ」ネタです。</p>
+
+<p>小学生時代から何度目かのマイブームです。
+今回のブームは今までで最も気合が入っていて、スピードキュービングと呼ばれるものに結構ハマっています。</p>
+
+<p>今までは「<a href="http://www.megahouse.co.jp/" title="メガハウス">メガハウス</a>」製の既製のキューブを使用していました。
+（既製のものはステッカーがすぐ剥がれるので、「<a href="http://www.stlab.jp/csk/" title="CSKit">CSKit</a>」さんのもので張替えて使用）</p>
+
+<p>しかし、スピードキュービングはスピードが命ということで、回し心地を重視して、「<a href="http://www.megahouse.co.jp/" title="メガハウス">メガハウス</a>」製のスピードキュービングキットも使用してみました。（こちらのキューブは４・５日しが使用していません）</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/SCK_01.jpg"><img src="http://komasaru.github.io/images/2011/11/SCK_01-150x112.jpg" alt="SCK_01" title="SCK_01" width="150" height="112" class="alignnone size-thumbnail wp-image-5851" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/SCK_02.jpg"><img src="http://komasaru.github.io/images/2011/11/SCK_02-150x112.jpg" alt="SCK_02" title="SCK_02" width="150" height="112" class="alignnone size-thumbnail wp-image-5852" /></a></p>
+
+<p>回し心地は調整できるので、軽くして使用していました。
+（紙やすりでかるくバリもとり、もちろんシリコンスプレーも注して）
+既製品に比べて動きは軽くはなりましたが、まだ馴染んでないせいか若干のひっかかり感は感じていました。</p>
+
+<!--more-->
+
+
+<p>ここからが、今回の本題です。</p>
+
+<p>スピードキュービング界では中国・大雁（DaYan）製のキューブが定番（もちろん他のメーカーもありますが）のようです。
+最近、スピードキュービングのことを調べていて、初めて知りました。</p>
+
+<p>早速、「triboxストア」で購入してみました。
+キューブの構造もわかるし若干低価格のDIYキット（黒素体・白素体）を購入しました。
+ステッカーはオリジナル版ではなくtriboxバージョンを選択しました。</p>
+
+<p>以下、先日組み立てた時の記録です。
+特に説明書はありませんが、ルービックキューブを分解したことがある人なら簡単に組み立てられます。</p>
+
+<h4>DaYan ZhanChi DIY キット 組み立て等</h4>
+
+<p>DIYキットなので、こんな感じで届きます。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_01.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_01-150x112.jpg" alt="ZHANCHI_01" title="ZHANCHI_01" width="150" height="112" class="alignnone size-thumbnail wp-image-5853" /></a></p>
+
+<p>コア（中心の軸）部分のパーツです。
+最初から１個だけセンターキューブが取り付けられていました。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_02.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_02-150x112.jpg" alt="ZHANCHI_02" title="ZHANCHI_02" width="150" height="112" class="alignnone size-thumbnail wp-image-5854" /></a></p>
+
+<p>センターキューブです。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_03.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_03-150x112.jpg" alt="ZHANCHI_03" title="ZHANCHI_03" width="150" height="112" class="alignnone size-thumbnail wp-image-5856" /></a></p>
+
+<p>センターキューブのキャップです。
+ツメは１箇所しかありません。（最初は折れているのかと思ってしまいました）</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_04.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_04-150x112.jpg" alt="ZHANCHI_04" title="ZHANCHI_04" width="150" height="112" class="alignnone size-thumbnail wp-image-5857" /></a></p>
+
+<p>エッジキューブです。（実は更に３つのパーツに分解できますが今回はパス）</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_05.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_05-150x112.jpg" alt="ZHANCHI_05" title="ZHANCHI_05" width="150" height="112" class="alignnone size-thumbnail wp-image-5858" /></a></p>
+
+<p>コーナーキューブです。（実はこれも３つのパーツに分解できますが今回はパス）</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_06.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_06-150x112.jpg" alt="ZHANCHI_06" title="ZHANCHI_06" width="150" height="112" class="alignnone size-thumbnail wp-image-5859" /></a></p>
+
+<p>ネジ・スプリング・ワッシャー部分を確認するために、コア部分に最初から取り付けてあるセンターキューブを取り外してみました。
+想定どおりでした。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_07.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_07-150x112.jpg" alt="ZHANCHI_07" title="ZHANCHI_07" width="150" height="112" class="alignnone size-thumbnail wp-image-5860" /></a></p>
+
+<p>コアの５箇所に５個のセンターキューブを取り付けます。（この時点ではネジは仮留め）</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_08.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_08-150x112.jpg" alt="ZHANCHI_08" title="ZHANCHI_08" width="150" height="112" class="alignnone size-thumbnail wp-image-5861" /></a></p>
+
+<p>２個のコーナーキューブと１個のエッジキューブを並べてみたところです。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_09.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_09-150x112.jpg" alt="ZHANCHI_09" title="ZHANCHI_09" width="150" height="112" class="alignnone size-thumbnail wp-image-5862" /></a></p>
+
+<p>２個のコーナーキューブと１個のエッジキューブをくっ付けるとうまい具合にかみ合います。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_10.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_10-150x112.jpg" alt="ZHANCHI_10" title="ZHANCHI_10" width="150" height="112" class="alignnone size-thumbnail wp-image-5864" /></a></p>
+
+<p>コーナーキューブ・エッジキューブを互いにうまくかみ合うように取り付けていきます。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_11.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_11-150x112.jpg" alt="ZHANCHI_11" title="ZHANCHI_11" width="150" height="112" class="alignnone size-thumbnail wp-image-5865" /></a></p>
+
+<p>すべてのキューブを取り付けたら、残していたセンターキューブを取り付けます。
+そして、実際に回してみながらネジの締め具合を調整します。
+※場合により、シリコンスプレーを注したりします。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_12.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_12-150x112.jpg" alt="ZHANCHI_12" title="ZHANCHI_12" width="150" height="112" class="alignnone size-thumbnail wp-image-5866" /></a></p>
+
+<p>センターキューブにキャップを取り付けます。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_13.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_13-150x112.jpg" alt="ZHANCHI_13" title="ZHANCHI_13" width="150" height="112" class="alignnone size-thumbnail wp-image-5867" /></a></p>
+
+<p>貼り付けるステッカーです。（triboxバージョン）思ったより厚みは薄いです。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_14.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_14-150x112.jpg" alt="ZHANCHI_14" title="ZHANCHI_14" width="150" height="112" class="alignnone size-thumbnail wp-image-5868" /></a></p>
+
+<p>ステッカーを日本配色で貼り付けます。
+triboxバージョンは転写シールがないのでピンセット等で１枚ずつ丁寧に貼り付けて完成です。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_15.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_15-150x112.jpg" alt="ZHANCHI_15" title="ZHANCHI_15" width="150" height="112" class="alignnone size-thumbnail wp-image-5869" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_16.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_16-150x112.jpg" alt="ZHANCHI_16" title="ZHANCHI_16" width="150" height="112" class="alignnone size-thumbnail wp-image-5870" /></a></p>
+
+<p>同様に、白素体も組み立て。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_17.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_17-150x112.jpg" alt="ZHANCHI_17" title="ZHANCHI_17" width="150" height="112" class="alignnone size-thumbnail wp-image-5876" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2011/11/ZHANCHI_18.jpg"><img src="http://komasaru.github.io/images/2011/11/ZHANCHI_18-150x112.jpg" alt="ZHANCHI_18" title="ZHANCHI_18" width="150" height="112" class="alignnone size-thumbnail wp-image-5877" /></a></p>
+
+<h4>所感</h4>
+
+<p>「<a href="http://www.megahouse.co.jp/" title="メガハウス">メガハウス</a>」製のキューブ（既製品・ＳＣＫ）と比べてみて主に感じたことです。</p>
+
+<ul>
+<li>ポップしないように構造が複雑になっている。</li>
+<li>実測までしていないが、体感で重量が若干軽い</li>
+<li>ひっかかり感が全くない。</li>
+<li>シリコンスプレーを注さなくても動きが軽い。</li>
+<li>総合的に、非常に回しやすい。</li>
+</ul>
+
+
+<hr />
+
+<p>「DaYan」をもっと早く知っていれば、と思ったところです。
+もう、手放せません。
+これからは、これで練習します。</p>
+
+<p>ちなみに、以下が「<a href="http://cube.garron.us/cct/" title="CCT Timer">CCT Timer</a>」で計測した今日の記録です。
+ZhanChi にしたことと、さらに数パターンをものにできたことで、アベレージで１分切れるようになりました。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Average: 54.66
+</span><span class='line'>Standard Deviation: 3.32
+</span><span class='line'>Best Time: 40.06
+</span><span class='line'>Worst Time: 1:00.81
+</span><span class='line'>Individual Times:
+</span><span class='line'>1.  49.75   R' B U' L R' B2 F' D U' F R' B2 R' B F2 D F D L R D2 U2 L' B D
+</span><span class='line'>2.  56.36   D2 R2 D L R2 B' F' R2 D' U L D2 U2 B2 F' U R F R' F D' F2 D' F' R
+</span><span class='line'>3.  50.95   U' L2 B' F' D2 U' F2 L' R2 U2 B D2 L2 B F2 L2 U' R' D U L D' B L2 R2
+</span><span class='line'>4.  57.27   R' D' F2 R2 U L U2 B F L D' L B F2 D2 B F2 L2 R D U L2 R' B' F'
+</span><span class='line'>5.  55.11   L' D2 U2 B R2 D' U' B F' D' U' F L2 R F2 R2 B2 R2 U L R' U' L2 R' B'
+</span><span class='line'>6.  (40.06) B' R' B F D' B2 F D U R' D2 U B' U' B' D2 L2 R' U L' R F D' L R2
+</span><span class='line'>7.  58.09   B' U' B' R' U2 L2 R' B U2 B2 L U L D' B' R2 B' U L2 F' D' F' L R' F'
+</span><span class='line'>8.  58.72   D U B' F' L F2 U' B' U F D' U B F D2 U' L2 U F L R' D U' B U'
+</span><span class='line'>9.  52.98   F' U F2 L' R' D' U' F2 L2 B' F' R F2 L B2 F2 L B F2 L2 B' L2 R F D'
+</span><span class='line'>10. 48.61   D' F2 L2 D' U2 F' L R F L' R U' R U2 L' B2 R' B2 L R2 B2 F2 L' R F
+</span><span class='line'>11. 58.76   B2 U' F2 L' R D' F' U2 L2 R2 D2 U R2 B' F' D' U' F L D U B2 L2 R B
+</span><span class='line'>12. (1:00.81)   B' L U' B2 F2 R' F2 L' D U2 B D2 U' B' F2 U2 B2 D2 U2 L R2 D' U2 F R</span></code></pre></td></tr></table></div></figure>
+まだまだ、覚え切れていないパターンが多数。
+記憶と練習あるのみ！</p>
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* ルービックキューブ３×３ － シール交換！]]></title>
+    <link href="http://komasaru.github.io/blog/2010/02/04/04002056/"/>
+    <updated>2010-02-04T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2010/02/04/04002056</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>今日はついにルービックキューブ３×３のシール（ステッカー）を交換しました。</p>
+
+<p>シールを購入したサイト「 <a href="http://www.stlab.jp/csk/" title="ＣＳＫｉｔ">ＣＳＫｉｔ</a> 」に貼り替え方法が掲載されています。</p>
+
+<p>簡単でした。</p>
+
+<!--more-->
+
+
+<p>こちらが、新品同様になったキューブです。</p>
+
+<p><a href="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_61.jpg"><img class="alignnone size-thumbnail wp-image-2872" title="RUBICCUBE_MNT_6" src="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_61-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p>ただ、白面の真ん中のロゴマークがなくなったのが、ちょっとさびしいですが。。。</p>
+
+<p>※シールを剥がすのにシール剥がしの液体（スプレー）が必要かとも思っていましたが、不要でした。
+シールを剥がした後に若干残ったシールの「ベトベト」もウェットティッシュで綺麗にとれました。</p>
+
+<p>今日はこのへんで。</p>
+
+<p>ではまた。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* ルービックキューブ３×３ － シール交換決意！]]></title>
+    <link href="http://komasaru.github.io/blog/2010/02/03/03002007/"/>
+    <updated>2010-02-03T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2010/02/03/03002007</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>今日は、超～っ久しぶりの「 ブービックキューブ」についてです。</p>
+
+<p>あまり時間がないので、時々かまっている「 ルービックキューブ 」ですが、さすがにシールが剥がれてきたので、貼り替えを決意した。</p>
+
+<p>という話です。</p>
+
+<!--more-->
+
+
+<p>決意しただけです。</p>
+
+<p>実際の貼り替え作業は次回以降になると思います。</p>
+
+<p>今メインで使用しているルービックキューブの状態は以下のとおりです。</p>
+
+<p><a href="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_1.jpg"><img class="alignnone size-thumbnail wp-image-2862" title="RUBICCUBE_MNT_1" src="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_1-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_2.jpg"><img class="alignnone size-thumbnail wp-image-2863" title="RUBICCUBE_MNT_2" src="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_2-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p>貼り替え用のシールは準備済みです。</p>
+
+<p>こちら↓↓↓</p>
+
+<p><a href="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_3.jpg"><img class="alignnone size-thumbnail wp-image-2864" title="RUBICCUBE_MNT_3" src="http://komasaru.github.io/images/2010/02/RUBICCUBE_MNT_3-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p>２・３年前に<a href="http://www.stlab.jp/csk/" title="こちら">こちら</a>から５セットほど購入しました。</p>
+
+<p>（自分で、ホームセンターでカラーシールを購入して、サイズに合わせてカットして、ということも考えたことがありましたが、面倒＆時間がないので、断念。。。）</p>
+
+<p>実は、予備のキューブや未開封のスピードキュービング専用のキューブも保有していますが、なんかもったいなくて！</p>
+
+<p><a href="http://komasaru.github.io/images/2010/02/RubicCube_06.jpg"><img class="alignnone size-thumbnail wp-image-2865" title="RubicCube_06" src="http://komasaru.github.io/images/2010/02/RubicCube_06-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p>本当に近いうちにシール貼り替えを実践しようと思っています。</p>
+
+<p>※ちなみに、３×３の記録は早くて１分くらいです。（目標は３０秒です）</p>
+
+<p>ではまた。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* ルービックキューブの本！]]></title>
+    <link href="http://komasaru.github.io/blog/2009/02/04/04063023/"/>
+    <updated>2009-02-04T06:30:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2009/02/04/04063023</id>
+    <content type="html"><![CDATA[<p>どうも、まいど。</p>
+
+<p>　　
+ちょっと前に、
+ルービックキューブの話しました。
+（「ルービックキューブ」 のカテゴリ参照）</p>
+
+<p>そこの話の中で、
+僕が持っている攻略本より良さげな本があることを
+書きました。</p>
+
+<p>　　
+気になって、
+昨日地元の本屋さんで買ってしまいました。</p>
+
+<p>　　
+でも、中身を見てみると・・・
+　　
+大事な部分（攻略の部分）はほぼ同じでした。</p>
+
+<p>違っていたのは、</p>
+
+<ul>
+<li>トピックス的な内容が違っていた。</li>
+<li>２ｘ２ｘ２ の攻略も載ってた。</li>
+</ul>
+
+
+<p>くらいかな？！</p>
+
+<p>　　
+でも、いやな気分ではないです。</p>
+
+<p>　　
+　　
+なぜなら、</p>
+
+<p>ルービックキューブを愛しているからです。</p>
+
+<p>　　
+この２冊持ってます。</p>
+
+<table>
+<tr>
+<td>
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4796649239&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+</td>
+<td>
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4796656871&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+</td>
+</tr>
+</table>
+
+
+<p>どうですか？</p>
+
+<p>　　
+あっ、
+あと、これも持ってます。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4535785376&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>これは、
+ルービックキューブを数学的に解く方法！
+が載ってます。
+まだちゃんと読んでないですが・・・</p>
+
+<p>　　
+　　
+バラバラになったままのルービックキューブを
+もっているアナタ。</p>
+
+<p>　　
+６面揃えてみませんか？</p>
+
+<p>　　
+　　
+次回のルービックキューブの話題は、</p>
+
+<p>だぶん、</p>
+
+<p>シールのめくれたキューブ再生についてだと思います。。。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/02/rubiccube_01.jpg"><img src="http://komasaru.github.io/images/2009/02/rubiccube_01-112x150.jpg" alt="rubiccube_01" title="rubiccube_01" width="112" height="150" class="alignnone size-thumbnail wp-image-717" /></a></p>
+
+<p>　　
+　　
+　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* ルービックキューブたち！]]></title>
+    <link href="http://komasaru.github.io/blog/2009/01/25/25122247/"/>
+    <updated>2009-01-25T12:22:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2009/01/25/25122247</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>実は僕の趣味のひとつに「ルービックキューブ」があります。</p>
+
+<p>キューブ歴は小学３年くらいからだから多分２７年くらい。</p>
+
+<p>（途中サボっていた時期もあるけど・・・）</p>
+
+<p>３×３×３の６面完成のスピードは平均で約１分です。</p>
+
+<p>いかに早く６面完成させるか。それをスピードキュービングといいます。</p>
+
+<p>キューブを買った時についている６面完成のための説明書のそろえ方（ 多分 「ツクダ式」 ）だと３０秒は切れないそうなんで、今はスピードキュービング界ではスタンダードの 「ＬＢＬ法」 にて練習中です。</p>
+
+<p>ただ、今はLBL法の中でも基本的な解法でしかやってないんで、なかなか３０秒ではそろえられません。</p>
+
+<p>基本的な解法以外にいろんなパターンを覚えると時間短縮ができるんで、いろいろ試してみようか思っているとこ。</p>
+
+<p>とりあえず、僕の持っているキューブたちを紹介します。</p>
+
+<p>１．３×３×３ （今メインで使用している。シールが剥げてる。）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_01.jpg"><img class="alignnone size-thumbnail wp-image-399" title="rubiccube_01" src="http://komasaru.github.io/images/2009/01/rubiccube_01-112x150.jpg" alt="rubiccube_01" width="112" height="150" /></a></p>
+
+<p>２．３×３×３ （予備。保管・観賞用）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_02.jpg"><img class="alignnone size-thumbnail wp-image-400" title="rubiccube_02" src="http://komasaru.github.io/images/2009/01/rubiccube_02-112x150.jpg" alt="rubiccube_02" width="112" height="150" /></a></p>
+
+<p>３．２×２×２ （遅くても３０秒で６面完成できます）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_03.jpg"><img class="alignnone size-thumbnail wp-image-401" title="rubiccube_03" src="http://komasaru.github.io/images/2009/01/rubiccube_03-112x150.jpg" alt="rubiccube_03" width="112" height="150" /></a></p>
+
+<p>４．３×３×３ （小学３年くらいに親に買ってもらった（もうグタグタ））</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_05.jpg"><img class="alignnone size-thumbnail wp-image-402" title="rubiccube_05" src="http://komasaru.github.io/images/2009/01/rubiccube_05-112x150.jpg" alt="rubiccube_05" width="112" height="150" /></a></p>
+
+<p>５．４×４×４ （解法の説明書見ながらでしかそろえられん。それでも１０分はかかるかも）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_04.jpg"><img class="alignnone size-thumbnail wp-image-403" title="rubiccube_04" src="http://komasaru.github.io/images/2009/01/rubiccube_04-112x150.jpg" alt="rubiccube_04" width="112" height="150" /></a></p>
+
+<p>６．３×３×３ （スピードキュービング用。自分で動きの硬さなどを調整できるキット。まだ、未開封。いずれはこれをメインに）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_06.jpg"><img class="alignnone size-thumbnail wp-image-404" title="rubiccube_06" src="http://komasaru.github.io/images/2009/01/rubiccube_06-150x112.jpg" alt="rubiccube_06" width="150" height="112" /></a></p>
+
+<p>７．３×３×３ （キーホルダー。ちゃんと動きます。）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_08.jpg"><img class="alignnone size-thumbnail wp-image-405" title="rubiccube_08" src="http://komasaru.github.io/images/2009/01/rubiccube_08-112x150.jpg" alt="rubiccube_08" width="112" height="150" /></a></p>
+
+<p>以上が僕のキューブ達でした。</p>
+
+<p>ちなみに、僕が愛用しているLBL法の載っている本はこちら。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/01/rubiccube_book.jpg"><img class="alignnone size-thumbnail wp-image-412" title="rubiccube_book" src="http://komasaru.github.io/images/2009/01/rubiccube_book-112x150.jpg" alt="rubiccube_book" width="112" height="150" /></a></p>
+
+<p>ただこれよりいいのが出ているみたいです。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4796656871&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>追伸</p>
+
+<p>このうち、メインで使用している３×３×３はぼちぼちシールの貼り変えをしようかと思ってます。</p>
+
+<p>実は専用のシールを作っている方がいて、購入してあるんです。</p>
+
+<p>その話題はまた。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+</feed>

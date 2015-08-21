@@ -1,0 +1,2468 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>mk-mode BLOG</title>
+  <meta name="author" content="mk-mode.com">
+
+  
+  <meta name="description" content="松江をこよなく愛する mk-mode の BLOGページです。主にIT系(Tips、サーバ構築)等について記録しています。">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://komasaru.github.io/page/127">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="mk-mode BLOG" type="application/atom+xml">
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Gorditas' rel='stylesheet' type='text/css'>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/javascripts/my_custom.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18154748-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">mk-mode BLOG</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://www.mk-mode.com/rails/" title="My homepage made by Ruby on Rails" target="_blank">Site</a></li>
+  <li><a href="http://www.mk-mode.com/rails/calendar/calendar/" title="The Calendar page on my homepage" target="_blank">Calendar</a></li>
+  <li><a href="http://twitter.com/ko_masaru" title="Go to my Twitter page" target="_blank">Twitter</a></li>
+  <li><a href="http://www.facebook.com/masaru.koizumi.5" title="Go to my Facebook page" target="_blank">Facebook</a></li>
+  <li><a href="https://github.com/komasaru" title="Go to my GitHub page." target="_blank">GitHub</a></li>
+  <li><a href="http://www.youtube.com/user/komasaru888" title="Go to my YouTube page" target="_blank">YouTube</a></li>
+  <li><a href="http://www.mk-mode.com/rails/jmaxml" title="The JMA XML page on my homepage" target="_blank">JMA XML</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+        <form class="pull-right navbar-search" action="http://www.google.co.jp/cse" id="cse-search-box">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-7320193476057758:6328726109" />
+            <input type="hidden" name="ie" value="UTF-8" />
+            <input class="search" type="text" name="q" placeholder="Google Custom Search" />
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span9">
+  
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/06/06002020/">* 玄箱ＨＧ・Ｆｅｄｏｒａ１０にミラーリングツール！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-06T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/玄箱/'>玄箱</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>前回は実サーバの完全バックアップ（クローン化）のために ＶＭｗａｒｅＰｌａｙｅｒ に Ｆｅｄｏｒａ１０ をインストールして、ミラーリングするようにしました。</p>
+
+<p>でも、今のところ ＶＭｗａｒｅ は常時稼働させているわけでもありません。やっぱり、常時稼働の別マシンへのミラーリングを試みてみようと考えました。</p>
+
+<p>うちの稼動中のサーバとは別に、ほぼ録画＆バックアップ専用の玄箱ＨＧ（Ｆｅｄｏｒａ１０導入済み＆２４時間稼動中）があるんで、そいつをミラー先としてやってみることにしました。</p>
+
+<h3>導入手順</h3>
+
+<p>※またまた <a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a> の <a href="http://fedorasrv.com/lsyncd.shtml" title="リアルタイムミラーリングツール導入(lsyncd+rsyncd)">リアルタイムミラーリングツール導入(lsyncd+rsyncd)</a> を参考にさせてもらってます。</p>
+
+<p>【前提条件】
+・実サーバはＦｅｄｏｒａ１０でＷｅｂサーバ、メールサーバ、ＦＴＰサーバ等が稼動中。
+・バックアップ側もＦｅｄｏｒａ１０で、ＮＴＰサーバ、Ｓａｍｂａサーバが稼動中。
+・実サーバのＩＰアドレスは 192.168.11.3 、バックアップ側（玄箱ＨＧ）のＩＰアドレスは 192.168.11.2 。
+・実サーバ、バックアップ側（玄箱）どちらも「 Poderosa 」によるリモート接続による操作。
+（実サーバはＳＳＨ２接続・鍵認証、バックアップ側（玄箱ＨＧ）はＳＳＨ２接続・パスワード認証）</p>
+
+<h4>１．ミラー先（玄箱ＨＧ）の起動</h4>
+
+<p>ミラー先となる 玄箱ＨＧ・Ｆｅｄｏｒａ１０ が起動していることを確認。</p>
+
+<h4>２．ミラー先にrsyncサーバー設定</h4>
+
+<p>「 Poderosa 」により 玄箱ＨＧ・Ｆｅｄｏｒａ１０ にリモート接続し、rootユーザになっておく。
+そして以下のように設定。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# mkdir /tmp/mirror　←　ミラー先ディレクトリの作成
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# chown nobody:nobody /tmp/mirror　←　ミラー先ディレクトリ所有者をnobodyに変更
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# vi /etc/rsyncd.conf　←　rsyncサーバ設定ファイルの作成
+</span><span class='line'>[mirror]　←　任意のモジュール名(ミラー元から接続時の名前)
+</span><span class='line'>    path = /tmp/mirror　←　ミラー先ディレクトリ
+</span><span class='line'>    hosts allow = 192.168.11.0/24　←　接続許可ホスト
+</span><span class='line'>    read only = false　←　更新許可</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>３．ミラー先のrsyncサーバー起動</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# yum -y install xinetd　←　xinetdインストール
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# /etc/rc.d/init.d/xinetd start　←　xinetd起動
+</span><span class='line'>xinetd を起動中:                                           [  OK  ]
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# chkconfig rsync on　←　rsyncサーバ自動起動設定</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>４．ミラー元（実サーバ）へlsyncdインストール</h4>
+
+<p>「 Poderosa 」により 実サーバ・Ｆｅｄｏｒａ１０ にリモート接続し、rootユーザになっておく。
+そして、以下のようにして lsyncd をインストール。
+実際には以下の作業は前回終了しているので、今回は省略。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# yum -y install libxml2-devel　←　lsyncdインストールに必要なパッケージをインストール
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# wget http://lsyncd.googlecode.com/files/lsyncd-1.26.tar.gz　←　lsyncdダウンロード
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# tar zxvf lsyncd-1.26.tar.gz　←　lsyncd展開
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# cd lsyncd-1.26　←　lsyncd展開先ディレクトリへ移動
+</span><span class='line'>
+</span><span class='line'>[root@noah lsyncd-1.26]# ./configure && make && make install　←　lsyncdインストール
+</span><span class='line'>
+</span><span class='line'>[root@noah lsyncd-1.26]# cd　←　lsyncd展開先ディレクトリを抜ける
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# rm -rf lsyncd-1.26　←　lsyncd展開先ディレクトリを削除
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# rm -rf lsyncd-1.26.tar.gz　←　ダウンロードしたファイルを削除</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．ミラー元のlsyncd設定</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# vi /etc/lsyncd.conf　←　lsyncd設定ファイルの作成
+</span><span class='line'>/ 192.168.11.2 mirror　←　「 ミラー元ディレクトリ  ミラー先(rsyncサーバ)IPアドレス  ミラー先モジュール名 」の順に指定
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# vi /etc/logrotate.d/lsyncd　←　lsyncdログローテーション設定ファイルの作成
+</span><span class='line'>/var/log/lsyncd {
+</span><span class='line'>    missingok
+</span><span class='line'>    notifempty
+</span><span class='line'>    sharedscripts
+</span><span class='line'>    postrotate
+</span><span class='line'>        /etc/rc.d/init.d/lsyncd restart 2>&1 > /dev/null || true
+</span><span class='line'>    endscript
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>６．ミラー元のlsyncd起動</h4>
+
+<p>実際には既に起動しているので、再起動した。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# vi /etc/rc.d/init.d/lsyncd　←　lsyncd起動スクリプト作成
+</span><span class='line'>#!/bin/bash
+</span><span class='line'>#
+</span><span class='line'># lsyncd
+</span><span class='line'>#
+</span><span class='line'># chkconfig: - 99 20
+</span><span class='line'># description: lsyncd auto start script
+</span><span class='line'>
+</span><span class='line'>start() {
+</span><span class='line'>    IFS=
+</span><span class='line'>    for i in `cat /etc/lsyncd.conf`
+</span><span class='line'>    do
+</span><span class='line'>        src=`echo $i|awk '{print $1}'`
+</span><span class='line'>        dest=`echo $i|awk '{print $3}'`
+</span><span class='line'>        remort=`echo $i|awk '{print $2}'`
+</span><span class='line'>        /usr/local/bin/lsyncd $src $remort::$dest/
+</span><span class='line'>    done
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>stop() {
+</span><span class='line'>    /bin/kill -9 `/sbin/pidof lsyncd`
+</span><span class='line'>    until [ -z $(/sbin/pidof lsyncd) ]; do :; done
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>case "$1" in
+</span><span class='line'>    start)
+</span><span class='line'>        start
+</span><span class='line'>        ;;
+</span><span class='line'>    stop)
+</span><span class='line'>        stop
+</span><span class='line'>        ;;
+</span><span class='line'>    restart)
+</span><span class='line'>        stop
+</span><span class='line'>        start
+</span><span class='line'>        ;;
+</span><span class='line'>    status)
+</span><span class='line'>        pid=`pidof lsyncd`
+</span><span class='line'>        if [ $? -eq 0 ]; then
+</span><span class='line'>            echo "lsyncd (pid $pid) is running..."
+</span><span class='line'>        else
+</span><span class='line'>            echo "lsyncd is not running"
+</span><span class='line'>        fi
+</span><span class='line'>        ;;
+</span><span class='line'>    *)
+</span><span class='line'>        echo "Usage: lsyncd {start|stop|restart|status}"
+</span><span class='line'>        exit 1
+</span><span class='line'>esac
+</span><span class='line'>
+</span><span class='line'>exit $?
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chmod +x /etc/rc.d/init.d/lsyncd　←　lsyncd起動スクリプトへ実行権限付加
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# /etc/rc.d/init.d/lsyncd start　←　lsyncd起動
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chkconfig --add lsyncd　←　lsyncd起動スクリプトをchkconfigへ登録
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chkconfig lsyncd on　←　lsyncd自動起動設定</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>７．動作確認</h4>
+
+<p>上記の「 lsyncd起動 」で処理が開始されているはずなので、しばらくしてからミラー先（ＶＭｗａｒｅ側Ｆｅｄｏｒａ）の指定したディレクトリにコピーされているか確認する。
+■ミラー元</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# ls -ll /
+</span><span class='line'>合計 122
+</span><span class='line'>drwxr-xr-x   8 root root  4096 2009-04-05 05:07 backup
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2009-03-29 05:11 bin
+</span><span class='line'>drwxr-xr-x   5 root root  1024 2009-04-04 07:15 boot
+</span><span class='line'>drwxr-xr-x  16 root root  4480 2009-04-05 11:04 dev
+</span><span class='line'>drwxr-xr-x 103 root root 12288 2009-04-05 10:55 etc
+</span><span class='line'>drwxr-xr-x   5 root root  4096 2009-01-06 09:46 home
+</span><span class='line'>drwxr-xr-x  16 root root 12288 2009-04-02 05:08 lib
+</span><span class='line'>drwx------   2 root root 16384 2008-12-09 08:55 lost+found
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 media
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 mnt
+</span><span class='line'>-rw-r--r--   1 root root   538 2009-03-02 11:20 mrtg-l.png
+</span><span class='line'>-rw-r--r--   1 root root   414 2009-03-02 11:20 mrtg-m.png
+</span><span class='line'>-rw-r--r--   1 root root  1759 2009-03-02 11:20 mrtg-r.png
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 opt
+</span><span class='line'>dr-xr-xr-x 151 root root     0 2009-03-23 07:01 proc
+</span><span class='line'>-rw-r--r--   1 root root   181 2008-12-09 23:03 razor-agent.log
+</span><span class='line'>drwxr-x---   9 root root  4096 2009-03-30 19:38 root
+</span><span class='line'>drwxr-xr-x   2 root root 12288 2009-04-02 05:08 sbin
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-12-09 08:57 selinux
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 srv
+</span><span class='line'>drwxr-xr-x  12 root root     0 2009-03-23 07:01 sys
+</span><span class='line'>drwxrwxrwt  10 root root  4096 2009-04-05 11:03 tmp
+</span><span class='line'>drwxr-xr-x  13 root root  4096 2008-12-09 09:02 usr
+</span><span class='line'>drwxr-xr-x  23 root root  4096 2008-12-10 17:52 var
+</span><span class='line'>[root@noah ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<p>■ミラー先</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# ls -ll /tmp/mirror
+</span><span class='line'>合計 108
+</span><span class='line'>drwxr-xr-x   8 nobody nobody 4096 2009-04-05 05:07 backup
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2009-03-29 05:11 bin
+</span><span class='line'>drwxr-xr-x   5 nobody nobody 4096 2009-04-04 07:15 boot
+</span><span class='line'>drwxr-xr-x  16 nobody nobody 4096 2009-04-05 10:56 dev
+</span><span class='line'>drwxr-xr-x 103 nobody nobody 8192 2009-04-05 10:55 etc
+</span><span class='line'>drwxr-xr-x   5 nobody nobody 4096 2009-01-06 09:46 home
+</span><span class='line'>drwxr-xr-x  16 nobody nobody 8192 2009-04-02 05:08 lib
+</span><span class='line'>drwx------   2 nobody nobody 4096 2008-12-09 08:55 lost+found
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 media
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 mnt
+</span><span class='line'>-rw-r--r--   1 nobody nobody  538 2009-03-02 11:20 mrtg-l.png
+</span><span class='line'>-rw-r--r--   1 nobody nobody  414 2009-03-02 11:20 mrtg-m.png
+</span><span class='line'>-rw-r--r--   1 nobody nobody 1759 2009-03-02 11:20 mrtg-r.png
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 opt
+</span><span class='line'>dr-xr-xr-x 163 nobody nobody 4096 2009-03-23 07:01 proc
+</span><span class='line'>-rw-r--r--   1 nobody nobody  181 2008-12-09 23:03 razor-agent.log
+</span><span class='line'>drwxr-x---   9 nobody nobody 4096 2009-03-30 19:38 root
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 8192 2009-04-02 05:08 sbin
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-12-09 08:57 selinux
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 srv
+</span><span class='line'>drwxr-xr-x  12 nobody nobody 4096 2009-03-23 07:01 sys
+</span><span class='line'>drwxrwxr-x  10 nobody nobody 4096 2009-04-05 10:50 tmp
+</span><span class='line'>drwxr-xr-x  13 nobody nobody 4096 2008-12-09 09:02 usr
+</span><span class='line'>drwxr-xr-x  23 nobody nobody 4096 2008-12-10 17:52 var
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイル類も大体（？）コピーされている模様。</p>
+
+<hr />
+
+<p>設定は以上です。</p>
+
+<p>仮にミラー先が起動していない場合は、ミラー先が起動した後の最初のファイル更新時にミラーリングがされるみたいです。
+それはスゲー！</p>
+
+<p>今回は実際にミラー先を元にクローンを復元するところまではしません。</p>
+
+<p>ただ、気になるのは
+実サーバはｉ３８６カーネル
+ミラー先（玄箱ＨＧ）はｐｐｃカーネル
+という違いがあること。</p>
+
+<p>ま、だめなら、ＶＭ側でやることにします。</p>
+
+<p>とりあえず、ここまでできていれば、何とかなるでしょう！？</p>
+
+<p>それじゃ。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/05/05025423/">* まるごとＲｕｂｙ購入！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-05T02:54:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>02:54</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/ruby/'>Ruby</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+最近、
+「 Ｒｕｂｙ 」が気になって仕方ないので、</p>
+
+<p>本屋で「 Ｒｕｂｙ 」の本で、
+初心者向け＆実用的そうなのを
+探してみました。</p>
+
+<p>やっぱり、
+インプレスジャパンの「<strong>まるごとシリーズ</strong>」のムックを
+買いました。
+「 まるごとＲｕｂｙ 」です。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4844325795&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>前回は同じシリーズの「 まるごとＰＨＰ 」を買っています。</p>
+
+<p>今回は、まだ新しい方の書籍なんで、地元の書店にありました。</p>
+
+<p>なぜ、Ｒｕｂｙが気になっているかというと、
+Ｒｕｂｙ開発者がうちの地元在住だった（？）方、アンド、その方が日本リナックス協会会長だった（？）ということで、うちの地元がオープンソースでのソフト開発等々に意外と力を入れているんで、自分も知っておかないとと思っているところだからです。</p>
+
+<p>楽天市場とか、医師会の医事会計（レセプト）システムなんかのシステムもＲｕｂｙだそうだし、今、世界標準化へ向けて準備中の模様です。</p>
+
+<p>実際は、まだ Ｒｕｂｙ には触れてませんが、近いうちに触れてみようかと考えている次第です。</p>
+
+<p>でも、今、会社の方が決算時期とかで、いくら不況下でも忙しい時期なんで、なかなか手がつけられませんが・・・</p>
+
+<p>近いうちに（？）触っては見たいと思ってます。</p>
+
+<p>　　
+それじゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/04/04002059/">* Ｆｅｄｏｒａ１０にミラーリングツール！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-04T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>前回は実サーバの完全バックアップ（クローン化）のために ＶＭｗａｒｅＰｌａｙｅｒ に Ｆｅｄｏｒａ１０ をインストールしました。
+今回はいよいよミラーリングツールを導入してみます。</p>
+
+<p>【前提条件】
+・実サーバはＦｅｄｏｒａ１０でＷｅｂサーバ、メールサーバ、ＦＴＰサーバ等が稼動中。
+・バックアップ側はＷｉｎｄｏｗｓＸＰＰｒｏ（ＳＰ３）上のＶＭｗａｒｅＰｌａｙｅｒにインストールしたＦｅｄｏｒａ１０。
+・バックアップ側は <a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a> を参考に初期設定まで済み。
+・実サーバのＩＰアドレスは 192.168.11.3 、バックアップ側（ＶＭ）のＩＰアドレスは 192.168.11.101 。
+・実サーバ、バックアップ側（ＶＭ）どちらも「 Poderosa 」によるリモート接続による操作。
+（実サーバはＳＳＨ２接続・鍵認証、バックアップ側（ＶＭ）はＳＳＨ２接続・パスワード認証）</p>
+
+<h3>導入手順</h3>
+
+<p>※ <a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a> の <a href="http://fedorasrv.com/lsyncd.shtml" title="リアルタイムミラーリングツール導入(lsyncd+rsyncd)">リアルタイムミラーリングツール導入(lsyncd+rsyncd)</a> を参考にさせてもいました。</p>
+
+<h4>１．ミラー先（Fedora10 on VMware）の起動</h4>
+
+<p>ミラー先となるＷｉｎｄｏｗｓ上の ＶＭｗａｒｅ・Ｆｅｄｏｒａ１０ を起動させる。
+※本来の目的はミラーリングコピーなんで、常時起動させていないと意味がないんだけど、ＶＭｗａｒｅ起動させてると他の処理が非常に重くなるし、とりあえずは試験的の運用なんで、今のところ普段は起動させてません。</p>
+
+<h4>２．ミラー先にrsyncサーバー設定</h4>
+
+<p>「 Poderosa 」により ＶＭｗａｒｅ・Ｆｅｄｏｒａ１０ にリモート接続し、rootユーザになっておく。
+そして以下のように設定。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@vm-fedora ~]# mkdir /tmp/mirror　←　ミラー先ディレクトリの作成
+</span><span class='line'>
+</span><span class='line'>[root@vm-fedora ~]# chown nobody:nobody /tmp/mirror　←　ミラー先ディレクトリ所有者をnobodyに変更
+</span><span class='line'>
+</span><span class='line'>[root@vm-fedora ~]# vi /etc/rsyncd.conf　←　rsyncサーバ設定ファイルの作成
+</span><span class='line'>[mirror]　←　任意のモジュール名(ミラー元から接続時の名前)
+</span><span class='line'>    path = /tmp/mirror　←　ミラー先ディレクトリ
+</span><span class='line'>    hosts allow = 192.168.11.0/24　←　接続許可ホスト
+</span><span class='line'>    read only = false　←　更新許可</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>３．ミラー先のrsyncサーバー起動</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@vm-fedora ~]# yum -y install xinetd　←　xinetdインストール
+</span><span class='line'>
+</span><span class='line'>[root@vm-fedora ~]# /etc/rc.d/init.d/xinetd start　←　xinetd起動
+</span><span class='line'>xinetd を起動中:                                           [  OK  ]
+</span><span class='line'>
+</span><span class='line'>[root@vm-fedora ~]# chkconfig rsync on　←　rsyncサーバ自動起動設定</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>４．ミラー元（実サーバ）へlsyncdインストール</h4>
+
+<p>「 Poderosa 」により 実サーバ・Ｆｅｄｏｒａ１０ にリモート接続し、rootユーザになっておく。
+そして、以下のようにして lsyncd をインストール。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# yum -y install libxml2-devel　←　lsyncdインストールに必要なパッケージをインストール
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# wget http://lsyncd.googlecode.com/files/lsyncd-1.26.tar.gz　←　lsyncdダウンロード
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# tar zxvf lsyncd-1.26.tar.gz　←　lsyncd展開
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# cd lsyncd-1.26　←　lsyncd展開先ディレクトリへ移動
+</span><span class='line'>
+</span><span class='line'>[root@noah lsyncd-1.26]# ./configure && make && make install　←　lsyncdインストール
+</span><span class='line'>
+</span><span class='line'>[root@noah lsyncd-1.26]# cd　←　lsyncd展開先ディレクトリを抜ける
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# rm -rf lsyncd-1.26　←　lsyncd展開先ディレクトリを削除
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# rm -rf lsyncd-1.26.tar.gz　←　ダウンロードしたファイルを削除</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．ミラー元のlsyncd設定</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# vi /etc/lsyncd.conf　←　lsyncd設定ファイルの作成
+</span><span class='line'>/ 192.168.11.101 mirror　←　「 ミラー元ディレクトリ  ミラー先(rsyncサーバ)IPアドレス  ミラー先モジュール名 」の順に指定
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# vi /etc/logrotate.d/lsyncd　←　lsyncdログローテーション設定ファイルの作成
+</span><span class='line'>/var/log/lsyncd {
+</span><span class='line'>    missingok
+</span><span class='line'>    notifempty
+</span><span class='line'>    sharedscripts
+</span><span class='line'>    postrotate
+</span><span class='line'>        /etc/rc.d/init.d/lsyncd restart 2>&1 > /dev/null || true
+</span><span class='line'>    endscript
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>６．ミラー元のlsyncd起動</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# vi /etc/rc.d/init.d/lsyncd　←　lsyncd起動スクリプト作成
+</span><span class='line'>#!/bin/bash
+</span><span class='line'>#
+</span><span class='line'># lsyncd
+</span><span class='line'>#
+</span><span class='line'># chkconfig: - 99 20
+</span><span class='line'># description: lsyncd auto start script
+</span><span class='line'>
+</span><span class='line'>start() {
+</span><span class='line'>    IFS=
+</span><span class='line'>    for i in `cat /etc/lsyncd.conf`
+</span><span class='line'>    do
+</span><span class='line'>        src=`echo $i|awk '{print $1}'`
+</span><span class='line'>        dest=`echo $i|awk '{print $3}'`
+</span><span class='line'>        remort=`echo $i|awk '{print $2}'`
+</span><span class='line'>        /usr/local/bin/lsyncd $src $remort::$dest/
+</span><span class='line'>    done
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>stop() {
+</span><span class='line'>    /bin/kill -9 `/sbin/pidof lsyncd`
+</span><span class='line'>    until [ -z $(/sbin/pidof lsyncd) ]; do :; done
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>case "$1" in
+</span><span class='line'>    start)
+</span><span class='line'>        start
+</span><span class='line'>        ;;
+</span><span class='line'>    stop)
+</span><span class='line'>        stop
+</span><span class='line'>        ;;
+</span><span class='line'>    restart)
+</span><span class='line'>        stop
+</span><span class='line'>        start
+</span><span class='line'>        ;;
+</span><span class='line'>    status)
+</span><span class='line'>        pid=`pidof lsyncd`
+</span><span class='line'>        if [ $? -eq 0 ]; then
+</span><span class='line'>            echo "lsyncd (pid $pid) is running..."
+</span><span class='line'>        else
+</span><span class='line'>            echo "lsyncd is not running"
+</span><span class='line'>        fi
+</span><span class='line'>        ;;
+</span><span class='line'>    *)
+</span><span class='line'>        echo "Usage: lsyncd {start|stop|restart|status}"
+</span><span class='line'>        exit 1
+</span><span class='line'>esac
+</span><span class='line'>
+</span><span class='line'>exit $?
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chmod +x /etc/rc.d/init.d/lsyncd　←　lsyncd起動スクリプトへ実行権限付加
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# /etc/rc.d/init.d/lsyncd start　←　lsyncd起動
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chkconfig --add lsyncd　←　lsyncd起動スクリプトをchkconfigへ登録
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chkconfig lsyncd on　←　lsyncd自動起動設定</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>７．動作確認</h4>
+
+<p>上記の「 lsyncd起動 」で処理が開始されているはずなので、しばらくしてからミラー先（ＶＭｗａｒｅ側Ｆｅｄｏｒａ）の指定したディレクトリにコピーされているか確認する。
+■ミラー元</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# ls -ll /
+</span><span class='line'>合計 122
+</span><span class='line'>drwxr-xr-x   8 root root  4096 2009-03-30 05:05 backup
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2009-03-29 05:11 bin
+</span><span class='line'>drwxr-xr-x   5 root root  1024 2009-03-08 06:04 boot
+</span><span class='line'>drwxr-xr-x  16 root root  4480 2009-03-30 20:14 dev
+</span><span class='line'>drwxr-xr-x 103 root root 12288 2009-03-30 19:45 etc
+</span><span class='line'>drwxr-xr-x   5 root root  4096 2009-01-06 09:46 home
+</span><span class='line'>drwxr-xr-x  16 root root 12288 2009-03-29 05:11 lib
+</span><span class='line'>drwx------   2 root root 16384 2008-12-09 08:55 lost+found
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 media
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 mnt
+</span><span class='line'>-rw-r--r--   1 root root   538 2009-03-02 11:20 mrtg-l.png
+</span><span class='line'>-rw-r--r--   1 root root   414 2009-03-02 11:20 mrtg-m.png
+</span><span class='line'>-rw-r--r--   1 root root  1759 2009-03-02 11:20 mrtg-r.png
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 opt
+</span><span class='line'>dr-xr-xr-x 155 root root     0 2009-03-23 07:01 proc
+</span><span class='line'>-rw-r--r--   1 root root   181 2008-12-09 23:03 razor-agent.log
+</span><span class='line'>drwxr-x---   9 root root  4096 2009-03-30 19:38 root
+</span><span class='line'>drwxr-xr-x   2 root root 12288 2009-03-29 05:11 sbin
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-12-09 08:57 selinux
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 srv
+</span><span class='line'>drwxr-xr-x  12 root root     0 2009-03-23 07:01 sys
+</span><span class='line'>drwxrwxrwt  10 root root  4096 2009-03-30 20:13 tmp
+</span><span class='line'>drwxr-xr-x  13 root root  4096 2008-12-09 09:02 usr
+</span><span class='line'>drwxr-xr-x  23 root root  4096 2008-12-10 17:52 var
+</span><span class='line'>[root@noah ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<p>■ミラー先</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@vm-fedora ~]# ls -ll /tmp/mirror
+</span><span class='line'>合計 120
+</span><span class='line'>drwxr-xr-x   8 nobody nobody  4096 2009-03-30 05:05 backup
+</span><span class='line'>drwxr-xr-x   2 nobody nobody  4096 2009-03-29 05:11 bin
+</span><span class='line'>drwxr-xr-x   5 nobody nobody  4096 2009-03-08 06:04 boot
+</span><span class='line'>drwxr-xr-x  16 nobody nobody  4096 2009-03-30 19:56 dev
+</span><span class='line'>drwxr-xr-x 103 nobody nobody 12288 2009-03-30 19:45 etc
+</span><span class='line'>drwxr-xr-x   5 nobody nobody  4096 2009-01-06 09:46 home
+</span><span class='line'>drwxr-xr-x  16 nobody nobody 12288 2009-03-29 05:11 lib
+</span><span class='line'>drwx------   2 nobody nobody  4096 2008-12-09 08:55 lost+found
+</span><span class='line'>drwxr-xr-x   2 nobody nobody  4096 2008-09-06 19:13 media
+</span><span class='line'>drwxr-xr-x   2 nobody nobody  4096 2008-09-06 19:13 mnt
+</span><span class='line'>-rw-r--r--   1 nobody nobody   538 2009-03-02 11:20 mrtg-l.png
+</span><span class='line'>-rw-r--r--   1 nobody nobody   414 2009-03-02 11:20 mrtg-m.png
+</span><span class='line'>-rw-r--r--   1 nobody nobody  1759 2009-03-02 11:20 mrtg-r.png
+</span><span class='line'>drwxr-xr-x   2 nobody nobody  4096 2008-09-06 19:13 opt
+</span><span class='line'>dr-xr-xr-x 156 nobody nobody  4096 2009-03-23 07:01 proc
+</span><span class='line'>-rw-r--r--   1 nobody nobody   181 2008-12-09 23:03 razor-agent.log
+</span><span class='line'>drwxr-x---   9 nobody nobody  4096 2009-03-30 19:38 root
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 12288 2009-03-29 05:11 sbin
+</span><span class='line'>drwxr-xr-x   2 nobody nobody  4096 2008-12-09 08:57 selinux
+</span><span class='line'>drwxr-xr-x   2 nobody nobody  4096 2008-09-06 19:13 srv
+</span><span class='line'>drwxr-xr-x  12 nobody nobody  4096 2009-03-23 07:01 sys
+</span><span class='line'>drwxrwxr-x  10 nobody nobody  4096 2009-03-30 19:50 tmp
+</span><span class='line'>drwxr-xr-x  13 nobody nobody  4096 2008-12-09 09:02 usr
+</span><span class='line'>drwxr-xr-x  23 nobody nobody  4096 2008-12-10 17:52 var
+</span><span class='line'>[root@vm-fedora ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイル類も大体（？）コピーされている模様。</p>
+
+<hr />
+
+<p>設定は以上です。</p>
+
+<p>仮にミラー先が起動していない場合は、ミラー先が起動したときにミラーリングがされるみたいです。
+それはスゲー！</p>
+
+<p>今回は実際にミラー先を元にクローンを復元するところまではしません。
+ここまでできていれば、何とかなるでしょう！？</p>
+
+<p>それじゃ。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/03/03014038/">* LOTO6 No.439</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-03T01:40:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2009</span></span> <span class='time'>01:40</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ロト６/'>ロト６</a>
+  
+</span>
+
+ ]
+        [ 
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>まいどです。</p>
+
+<p>日付が変わって昨日ののロト６（第４３９回）の結果です。</p>
+
+<p>私の結果についてはいつもどおりです！</p>
+
+<p>そんなこんなで、いつもどおり
+ダウンロード用ＣＳＶファイルを最新に更新しました。
+こちら - - - > <strong><a href="http://www.mk-mode.com/rails/loto/loto6" title="mk-mode SITE">mk-mode SITE</a></strong></p>
+
+<p><a href="http://www.mk-mode.com/rails/loto/LOTO6_ALL.csv" title="こちら">こちら</a> でもＯＫ。
+（右クリックで対象ファイルを保存！）</p>
+
+<p>どうぞ、ご活用下さい。</p>
+
+<p><strong><font color="red">※当方のデータは保証できるものではありません。
+　あくまでも、個人で分析するために活用しているだけです。</font></strong></p>
+
+<p><strong><font color="red">※正式なデータは「みずほ」宝くじコーナーでご確認ください。</font></strong></p>
+
+<p><strong><font color="red">※データに不具合があれば教えてください。</font></strong></p>
+
+<p>　　
+ではまた。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/02/02002016/">* ＶＭｗａｒｅにＦｅｄｏｒａ１０！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-02T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>, <a class='tag' href='/blog/tags/vmware/'>VMware</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>うちのＦｅｄｏｒａ１０サーバを仮想マシンＶＭｗａｒｅでクローン化するための準備として、まずはフリーの ＶＭｗａｒｅＰｌａｙｅｒ にディスクイメージを作成するための Ｑｅｍｕ というソフトを使用してＦｅｄｏｒａ１０をインストールします。</p>
+
+<p>フリーの ＶＭｗａｒｅＰｌａｙｅｒ をはじめ、ＶＭｗａｒｅＷｏｒｋｓｔａｔｉｏｎ とかはシステム開発の現場とか、自宅サーバ構築の仮環境用として、非常にお世話になっているんで、感謝感謝です。</p>
+
+<p>自宅サーバで実際にＷｉｎｄｏｗｓＸＰ上にＦｅｄｏｒａを構築してサーバ運用していた時期もありました。
+（当時のマシンのメモリが貧弱だったんですぐにあきらめましたが・・・）</p>
+
+<p>昔、どっかのサイトを参考にして作成したＶＭｗａｒｅＰｌａｙｅｒ用のＶＭＸファイルをずっと流用しているんで、今回も流用しました。</p>
+
+<p>ＶＭｗａｒｅＰｌａｙｅｒ は「 2.5.1 build-126130 」とかにアップデートしてます。（たしか数ヶ月前）</p>
+
+<p>でも、一応今回は最初から導入しなおしてみようと思ってるんで、ＶＭｗａｒｅＰｌａｙｅｒ とか Ｑｅｍｕ とか、インストールするところから記録として残しておこうと思います。</p>
+
+<h3>作業記録</h3>
+
+<h4>１．ＶＭｗａｒｅＰｌａｙｅｒのセットアップ</h4>
+
+<p>当然これが必要です。下記からダウンロードしてインストールする。
+こちら → <a href="http://www.vmware.com/download/player/" title="http://www.vmware.com/download/player/">http://www.vmware.com/download/player/</a>
+当記事執筆時点では、当方には最新バージョン（ 2.5.1 build-126130 ）がインストール済みでした。</p>
+
+<h4>２．Ｑｅｍｕのダウンロード＆展開</h4>
+
+<p><a href="http://www.h7.dion.ne.jp/~qemu-win/index-ja.html" title="QEMU on Windows">QEMU on Windows</a> から最新版をダウンロードしＺＩＰファイルを展開する。。
+当記事執筆時点では、当方には最新バージョン（ qemu-0.9.0-windows.zip ）がダウンロード＆展開済みでした。</p>
+
+<h4>３．ＶＭｗａｒｅディスクイメージの作成</h4>
+
+<p>上記で展開されたフォルダ内の qemu-img.exe をＤＯＳコマンド画面で以下のように実行する。
+下記では「 qemu-img.exe 」のあるフォルダで実行しています。
+ディスクイメージの作成先は「 D:\VMware 」フォルダでファイル名は「 fedora.vmdk 」とし、ディスク領域は余裕を持って３０Ｇとっています。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>D:\70_Soft\qemu-0.9.0-windows>qemu-img.exe create -f vmdk D:\VMware\Fedora\fedora.vmdk 30G
+</span><span class='line'>Formating 'D:\VMware\Fedora\fedora.vmdk', fmt=vmdk, size=31457280 kB
+</span><span class='line'>
+</span><span class='line'>D:\70_Soft\qemu-0.9.0-windows></span></code></pre></td></tr></table></div></figure>
+
+
+<h4>４．ＶＭｗａｒｅＰｌａｙｅｒ用の設定ファイル作成</h4>
+
+<p>以下のように設定ファイル（ＶＭＸファイル）を作成する。
+いつも使用しているものを流用しています。
+「 D:\VMware 」フォルダに、ファイル名[ fedora.vmx ]として保存しました。
+いつもこれを流用してＩＳＯファイルを使用しています。
+ご自分の環境にあわせて適宜変更してください。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.encoding = "Shift_JIS"
+</span><span class='line'>config.version = "8"
+</span><span class='line'>virtualHW.version = "3"
+</span><span class='line'>memsize = "256"　　　　　　　　　　　　　　　　　　　　←　物理メモリを圧縮しない程度に
+</span><span class='line'>ide0:0.present = "TRUE"
+</span><span class='line'>ide0:0.fileName = "fedora.vmdk"　　　　　　　　　　　　←　作成されるディスクイメージ
+</span><span class='line'>
+</span><span class='line'>ide1:0.present = "TRUE"
+</span><span class='line'>ide1:0.fileName = "D:\70_Soft\Fedora-10-i386-DVD.ISO"　←　ＩＳＯイメージを使用
+</span><span class='line'>ide1:0.deviceType = "cdrom-image"
+</span><span class='line'>ethernet0.present = "TRUE"
+</span><span class='line'>ethernet0.connectionType = "bridged" 　　　　　　　　　←　ネットワークはブリッジ接続
+</span><span class='line'>usb.present = "TRUE"
+</span><span class='line'>sound.present = "TRUE"
+</span><span class='line'>sound.virtualDev = "es1371"
+</span><span class='line'>displayName = "Fedora on VMware" 　　　　　　　　　　　←　VMwarePlayerに表示する文字
+</span><span class='line'>guestOS = "other26xlinux"　　　　　　　　　　　　　　　←　Ｆｅｄｏｒａ１０なので
+</span><span class='line'>nvram = "fedora.nvram" 　　　　　　　　　　　　　　　　←　ファイル名は統一したほうがよいので
+</span><span class='line'>scsi0:0.redo = ""
+</span><span class='line'>ethernet0.addressType = "generated"
+</span><span class='line'>uuid.location = "56 4d 74 7e 54 a3 bb 35-a7 61 26 5e 50 43 f5 38"
+</span><span class='line'>uuid.bios = "56 4d 74 7e 54 a3 bb 35-a7 61 26 5e 50 43 f5 38"
+</span><span class='line'>ide1:0.autodetect = "TRUE"
+</span><span class='line'>ethernet0.generatedAddress = "00:0c:29:43:f5:38"
+</span><span class='line'>ethernet0.generatedAddressOffset = "0"
+</span><span class='line'>checkpoint.vmState = "fedora.vmss" 　　　　　　　　　　←　ファイル名は統一したほうがよいので
+</span><span class='line'>tools.remindInstall = "FALSE"
+</span><span class='line'>ide0:0.redo = ""
+</span><span class='line'>
+</span><span class='line'>extendedConfigFile = "fedora.vmxf" 　　　　　　　　　　←　ファイル名は統一したほうがよいので
+</span><span class='line'>
+</span><span class='line'>floppy0.present = "FALSE"　　　　　　　　　　　　　　　←　フロッピドライブはないので
+</span><span class='line'>virtualHW.productCompatibility = "hosted"
+</span><span class='line'>tools.upgrade.policy = "manual"
+</span><span class='line'>
+</span><span class='line'>vmotion.checkpointFBSize = "16777216"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみにゲストＯＳのところの設定は以下のようにするみたいです。
+いろんなサイトに載っていますが・・・</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Guest OS の種類                            vmx の guestOS
+</span><span class='line'>Windows 3.1                                win31
+</span><span class='line'>Windows 95                                 win95
+</span><span class='line'>Windows 98                                 win98
+</span><span class='line'>Windows Me                                 winme
+</span><span class='line'>Windows NT                                 winnt
+</span><span class='line'>Windows 2000 Professional                  win2000pro
+</span><span class='line'>Windows 2000 Server                        win2000serv
+</span><span class='line'>Windows 2000 Advanced Server               win2000advserv
+</span><span class='line'>Windows XP Home Edition                    winxphome
+</span><span class='line'>Windows XP Professional                    winxppro
+</span><span class='line'>Windows XP Professional x64 Edition        winxppro-64
+</span><span class='line'>Windows Server 2003 Web Edition            winnetweb
+</span><span class='line'>Windows Server 2003 Standard Edition       winnetstandard
+</span><span class='line'>Windows Server 2003 Enterprise Edition     winnetenterprise
+</span><span class='line'>Windows Server 2003 Small Business         winnetbusiness
+</span><span class='line'>Windows Server 2003 Standard x64 Edition   winnetstandard-64
+</span><span class='line'>Windows Server 2003 Enterprise x64 Edition winnetenterprise-64
+</span><span class='line'>Windows Vista                              winvista
+</span><span class='line'>Windows Vista x64 Edition                  winvista-64
+</span><span class='line'>Red Hat Linux                              redhat
+</span><span class='line'>Red Hat Enterprise Linux 2                 rhel2
+</span><span class='line'>Red Hat Enterprise Linux 3                 rhel3
+</span><span class='line'>Red Hat Enterprise Linux 3 64-bit          rhel3-64
+</span><span class='line'>Red Hat Enterprise Linux 4                 rhel4
+</span><span class='line'>Red Hat Enterprise Linux 4 64-bit          rhel4-64
+</span><span class='line'>SUSE Linux                                 suse
+</span><span class='line'>SUSE Linux 64-bit                          suse-64
+</span><span class='line'>SUSE Linux Enterprise Server               sles
+</span><span class='line'>SUSE Linux Enterprise Server 64-bit        sles-64
+</span><span class='line'>Novell Linux Desktop 9                     nld9
+</span><span class='line'>Sun Java Desktop System                    sjds
+</span><span class='line'>Mandrake Linux                             mandrake
+</span><span class='line'>Turbolinux                                 turbolinux
+</span><span class='line'>Ubuntu                                     ubuntu
+</span><span class='line'>Ubuntu 64-bit                              ubuntu-64
+</span><span class='line'>Other Linux 2.4.x kernel                   other24xlinux
+</span><span class='line'>Other Linux 2.4.x kernel 64-bit            other24xlinux-64
+</span><span class='line'>Other Linux 2.6.x kernel                   other26xlinux
+</span><span class='line'>Other Linux 2.6.x kernel 64-bit            other26xlinux-64
+</span><span class='line'>Other Linux                                otherlinux
+</span><span class='line'>Other Linux 64-bit                         otherlinux-64
+</span><span class='line'>Solaris 9                                  solaris9
+</span><span class='line'>Solaris 10                                 solaris10
+</span><span class='line'>Solaris 10 64-bit                          solaris10-64
+</span><span class='line'>MS-DOS                                     dos
+</span><span class='line'>FreeBSD                                    freebsd
+</span><span class='line'>FreeBSD 64-bit                             freebsd-64
+</span><span class='line'>Other                                      other
+</span><span class='line'>Other 64-bit                               other-64</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．ＯＳのインストール</h4>
+
+<p>上記で作成した設定ファイル fedora.vmx をダブルクリックする。
+ＯＳのインストールが始まります。
+今回は <a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a> の <a href="http://fedorasrv.com/fedora10.shtml" title="Fedora 10インストール">Fedora 10インストール</a> のとおりにインストールしました。
+（現在稼動中のＦｅｄｏｒａサーバもこのとおりにインストールしているんで）
+※ＶＭへのインストール時、ホスト名やその他ネットワークの設定なんかは実サーバとは異なるものにするなどしてます。</p>
+
+<p><a href="/images/2009/03/vm_fedora10_1.jpg"><img src="/images/2009/03/vm_fedora10_1-150x122.jpg" alt="vm_fedora10_1" title="vm_fedora10_1" width="150" height="122" class="alignnone size-thumbnail wp-image-1640" /></a></p>
+
+<p>また、さらに「 Ｐｏｄｅｒｏｓａ 」によるリモート接続を行い、初期設定までは済ませました。
+あと、時間が狂ってもいけないんで、ＮＴＰサーバもインストールしときました。
+それらも全て <a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a> のとおりです。</p>
+
+<p>うまくいけば、再起動するとこんな感じで立ち上がるはず↓↓</p>
+
+<p><a href="/images/2009/03/vm_fedora10_2.jpg"><img src="/images/2009/03/vm_fedora10_2-150x94.jpg" alt="vm_fedora10_2" title="vm_fedora10_2" width="150" height="94" class="alignnone size-thumbnail wp-image-1641" /></a></p>
+
+<hr />
+
+<p>とりあえず、ＶＭｗａｒｅＰｌａｙｅｒ への Ｆｅｄｏｒａ１０ のインストールは以上です。</p>
+
+<p>次回は実サーバからミラーリングコピーすることに挑戦してみます。</p>
+
+<p>それでは、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/01/01002051/">* Ｆｅｄｏｒａサーバのクローン化のために！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-01T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+今、うちのＦｅｄｏｒａ１０サーバは単独で稼働させてて、大事なファイル・フォルダは１日１回自動でバックアップさせています。
+バックアップファイルはＷｉｎｄｏｗｓマシン側からＦＴＰダウンロードして保存しています。（これもタスクで自動化）</p>
+
+<p>仮にサーバがダウンして復旧に時間がかかりそうな場合は、実サーバ構築前に仮構築していた仮想マシン（ＶＭｗａｒｅＰｌａｙｅｒ）上のＦｅｏｄｒａ１０に実サーバの設定ファイル等をコピーして仮稼働させようと考えていました。</p>
+
+<p>でも、意外と手間がかかりそう・・・</p>
+
+<p>ってことで、実サーバを丸ごとコピーして全く同じ状態のクローンを作るようにしておけば、復旧も楽ではないかと、考えた次第です。</p>
+
+<p>Ｗｉｎｄｏｗｓと違ってレジストリとか使ってないんで、フォルダ・ファイルの全コピーでクローンができるみたい。。。
+ホントかどうかは今のところ不明ですが・・・</p>
+
+<p>そこでそのクローンを作るマシンですが、今ある別のマシンを使いたくないんで、やっぱり仮想マシンＶＭｗａｒｅＰｌａｙｅｒに作ってみることにしました。</p>
+
+<p>概要としては、</p>
+
+<ul>
+<li>仮想マシンにＦｅｄｏｒａ１０を最小限のインストール。</li>
+<li>実サーバの内容を丸ごとコピーするフォルダを作りそのフォルダにミラーリングコピー。</li>
+<li>で、仮に実サーバがダウンした場合は、ミラーリングコピーしていたフォルダの内容を本当の階層にコピーして稼働させる。</li>
+</ul>
+
+
+<p>です。</p>
+
+<p>最初から実サーバと同じフォルダ構成でミラーリングコピーするとＩＰアドレスとかもコピーされて実サーバとかぶるんじゃないかと思って、丸ごとコピー用のフォルダにコピーするように考えています。</p>
+
+<p>本当は仮想マシンじゃなくて、本物のマシンでやりたかったけど、今のところ使えるマシンが余ってなかったんで。。。</p>
+
+<p>　　
+ということで、
+次からはＶＭｗａｒｅＰｌａｙｅｒにＦｅｄｏｒａ１０を構築するところから、記録しながらやってみようと思ってま～っす。。。</p>
+
+<p>ちなみに、うちの職場でも訳あって、経理で仮想マシンを使用してるんだけど、上司の年配の女性の人は仮想マシンのことをいつも「 <strong>偽装マシン</strong> 」と言ってます。
+なんか、いやなイメージ。。。</p>
+
+<p>　　
+じゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/03/31/31002034/">* Windows – 「最近使ったﾌｧｲﾙ」の履歴削除！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-03-31T00:20:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>, <a class='tag' href='/blog/tags/レジストリ/'>レジストリ</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今日も、ＷｉｎｄｏｗｓＸＰマシンのレジストリのカスタマイズについてです。</p>
+
+<p>今回は、「最近使ったファイル」の履歴をＰＣ再起動時に削除するレジストリ設定です。</p>
+
+<h3>設定手順</h3>
+
+<p>※レジストリを修正する際は、必ずバックアップをとっておいてください。
+動かなくなった場合に、ＰＣ自体が動かないのに、リカバリできるかどうかも不明ですが・・・
+また、以下は自分のための記録です。
+以下を参考にしてレジストリを変更したためにＰＣが動作不能となっても当方は保証できません。
+自己の責任のもと、作業を行ってください。</p>
+
+<h4>１．レジストリ エディタ「 regedt.exe 」の起動</h4>
+
+<p>ＷｉｎＸＰの場合、「 C:\WINDOWS 」フォルダに 「 regedit.exe 」があると思います。
+当方は、わかりやすい所にショートカットを作っています。</p>
+
+<p><a href="/images/2009/03/win_reg_recent_1.jpg"><img src="/images/2009/03/win_reg_recent_1-150x93.jpg" alt="win_reg_recent_1" title="win_reg_recent_1" width="150" height="93" class="alignnone size-thumbnail wp-image-1629" /></a></p>
+
+<h4>２．設定する場所を確認</h4>
+
+<p>レジストリ キー
+「 HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer 」
+を探っていく。</p>
+
+<p><a href="/images/2009/03/win_reg_recent_2.jpg"><img src="/images/2009/03/win_reg_recent_2-150x96.jpg" alt="win_reg_recent_2" title="win_reg_recent_2" width="150" height="96" class="alignnone size-thumbnail wp-image-1630" /></a></p>
+
+<h4>３．ＤＷＯＲＤ値項目を新規作成</h4>
+
+<p>デフォルトでは存在しないので、右側の何も無いところでマウスを右クリックし、「 新規 」−「 DWORD値 」とクリックしていくと、「 新しい値 #1 」という項目ができるので、名前を「 NoRecentDocsHistory 」に変更する。</p>
+
+<p><a href="/images/2009/03/win_reg_recent_3.jpg"><img src="/images/2009/03/win_reg_recent_3-150x96.jpg" alt="win_reg_recent_3" title="win_reg_recent_3" width="150" height="96" class="alignnone size-thumbnail wp-image-1631" /></a></p>
+
+<h4>４．ＤＷＯＲＤ値の設定</h4>
+
+<p>先程作成した項目をダブルクリックして編集画面を開く。
+「 表記 」は「 １６進数 」でも「 １０進数 」もどちらでもよい。
+「 値のデータ 」ボックスに「 1 」を入力し、「 ＯＫ 」をクリックする。</p>
+
+<p><a href="/images/2009/03/win_reg_recent_4.jpg"><img src="/images/2009/03/win_reg_recent_4-150x71.jpg" alt="win_reg_recent_4" title="win_reg_recent_4" width="150" height="71" class="alignnone size-thumbnail wp-image-1632" /></a></p>
+
+<h4>５．動作確認前の準備</h4>
+
+<p>コンピュータを再起動の前に、「 最近使ったファイル 」に履歴が残っていることを確認する。</p>
+
+<p><a href="/images/2009/03/win_reg_recent_5.jpg"><img src="/images/2009/03/win_reg_recent_5-136x150.jpg" alt="win_reg_recent_5" title="win_reg_recent_5" width="136" height="150" class="alignnone size-thumbnail wp-image-1633" /></a></p>
+
+<h4>６．ＰＣ再起動</h4>
+
+<p>レジストリ変更を有効にするためにコンピュータを再起動する。</p>
+
+<h4>７．動作確認</h4>
+
+<p>「 最近使ったファイル 」の履歴が消えていることを確認する。</p>
+
+<p><a href="/images/2009/03/win_reg_recent_6.jpg"><img src="/images/2009/03/win_reg_recent_6-150x96.jpg" alt="win_reg_recent_6" title="win_reg_recent_6" width="150" height="96" class="alignnone size-thumbnail wp-image-1634" /></a></p>
+
+<hr />
+
+<p>設定は以上です。</p>
+
+<p>これで、過去の履歴が抹消されます。
+スタンバイには効きませんので、あしからず。。。</p>
+
+<p>それでは。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/03/30/30002033/">* Windows – ﾚｼﾞｽﾄﾘでﾒﾆｭｰ展開時間変更！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-03-30T00:20:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>, <a class='tag' href='/blog/tags/レジストリ/'>レジストリ</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今日は、Ｗｉｎｄｏｗｓマシンのレジストリのカスタマイズについてです。</p>
+
+<p>その中でも今回は、各種メニューにマウスカーソルが乗った時にサブメニューが開くまでの時間を設定する方法です。</p>
+
+<p>Ｗｉｎｄｏｗｓのスタートボタンからのメニュー表示だけでなく、エクスプローラとかエクセルとか、ほぼ大体対応していると思います。</p>
+
+<p>標準では、マウスカーソルがメニューのある項目上に乗った時、１・２秒くらいしてからサブメニューが展開すると思います。</p>
+
+<p>これがレジストリの設定で即展開されるようになります。</p>
+
+<h3>設定手順</h3>
+
+<p>※レジストリを修正する際は、必ずバックアップをとっておいてください。
+動かなくなった場合に、ＰＣ自体が動かないのに、リカバリできるかどうかも不明ですが・・・
+また、以下は自分のための記録です。
+以下を参考にしてレジストリを変更したためにＰＣが動作不能となっても当方は保証できません。
+自己の責任のもと、作業を行ってください。</p>
+
+<p>今回は、マウスカーソルが乗ったら即サブメニューが展開されるような設定を試しています。</p>
+
+<h4>１．レジストリ エディタ「 regedt.exe 」の起動</h4>
+
+<p>ＷｉｎＸＰの場合、「 C:\WINDOWS 」フォルダに 「 regedit.exe 」があると思います。
+当方は、わかりやすい所にショートカットを作っています。</p>
+
+<p><a href="/images/2009/03/win_reg_menu_1.jpg"><img src="/images/2009/03/win_reg_menu_1-150x93.jpg" alt="win_reg_menu_1" title="win_reg_menu_1" width="150" height="93" class="alignnone size-thumbnail wp-image-1616" /></a></p>
+
+<h4>２．「 MenuShowDelay 」値の場所を確認</h4>
+
+<p>レジストリ キー
+「 HKEY_CURRENT_USER\Control Panel\Desktop 」
+を探っていって、
+「 MenuShowDelay 」値の場所を見つけたらクリックする。</p>
+
+<p><a href="/images/2009/03/win_reg_menu_2.jpg"><img src="/images/2009/03/win_reg_menu_2-150x96.jpg" alt="win_reg_menu_2" title="win_reg_menu_2" width="150" height="96" class="alignnone size-thumbnail wp-image-1617" /></a></p>
+
+<h4>３．「 ＤＷＯＲＤ値の編集 」画面を表示</h4>
+
+<p>「 編集 」メニューの「 修正 」をクリックします。
+もしくは「 MenuShowDelay 」右クリックで「 修正 」をクリックする。</p>
+
+<h4>４．値の設定</h4>
+
+<p>「 値のデータ 」ボックスに「 ０ 」を入力し、「 ＯＫ 」をクリックする。</p>
+
+<p><a href="/images/2009/03/win_reg_menu_3.jpg"><img src="/images/2009/03/win_reg_menu_3-150x50.jpg" alt="win_reg_menu_3" title="win_reg_menu_3" width="150" height="50" class="alignnone size-thumbnail wp-image-1618" /></a></p>
+
+<h4>５．ＰＣ再起動</h4>
+
+<p>レジストリ変更を有効にするためにコンピュータを再起動する。</p>
+
+<h4>６．動作確認</h4>
+
+<p>マウスで何かメニューを開いてみる。
+１回目はチョットもつれた感じになるかもしれませんが、２回目以降は即サブメニューが展開されると思います。</p>
+
+<hr />
+
+<p>今回はＷｉｎｄｏｗｓＸＰでの設定方法でした。
+ＷｉｎｄｏｗｓＶｉｓｔａ等、他のＷｉｎｄｏｗｓでは未確認ですのであしからず。。。</p>
+
+<p>それでは、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/03/29/29002019/">* 玄箱ＨＧにファイルサーバ！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-03-29T00:20:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/玄箱/'>玄箱</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>, <a class='tag' href='/blog/tags/samba/'>Samba</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今回は、一応 Ｆｅｄｏｒａ１０ になったうちの KURO-BOX/HG にファイルサーバ Ｓａｍｂａ をインストールしました。</p>
+
+<p>うちの玄箱ＨＧにとって初めてのＦｅｄｏｒａ１０の上への Ｓａｍｂａ のインストールなんで、ちょっとだけ心配ですが・・・</p>
+
+<p>いつもながら、これはあくまでも自分用の記録です。若干環境等異なる場合もあるかもしれません。ご了承下さい。</p>
+
+<h3>作業記録</h3>
+
+<p>【前提条件】
+・Ｆｅｄｏｒａ化する玄箱は「 KURO-BOX/HG 」。
+・「 KURO-BOX/HG 」には３２０ＧＢのハードディスクを組み込んでいる。
+・「 KURO-BOX/HG 」のＩＰアドレスは [ 192.168.11.2 ]
+・「 KURO-BOX/HG 」に「 できる！玄箱 Fedora化！！ 」[ <a href="http://www.shinkr-webpj.jp/">http://www.shinkr-webpj.jp/</a> ]のインストールキット「 F4K Install Kit 」でＦｅｄｏｒａ７導入済み＆「 yum 」が最新版に入れ替え済み。
+・「 KURO-BOX/HG 」のＦｅｄｏｒａ７ → Ｆｅｄｏｒａ８ → Ｆｅｄｏｒａ９ → Ｆｅｄｏｒａ１０にアップグレード済み。
+・インストール作業を実行させるマシンはＷｉｎｄｏｗｓＸＰ（ＰｅｎｔｉｕｍＭ）</p>
+
+<h4>１．玄箱への接続</h4>
+
+<p>ローカルマシンから KURO-BOX/HG へリモート接続し、rootユーザになる。
+（当方は、「 Poderosa 」というのを使用しています）</p>
+
+<h4>２．Ｓａｍｂａ のインストール</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# yum -y install samba
+</span><span class='line'>Installed:
+</span><span class='line'>  samba.ppc 0:3.2.8-0.27.fc10                                                     
+</span><span class='line'>
+</span><span class='line'>Complete!
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>３．Ｓａｍｂａユーザ作成</h4>
+
+<p>今回は既存ユーザをSambaサーバーアクセス用ユーザとするので、以下のようにする。</p>
+
+<div>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# pdbedit -a masaru
+</span><span class='line'>tdbsam_open: Converting version 0 database to version 3.
+</span><span class='line'>new password:
+</span><span class='line'>retype new password:
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 1 (min password length), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 2 (password history), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 3 (user must logon to change password), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 4 (maximum password age), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 5 (minimum password age), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 6 (lockout duration), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 7 (reset count minutes), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 8 (bad lockout attempt), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 9 (disconnect time), returning 0
+</span><span class='line'>account_policy_get: tdb_fetch_uint32 failed for field 10 (refuse machine password change), returning 0
+</span><span class='line'>Unix username:        masaru
+</span><span class='line'>NT username:
+</span><span class='line'>Account Flags:        [U          ]
+</span><span class='line'>User SID:             S-1-5-21-3141940959-3957822763-225586655-1000
+</span><span class='line'>Primary Group SID:    S-1-5-21-3141940959-3957822763-225586655-513
+</span><span class='line'>Full Name:
+</span><span class='line'>Home Directory:       \\kuro-box\masaru
+</span><span class='line'>HomeDir Drive:
+</span><span class='line'>Logon Script:
+</span><span class='line'>Profile Path:         \\kuro-box\masaru\profile
+</span><span class='line'>Domain:               KURO-BOX
+</span><span class='line'>Account desc:
+</span><span class='line'>Workstations:
+</span><span class='line'>Munged dial:
+</span><span class='line'>Logon time:           0
+</span><span class='line'>Logoff time:          never
+</span><span class='line'>Kickoff time:         never
+</span><span class='line'>Password last set:    日, 22  3月 2009 17:26:33 JST
+</span><span class='line'>Password can change:  日, 22  3月 2009 17:26:33 JST
+</span><span class='line'>Password must change: never
+</span><span class='line'>Last bad password   : 0
+</span><span class='line'>Bad password count  : 0
+</span><span class='line'>Logon hours         : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+</div>
+
+
+<h4>４．Ｓａｍｂａ用の共有ディレクトリの作成</h4>
+
+<p>「 mnt 」フォルダがＦｅｄｏｒａインストール領域以外の一番容量が残っているフォルダなので、「 mnt 」フォルダをＳａｍｂａように設定する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# mkdir /mnt/samba
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．共有ディレクトリの所有者の変更</h4>
+
+<p>今回はＳａｍｂａサーバにアクセスするのは自分だけなので自分に変更。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# chown masaru:masaru /mnt/samba
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>６．Ｓａｍｂａ設定ファイルの編集</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[global]
+</span><span class='line'>
+</span><span class='line'>        unix charset = UTF-8　          ←　追加(Linux側の日本語文字コードを指定する)
+</span><span class='line'>        dos charset = CP932　           ←　追加(Windows側の日本語文字コードを指定する)
+</span><span class='line'>        display charset = UTF-8　       ←　追加(Linux側の日本語文字コードを指定する)
+</span><span class='line'>
+</span><span class='line'>        workgroup = WORKGROUP　         ←　変更(Windowsのワークグループ名を指定する)
+</span><span class='line'>
+</span><span class='line'>        hosts allow = 127. 192.168.11.　←　変更(内部からのみアクセスできるようにする)
+</span><span class='line'>
+</span><span class='line'>        load printers = no　            ←　変更(Sambaでプリンタを共有しない場合)
+</span><span class='line'>
+</span><span class='line'>#[homes]　←　コメントアウト（今回はユーザ毎のフォルダを作成しないので）
+</span><span class='line'>;       comment = Home Directories　←　コメントアウト
+</span><span class='line'>;       browseable = no           　←　コメントアウト
+</span><span class='line'>;       writable = yes            　←　コメントアウト
+</span><span class='line'>;       valid users = %S
+</span><span class='line'>;       valid users = MYDOMAIN\%S
+</span><span class='line'>
+</span><span class='line'>[public]　←　コメントアウトの解除
+</span><span class='line'>        comment = Public Stuff　←　コメントアウトの解除
+</span><span class='line'>        path = /mnt/samba     　←　コメントアウトの解除、共有フォルダを指定
+</span><span class='line'>        public = yes          　←　コメントアウトの解除
+</span><span class='line'>        writable = yes        　←　コメントアウトの解除
+</span><span class='line'>;       printable = no
+</span><span class='line'>;       write list = +staff
+</span><span class='line'># ゴミ箱機能を使用するなら以下をコメントアウト解除する。
+</span><span class='line'>;       vfs objects = recycle        　←　今回はゴミ箱機能は使用しない
+</span><span class='line'>;       recycle:repository = .recycle　←　今回はゴミ箱機能は使用しない
+</span><span class='line'>;       recycle:keeptree = no        　←　今回はゴミ箱機能は使用しない
+</span><span class='line'>;       recycle:versions = yes       　←　今回はゴミ箱機能は使用しない
+</span><span class='line'>;       recycle:touch = no           　←　今回はゴミ箱機能は使用しない
+</span><span class='line'>;       recycle:maxsize = 0          　←　今回はゴミ箱機能は使用しない
+</span><span class='line'>;       recycle:exclude = *.tmp ~$*  　←　今回はゴミ箱機能は使用しない</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>７．Ｓａｍｂａ起動</h4>
+
+<p>Ｓａｍｂａサービスを起動する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# /etc/rc.d/init.d/smb start
+</span><span class='line'>SMB サービスを起動中:                                      [  OK  ]
+</span><span class='line'>[root@KURO-BOX ~]# /etc/rc.d/init.d/nmb start
+</span><span class='line'>NMB サービスを起動中:                                      [  OK  ]
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>８．Ｓａｍｂａの自動起動設定</h4>
+
+<p>玄箱起動時に自動でＳａｍｂａが起動するように設定する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# chkconfig smb on
+</span><span class='line'>[root@KURO-BOX ~]# chkconfig nmb on
+</span><span class='line'>[root@KURO-BOX ~]# chkconfig --list smb
+</span><span class='line'>smb             0:off   1:off   2:on    3:on    4:on    5:on    6:off　←　２～５が[ on ]になっていることを確認
+</span><span class='line'>[root@KURO-BOX ~]# chkconfig --list nmb
+</span><span class='line'>nmb             0:off   1:off   2:on    3:on    4:on    5:on    6:off　←　２～５が[ on ]になっていることを確認
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>９．リブート</h4>
+
+<p>玄箱をリブートさせてみる。</p>
+
+<h4>１０．動作確認</h4>
+
+<p>玄箱が立ち上がったら、Ｗｉｎｄｏｗｓマシンから「 Microsoft Windows Network 」からワークグループを開いてみる。</p>
+
+<p><a href="/images/2009/03/kuro_f10_smb_011.jpg"><img src="/images/2009/03/kuro_f10_smb_011-150x104.jpg" alt="kuro_f10_smb_011" title="kuro_f10_smb_011" width="150" height="104" class="alignnone size-thumbnail wp-image-1593" /></a></p>
+
+<p>玄箱が表示されたら、玄箱をクリックしてみて、Ｓａｍｂａ共有フォルダが作成されていることを確認する。</p>
+
+<p><a href="/images/2009/03/kuro_f10_smb_02.jpg"><img src="/images/2009/03/kuro_f10_smb_02-150x104.jpg" alt="kuro_f10_smb_02" title="kuro_f10_smb_02" width="150" height="104" class="alignnone size-thumbnail wp-image-1590" /></a></p>
+
+<p>作成されたＳａｍｂａ共有フォルダに新規フォルダを作成したり、ファイルをコピーしたりしてみる。
+漢字も扱えるか（文字化けしないか）チェックしてみる。</p>
+
+<p><a href="/images/2009/03/kuro_f10_smb_03.jpg"><img src="/images/2009/03/kuro_f10_smb_03-150x104.jpg" alt="kuro_f10_smb_03" title="kuro_f10_smb_03" width="150" height="104" class="alignnone size-thumbnail wp-image-1591" /></a></p>
+
+<p>あとは、ネットワークドライブとして登録して、利便性を図るなどしてみる。</p>
+
+<hr />
+
+<p>設定は以上。
+なんとなく、よさげ。。。</p>
+
+<p>これで当分使用してみることにします。</p>
+
+<p>それでは、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/03/28/28002009/">* Ｄ９４５ＧＣＬＦチップセットファン交換！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-03-28T00:20:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/自作pc/'>自作pc</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/atom/'>Atom</a>, <a class='tag' href='/blog/tags/d945gclf/'>D945GCLF</a>, <a class='tag' href='/blog/tags/intel/'>Intel</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今日は、
+うちの自作ＦｅｄｏｒａサーバにしているＩｎｔｅｌの Ｄ９４５ＧＣＬＦ の チップセットファン についてです。</p>
+
+<p>ＩｎｔｅｌのＤ９４５ＧＣＬＦ（Ａｔｏｍ２３０搭載）をＤｉｒａｃのＮｏａｈ８００シリーズのケースに入れて稼働させているんですが、この間チップセットファンが回ってないことに気づき、最近はケースファンだけでエアフローを確保していた次第です。</p>
+
+<p>チップセットファンをとめるネジを締め付けるとファンの周りがよじれて引っかかってしまう。ネジを緩めるとファンは回るんだけど、それだとカタカタしてしまう。</p>
+
+<p>今の時期はまだ何とか大丈夫そうだったんだけど、ボチボチ暖かくなってくるし、ＣＰＵも最近なんだか熱い感じなんで、思い切って、チップセットファンを交換しました。</p>
+
+<p>ちなみに今現在の状態はこんなんです↓↓</p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_01.jpg"><img src="/images/2009/03/noah_chipset_fan_01-150x74.jpg" alt="noah_chipset_fan_01" title="noah_chipset_fan_01" width="150" height="74" class="alignnone size-thumbnail wp-image-1598" /></a></p>
+
+<p>標準で装備されていたチップセットファンは４ｃｍの回転数が６０００ｒｐｍのもので、意外とうるさいんで、今回は回転数４０００ｒｐｍの超静音といわれるものを取り付けてみました。</p>
+
+<p>うちの地元にもできた パソコン工房 に希望のものがありました。
+ａｉｎｅｘの「 ＡＤＤＡ ＣＦ−４０ＳＳ 」というのです。
+¥1,200くらいでした。
+これ↓↓</p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_02.jpg"><img src="/images/2009/03/noah_chipset_fan_02-112x150.jpg" alt="noah_chipset_fan_02" title="noah_chipset_fan_02" width="112" height="150" class="alignnone size-thumbnail wp-image-1599" /></a></p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_03.jpg"><img src="/images/2009/03/noah_chipset_fan_03-112x150.jpg" alt="noah_chipset_fan_03" title="noah_chipset_fan_03" width="112" height="150" class="alignnone size-thumbnail wp-image-1600" /></a></p>
+
+<p>これをＤ９４５ＧＣＬＦ標準のものと交換し、ついでにケース内のエアフローも考え直してみました。</p>
+
+<h3>実施手順</h3>
+
+<p>※もちろん、電源落として、各種ケーブル類を取り外してからです。</p>
+
+<h4>１．ケースカバーの取り外し</h4>
+
+<p>今はケースファン増設し、２つのファンでケース内に空気を取り込み、反対側から排出するようにしてます。
+（ケース横置きが前提です）</p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_04.jpg"><img src="/images/2009/03/noah_chipset_fan_04-150x112.jpg" alt="noah_chipset_fan_04" title="noah_chipset_fan_04" width="150" height="112" class="alignnone size-thumbnail wp-image-1601" /></a></p>
+
+<h4>２．ケースファンの向き変更</h4>
+
+<p>今度はケース内の空気をケース外へ排出するようにするため、２つのファンの向きを変えました。</p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_05.jpg"><img src="/images/2009/03/noah_chipset_fan_05-150x112.jpg" alt="noah_chipset_fan_05" title="noah_chipset_fan_05" width="150" height="112" class="alignnone size-thumbnail wp-image-1602" /></a></p>
+
+<h4>３．標準のチップセットファン取り外し</h4>
+
+<p>既存のチップセットファンを取り外す。</p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_06.jpg"><img src="/images/2009/03/noah_chipset_fan_06-150x112.jpg" alt="noah_chipset_fan_06" title="noah_chipset_fan_06" width="150" height="112" class="alignnone size-thumbnail wp-image-1603" /></a></p>
+
+<h4>４．新しいチップセットファンを取り付け</h4>
+
+<p>新しいチップセットファンを結束バンドで取り付ける。
+既存のビス、新しいファン付属のボルトでは取り付けられなかったんで。。。</p>
+
+<p><a href="/images/2009/03/noah_chipset_fan_07.jpg"><img src="/images/2009/03/noah_chipset_fan_07-150x112.jpg" alt="noah_chipset_fan_07" title="noah_chipset_fan_07" width="150" height="112" class="alignnone size-thumbnail wp-image-1604" /></a></p>
+
+<h4>５．ケースカバーの取り付け等</h4>
+
+<p>ケースカバーを取り付け、各種ケーブルを取り付ける。
+そして、電源オン！</p>
+
+<hr />
+
+<p>作業は以上です。</p>
+
+<p>これで、チップセットファンの風がケース外へ向かって流れるときにＣＰＵをかすめるんで、ＣＰＵも若干冷えるんじゃないかな、と。</p>
+
+<p>１日様子をみてみよう！</p>
+
+<p>・・・</p>
+
+<p>そして１日後。（早っ！）</p>
+
+<p>結果は。。。</p>
+
+<ul>
+<li><strong>騒音レベルについて</strong>
+測定器がないんであれですが、チップセットファンが回ってなかった時（ケースファンだけの時）と変わらないくらい静かです。
+全然気にならないくらいです。</li>
+<li><strong>ケース内の温度について</strong></li>
+</ul>
+
+
+<p><a href="/images/2009/03/noah_chipset_fan_08.jpg"><img src="/images/2009/03/noah_chipset_fan_08-150x74.jpg" alt="noah_chipset_fan_08" title="noah_chipset_fan_08" width="150" height="74" class="alignnone size-thumbnail wp-image-1605" /></a></p>
+
+<p>昨日より気温が低いからか・・・、まあまあな感じ。。。</p>
+
+<p>やっぱ、もうちょっと様子をみることにします。。。</p>
+
+<p>その結果で、またエアフローを考え直します。</p>
+
+<p>そんじゃ、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <ul class="pager">
+    
+    <li class="previous"><a href="page/128">&larr; Older</a></li>
+    
+    <li><a href="/blog/archives">Blog Archives</a></li>
+    
+    <li class="next"><a href="page/126">Newer &rarr;</a></li>
+    
+  </ul>
+</div>
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <span class="nav-header">Access Counter</span>
+  <table class="access">
+    <tr>
+     <td>ブログ開設日</td><td class="access-val">2009-01-05</td>
+    </tr>
+    <tr>
+      <td>サーバ連続稼働時間</td><td class="access-val"><div id="uptime">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">Page View 合計</td>
+      <td class="access-val"><div id="pv-total">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">今日</td>
+      <td class="access-val"><div id="pv-today">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">昨日</td>
+      <td class="access-val"><div id="pv-yesterday">Reading... </div></td>
+    </tr>
+  </table>
+</section>
+<section class="well">
+  <ul class="nav nav-list">
+    <li class="nav-header">Information</li>
+  </ul>
+  <a href="http://www.pref.shimane.lg.jp/" target="_blank"><img class="information" src="/images/shimanekoL.jpg" alt="島根県" title="「島根県」へのリンクです。" /></a>
+  <a href="http://shimane-goen.jp/" target="_blank"><img class="information" src="/images/goen_2015_234_60.png" alt="ご縁の国しまね" title="「ご縁の国しまね」へのリンクです。" /></a>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- mk-mode BLOG Sidebar-2 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:200px;height:90px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9601859305"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</section>
+<section class="well">
+  <ul id="sponsord-link" class="nav nav-list">
+    <li class="nav-header">About Me</li>
+  </ul>
+  <p>趣味で自作の自宅Linuxサーバ運用。ブログではIT系(サーバ構築(Linux etc)、PG(Ruby etc)、PC Tips)についての話題を中心に公開。ルービックキューブも人生何回目かのマイブームで、今は非公式ながら Sub25！</p>
+  <a href="http://www.mk-mode.com/" target="_blank">Site</a>
+  <a href="http://twitter.com/ko_masaru/" target="_blank">Twitter</a>
+  <a href="http://www.facebook.com/masaru.koizumi.5" target="_blank">Facebook</a>
+  <a href="https://github.com/komasaru" target="_blank">GitHub</a>
+  <a href="http://www.youtube.com/user/komasaru888" target="_blank">YouTube</a>
+</section>
+<section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a>
+      </li>
+    
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Categories</li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (251)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (524)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (199)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (334)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Tag Cloud</li>
+  </ul>
+  <a href='/blog/tags/ajax' style='font-size: 100.58064516129032%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.16129032258064%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.64516129032258%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.58064516129032%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.16129032258064%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19354838709677%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.48387096774194%'>bash(18)</a> <a href='/blog/tags/bash' style='font-size: 100.19354838709677%'>Bash(1)</a> <a href='/blog/tags/bitly' style='font-size: 100.38709677419355%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19354838709677%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38709677419355%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.67741935483872%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19354838709677%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19354838709677%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19354838709677%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.74193548387096%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 106.0%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.96774193548387%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.58064516129032%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.83870967741936%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38709677419355%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19354838709677%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.74193548387096%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.70967741935483%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19354838709677%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7741935483871%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.35483870967742%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.80645161290323%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.16129032258064%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.96774193548387%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.64516129032258%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19354838709677%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.12903225806451%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.58064516129032%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.2258064516129%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.12903225806451%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38709677419355%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.96774193548387%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19354838709677%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.93548387096774%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.58064516129032%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38709677419355%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.51612903225806%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7741935483871%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19354838709677%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.54838709677419%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.70967741935483%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.58064516129032%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.58064516129032%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38709677419355%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.58064516129032%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.06451612903226%'>Linux(300)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.2258064516129%'>LinuxMint(58)</a> <a href='/blog/tags/lokka' style='font-size: 100.38709677419355%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 105.03225806451613%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.38709677419355%'>MariaDB(33)</a> <a href='/blog/tags/markdown' style='font-size: 101.16129032258064%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.58064516129032%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19354838709677%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.90322580645162%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 130.96774193548387%'>MySQL(160)</a> <a href='/blog/tags/namazu' style='font-size: 100.19354838709677%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.48387096774194%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.16129032258064%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.58064516129032%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38709677419355%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.35483870967742%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7741935483871%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19354838709677%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.41935483870968%'>Octopress(59)</a> <a href='/blog/tags/office' style='font-size: 100.19354838709677%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19354838709677%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.16129032258064%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19354838709677%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.38709677419355%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.0%'>Postfix(31)</a> <a href='/blog/tags/proxy' style='font-size: 100.38709677419355%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38709677419355%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.16129032258064%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.74193548387096%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.3225806451613%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.61290322580645%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38709677419355%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19354838709677%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19354838709677%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.16129032258064%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(310)</a> <a href='/blog/tags/samba' style='font-size: 101.74193548387096%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.58064516129032%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.54838709677419%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19354838709677%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38709677419355%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19354838709677%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38709677419355%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19354838709677%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.16129032258064%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.93548387096774%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7741935483871%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19354838709677%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.96774193548387%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19354838709677%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7741935483871%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.61290322580645%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38709677419355%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.96774193548387%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.54838709677419%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19354838709677%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.74193548387096%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.96774193548387%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.35483870967742%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.58064516129032%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7741935483871%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19354838709677%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.35483870967742%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.12903225806451%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19354838709677%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.93548387096774%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.7741935483871%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.74193548387098%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.58064516129032%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.74193548387098%'>XML(40)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38709677419355%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19354838709677%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.16129032258064%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.51612903225806%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19354838709677%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.16129032258064%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19354838709677%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.6774193548387%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.16129032258064%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38709677419355%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19354838709677%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.96774193548387%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.16129032258064%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.58064516129032%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19354838709677%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.74193548387096%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.6774193548387%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.09677419354838%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38709677419355%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19354838709677%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.54838709677419%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19354838709677%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19354838709677%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.16129032258064%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.96774193548387%'>端末(5)</a> 
+</section>
+<section class="well">
+  <ul id="month-list" class="nav nav-list">
+    <li class="nav-header">Monthly Archives</li>
+  </ul>
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/08/'>2015-08 (7)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1397 posts
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/komasaru">@komasaru</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'komasaru',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="well">
+  <ul id="twitter-timeline" class="nav">
+    <li class="nav-header">Latest Tweets</li>
+  </ul>
+  <a class="twitter-timeline"  href="https://twitter.com/ko_masaru"  data-widget-id="293992385095016448">@ko_masaru からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+
+
+<section class="well">
+  <ul id="sponsord-link" class="nav">
+    <li class="nav-header">Sponsored Link</li>
+  </ul>
+  <span id="sponsored-link">
+    <object data="http://komasaru.github.io/obj_sponsored_link.html" type="text/html" width="254" height="200"></object>
+  </span>
+</section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p id="page-top">
+  <a href="#wrapper">
+    <img src="/images/pagetop.png" alt="PAGE TOP" />
+  </a>
+</p>
+<p>
+  Copyright &copy; 2015 - mk-mode.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mkmodeblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

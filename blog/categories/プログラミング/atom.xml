@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Rroonga で全文検索！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/17/ruby-rroonga-fulltext-searching/"/>
+    <updated>2015-08-17T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/17/ruby-rroonga-fulltext-searching</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Ruby でカラムストア機能付き全文検索エンジン Groonga の機能を容易に使用できる Rroonga を使用してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Ruby 2.2.2-p95 での作業を想定。</li>
+<li>カラムストア機能付き全文検索エンジン Groonga がインストール済みであること。</li>
+</ul>
+
+
+<h3>1. Rroonga のインストール</h3>
+
+<p>以下のようにしてインストールする。<br/>
+（ちなみ、 Groonga 未インストールなら、ここでインストールされるはず。（当方 Groonga インストール済みなので、未確認））</p>
+
+<pre><code class="text">$ sudo gem install rroonga
+</code></pre>
+
+<h3>2. データベースの作成</h3>
+
+<p>簡単な都道府県名データベースを作成してみる。</p>
+
+<p>取り急ぎ対話形式で作業を行いたいので、 pry(or irb) に入る。（プロンプトを簡易表示。 <code>groonga</code> を <code>require</code> して）</p>
+
+<pre><code class="text">$ pry --simple-prompt -r groonga
+</code></pre>
+
+<p>まず、エンコーディングの設定を行う。（今回は Linux なので UTF-8 に設定）</p>
+
+<pre><code class="text">&gt;&gt; Groonga::Context.default_options = {:encoding =&gt; :utf8}
+=&gt; {:encoding=&gt;:utf8}
+</code></pre>
+
+<p>そして、データベースを作成する。（データベースファイル名を指定）</p>
+
+<pre><code class="text">&gt;&gt; Groonga::Database.create(:path =&gt; "/path/to/prefs.db")
+=&gt; #&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;
+</code></pre>
+
+<h3>3. テーブルの作成</h3>
+
+<p>都道府県名テーブルを作成してみる。（テーブル名、テーブルタイプを指定）<br/>
+（テーブルタイプには <code>hash</code>, <code>patricia_trie</code>, <code>double_array_trie</code>, <code>array</code> が指定可能）</p>
+
+<pre><code class="text">&gt;&gt; Groonga::Schema.create_table("Prefs", :type =&gt; :hash) do |tbl|
+ |   tbl.text("pref_name")
+ | end
+=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe62cef60
+  @definitions=
+   [#&lt;Groonga::Schema::ColumnDefinition:0x007f9fe62ce1f0
+     @name="pref_name",
+     @options={:persistent=&gt;true, :named_path=&gt;nil},
+     @type="Text"&gt;],
+  @name="Prefs",
+  @options=
+   {:context=&gt;
+     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
+    :type=&gt;:hash},
+  @table_type=Groonga::Hash&gt;]
+</code></pre>
+
+<p>テーブルが作成されたか確認してみる。</p>
+
+<pre><code class="text">&gt;&gt; prefs = Groonga["Prefs"]
+=&gt; #&lt;Groonga::Hash id: &lt;256&gt;, name: &lt;Prefs&gt;, path: &lt;/path/to/prefs.db.0000100&gt;, domain: &lt;ShortText&gt;, range: (nil), flags: &lt;&gt;, size: &lt;0&gt;, encoding: &lt;:utf8&gt;, default_tokenizer: (nil), token_filters: [], normalizer: (nil)&gt;
+&gt;&gt; prefs.size
+=&gt; 0
+</code></pre>
+
+<h3>4. レコードの追加</h3>
+
+<p>以下のようにして、テーブルにレコードを追加していく。（47都道府県分。別途作成しておいた配列をループさせて登録するのがよいだろう）</p>
+
+<pre><code class="text">&gt;&gt; prefs.add("Hokkaido", :pref_name =&gt; "北海道")
+=&gt; #&lt;Groonga::Record:0x007f9fe69e4480 ..., attributes: {"_id"=&gt;1, "_key"=&gt;"Hokkaido", "pref_name"=&gt;"北海道"}&gt;
+</code></pre>
+
+<p>以下のような方法で追加することも可能。</p>
+
+<pre><code class="text">&gt;&gt; prefs.add("Aomoriken")
+=&gt; #&lt;Groonga::Record:0x007f9fe6755020 ..., attributes: {"_id"=&gt;3, "_key"=&gt;"Aomoriken", "pref_name"=&gt;nil}&gt;
+&gt;&gt; prefs["Aomoriken"].pref_name = "青森県"
+=&gt; "青森県"
+</code></pre>
+
+<p>ちなみに、削除するには以下のようにする。</p>
+
+<pre><code class="text">&gt;&gt; prefs.delete("Aomoriken")
+=&gt; nil
+</code></pre>
+
+<h3>5. レコードの参照</h3>
+
+<p>登録したレコードを参照してみる。</p>
+
+<pre><code class="text">&gt;&gt; prefs["Shimaneken"]
+=&gt; #&lt;Groonga::Record:0x007f9fe671a1f0 ..., attributes: {"_id"=&gt;32, "_key"=&gt;"Shimaneken", "pref_name"=&gt;"島根県"}&gt;
+
+&gt;&gt; prefs["Shimaneken"].id
+=&gt; 32
+
+&gt;&gt; prefs["Shimaneken"].key
+=&gt; "Shimaneken"
+
+&gt;&gt; prefs["Shimaneken"].pref_name
+=&gt; "島根県"
+
+&gt;&gt; prefs.size
+=&gt; 47
+</code></pre>
+
+<h3>6. 全文検索用語彙テーブルの作成</h3>
+
+<p>全文検索用語彙テーブルを作成する。（以下は、テーブルタイプを PatriciaTrie に、ノーマライザを大文字小文字の区別をしない NormalizerAuto に、デフォルトトークナイザを N-gram の一種バイグラムに設定する例）</p>
+
+<pre><code class="text">&gt;&gt; Groonga::Schema.create_table("Terms",
+ |   :type =&gt; :patricia_trie,
+ |   :normalizer =&gt; :NormalizerAuto,
+ | :default_tokenizer =&gt; "TokenBigram")
+=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe6bb9cb0
+  @definitions=[],
+  @name="Terms",
+  @options=
+   {:context=&gt;
+     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
+    :type=&gt;:patricia_trie,
+    :normalizer=&gt;:NormalizerAuto,
+    :default_tokenizer=&gt;"TokenBigram"},
+  @table_type=Groonga::PatriciaTrie&gt;]
+</code></pre>
+
+<h3>7. 全文検索用語彙テーブルのインデックス定義</h3>
+
+<p>今回は都道府県名ローマ字で検索してみることにする。</p>
+
+<pre><code class="text">&gt;&gt; Groonga::Schema.change_table("Terms") do |tbl|
+ |   tbl.index("Prefs.pref_name")
+ | end
+=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe6a823d8
+  @definitions=
+   [#&lt;Groonga::Schema::IndexColumnDefinition:0x007f9fe6a81d48
+     @name=nil,
+     @options={:persistent=&gt;true, :named_path=&gt;nil},
+     @target_columns=["pref_name"],
+     @target_table="Prefs"&gt;],
+  @name="Terms",
+  @options=
+   {:context=&gt;
+     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
+    :change=&gt;true},
+  @table_type=Groonga::Array&gt;]
+</code></pre>
+
+<h3>8. 検索の確認</h3>
+
+<pre><code class="text">&gt;&gt; prefs_shimane = prefs.select { |rec| rec.pref_name =~ "島根県" }    =&gt; #&lt;Groonga::Hash id: &lt;2147483655&gt;, name: (anonymous), path: (temporary), domain: &lt;Prefs&gt;, range: (nil), flags: &lt;WITH_SUBREC&gt;, size: &lt;1&gt;, encoding: &lt;:utf8&gt;, default_tokenizer: (nil), token_filters: [], normalizer: (nil)&gt;
+
+&gt;&gt; prefs_shimane.size
+=&gt; 1
+
+&gt;&gt; prefs_shimane.collect { |rec| rec.key.key }
+=&gt; ["Shimaneken"]
+
+&gt;&gt; prefs_shimane.collect { |rec| rec["_key"] }
+=&gt; ["Shimaneken"]
+</code></pre>
+
+<h3>9. 参考サイト</h3>
+
+<ul>
+<li><a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga - カラムストア機能付き全文検索エンジン</a></li>
+<li><a href="http://ranguba.org/ja/" title="RubyでGroonga使って全文検索 - ラングバ">RubyでGroonga使って全文検索 - ラングバ</a></li>
+</ul>
+
+
+<hr />
+
+<p>その他の詳細な使用方法は実際に Ruby コーディングしながら覚えることになるでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - gnuplot でグラフ描画！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/"/>
+    <updated>2015-08-13T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/13/ruby-graph-drawing-by-gnuplot</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Ruby で容易にグラフを描画できる RubyGems ライブラリ gnuplot を使用してみました。</p>
+
+<p>RubyGems ライブラリ gnuplot は、2次元や3次元のグラフを描画するためのコマンドラインツール Gnuplot を Ruby で使用できるようにラップしたものです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) 一般ユーザでの作業を想定。</li>
+<li>Ruby 2.2.2-p95 での作業を想定。</li>
+<li>Gnuplot インストール済みであること。（<a href="/2015/07/30/linux-mint-installation-gnuplot/" title="Linux Mint - Gnuplot でグラフ描画！">Linux Mint - Gnuplot でグラフ描画！</a>）</li>
+</ul>
+
+
+<h3>1. RubyGems パッケージのインストール</h3>
+
+<pre><code class="text">$ sudo gem install gnuplot
+</code></pre>
+
+<h3>2. 動作確認</h3>
+
+<h4>2-1. 作成例・１</h4>
+
+<p>単純な<script type="math/tex">sin</script>曲線・<script type="math/tex">cos</script>曲線を描画する例。</p>
+
+<pre><code class="ruby gnuplot_1.rb">#! /usr/local/bin/ruby
+#-----------------------------------------------
+# Ruby script to draw a graph by gnuplot.(Ex.1)
+#-----------------------------------------------
+require 'gnuplot'
+
+Gnuplot.open do |gp|
+  Gnuplot::Plot.new(gp) do |plot|
+    plot.xrange "[-10:10]"
+    plot.title  "作成例１"
+    plot.xlabel "x"
+    plot.ylabel "y"
+    plot.grid
+
+    plot.data &lt;&lt; Gnuplot::DataSet.new("sin(x)") do |ds|
+      ds.with      = "lines"
+      ds.linewidth = 2
+    end
+
+    plot.data &lt;&lt; Gnuplot::DataSet.new("cos(x)") do |ds|
+      ds.with      = "lines"
+      ds.linewidth = 2
+    end
+  end
+end
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/18575f0245952cae7d02" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.1)">Gist - Ruby script to draw a graph by gnuplot.(Ex.1)</a></li>
+</ul>
+
+
+<p>そして、実行権限を付与して実行。</p>
+
+<pre><code class="text">$ sudo chmod +x gnuplot_1.rb
+
+$ ./gnuplot_1.rb
+</code></pre>
+
+<p>Gnuplot ウィンドウが開き、グラフが描画される。</p>
+
+<p><img src="/images/2015/08/13/GNUPLOT_1.png" title="GNUPLOT_1" alt="GNUPLOT_1" /></p>
+
+<p>但し、環境によってはこのウィンドウを閉じようとしてもうまく閉じれないかもしれない。（termnal が &ldquo;wxt&rdquo; の場合。 terminal が &ldquo;x11&rdquo; 等なら閉じれるが、日本語は使用できない）<br/>
+ちなみに、本家の gnuplot では、この問題は &ldquo;Close&rdquo; を &ldquo;exit&rdquo; でなく &ldquo;exit gnuplot&rdquo; にバインドすれば解決するようだが、今回の RubyGems ライブラリでは通用しない模様。（試行してみた結果）</p>
+
+<h4>2-2. 作成例・２</h4>
+
+<p><script type="math/tex">y=x<sup>3</sup> - 2x + 2 \ (x={-2.0,-1.9,\cdots,1.9,2.0})</script>のグラフを PNG ファイルに描画・出力する例。</p>
+
+<pre><code class="ruby gnuplot_2.rb">#! /usr/local/bin/ruby
+#-----------------------------------------------
+# Ruby script to draw a graph by gnuplot.(Ex.2)
+#-----------------------------------------------
+require 'gnuplot'
+
+Gnuplot.open do |gp|
+  Gnuplot::Plot.new(gp) do |plot|
+    plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
+    plot.output   "gnuplot_2.png"
+    plot.title    "作成例２"
+    plot.xlabel   "x"
+    plot.ylabel   "y=x^3-2x+2"
+    plot.grid
+
+    x = (-20..20).collect { |v| v.to_f / 10.0 }
+    y = x.collect { |v| v ** 3 - 2 * v + 2}
+
+    plot.data &lt;&lt; Gnuplot::DataSet.new([x, y]) do |ds|
+      ds.with      = "linespoints"  # 点のみなら "points"
+      ds.linewidth = 2
+      ds.linecolor = 3
+      ds.notitle
+    end
+  end
+end
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/27e65a70d4681dd73370" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.2)">Gist - Ruby script to draw a graph by gnuplot.(Ex.2)</a></li>
+</ul>
+
+
+<p>そして、実行権限を付与して実行。</p>
+
+<pre><code class="text">$ sudo chmod +x gnuplot_2.rb
+
+$ ./gnuplot_2.rb
+</code></pre>
+
+<p>&ldquo;gnuplot_2.png&rdquo; というファイルが出力される。</p>
+
+<p><img src="/images/2015/08/13/GNUPLOT_2.png" title="GNUPLOT_2" alt="GNUPLOT_2" /></p>
+
+<h4>2-3. 作成例・３</h4>
+
+<p><script type="math/tex">z=sin(x)cos(x)</script>の三次元グラフを PNG ファイルに描画・出力する例。</p>
+
+<pre><code class="ruby gnuplot_3.rb">#! /usr/local/bin/ruby
+#-----------------------------------------------
+# Ruby script to draw a graph by gnuplot.(Ex.3)
+#-----------------------------------------------
+
+require 'gnuplot'
+
+Gnuplot.open do |gp|
+  Gnuplot::SPlot.new(gp) do |plot|
+    plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
+    plot.output   "gnuplot_3.png"
+    plot.set      "object 1 rect from screen 0,0 to screen 1,1 fc rgb '#D0D0E0' fillstyle solid 1.0 behind"
+    plot.title    "作成例３"
+    plot.xrange   "[-10:10]"
+    plot.yrange   "[-10:10]"
+    plot.xlabel   "x"
+    plot.ylabel   "y"
+    plot.zlabel   "z"
+    plot.pm3d
+    plot.grid
+
+    plot.data &lt;&lt; Gnuplot::DataSet.new("sin(x)*cos(y)") do |ds|
+      ds.with      = "lines"
+      ds.linecolor = 6
+    end
+  end
+end
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/1395add506fd9a1a4bd6" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.3)">Gist - Ruby script to draw a graph by gnuplot.(Ex.3)</a></li>
+</ul>
+
+
+<p>そして、実行権限を付与して実行。</p>
+
+<pre><code class="text">$ sudo chmod +x gnuplot_3.rb
+
+$ ./gnuplot_3.rb
+</code></pre>
+
+<p><img src="/images/2015/08/13/GNUPLOT_3.png" title="GNUPLOT_3" alt="GNUPLOT_3" /></p>
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://www.gnuplot.info/" title="gnuplot">gnuplot</a></li>
+<li><a href="https://rubygems.org/gems/gnuplot" title="gnuplot - RubyGems.org - your community gem host">gnuplot - RubyGems.org - your community gem host</a></li>
+</ul>
+
+
+<hr />
+
+<p>Ruby で処理した得た数値をグラフ化することが多い場合は重宝するでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Array クラス拡張で配列要素にランク付け（同順位考慮）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/07/24/ruby-ranking-simultaneous-arrival-by-array-class/"/>
+    <updated>2015-07-24T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/07/24/ruby-ranking-simultaneous-arrival-by-array-class</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Ruby で配列内の数値をランク付け（同順位を考慮）する方法を、 Array クラスを拡張して実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.2-p95 での作業を想定。</li>
+<li>配列内の数値が大きい順に順位を付ける。</li>
+<li>同順位を考慮する。（例：要素が 3, 1, 3, 2 で、大きい順に順位付ける場合の順位を 1, 4, 1, 3 とする）</li>
+</ul>
+
+
+<h3>1. Ruby スクリプトの作成</h3>
+
+<p>実質、配列の順位付を行なっているのは１行のみで、数値が自分より大きい要素の個数 +1 を順位とするアルゴリズム。</p>
+
+<pre><code class="ruby array_rank.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+#**********************************************************
+# Ruby script to rank array items, considering same ranks.
+#**********************************************************
+#
+class Array
+  def rank
+    # 以下の場合は例外スロー
+    # - 自身配列が空
+    # - 自身配列に数値以外の値を含む
+    raise "Self array is nil!" if self.size == 0
+    self.each do |v|
+      raise "Items except numerical values exist!" unless v.to_s =~ /[\d\.]+/
+    end
+
+    # ランク付け
+    self.map { |v| self.count { |a| a &gt; v } + 1 }
+  end
+end
+
+a = [9, 3, 2, 7, 1, 6, 8, 5, 10, 4]
+b = [6, 8, 5, 8, 4, 9, 3, 3, 7, 1]
+c = [6, 8.5, 5, 3.2, 7, 1, 8.1, 3.2, 9, 3]
+d = [9, 3, 2, 7, "abc", 6, 8, 5, 10, 4]
+puts "a = #{a}"
+puts "--&gt; #{a.rank}"
+puts
+puts "b = #{b}"
+puts "--&gt; #{b.rank}"
+puts
+puts "c = #{c}"
+puts "--&gt; #{c.rank}"
+puts
+puts "d = #{d}"
+puts "--&gt; #{d.rank}"
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/0a58f9027edbc148399e" title="Gist - Ruby script to rank array items, considering same ranks.">Gist - Ruby script to rank array items, considering same ranks.</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの実行</h3>
+
+<pre><code class="text">$ ./array_rank.rb
+a = [9, 3, 2, 7, 1, 6, 8, 5, 10, 4]
+--&gt; [2, 8, 9, 4, 10, 5, 3, 6, 1, 7]
+
+b = [6, 8, 5, 8, 4, 9, 3, 3, 7, 1]
+--&gt; [5, 2, 6, 2, 7, 1, 8, 8, 4, 10]
+
+c = [6, 8.5, 5, 3.2, 7, 1, 8.1, 3.2, 9, 3]
+--&gt; [5, 2, 6, 7, 4, 10, 3, 7, 1, 9]
+
+d = [9, 3, 2, 7, "abc", 6, 8, 5, 10, 4]
+./array_rank.rb:14:in `block in rank': Exist items except numerical values! (RuntimeError)
+        from ./array_rank.rb:13:in `each'
+        from ./array_rank.rb:13:in `rank'
+        from ./array_rank.rb:33:in `&lt;main&gt;'
+</code></pre>
+
+<hr />
+
+<p>当方の場合、意外と利用頻度が高いので、単純な処理とは言えど結構重宝しています。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux & Ruby - メール受信時の処理！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/07/21/linux-ruby-process-when-mail-received/"/>
+    <updated>2015-07-21T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/07/21/linux-ruby-process-when-mail-received</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux 上に構築したメールサーバで、メール受信をトリガにして処理を実行する手順等についての記録です。<br/>
+処理は Ruby で行うことを想定しています。（多くのサイト等では Perl や PHP での処理がよく紹介されてます）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Debian GNU/Linux 8.1 での作業を想定。</li>
+<li>Ruby 2.2.2-95 での作業を想定。</li>
+<li>SMTP サーバ Postfix 構築済み。
+
+<ul>
+<li>参考「<a href="/2015/06/12/debian-8-postfix-installation/" title="Debian 8 (Jessie) - SMTP サーバ Postfix 構築！">Debian 8 (Jessie) - SMTP サーバ Postfix 構築！</a>」</li>
+</ul>
+</li>
+<li>POP/IMAP サーバ Dovecot 構築済み。
+
+<ul>
+<li>参考「<a href="/2015/06/13/debian-8-dovecot-installation/" title="Debian 8 (Jessie) - POP/IMAP サーバ Dovecot 構築！">Debian 8 (Jessie) - POP/IMAP サーバ Dovecot 構築！</a>」</li>
+</ul>
+</li>
+<li>Postfix の aliases （メール転送機能）と連携をとる方法を想定。</li>
+<li>処理対象のユーザ・グループは &ldquo;test&rdquo;, &ldquo;test&rdquo; を想定。</li>
+</ul>
+
+
+<h3>1. Ruby スクリプトの作成</h3>
+
+<p>以下のような Ruby スクリプトを作成する。<br/>
+（紹介用に受信したメールを解析してテキストファイルに保存するだけのプログラム）</p>
+
+<pre><code class="ruby get_mail.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+#-------------------------------------------------
+# Ruby script to get a mail via alias of postfix.
+#-------------------------------------------------
+require 'mail'
+
+class GetMail
+  def initialize
+    dt = Time.now.strftime("%Y%m%d_%H%M%S%L")
+    @out_file = "/path/to/#{dt}.txt"
+  end
+
+  def execute
+    open(@out_file, "w") do |f|
+      mail = Mail.new($stdin.read)
+      f.puts "From:    #{mail.from.first}"
+      f.puts "To:      #{mail.to.first}"
+      f.puts "Date:    #{mail.date}"
+      f.puts "Subject: #{mail.subject}"
+      f.puts "Body:\n#{mail.body.decoded.encode("UTF-8", mail.charset)}"
+    end
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    e.backtrace.each{|trace| $stderr.puts "\t#{trace}"}
+    exit 1
+  end
+end
+
+exit unless $0 == __FILE__
+GetMail.new.execute
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/0cbfe02794efa4c1a09e" title="Gist - Ruby script to get a mail via alias of postfix.">Gist - Ruby script to get a mail via alias of postfix.</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの配置</h3>
+
+<p>作成した Ruby スクリプトをサーバ上の適当な位置に配置する。<br/>
+（今回、当方は処理を行いたいユーザの home ディレクトリ &ldquo;/home/test&rdquo; 直下に配置した（所有者 &ldquo;test&rdquo; で））</p>
+
+<p>配置後、実行権限を付与する。</p>
+
+<pre><code class="text"># chmod +x get_mail.rb
+</code></pre>
+
+<h3>3. メール保存用ディレクトリの作成</h3>
+
+<p>今回の処理で使用するディレクトリをサーバ上の適当な位置に作成する。<br/>
+（今回、当方は処理を行いたいユーザの home ディレクトリ &ldquo;/home/test&rdquo; 配下に &ldquo;get_mail&rdquo; ディレクトリを作成した（所有者 &ldquo;test&rdquo; で））</p>
+
+<h3>4. Postfix の aliases 設定</h3>
+
+<pre><code class="bash /etc/aliases">test:  :include:/home/test/alias_inc
+</code></pre>
+
+<p>ちなみに、処理を行う他に転送も行いたい場合は、以下のようにカンマで区切ればよい。</p>
+
+<pre><code class="bash /etc/aliases">test:  hoge, :include:/home/test/alias_inc
+</code></pre>
+
+<h3>5. include ファイル（実行コマンド）の作成</h3>
+
+<pre><code class="text /home/test/alias_inc">"| /home/test/get_mail.rb"
+</code></pre>
+
+<p>そして、このファイルの所有者が &ldquo;test&rdquo; でなければ &ldquo;test&rdquo; にする。</p>
+
+<pre><code class="text"># chown test. /home/test/alias_inc
+</code></pre>
+
+<h3>6. Postfix 設定ファイル main.cf の編集</h3>
+
+<p>&ldquo;/etc/aliases&rdquo; ファイル内で <code>:include:</code> を使用する際は、Postfix の設定ファイル &ldquo;main.cf&rdquo; に以下のように追記しなければならない。<br/>
+（Postfix は、デフォルトでは <code>:include:</code> での &ldquo;|command&rdquo; への配送を認めていないため）</p>
+
+<pre><code class="bash /etc/postfix/main.cf">allow_mail_to_commands = alias,forward,include
+</code></pre>
+
+<h3>7. Postfix 設定のリロード</h3>
+
+<pre><code class="text"># systemctl reload postfix
+</code></pre>
+
+<h3>8. aliases の設定反映</h3>
+
+<pre><code class="text"># newaliases
+</code></pre>
+
+<h3>9. 動作確認</h3>
+
+<p>実際に test ユーザ宛にメールを送信してみて、指定のディレクトリ配下に保存されること、内容が適切であることを確認する。</p>
+
+<h3>10. その他</h3>
+
+<p>上記の 4, 5, 6 でエイリアスを別ファイルに分けてインクルードしている。<br/>
+これは、"/etc/aliases" 内で直接コマンドを指定すると作成されるファイルの所有者・グループが &ldquo;nobody:nogroup&rdquo; になってしまうのを防ぐためである。</p>
+
+<h3>11. 参考サイト</h3>
+
+<ul>
+<li><a href="http://www.postfix-jp.info/trans-2.3/jhtml/aliases.5.html" title="Postfix manual - aliases(5)">Postfix manual - aliases(5)</a></li>
+</ul>
+
+
+<hr />
+
+<p>当方は、Linux サーバに Twitter ツイート専用のユーザを作成し、そのユーザ宛に配送されたメール本文をツイートするように応用しています。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - 円周率計算（BBP の公式使用）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/05/19/ruby-pi-computation-by-bbp/"/>
+    <updated>2015-05-19T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/05/19/ruby-pi-computation-by-bbp</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>前回、 BBP(Bailey, Borwein, Plouffe) の公式を使用して任意の桁の円周率を16進で計算するアルゴリズムを C++ で実装しました。</p>
+
+<ul>
+<li><a href="/2015/05/17/cpp-pi-computation-by-bbp/" title="C++ - 円周率計算（BBP の公式使用）！">C++ - 円周率計算（BBP の公式使用）！</a></li>
+</ul>
+
+
+<p>今回は、同じアルゴリズムを Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>ruby 2.2.2-p95 での作業を想定。</li>
+<li>計算に使用したマシンは CPU: Intel Core2Duo E8500 ( 3.16GHz ), MEM: 3.9GiB</li>
+</ul>
+
+
+<h3>1. BBP の公式を使用した円周率計算について</h3>
+
+<p>前回の記事を参照。</p>
+
+<ul>
+<li><a href="/2015/05/17/cpp-pi-computation-by-bbp/" title="C++ - 円周率計算（BBP の公式使用）！">C++ - 円周率計算（BBP の公式使用）！</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>第1引数で計算を開始する桁を指定し、その桁から 10 桁を出力する仕様。（べき剰余の演算も自前で実装。「<a href="/2015/05/15/ruby-implementation-of-modular-exponentiation" title="Ruby - べき剰余アルゴリズムの実装！">Ruby - べき剰余アルゴリズムの実装！</a>」参照）</p>
+
+<pre><code class="ruby pi_bbp.rb">#!/usr/local/bin/ruby
+#=======================================
+# Computation of pi by BBP algorithm.
+#=======================================
+require 'benchmark'
+
+class PiBbp
+  EPS = 1.0e-17  # Loop-exit accuration of the right summation
+
+  def comp_pi(d)
+    d -= 1
+    pi = (4 * s(1, d) - 2 * s(4, d) - s(5, d) - s(6, d)) % 1.0
+    printf("FRACTION  : %.15f\n", pi)
+    printf("HEX DIGITS: %10x\n", (pi * 16 ** 10).truncate)
+  end
+
+  def s(j, d)
+    # Left sum
+    s = 0.0
+    k = 0
+    while k &lt;= d
+      r = 8 * k + j
+      t = mod_exp(16, d - k, r)
+      t /= r.to_f
+      s += t % 1.0
+      s %= 1.0
+      k += 1
+    end
+
+    # Right sum
+    loop do
+      r = 8 * k + j
+      t = 16.0 ** (d - k) / r
+      break if t &lt; EPS
+      s += t
+      s %= 1.0
+      k += 1
+    end
+
+    return s
+  end
+
+  def mod_exp(b, e, m)
+    return 1 if e == 0
+    ans = mod_exp(b, e / 2, m)
+    ans = (ans * ans) % m
+    ans = (ans * b) % m if e % 2 == 1
+    return ans
+  end
+end
+
+exit unless __FILE__ == $0
+exit unless ARGV[0]
+obj = PiBbp.new
+res = Benchmark.realtime do
+  obj.comp_pi(ARGV[0].to_i)
+end
+puts "( TIME: #{res} seconds )"
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/a091c46595cdbc8d276a" title="Gist - Ruby script code to compute pi with BBP formula.">Gist - Ruby script to compute pi with BBP formula.</a></li>
+</ul>
+
+
+<h3>3. 動作確認</h3>
+
+<p><code>HEX DIGITS</code> が求める円周率（16進）。（但し、計算公式の特性上、後半の桁の値は保証されない）</p>
+
+<pre><code class="text">$ ./pi_bbp.rb 1
+FRACTION  : 0.141592653589793
+HEX DIGITS: 243f6a8885
+TIME: 0.00012832199718104675 seconds )
+
+$ ./pi_bbp.rb 91
+FRACTION  : 0.910345837630448
+HEX DIGITS: e90c6cc0ac
+TIME: 0.0006358680002449546 seconds )
+
+$ ./pi_bbp.rb 991
+FRACTION  : 0.284592623548894
+HEX DIGITS: 48db0fead3
+TIME: 0.008182067002053373 seconds )
+
+$ ./pi_bbp.rb 9991
+FRACTION  : 0.151042259944499
+HEX DIGITS: 26aab49ec6
+( TIME: 0.10906490000343183 seconds )
+
+$ ./pi_bbp.rb 99991
+FRACTION  : 0.633399233605157
+HEX DIGITS: a22673c1a5
+( TIME: 1.3719816630000423 seconds )
+
+$ ./pi_bbp.rb 999991
+FRACTION  : 0.624957331312628
+HEX DIGITS: 9ffd342362
+( TIME: 14.838047453999025 seconds )
+
+$ ./pi_bbp.rb 9999991
+FRACTION  : 0.756411434763846
+HEX DIGITS: c1a42e06a1
+TIME: 177.62035008599923 seconds
+</code></pre>
+
+<p>（99,999,991桁目からの10桁（1億桁目まで）は計算していないが、当方の環境では30分少しかかりそう）</p>
+
+<h3>4. 計算結果の検証</h3>
+
+<p>&ldquo;<a href="http://bellard.org/pi/pi2700e9/pidigits.html" title="Pi Digits">Pi Digits</a>&rdquo; の計算結果と比較し、任意のあらゆる部分が一致することを確認した。</p>
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://xn--w6q13e505b.jp/" title="円周率.jp">円周率.jp</a></li>
+<li><a href="http://www.experimentalmath.info/bbp-codes/" title="BBP Code Directory">BBP Code Directory</a></li>
+<li><a href="http://bellard.org/pi/pi2700e9/announce.html" title="Pi Computation Record">Pi Computation Record</a></li>
+</ul>
+
+
+<hr />
+
+<p>当然ながら同じアルゴリズムを C++ に実装した場合と比べると随分と速度が遅いです。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,1419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 株式 | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/株式/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[* R - ローソク足チャート描画！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/10/17/17002031/"/>
+    <updated>2012-10-17T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/10/17/17002031</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>以前、Scientific Linux のデスクトップ環境に統計解析向けプログラミング言語 R の環境、GUI ツール RStudio を構築しました。</p>
+
+<ul>
+<li><a href="/2012/10/12/12002003/" title="Scientific Linux - R 言語環境構築！">Scientific Linux - R 言語環境構築！</a></li>
+<li><a href="/2012/10/13/13002056/" title="Scientific Linux - RStudio インストール！">Scientific Linux - RStudio インストール！</a></li>
+</ul>
+
+
+<p>今日は、RStudio で株価の CSV データを読み込んでローソク足チャートを描画してみました。</p>
+
+<p>以下、作業記録です。</p>
+
+<!--more-->
+
+
+<h3>作業メモ</h3>
+
+<h4>0. 前提条件</h4>
+
+<ul>
+<li>Scientific Linux 6.3 (64bit) での作業を想定していますが、他の ディストリビューション・OS でも同様のはずです。</li>
+<li>R がインストール済みで使用可能となっている。</li>
+<li>GUI ツール RStudio がインストール済みで使用可能となっている。</li>
+<li>R 自体の詳細な使用方法はここでは触れ（でき）ません。各自お調べ下さい。</li>
+</ul>
+
+
+<h4>1. quantmod パッケージのインストール</h4>
+
+<p>まず、RStudio でローソク足チャート等を描画するためのライブラリ quantmod を以下のようにインストールする。
+途中、「個人用ライブラリを使用するか？」、「個人用ライブラリを作成するか？」等と問われたら、"y" で応答する。（適宜対応）
+また、ミラーサイトは近い場所を選択する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>&lt;p>install.packages(&ldquo;quantmod&rdquo;)
+</span><span class='line'>Installing package(s) into ‘/usr/lib64/R/library’
+</span><span class='line'>(as ‘lib’ is unspecified)
+</span><span class='line'>Warning in install.packages :
+</span><span class='line'>  &lsquo;lib = &ldquo;/usr/lib64/R/library&rdquo;&rsquo; is not writable
+</span><span class='line'>Would you like to use a personal library instead?  (y/n) y
+</span><span class='line'>Would you like to create a personal library
+</span><span class='line'>~/R/x86_64-redhat-linux-gnu-library/2.15
+</span><span class='line'>to install packages into?  (y/n) y
+</span><span class='line'>&mdash; Please select a CRAN mirror for use in this session &mdash;
+</span><span class='line'>CRAN mirror&lt;/p>&lt;/blockquote>
+</span><span class='line'>
+</span><span class='line'>&lt;p>  ====&lt; 途中省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>31: Greece                   32: Hungary              &lt;br/>
+</span><span class='line'>33: India                    34: Indonesia            &lt;br/>
+</span><span class='line'>35: Iran                     36: Ireland              &lt;br/>
+</span><span class='line'>37: Italy (Milano)           38: Italy (Padua)        &lt;br/>
+</span><span class='line'>39: Italy (Palermo)          40: Japan (Hyogo)        &lt;br/>
+</span><span class='line'>41: Japan (Tsukuba)          42: Japan (Tokyo)        &lt;br/>
+</span><span class='line'>43: Korea                    44: Latvia               &lt;br/>
+</span><span class='line'>45: Mexico (Mexico City)     46: Mexico (Texcoco)     &lt;br/>
+</span><span class='line'>47: Netherlands (Amsterdam)  48: Netherlands (Utrecht)&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>  ====&lt; 途中省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p> 選択： 40&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>  ====&lt; 途中省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;ul>
+</span><span class='line'>&lt;li>DONE (quantmod)&lt;/li>
+</span><span class='line'>&lt;/ul>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>The downloaded source packages are in
+</span><span class='line'>    ‘/tmp/Rtmp0TjY4r/downloaded_packages’</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. CSV データ作成</h4>
+
+<p>ローソク足チャート作成に使用する CSV データファイルを作成する。
+１行目はヘッダで、以下のような名前にする必要がある。
+【 ファイル名： test.csv 】
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&ldquo;Date&rdquo;,&ldquo;Open&rdquo;,&ldquo;High&rdquo;,&ldquo;Low&rdquo;,&ldquo;Close&rdquo;,&ldquo;Volume&rdquo;
+</span><span class='line'>2012/01/04,180,181,179,180,147000
+</span><span class='line'>2012/01/05,181,181,179,179,138000
+</span><span class='line'>2012/01/06,180,180,178,178,120000
+</span><span class='line'>2012/01/10,179,181,179,181,91000
+</span><span class='line'>2012/01/11,182,182,180,180,77000&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>  ====&lt; 途中省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>2012/09/25,176,177,175,176,347000
+</span><span class='line'>2012/09/26,176,177,176,177,137000
+</span><span class='line'>2012/09/27,176,177,175,176,173000
+</span><span class='line'>2012/09/28,176,176,173,173,383000
+</span><span class='line'>2012/10/01,174,174,173,174,155000</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>3. グラフ描画</h4>
+
+<p>RStudio でライブラリ、そして CSV データを読み込んでローソク足チャートを描画する。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>library(&ldquo;quantmod&rdquo;)
+</span><span class='line'>data &lt;- read.zoo(&ldquo;test.csv&rdquo;, header=T, sep=&ldquo;,&rdquo;)
+</span><span class='line'>candleChart(data)</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>4. グラフ確認</h4>
+
+<p>グラフ描画処理に成功すれば、以下のようなグラフが表示されるはず。</p>
+
+<p><a href="http://komasaru.github.io/images/2012/10/R_CANDLECHART_1.png"><img src="http://komasaru.github.io/images/2012/10/R_CANDLECHART_1-150x135.png" alt="R_CANDLECHART_1" title="R_CANDLECHART_1" width="150" height="135" class="alignnone size-thumbnail wp-image-7797" /></a></p>
+
+<p>他にも、オプションを設定することで色々なグラフが描画可能です。
+以下は、背景を白色にし、ローソク足＋出来高＋単純移動平均(5日,25日,75日)＋ボリンジャーバンド(単純移動平均日数=25日・σ=2)を描画したもの。</p>
+
+<p><a href="http://komasaru.github.io/images/2012/10/R_CANDLECHART_2.png"><img src="http://komasaru.github.io/images/2012/10/R_CANDLECHART_2-150x100.png" alt="R_CANDLECHART_2" title="R_CANDLECHART_2" width="150" height="100" class="alignnone size-thumbnail wp-image-7854" /></a></p>
+
+<h4>参考サイト</h4>
+
+<ul>
+<li><a href="http://www.quantmod.com/" title="quantmod: Quantitative Financial Modelling Framework">quantmod: Quantitative Financial Modelling Framework</a></li>
+</ul>
+
+
+<hr />
+
+<p>R って簡単に綺麗なグラフが描画できておもしろいですね。
+もちろん、簡単に描画出きるのはライブラリのおかげでもありますが。。。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4797327421&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4274067831&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4902007371&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* グランビルの法則で売買シグナル判定！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/07/30/30002003/"/>
+    <updated>2012-07-30T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/07/30/30002003</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>「グランビルの法則」についてのメモです。</p>
+
+<p>「グランビルの法則」とは米国の有名な株式アナリストである Joseph E. Granville が移動平均線と株価の関係より導いた法則で、移動平均線と株価の位置により４つの買いパターンと４つの売りパターンがあるというものです。</p>
+
+<!--more-->
+
+
+<h3>グランビルの法則</h3>
+
+<p>以下に買いシグナル判断の４パターン、売りシグナル判断の４パターンをまとめました。
+グランビルの法則は、もともと200日移動平均線を元に考案されたものですが、近代の株式取引処理の早さからすると25日移動平均線が意識される場合が多いようです。
+しかし、銘柄によって異なるので一概には言えません。銘柄別によく吟味する必要があります。
+また、株価と移動平均線ではなく、短期移動平均線と中期移動平均線、中期移動平均線と長期移動平均線で考える場合もあります。</p>
+
+<p><a href="http://komasaru.github.io/images/2012/07/GRANVILLE_01.jpg"><img src="http://komasaru.github.io/images/2012/07/GRANVILLE_01.jpg" alt="GRANVILLE_01" title="GRANVILLE_01" width="538" height="373" class="alignnone size-full wp-image-7350" /></a></p>
+
+<h4>買いシグナル</h4>
+
+<ul>
+<li>移動平均線が下向きから横ばいか上向きになり、
+    株価が移動平均線を下から上抜いたら、
+    トレンドが上昇に転じたと見て買い。
+    （中・大勢の買い）</li>
+<li>移動平均線が上向きの状況下で、
+    株価が移動平均線を少し割り込むくらいのところまで下落し反発したら買い。
+    （押し目買い）</li>
+<li>移動平均線が上向きの状況下で、
+    株価が移動平均線付近のところまで下落し反発したら買い。
+    （押し目買い）</li>
+<li>移動平均線が下向きの状況下で、
+    株価が移動平均線から大きく下離れしたら、
+    移動平均線に向かって短期的に反発する可能性があると見て買い。
+    （短期的・消極的自律反発）</li>
+</ul>
+
+
+<h4>売りシグナル</h4>
+
+<ul>
+<li>移動平均線の向きが上向きから横ばいか下向きになり、
+    株価が移動平均線を上から下抜いたら、
+    トレンドが下落に転じたと見て売り。（中・大勢の買い）</li>
+<li>移動平均線が下向きの状況下で、
+    株価が移動平均線を少し割り込むくらいのところまで上昇し反落したら売り。
+    （戻り売り）</li>
+<li>移動平均線が下向きの状況下で、
+    株価が移動平均線付近のところまで上昇し反落したら売り。
+    （戻り売り）</li>
+<li>移動平均線が上向きの状況下で、
+    株価が移動平均線から大幅に上離れしたら、
+    移動平均線に向かって短期的に反落する可能性があると見て売り。
+    （短期的・消極的修正）</li>
+</ul>
+
+
+<h4>補足</h4>
+
+<p>株価と移動平均線との差を「移動平均乖（カイ）離率」と言ったり、２つの移動平均線の差を「PMAO」と言ったりします。
+さらに、グランビルの法則についてい色々調べてみると以下のような事も言えるようです。</p>
+
+<ul>
+<li>「買い１」・「売り１」は、トレンド転換のかなり強いサインと言える。</li>
+<li>「買い２・３」・「売り２・３」は、わかりやすくので初心者向き。</li>
+<li>「買い２・３」・「売り２・３」は、しっかり反発（反落）することを確認する。</li>
+<li>「買い４」・「売り４」は、タイミングを計るのが難しいので初心者には不向き。</li>
+</ul>
+
+
+<hr />
+
+<p>テクニカル指標の中でも単純な部類の移動平均線でここまで売買のサインを判断できるのは興味深いです。
+もちろん、例外的な反応を見せる事もあるので要注意ですが。。。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4775971506&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4775971034&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4761267038&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* C++ & cURL で Web スクレイピング！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/07/22/22002052/"/>
+    <updated>2012-07-22T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/07/22/22002052</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>当方、今まで Ruby + Hpricot や Java + Tidy で Yahoo!ファイナンスからデータを取得してきました。
+しかし、Ruby + Hpricot での処理を Java + Tidy での処理に変更しても、高速化は実現できませんでした。</p>
+
+<p>今回は、GNU C++ で同様の処理を試験すべくプログラミングしてみました。
+今まで Ruby や Java で使用してきた HTML パースのライブラリを使用せず、cURL(HTTPやFTPでデータのやり取りをするライブラリ) で取得した HTML ソースを自力で解析してみました。
+また、テストした内容は上場中の全銘柄の情報を取得するというものです。
+（応用すれば、株価の取得等なんでもできます。）</p>
+
+<p>上で言う「自力」とは「正規表現」ライブラリを使用せず、文字列をコツコツと切り貼りするような処理の事です。
+C++ で使用可能な「正規表現」ライブラリは多数あるようですが。。。</p>
+
+<!--more-->
+
+
+<h3>作業記録</h3>
+
+<h4>0. 前提条件</h4>
+
+<p>作業した環境は Cygwin 1.7.15 です。
+使用したコンパイラは g++ (GCC) 4.7.1 です。
+ちなみに、当方 C/C++ はそんなに詳しくないので冗長な部分等あるかもしれません。</p>
+
+<h4>1. C++ ソース作成</h4>
+
+<p>今回作成した C++ ソースは以下の通りです。
+全ての業種について全ページのHTMLソースを取得し、ページ内に存在する銘柄コード・銘柄名・市場名・特色を取得する処理です。
+HTMLソースの取得には CURL ライブラリを利用し、取得したHTMLソースを１行ずつ分割・配列格納し、目的の情報を含む行を詳細に解析する、という流れです。
+また、C++ なのでオブジェクト指向な作りにしています。
+その他、細かな事はソースを追ってみて下さい。
+【 ファイル名： TestCurl.cpp 】
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&lt;</span><span class="n">iostream</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&lt;</span><span class="n">list</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">locale</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&lt;</span><span class="n">stdexcept</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">stdio</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">stdlib</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">string</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">include</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">curl</span><span class="o">/</span><span class="n">curl</span><span class="p">.</span><span class="n">h</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">define</span> <span class="n">URL_BASE</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;http://stocks.finance.yahoo.co.jp/stocks/qi/?ids=&quot;</span><span class="o">&gt;</span><span class="nl">http</span><span class="p">:</span><span class="c1">//stocks.finance.yahoo.co.jp/stocks/qi/?ids=&lt;/a&gt;&amp;rdquo;&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">define</span> <span class="n">MATCH_1</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">td</span> <span class="n">class</span><span class="o">=</span><span class="err">\</span><span class="s">&quot;center yjM</span><span class="se">\&quot;</span><span class="s">&gt;&amp;rdquo;&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">define</span> <span class="n">MATCH_2</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">strong</span> <span class="n">class</span><span class="o">=</span><span class="err">\</span><span class="s">&quot;yjMt</span><span class="se">\&quot;</span><span class="s">&gt;&amp;rdquo;&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">define</span> <span class="n">MATCH_3</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="err">\</span><span class="s">&quot;yjSt profile</span><span class="se">\&quot;</span><span class="s">&gt;&amp;rdquo;&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">define</span> <span class="n">REG_1</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&gt;</span><span class="p">([</span><span class="o">^&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&gt;</span><span class="err">\</span><span class="n">n</span><span class="p">]</span><span class="o">+</span><span class="p">)</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'> <span class="o">*</span> <span class="n">split</span><span class="err">関数</span>
+</span><span class='line'> <span class="o">*</span> <span class="err">@</span><span class="n">param</span> <span class="n">string</span> <span class="n">str</span> <span class="err">分割したい文字列</span>
+</span><span class='line'> <span class="o">*</span> <span class="err">@</span><span class="n">param</span> <span class="n">string</span> <span class="n">delim</span> <span class="err">デリミタ</span>
+</span><span class='line'> <span class="o">*</span> <span class="err">@</span><span class="k">return</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="err">分割された文字列</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="n">list</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">split</span><span class="p">(</span><span class="n">string</span> <span class="n">str</span><span class="p">,</span> <span class="n">string</span> <span class="n">delim</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">cutAt</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">while</span><span class="p">(</span> <span class="p">(</span><span class="n">cutAt</span> <span class="o">=</span> <span class="n">str</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="n">delim</span><span class="p">))</span> <span class="o">!=</span> <span class="n">str</span><span class="p">.</span><span class="n">npos</span> <span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">cutAt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">result</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">str</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cutAt</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">str</span> <span class="o">=</span> <span class="n">str</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span><span class="n">cutAt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">str</span><span class="p">.</span><span class="n">length</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">result</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'> <span class="o">*</span> <span class="n">CURL</span> <span class="err">コールバック関数</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="kt">size_t</span> <span class="n">callBackFunc</span><span class="p">(</span><span class="kt">char</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">nmemb</span><span class="p">,</span> <span class="n">string</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">stream</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">realsize</span> <span class="o">=</span> <span class="n">size</span> <span class="o">*</span> <span class="n">nmemb</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">stream</span><span class="o">-&gt;</span><span class="n">append</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">realsize</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">realsize</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'> <span class="o">*</span> <span class="p">[</span> <span class="n">CLASS</span> <span class="p">]</span> <span class="n">Web</span> <span class="n">Data</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Web</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">// 各種宣言</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">intPage</span><span class="p">;</span>                  <span class="c1">// ページ番号</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">strPage</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>              <span class="c1">// ページ番号(URL用)</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">intCountPage</span><span class="p">;</span>             <span class="c1">// ページ内件数</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">intCountCat</span><span class="p">;</span>              <span class="c1">// 業種内件数</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">intCountAll</span><span class="p">;</span>              <span class="c1">// 総件数</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">blnFlagEnd</span><span class="p">;</span>              <span class="c1">// LOOP終了フラグ</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pIter</span><span class="p">;</span>            <span class="c1">// イテレータ用ポインタ</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pStockCode</span><span class="p">;</span>       <span class="c1">// 銘柄コードポインタ</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pMarketName</span><span class="p">;</span>      <span class="c1">// 市場名ポインタ</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pStockName</span><span class="p">;</span>       <span class="c1">// 銘柄名ポインタ</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pCharacteristic</span><span class="p">;</span>  <span class="c1">// 特色ポインタ</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">strStockCode</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>         <span class="c1">// 銘柄コード</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">strMarketName</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>       <span class="c1">// 市場名</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">strStockName</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>       <span class="c1">// 銘柄名</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">strCharacteristic</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>  <span class="c1">// 特色</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">intI</span><span class="p">;</span>                     <span class="c1">// LOOP処理用インデックス</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 業種コード定義</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">aryCategory</span><span class="p">[</span><span class="mi">33</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s">&quot;0050&quot;</span><span class="p">,</span> <span class="s">&quot;1050&quot;</span><span class="p">,</span> <span class="s">&quot;2050&quot;</span><span class="p">,</span> <span class="s">&quot;3050&quot;</span><span class="p">,</span> <span class="s">&quot;3100&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;3150&quot;</span><span class="p">,</span> <span class="s">&quot;3200&quot;</span><span class="p">,</span> <span class="s">&quot;3250&quot;</span><span class="p">,</span> <span class="s">&quot;3300&quot;</span><span class="p">,</span> <span class="s">&quot;3350&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;3400&quot;</span><span class="p">,</span> <span class="s">&quot;3450&quot;</span><span class="p">,</span> <span class="s">&quot;3500&quot;</span><span class="p">,</span> <span class="s">&quot;3550&quot;</span><span class="p">,</span> <span class="s">&quot;3600&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;3650&quot;</span><span class="p">,</span> <span class="s">&quot;3700&quot;</span><span class="p">,</span> <span class="s">&quot;3750&quot;</span><span class="p">,</span> <span class="s">&quot;3800&quot;</span><span class="p">,</span> <span class="s">&quot;4050&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;5050&quot;</span><span class="p">,</span> <span class="s">&quot;5100&quot;</span><span class="p">,</span> <span class="s">&quot;5150&quot;</span><span class="p">,</span> <span class="s">&quot;5200&quot;</span><span class="p">,</span> <span class="s">&quot;5250&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;6050&quot;</span><span class="p">,</span> <span class="s">&quot;6100&quot;</span><span class="p">,</span> <span class="s">&quot;7050&quot;</span><span class="p">,</span> <span class="s">&quot;7100&quot;</span><span class="p">,</span> <span class="s">&quot;7150&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;7200&quot;</span><span class="p">,</span> <span class="s">&quot;8050&quot;</span><span class="p">,</span> <span class="s">&quot;9050&quot;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Constructor</span>
+</span><span class='line'>    <span class="n">Web</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Webデータ読込</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">readHtml</span><span class="p">();</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">};</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'> <span class="o">*</span> <span class="p">[</span> <span class="n">Web</span> <span class="p">]</span> <span class="n">Constructor</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="n">Web</span><span class="o">::</span><span class="n">Web</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">intCountAll</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'> <span class="o">*</span> <span class="p">[</span> <span class="n">Web</span> <span class="p">]</span> <span class="n">HTML</span><span class="err">読込</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">Web</span><span class="o">::</span><span class="n">readHtml</span><span class="p">()</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">// 全業種コード分LOOP</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">aryCategory</span><span class="p">)</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">aryCategory</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// ページ番号初期化</span>
+</span><span class='line'>    <span class="n">intPage</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// 業種内件数初期化</span>
+</span><span class='line'>    <span class="n">intCountCat</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// 終了フラグ初期化</span>
+</span><span class='line'>    <span class="n">blnFlagEnd</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">blnFlagEnd</span> <span class="o">==</span> <span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// ページ内件数初期化</span>
+</span><span class='line'>        <span class="n">intCountPage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// URL 組み立て</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">strUrl</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">sprintf</span><span class="p">(</span><span class="n">strPage</span><span class="p">,</span> <span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="n">intPage</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">strcat</span><span class="p">(</span><span class="n">strUrl</span><span class="p">,</span> <span class="n">URL_BASE</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">strcat</span><span class="p">(</span><span class="n">strUrl</span><span class="p">,</span> <span class="n">aryCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span class='line'>        <span class="n">strcat</span><span class="p">(</span><span class="n">strUrl</span><span class="p">,</span> <span class="s">&quot;&amp;amp;p=&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">strcat</span><span class="p">(</span><span class="n">strUrl</span><span class="p">,</span> <span class="n">strPage</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// CURL 用宣言</span>
+</span><span class='line'>        <span class="n">CURL</span> <span class="o">*</span><span class="n">curl</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">CURLcode</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">string</span> <span class="n">chunk</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// CURL 初期処理</span>
+</span><span class='line'>        <span class="n">curl</span> <span class="o">=</span> <span class="n">curl_easy_init</span><span class="p">();</span>
+</span><span class='line'>        <span class="c1">// CURLOPT_URL に URL を指定</span>
+</span><span class='line'>        <span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span> <span class="n">CURLOPT_URL</span><span class="p">,</span> <span class="n">strUrl</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// CURLOPT_WRITEFUNCTION にコールバック関数を指定</span>
+</span><span class='line'>        <span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span> <span class="n">CURLOPT_WRITEFUNCTION</span><span class="p">,</span> <span class="n">callBackFunc</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// CURLOPT_WRITEDATA にコールバック関数にて処理されたあとのデータ格納ポインタを指定</span>
+</span><span class='line'>        <span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span> <span class="n">CURLOPT_WRITEDATA</span><span class="p">,</span> <span class="p">(</span><span class="n">string</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">chunk</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// リクエスト実行</span>
+</span><span class='line'>        <span class="n">res</span> <span class="o">=</span> <span class="n">curl_easy_perform</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// リクエスト処理 OK 時</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">res</span> <span class="o">==</span> <span class="n">CURLE_OK</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// split の実行</span>
+</span><span class='line'>            <span class="n">list</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">string</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">strList</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="c1">// イテレータの取得</span>
+</span><span class='line'>            <span class="n">list</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">string</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">::</span><span class="n">iterator</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">strList</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+</span><span class='line'>            <span class="c1">// コンソール出力</span>
+</span><span class='line'>            <span class="k">while</span><span class="p">(</span> <span class="n">iter</span> <span class="o">!=</span> <span class="n">strList</span><span class="p">.</span><span class="n">end</span><span class="p">()</span> <span class="p">)</span> <span class="c1">// 最後まで</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">string</span> <span class="n">strIter</span> <span class="o">=</span> <span class="o">*</span><span class="n">iter</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">strIter</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">MATCH_1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1">// ページインクリメント</span>
+</span><span class='line'>                    <span class="n">intCountPage</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>                    <span class="c1">// イテレータのポインタ</span>
+</span><span class='line'>                    <span class="n">pIter</span> <span class="o">=</span> <span class="n">strIter</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1">// 銘柄コード</span>
+</span><span class='line'>                    <span class="n">pStockCode</span> <span class="o">=</span> <span class="n">pIter</span> <span class="o">+</span> <span class="mi">59</span><span class="p">;</span>
+</span><span class='line'>                    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">intI</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">intI</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">intI</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="n">strStockCode</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="n">pStockCode</span><span class="p">[</span><span class="n">intI</span><span class="p">];</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="n">strStockCode</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1">// 市場名</span>
+</span><span class='line'>                    <span class="n">pMarketName</span> <span class="o">=</span> <span class="n">pStockCode</span> <span class="o">+</span> <span class="mi">37</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">intI</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>                    <span class="k">while</span> <span class="p">(</span><span class="n">intI</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="n">pMarketName</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">==</span> <span class="err">&#39;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="err">&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="n">strMarketName</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span><span class='line'>                            <span class="n">intI</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="n">strMarketName</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="n">pMarketName</span><span class="p">[</span><span class="n">intI</span><span class="p">];</span>
+</span><span class='line'>                            <span class="n">intI</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1">// 銘柄名</span>
+</span><span class='line'>                    <span class="n">pStockName</span> <span class="o">=</span> <span class="n">strstr</span><span class="p">(</span><span class="n">pMarketName</span><span class="p">,</span> <span class="n">MATCH_2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">57</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">intI</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>                    <span class="k">while</span> <span class="p">(</span><span class="n">intI</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="n">pStockName</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">==</span> <span class="err">&#39;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="err">&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="n">strStockName</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span><span class='line'>                            <span class="n">intI</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="n">strStockName</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="n">pStockName</span><span class="p">[</span><span class="n">intI</span><span class="p">];</span>
+</span><span class='line'>                            <span class="n">intI</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">strIter</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">MATCH_3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1">// イテレータのポインタ</span>
+</span><span class='line'>                    <span class="n">pIter</span> <span class="o">=</span> <span class="n">strIter</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1">// 特色</span>
+</span><span class='line'>                    <span class="n">pCharacteristic</span> <span class="o">=</span> <span class="n">pIter</span> <span class="o">+</span> <span class="mi">27</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">intI</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>                    <span class="k">while</span> <span class="p">(</span><span class="n">intI</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="n">pCharacteristic</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">==</span> <span class="err">&#39;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="err">&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="n">strCharacteristic</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span><span class='line'>                            <span class="n">intI</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="n">strCharacteristic</span><span class="p">[</span><span class="n">intI</span><span class="p">]</span> <span class="o">=</span> <span class="n">pCharacteristic</span><span class="p">[</span><span class="n">intI</span><span class="p">];</span>
+</span><span class='line'>                            <span class="n">intI</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;[&quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">aryCategory</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;] &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">strStockCode</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;[&quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">strMarketName</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;] &quot;</span>
+</span><span class='line'>                         <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">strStockName</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot; : &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">strCharacteristic</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="o">++</span><span class="n">iter</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="c1">// 終了判定</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">intCountPage</span> <span class="o">==</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">intPage</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">blnFlagEnd</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// リクエスト処理 NG 時</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;CURL ERROR!&quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// ハンドラのクリーンアップ</span>
+</span><span class='line'>        <span class="n">curl_easy_cleanup</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// LOOP 終了判定</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">intCountPage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 終了フラグ</span>
+</span><span class='line'>            <span class="n">blnFlagEnd</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 業種内件数</span>
+</span><span class='line'>            <span class="n">intCountCat</span> <span class="o">+=</span> <span class="n">intCountPage</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 総取得件数</span>
+</span><span class='line'>    <span class="n">intCountAll</span> <span class="o">+=</span> <span class="n">intCountCat</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 総取得件数リターン</span>
+</span><span class='line'><span class="k">return</span> <span class="n">intCountAll</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'> <span class="o">*</span> <span class="err">メイン処理</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">try</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">====&amp;lt; START &amp;gt;====</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Webデータ読込</span>
+</span><span class='line'>    <span class="n">Web</span> <span class="n">objWeb</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">intCountAll</span> <span class="o">=</span> <span class="n">objWeb</span><span class="p">.</span><span class="n">readHtml</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 結果出力</span>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;読込件数 : &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">intCountAll</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">====&amp;lt; E N D &amp;gt;====</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">catch</span> <span class="p">(</span> <span class="n">runtime_error</span> <span class="n">ex</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. コンパイル</h4>
+
+<p>以下のコマンドでコンパイルします。
+&ldquo;-lcurl&rdquo; は CURL ライブラリを使用するオプション、"-std=c++11" はコンパイル時に警告が出るので付加している。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ g++ TestCurl.cpp -o TestCurl.exe -std=c++11 -lcurl</span></code></pre></td></tr></table></div></figure>
+何も出力されなければ成功です。</p>
+
+<h4>3. 実行</h4>
+
+<p>実行します。データ取得が始まるはずです。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ./TestCurl.exe&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>====&lt; START >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>[0050] 1301[東証1部] (株)極洋 : 水産品の貿易、加工、買い付け主力。すしネタに強み。加工食品は業務用が軸。海外加工比率高い&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>====&lt; 途中省略 >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>[9050] 9797[東証2部] 大日本コンサルタント(株) : 橋梁・道路に強み、中堅建設コンサル。官公庁取引多く収益計上は期終盤集中。札幌の同業と提携
+</span><span class='line'>読込件数 : 3580&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>====&lt; E N D >====&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>参考サイト</h4>
+
+<ul>
+<li><a href="http://wisdom.sakura.ne.jp/programming/cpp/" title="C++入門">C++入門</a></li>
+<li><a href="http://curl.haxx.se/" title="cURL and libcurl">cURL and libcurl</a></li>
+</ul>
+
+
+<hr />
+
+<p>久々の C++ でのプログラミングでしたので、若干手間がかかりました。
+しかし、Ruby + Hpricot や Java + Tidy で約 2分30秒 かかっていた処理が 約 1分30秒 になりました。
+これを応用して実運用に実装してみようかとも考えています。
+（1時間30分の処理が1時間を切るかどうか？）</p>
+
+<p>やっぱり、C/C++ は速いですね！
+と言うか、Ruby や Java でも HTML パースライブラリを使わずに自分で文字列処理した方が若干早かった気もしますが。。。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4798108936&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=487311148X&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4798113077&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* 企業の財務状況を分析する指標！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/07/04/04002035/"/>
+    <updated>2012-07-04T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/07/04/04002035</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>企業の財務状況を把握するの使用する各種指標についてのメモです。
+株を買う時にも参考にします。</p>
+
+<p>自分なりにまとめた物です。</p>
+
+<!--more-->
+
+
+<h3>各種指標</h3>
+
+<h4>EPS (１株当たり当期純利益、１株利益) (Earnings Per Share)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">当期純利益÷発行済みの株式数</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>１株に対してどれだけの利益が出ているかを見る。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>EPSが高いほど１株でたくさん利益を出しているので儲かっている企業、ということになる。</td>
+  </tr>
+</table>
+
+
+<h4>PER (株価収益率) (Price Earnings Ratio)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">株価÷１株当たり当期純利益(EPS)</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>１株あたりの利益に対して、今の株価は何倍まで買われているかを見ます。<br />
+    例えば、PER15倍では、投資したお金は15回企業が利益を出せば元が取れるという事になる。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>低いと割安、高いと割高と言える。同業他社と比べてみると良い。</td>
+  </tr>
+</table>
+
+
+<h4>BPS (１株あたり純資産) (Book-Value Per Share)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">純資産÷発行済みの株式数</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>純資産＝資産総額−負債総額<br />
+    企業が解散した時に、資産を処分して債務を返済した後に残る株主の取り分である。<br />
+    企業解散時の解散価値となる。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>高いほど良いと言える。</td>
+  </tr>
+</table>
+
+
+<h4>PBR (株価純資産倍率) (Price Book-Value Ratio)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">株価÷１株あたり純資産(BPS)</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>BPSと現在の株価を比べたもので、例えばBPS1000で株価が800ならPBRは0.8倍となり、800円投資すれば万が一その企業が解散しても1000円戻ってくることになるので株価は安いと言える。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>低いと割安、高いと割高と言える。同業他社と比べてみると良い。</td>
+  </tr>
+</table>
+
+
+<h4>ROE (株主資本利益率) (Return On Equity)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">１株当たり当期純利益(EPS)÷１株あたり純資産(BPS)</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>（当期純利益÷自己資本）×100 で計算する事も可能。<br />
+    株主資本（株主が投資したお金）が効率良く有効に使われているかが分かる。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>高いほど経営の効率が良いと言える。</td>
+  </tr>
+</table>
+
+
+<h4>自己資本比率 (Capital ratio)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">（自己資本÷総資本）×100</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>総資本 = 自己資本 + 他人資本<br />
+    株主資本比率とも呼ばれ、企業の安全性を判断する株式指標のひとつ。<br />
+    この比率が高いほど企業の安全性が高いことを表す指標である。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>一般的には、50％以上が望ましいとされている。</td>
+  </tr>
+</table>
+
+
+<h4>流動比率 (Current ratio)</h4>
+
+<table>
+  <tr>
+    <th width="50px">計算式</th>
+    <td width="450px">（流動資産÷流動負債）×100</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>流動資産とは一年以内に現金化される資産で、流動負債とは一年以内に支払期限の到来する返済義務である。<br />
+    企業の安全性を判断する株式指標で、資金繰りに問題ないかを表す指標である。</td>
+  </tr>
+  <tr>
+    <th>判断</th>
+    <td>高ければ高いほど企業の支払能力が高いといえ、理想200％以上、平均120～150％くらいです。100％を割っていると印象が悪い。</td>
+  </tr>
+</table>
+
+
+<hr />
+
+<p>他にも色々ありますが、主な指標はこれくらいでしょう。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4775971506&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4569676650&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4569709176&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* Ruby - Hpricot で Yahoo!ファイナンス！]]></title>
+    <link href="http://komasaru.github.io/blog/2012/06/28/28002015/"/>
+    <updated>2012-06-28T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2012/06/28/28002015</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>当方、以前から Ruby + MySQL で Yahoo!ファイナンスから株価時系列データ等を取得して管理しています。
+データの取得には Hpricot という Ruby 用の HTML パーサを使用しています。</p>
+
+<p>しかし、時系列データがYahoo!ファイナンスのサイトにアップされる時間がまちまちなので、チェックするスクリプトを作成してみました。</p>
+
+<p>こうした HTML から情報を取得する事を「Webスクレイピング」などと言います。</p>
+
+<!--more-->
+
+
+<h3>記録</h3>
+
+<p>普段使用している株価取得スクリプトの不要な部分を取り除いただけのシンプルなものにしました。</p>
+
+<h4>0. 前提条件</h4>
+
+<p>使用した Ruby は 1.9.3-p194 です。
+CentOS 6.2、Cygwin 1.7.15 上で動作確認してます。
+Windows は未確認です。文字コードあたりで不具合はあるかもしれません。
+また、市場・銘柄によって時系列データが確定する時刻が異なる場合もあります。
+大まかな目安として利用するのが目的です。</p>
+
+<h4>1. Ruby スクリプト</h4>
+
+<ul>
+<li>特定の銘柄の時系列データの最新の日付を取得しています。</li>
+<li>１銘柄のデータが更新されていれば、全て更新されているものと判断するようにしています。</li>
+<li>取引が活発でない銘柄を設定すると、１日取引がない場合もあるので注意が必要です。</li>
+<li>HTML を解析すると２番目の TABLE タグに時系列データが格納されているようです。</li>
+<li>その TABLE タグ内の１番目の TR タグは表のヘッダー部分です。</li>
+<li>２番目の TR タグの１番目の TD タグが最新の日付であるものとして扱っています。</li>
+<li>データが取得できなければ &ldquo;9999-99-99&rdquo; を返すようにしています。</li>
+</ul>
+
+
+<p>※HTML の構成はサイトの修正で変更になる場合があるので要注意！</p>
+
+<p>【 ファイル名：check_date.rb 】
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;h1&gt;-&lt;em&gt;- coding: utf-8 -&lt;/em</span><span class="o">&gt;-&lt;</span><span class="sr">/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;require &amp;lsquo;hpricot&amp;rsquo;</span>
+</span><span class='line'><span class="sr">require &amp;lsquo;open-uri&amp;rsquo;&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">CheckDate</span>
+</span><span class='line'>  <span class="c1"># 時系列データをチェックする銘柄（存在する銘柄）</span>
+</span><span class='line'>  <span class="c1"># （できれば取引が活発な銘柄）</span>
+</span><span class='line'>  <span class="no">STOCK</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="mi">8473</span><span class="o">.</span><span class="n">T</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1"># Webサイト情報 ( Yahoo!ファイナンス 時系列データの URL )</span>
+</span><span class='line'>  <span class="no">URL</span>   <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://info.finance.yahoo.co.jp/history/?code=&quot;</span><span class="o">&gt;</span><span class="ss">http</span><span class="p">:</span><span class="sr">//in</span><span class="n">fo</span><span class="o">.</span><span class="n">finance</span><span class="o">.</span><span class="n">yahoo</span><span class="o">.</span><span class="n">co</span><span class="o">.</span><span class="n">jp</span><span class="o">/</span><span class="n">history</span><span class="o">/</span><span class="p">?</span><span class="n">code</span><span class="o">=&lt;</span><span class="sr">/a&gt;&amp;rdquo;&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="c1"># [CLASS] Webデータ</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">WebData</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>      <span class="vi">@last_date</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="mi">9999</span><span class="o">-</span><span class="mi">99</span><span class="o">-</span><span class="mi">99</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;# 最終取引日付取得</span>
+</span><span class='line'><span class="sr">def get_date</span>
+</span><span class='line'><span class="sr">  begin</span>
+</span><span class='line'><span class="sr">    # HTML取得</span>
+</span><span class='line'><span class="sr">    url =  URL + STOCK</span>
+</span><span class='line'><span class="sr">    html = Hpricot( open( url, &quot;r&quot; ).read.encode( &quot;utf-8&quot;, :invalid =&amp;gt; :replace, :undef =&amp;gt; :replace ) )</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    # HTML 内 ２番目の TABLE タグが存在しなければ終了</span>
+</span><span class='line'><span class="sr">    # （２番目の TABLE タグに時系列データがある）</span>
+</span><span class='line'><span class="sr">    table = html.search( &quot;table&quot; )[1]</span>
+</span><span class='line'><span class="sr">    return @last_date unless table</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    # ２番目の TABLE タグ内の２番目の TR タグが存在しなければ終了</span>
+</span><span class='line'><span class="sr">    # （１番目の TR タグはヘッダ行）</span>
+</span><span class='line'><span class="sr">    tr = table.search( &quot;tr&quot; )[1]</span>
+</span><span class='line'><span class="sr">    return @last_date unless tr</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    # 取引日取得</span>
+</span><span class='line'><span class="sr">    # （１番目の TD タグに日付が格納されている）</span>
+</span><span class='line'><span class="sr">    td = tr.search( &quot;td&quot; )[0]</span>
+</span><span class='line'><span class="sr">    if td.inner_text =~ /</span><span class="p">(\</span><span class="n">d</span><span class="o">+</span><span class="p">)</span><span class="err">年</span><span class="p">(\</span><span class="n">d</span><span class="o">+</span><span class="p">)</span><span class="err">月</span><span class="p">(\</span><span class="n">d</span><span class="o">+</span><span class="p">)</span><span class="err">日</span><span class="o">/</span>
+</span><span class='line'>      <span class="vi">@last_date</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vg">$1</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s2">&quot;%02d&quot;</span><span class="p">,</span><span class="vg">$2</span><span class="o">.</span><span class="n">to_i</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s2">&quot;%02d&quot;</span><span class="p">,</span><span class="vg">$3</span><span class="o">.</span><span class="n">to_i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="vi">@last_date</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="c1"># エラーメッセージ</span>
+</span><span class='line'>    <span class="n">str_msg</span> <span class="o">=</span> <span class="s2">&quot;[ERROR][&quot;</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.get_date] &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>    <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span> <span class="n">str_msg</span> <span class="p">)</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  # 最終取引日付取得</span>
+</span><span class='line'><span class="sr">  obj_webdata = WebData.new</span>
+</span><span class='line'><span class="sr">  date = obj_webdata.get_date</span>
+</span><span class='line'><span class="sr">  puts &amp;ldquo;</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">%</span><span class="n">Y</span><span class="o">-%</span><span class="n">m</span><span class="o">-%</span><span class="n">d</span> <span class="o">%</span><span class="ss">H</span><span class="p">:</span><span class="o">%</span><span class="ss">M</span><span class="p">:</span><span class="o">%</span><span class="n">S</span><span class="s2">&quot; )} 現在: </span><span class="si">#{</span><span class="n">date</span><span class="si">}</span><span class="s2">&amp;ldquo;</span>
+</span><span class='line'><span class="s2">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>2. 動作確認</h4>
+
+<p>作成した Ruby スクリプトを実行すると以下のように出力されるはずです。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby check_date.rb
+</span><span class='line'>2012-06-21 23:50:48 現在: 2012-06-21
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>3. その他</h4>
+
+<p>当方は、このスクリプトをさらに改良し（結果をテキストファイルに出力するようにし）、サーバで１時間毎に cron 起動させ、何時ごろデータが更新されるかのチェックを行ったりもしています。</p>
+
+<p>今回の日付チェックのみならず株価等のデータ取得も基本的な考えは同じです。
+また、Ruby + Hpricot でなく Ruby + Nokogiri という方法もあります。
+Nokogiri の方が高速という意見もあるようですが、当方が試行してみたところほぼ同じ速度でした。（Hpricot も改良されて速度が速くなってきている？）</p>
+
+<h4>参考サイト</h4>
+
+<ul>
+<li><a href="http://tam.qmix.org/wiki/Hpricot.html" title="pylori*style wiki - HTMLパーサ Hpricot">pylori*style wiki - HTMLパーサ Hpricot</a></li>
+</ul>
+
+
+<hr />
+
+<p>当方は、Ruby + Hpricot での Web スクレイピングで以下の事も行っています。</p>
+
+<ul>
+<li>アメダスデータの取得</li>
+<li>地方公共団体一覧の取得</li>
+<li>数字選択式宝くじのデータ取得</li>
+</ul>
+
+
+<p>これらは当方のホームページで確認できます。→ <a href="http://www.mk-mode.com/rails/" title="mk-mode SITE">mk-mode SITE</a></p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4873113946&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4797357401&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4822234304&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+</feed>

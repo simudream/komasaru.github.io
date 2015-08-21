@@ -1,0 +1,818 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - Groonga インストール（by ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/09/linux-mint-groonga-installation-by-src/"/>
+    <updated>2015-08-09T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/09/linux-mint-groonga-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>オープンソースのカラムストア機能付き全文検索エンジン <a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga</a> を、ソースをビルドしてインストールする方法についての記録です。（最後に簡単な使用例も紹介）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>当記事執筆時点で最新の Groonga 5.0.5 をインストールする。</li>
+<li>トークナイザは、デフォルトの N-gram 方式ではなく形態素解析器 MeCab を使用することを想定。</li>
+<li>ここでは、全文検索がどういうものかという説明はしない。</li>
+<li>以下の説明内で出力するデータは、可読性を考慮して整形している。</li>
+</ul>
+
+
+<h3>1. 依存パッケージのインストール</h3>
+
+<pre><code class="text">$ sudo apt-get -y install wget tar build-essential \
+&gt; zlib1g-dev liblzo2-dev libmsgpack-dev \
+&gt; libzmq-dev libevent-dev libmecab-dev
+</code></pre>
+
+<h3>2. アーカーブソースの取得</h3>
+
+<p>アーカイブファイルをダウンロード後、展開する。</p>
+
+<pre><code class="text">$ wget http://packages.groonga.org/source/groonga/groonga-5.0.5.tar.gz
+$ tar zxvf groonga-5.0.5.tar.gz
+</code></pre>
+
+<h3>3. ビルド＆インストール</h3>
+
+<p><code>configure</code>, <code>make</code>, <code>make install</code> する。</p>
+
+<pre><code class="text">$ cd groonga-5.0.5
+$ ./configure
+$ make -j$(grep '^processor' /proc/cpuinfo | wc -l)
+$ sudo make install
+</code></pre>
+
+<ul>
+<li><code>make</code> の <code>-j$(grep '^processor' /proc/cpuinfo | wc -l)</code> の部分はプロセッサ数が明確なら <code>-j4</code> のように指定してもよいし、速度を気にしないのなら単に <code>make</code> のみでもよい。</li>
+<li><code>configure</code> オプションについては <a href="http://groonga.org/ja/docs/install/others.html#source-configure">configure</a> を参照。</li>
+</ul>
+
+
+<p>そして、インストールされたかバージョンを表示して確認してみる。</p>
+
+<pre><code class="text">$ groonga --version
+groonga 5.0.5 [linux-gnu,x86_64,utf8,match-escalation-threshold=0,nfkc,mecab,msgpack,onigmo,zlib,epoll]
+
+configure options: &lt;&gt;
+</code></pre>
+
+<h3>4. 動作確認</h3>
+
+<p>簡単に動作確認してみる。（パスは適宜変更）<br/>
+以下は、都道府県名のローマ字表記を <code>_key</code>、都道府県名の漢字表記を <code>name</code> として登録する例。（簡易都道府県名データベース）</p>
+
+<h4>4-1. データベースの作成</h4>
+
+<pre><code class="text">$ mkdir ~/groonga-db
+$ groonga -n ~/groonga-db/test.db
+</code></pre>
+
+<p>データベース作成後は自動で対話モードに入るが、手動で対話モードへ入るには以下のようにする。</p>
+
+<pre><code class="text">$ groonga ~/groonga-db/test.db
+</code></pre>
+
+<h4>4-2. テーブルの作成</h4>
+
+<pre><code class="text">&gt; table_create --name Prefs --flags TABLE_HASH_KEY --key_type ShortText
+[
+  [0,1436411689.75983,0.0292973518371582],
+  true
+]
+</code></pre>
+
+<h4>4-3. テーブルの表示</h4>
+
+<pre><code>&gt; select --table Prefs
+[
+  [0,1436411701.50367,0.000922203063964844],
+  [
+    [
+      [0],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"]
+      ]
+    ]
+  ]
+]
+</code></pre>
+
+<h4>4-4. カラムの作成</h4>
+
+<pre><code class="text">&gt; column_create --table Prefs --name name --type ShortText
+[
+  [0,1436411764.36768,0.0517301559448242],
+  true
+]
+
+&gt; select --table Prefs
+[
+  [0,1436411783.16738,0.000133037567138672],
+  [
+    [
+      [0],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"],
+        ["name","ShortText"]
+      ]
+    ]
+  ]
+]
+</code></pre>
+
+<h4>4-5. データのロード</h4>
+
+<pre><code class="text">&gt; load --table Prefs
+[
+  {"_key":"Hokkaido","name":"北海道"},
+  {"_key":"Aomoriken","name":"青森県"},
+           :
+  ====&lt; 途中省略 &gt;====
+           :
+  {"_key":"Kagoshimaken","name":"鹿児島県"},
+  {"_key":"Okinawaken","name":"沖縄県"},
+]
+</code></pre>
+
+<p>もしくは、以下のようにコマンドラインから JSON 形式で作成したファイルを取り込んでもよい。</p>
+
+<pre><code class="text load.grn">load --table Prefs
+[
+  {"_key":"Hokkaido","name":"北海道"},
+  {"_key":"Aomoriken","name":"青森県"},
+           :
+  ====&lt; 途中省略 &gt;====
+           :
+  {"_key":"Kagoshimaken","name":"鹿児島県"},
+  {"_key":"Okinawaken","name":"沖縄県"},
+]
+</code></pre>
+
+<pre><code class="text">$ groonga ~/groonga-db/test.db &lt; load.grn
+[[0,1436415458.66362,0.00340938568115234],47]
+</code></pre>
+
+<h4>4-6. レコードの取得</h4>
+
+<pre><code class="text "全レコードを取得（但し、先頭10件）"">select --table Prefs
+[
+  [0,1436415521.50463,0.00343823432922363],
+  [
+    [
+      [47],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"],
+        ["name","ShortText"]
+      ],
+      [1,"Hokkaido","北海道"],
+      [2,"Aomoriken","青森県"],
+      [3,"Iwateken","岩手県"],
+      [4,"Miyagiken","宮城県"],
+      [5,"Akitaken","秋田県"],
+      [6,"Yamagataken","山形県"],
+      [7,"Fukushimaken","福島県"],
+      [8,"Ibarakiken","茨城県"],
+      [9,"Tochigiken","栃木県"],
+      [10,"Gunmaken","群馬県"]
+    ]
+  ]
+]
+</code></pre>
+
+<pre><code class="text "ID が 32 のレコードを取得"">&gt; select --table Prefs --query _id:32
+[
+  [0,1436415572.03281,0.0471560955047607],
+  [
+    [
+      [1],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"],
+        ["name","ShortText"]
+      ],
+      [32,"Shimaneken","島根県"]
+    ]
+  ]
+]
+</code></pre>
+
+<pre><code class="text "KEY が shimaneken のレコードを取得"">&gt; select --table Prefs --query '_key:"Shimaneken"'
+[
+  [0,1436415572.03281,0.0471560955047607],
+  [
+    [
+      [1],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"],
+        ["name","ShortText"]
+      ],
+      [32,"Shimaneken","島根県"]
+    ]
+  ]
+</code></pre>
+
+<h4>4-7. 全文検索用の語彙表の作成</h4>
+
+<p>高速な全文検索を実現するためには転置インデックスが必要であるので、転置インデックスとして使用するテーブルを作成する。（トークナイザとして MeCab を使用する）</p>
+
+<p>辞書テーブルの作成は以下のようにする。</p>
+
+<pre><code class="text 辞書テーブルの作成">&gt; table_create --name Terms --flags TABLE_PAT_KEY|KEY_NORMALIZE --key_type ShortText --default_tokenizer TokenMecab
+[[0,1436416480.43314,0.0687055587768555],true]
+</code></pre>
+
+<p>辞書テーブルへのカラムの作成は以下のようにする。</p>
+
+<pre><code class="text 辞書テーブルへのカラムの作成">&gt; column_create --table Terms --name pref_name --flags COLUMN_INDEX|WITH_POSITION --type Prefs --source name
+[[0,1436416570.78517,0.964933156967163],true]
+</code></pre>
+
+<p>辞書テーブルの確認は以下のようにする。</p>
+
+<pre><code class="text 辞書テーブルの確認">&gt; select --table Terms
+[
+  [0,1436416592.4811,0.000155210494995117],
+  [
+    [
+      [50],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"],
+        ["pref_name","UInt32"]
+      ],
+      [1,"三重",1],
+      [2,"京都",1],
+      [3,"佐賀",1],
+      [4,"兵庫",1],
+      [5,"北海道",1],
+      [6,"千葉",1],
+      [7,"和歌山",1],
+      [8,"埼玉",1],
+      [9,"大分",1],
+      [10,"大阪",1]
+    ]
+  ]
+]
+</code></pre>
+
+<p>テーブルの検索は以下のようにする。</p>
+
+<pre><code class="text テーブルの検索">&gt; select --table Prefs --query name:@府
+[
+  [0,1436416671.28152,0.000936269760131836],
+  [
+    [
+      [2],
+      [
+        ["_id","UInt32"],
+        ["_key","ShortText"],
+        ["name","ShortText"]
+      ],
+      [26,"Kyotofu","京都府"],
+      [27,"Osakafu","大阪府"]
+    ]
+  ]
+]
+</code></pre>
+
+<h4>4-8. 対話モードの終了</h4>
+
+<pre><code class="text">&gt; quit
+</code></pre>
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga - カラムストア機能付き全文検索エンジン</a></li>
+</ul>
+
+
+<hr />
+
+<p>慣れないうちは Groonga を単体で扱うのは若干面倒に感じます。</p>
+
+<p>当方は、Rroonga（Groonga の機能を Ruby から利用するためのライブラリ）や Mroonga（Groonga をベースとした MySQL のストレージエンジン）を使用することも考えています。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[tmux - Window, Pane, Session 自動保存プラグイン！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/06/tmux-automatic-session-preservation/"/>
+    <updated>2015-08-06T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/06/tmux-automatic-session-preservation</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>ターミナルマルチプレクサ（仮想端末マネージャ） tmux の Window, Pane, Session 等を保存（自動保存）するプラグインをインストールする方法についての記録です。</p>
+
+<p>Window, Pane, Session 等を保存するプラグインは tmux-resurrect で、それを自動化するプラグインは tmux-continuum です。<br/>
+また、プラグインの管理には tpm(Tmux Plugin Manager)を使用します。<br/>
+（以前は tmux-resurrect を自動化するプラグインは tmux-resurrect-auto でしたが、現在は tmux-continuum に改名されています。tmux-resurrect-auto も使用できますが）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>tmux 2.1 での作業を想定。</li>
+<li>Git がインストール済みであること。</li>
+<li>tpm(Tmux Plugin Manager) で tmux プラグインを管理することを想定。<br/>
+（tpm を使用せず手動でインストールすることも可能）</li>
+</ul>
+
+
+<h3>1. tpm のインストール</h3>
+
+<p>tmux プラグインの管理に tpm(Tmux Plugin Manager) を使用するのでインストールする。</p>
+
+<pre><code class="text">$ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+</code></pre>
+
+<h3>2. tmux.conf の編集</h3>
+
+<p>&ldquo;~/.tmux.conf&rdquo; に以下の記述を追記する。</p>
+
+<p>``` bash ~/.tmux.conf
+set-option -g @tpm_plugins &lsquo;  \
+  tmux-plugins/tpm            \
+  tmux-plugins/tmux-resurrect \
+  tmux-plugins/tmux-continuum \
+&rsquo;
+set-option -g @continuum-save-interval &lsquo;60&rsquo;
+set-option -g @resurrect-processes &lsquo;ssh -p 9999 hoge&rsquo;
+set-option -g @resurrect-strategy-vim &lsquo;session&rsquo;</p>
+
+<p>run-shell &lsquo;~/.tmux/plugins/tpm/tpm&rsquo;
+<code>``
+*</code>set-option<code>は</code>set<code>で代用可。
+*</code>set-option -g @continuum-save-interval<code>でセッションを自動保存する間隔を指定する。  
+   非指定時のデフォルトは</code>15<code>分。</code>0<code>で自動保存の無効化。
+*</code>set-option -g @resurrect-processes<code>で保存したいセッションを指定する。  
+  （上記の例は "hoge" ホストへポート 9999 で SSH 接続したセッションを保存する例）
+*</code>set-option -g @resurrect-strategy-vim &lsquo;session&rsquo;` で Vim のセッションを保存する。</p>
+
+<h3>3. プラグインのインストール</h3>
+
+<p>tmux 上で Prefix 押下後に <code>I</code> を押下する。（<code>i</code> ではなく <code>I</code>）</p>
+
+<h3>4. 動作確認</h3>
+
+<p>Prefix + CTRL-s で Window, Pane, Session 等の状態を保存、Prefix + CTLR-r でWindow, Pane, Session 等の状態を復元できるので、「保存→マシン再行動→復元」と試してみる。</p>
+
+<p>tmux-continuum はデフォルトでは 60 分間隔で状態を保存するようなので、その辺りの動作も確認しておく。</p>
+
+<p>ちなみに、状態は &ldquo;~/.tmux/resurrect&rdquo; ディレクトリ配下にテキストファイルで保存される。</p>
+
+<hr />
+
+<p>これで、マシンを起動する度に Window, Pane, Session 等を手動で復元する手間が省けます。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - tmux 2.1 のインストール（by ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/03/linux-mint-tmux-installation-by-src/"/>
+    <updated>2015-08-03T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/03/linux-mint-tmux-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>ターミナルマルチプレクサ（仮想端末マネージャ）である tmux(Terminal MUltipleXer) の最新版を Linux Mint へインストールする方法についての記録です。</p>
+
+<p>これまで Apt パッケージでインストールした tmux 1.8 を使用していました。<br/>
+しかし、使用したいプラグインが tmux 1.9 未満ではインストールできないため、最新版の 2.1 をソースビルドでインストールすることとしました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Git でソースを取得するため Git がインストール済みであること。</li>
+<li>当記事執筆時点で最新の tmux 2.1 をインストールする。</li>
+<li>Apt でインストールしていた tmux 1.8 はアンインストールしておく。</li>
+</ul>
+
+
+<h3>1. libevent-dev のインストール</h3>
+
+<p>libevent-dev 2.x のパッケージが必要なので未インストールならインストールする。<br/>
+（以前は Apt では 2.x はインストールできずソースをビルドしてインストールする必要があったが、今は Apt で 2.x がインストール可能）</p>
+
+<pre><code class="text">$ sudo apt-get install libevent-dev
+</code></pre>
+
+<h3>2. tmux のインストール</h3>
+
+<p>Git でソースを <code>clone</code> して、 <code>configure</code>, <code>make</code>, <code>make install</code> する。<br/>
+（但し、<code>configure</code> 実行前に <code>autogen.sh</code> の実行が必要）</p>
+
+<pre><code class="text">$ git clone https://github.com/tmux/tmux.git
+$ cd tmux
+$ autogen.sh
+$ ./configure
+$ make
+$ sudo make install
+</code></pre>
+
+<h3>3. tmux インストールの確認</h3>
+
+<p>端末から <code>tmux</code> と入力・実行して tmux が起動すればよい。<br/>
+また、tmux コンソールが起動後にバージョンも確認してみる。</p>
+
+<pre><code class="text">$ tmux -V
+tmux 2.1
+</code></pre>
+
+<p>もしも、 tmux 起動時に以下のようなメッセージが出力されて起動しない場合は、</p>
+
+<pre><code class="text">protocol version mismatch (client 8, server 7)
+</code></pre>
+
+<p>古いバージョンの tmux サーバのセッションが残っているため。<br/>
+その場合は、以下のように起動中の tmux プロセスを kill すればよい。（厳密に PID をチェックして <code>kill</code> してもよい）</p>
+
+<pre><code class="text">$ killall tmux
+</code></pre>
+
+<h3>4. その他</h3>
+
+<p>その他、各種設定を行う。</p>
+
+<p>当ブログ過去記事も参照。</p>
+
+<ul>
+<li><a href="http://www.mk-mode.com/octopress/tags/tmux/" title="Tag:tmux - mk-mode BLOG">Tag:tmux - mk-mode BLOG</a></li>
+</ul>
+
+
+<p>一つだけ注意するとするなら、マウスモードの指定方法。<br/>
+古いバージョンでは &ldquo;~/.tmux.conf&rdquo; で以下のように指定していたが、</p>
+
+<p><code>bash ~/.tmux.conf
+set-option -g mode-mouse on
+set-option -g mouse-select-pane on
+set-option -g mouse-select-window on
+set-option -g mouse-resize-pane on
+</code></p>
+
+<p>今のバージョンでは以下のように１行のみ指定すればよい。</p>
+
+<p><code>bash ~/.tmux.conf
+set-option -g mouse on
+</code></p>
+
+<p>但し、これだけではマウスでのスクロールができないので、以下のような記述も追加する。</p>
+
+<p><code>bash ~/.tmux.conf
+bind-key -n WheelUpPane if-shell -Ft= "#{?pane_in_mode,1,#{alternate_on}}" "send-keys -M" "copy-mode"
+</code></p>
+
+<p>（<code>set-option</code> = <code>set</code>, <code>bind-key</code> = <code>bind</code>, <code>send-keys</code> = <code>send</code> とエイリアスされているので、置き換えてもよい）</p>
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://tmux.github.io/" title="tmux">tmux</a></li>
+</ul>
+
+
+<hr />
+
+<p>これで、使用したかった tmux プラグインが使用できるでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - Gnuplot でグラフ描画！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/07/30/linux-mint-installation-gnuplot/"/>
+    <updated>2015-07-30T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/07/30/linux-mint-installation-gnuplot</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux Mint で、2次元や3次元のグラフを描画するためのコマンドラインツール Gnuplot を使用してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>Apt パッケージを使用して 4.6.4 をインストールする。</li>
+</ul>
+
+
+<h3>1. Gnuplot のインストール</h3>
+
+<pre><code class="text">$ sudo apt-get install gnuplot-x11
+</code></pre>
+
+<p>注意するのは <code>gnuplot</code> でなく <code>gnuplot-x11</code> をインストールするということ。<br/>
+（こうしないと、 Gnuplot を起動してコマンドを入力してもグラフウィンドウが開かない）</p>
+
+<p>ちなみに、最新バージョンの Gnuplot をインストールしたければ、以下のようにしてインストールすればよい。（但し、環境によってはスムーズ（or 綺麗）にインストールできないかもしれない）</p>
+
+<pre><code class="text">$ wget http://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.1/gnuplot-5.0.1.tar.gz
+$ tar zxvf gnuplot-5.0.1.tar.gz
+$ cd gnuplot-5.0.1
+$ ./configure
+$ make
+$ sudo make install
+</code></pre>
+
+<h3>2. インストールの確認</h3>
+
+<pre><code class="text">$ gnuplot --version
+gnuplot 4.6 patchlevel 4
+</code></pre>
+
+<p>もしくは、以下のように Gnuplot を起動してみる。</p>
+
+<pre><code class="text">$ gnuplot
+
+        G N U P L O T
+        Version 4.6 patchlevel 4    last modified 2013-10-02
+        Build System: Linux x86_64
+
+        Copyright (C) 1986-1993, 1998, 2004, 2007-2013
+        Thomas Williams, Colin Kelley and many others
+
+        gnuplot home:     http://www.gnuplot.info
+        faq, bugs, etc:   type "help FAQ"
+        immediate help:   type "help"  (plot window: hit 'h')
+
+Terminal type set to 'wxt'
+gnuplot&gt; 
+</code></pre>
+
+<p>使用するターミナルが <code>wxt</code> or <code>x11</code> であることを確認する。<code>unknown</code> だと、コマンドを入力してもグラフウィンドウが立ち上がらない。<br/>
+<code>unknown</code> なら <code>set terminal wxt</code> or <code>set terminal x11</code> で設定する。</p>
+
+<h3>3. 動作確認</h3>
+
+<h3>3-1. 動作確認・その１</h3>
+
+<p>Gnuplot を起動後、テストコマンドを入力してグラフを描画してみる。</p>
+
+<pre><code class="text">gnuplot&gt; test
+</code></pre>
+
+<p><img src="/images/2015/07/30/GNUPLOT_1.png" title="GNUPLOT_1" alt="GNUPLOT_1" /></p>
+
+<h3>3-2. 動作確認・その２</h3>
+
+<p>Gnuplot を起動後、コマンドを順次入力してグラフを描画してみる。</p>
+
+<pre><code class="text">gnuplot&gt; plot sin(x)
+gnuplot&gt; replot cos(x)
+</code></pre>
+
+<p><img src="/images/2015/07/30/GNUPLOT_2.png" title="GNUPLOT_2" alt="GNUPLOT_2" /></p>
+
+<pre><code class="text">gnuplot&gt; splot x**2 + y**2
+</code></pre>
+
+<p><img src="/images/2015/07/30/GNUPLOT_3.png" title="GNUPLOT_3" alt="GNUPLOT_3" /></p>
+
+<h4>3-3. 動作確認・その３</h4>
+
+<p>予め作成しておいたスクリプトを呼び出してグラフを描画してみる。</p>
+
+<p>まず、例として以下のようなスクリプトを作成する。</p>
+
+<pre><code class="text gnuplot_sample.plt">set dummy u,v
+set key bmargin center horizontal Right noreverse enhanced autotitles nobox
+set parametric
+set view 50, 30, 1, 1
+set isosamples 50, 20
+set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
+set ticslevel 0
+set title "Interlocking Tori" 
+set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
+set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
+splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, \
+    1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
+</code></pre>
+
+<p>そして、Gnuplot を起動後に呼び出してみる。</p>
+
+<pre><code class="text">gnuplot&gt; load "gnuplot_sample.plt"
+</code></pre>
+
+<p>もしくは、以下のように呼び出してみる。（<code>call</code> は <code>load</code> と異なり引数も渡せる）</p>
+
+<pre><code class="text">gnuplot&gt; call "gnuplot_sample.plt"
+</code></pre>
+
+<p><img src="/images/2015/07/30/GNUPLOT_4.png" title="GNUPLOT_4" alt="GNUPLOT_4" /></p>
+
+<p>ちなみに、３次元グラフの場合はマウスで視点を移動できる。</p>
+
+<h4>3-4. 動作確認・その４</h4>
+
+<p>前項の Gnuplot スクリプトをそのままシェルスクリプト(Bash)に記述し、それを実行してグラフを描画してみる。</p>
+
+<pre><code class="bash gnuplot_sample.sh">#!/bin/bash
+
+gnuplot -p &lt;&lt; EOS
+set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 500, 350
+set output 'gnuplot_sample.png'
+set dummy u,v
+set key bmargin center horizontal Right noreverse enhanced autotitles nobox
+set parametric
+set view 50, 30, 1, 1
+set isosamples 50, 20
+set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
+set ticslevel 0
+set title "Interlocking Tori"
+set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
+set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
+splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, \
+    1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
+EOS
+</code></pre>
+
+<p>この &ldquo;gnuplot_sample.sh&rdquo; は以下のようにしてもよい。</p>
+
+<pre><code class="bash">#!/usr/bin/gnuplot -p
+
+set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 500, 350
+set output 'gnuplot_sample.png'
+set dummy u,v
+set key bmargin center horizontal Right noreverse enhanced autotitles nobox
+set parametric
+set view 50, 30, 1, 1
+set isosamples 50, 20
+set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
+set ticslevel 0
+set title "Interlocking Tori"
+set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
+set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
+splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, \
+    1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
+</code></pre>
+
+<p>実行権限を付与して、実行。</p>
+
+<pre><code class="text">$ chmod +x gnuplot_sample.sh
+$ ./gnuplot_sample.sh
+</code></pre>
+
+<p>以下のような PNG 画像が作成される。</p>
+
+<p><img src="/images/2015/07/30/GNUPLOT_SAMPLE.png" title="GNUPLOT_SAMPLE" alt="GNUPLOT_SAMPLE" /></p>
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://www.gnuplot.info/" title="gnuplot homepage">gnuplot homepage</a></li>
+</ul>
+
+
+<hr />
+
+<p>高機能な上に手軽に使用できるのが良いところでしょうか。</p>
+
+<p>今回紹介した使用例はごく一部の機能に限定していましたが、使いこなすうちになれるでしょう。</p>
+
+<p>また、統計解析用プログラミン言語 R でグラフを描画する場合と使い勝手等を比較してみたいとも思っています。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - ionice でディスクI/Oによる負荷を調整！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/07/12/linux-adjust-disk-io-stress-by-ionice/"/>
+    <updated>2015-07-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/07/12/linux-adjust-disk-io-stress-by-ionice</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>ご存知のとおり、プロセス実行優先度の管理は <code>nice</code> コマンドで行います。</p>
+
+<p>今回は、ディスク I/O 優先度の管理を行う <code>ionice</code> についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Debian GNU/Linux 8 Jessie での作業を想定。</li>
+</ul>
+
+
+<h3>1. 使用方法</h3>
+
+<pre><code class="text">$ ionice --help
+
+ionice - sets or gets process io scheduling class and priority.
+
+Usage:
+  ionice [OPTION] -p PID [PID...]
+  ionice [OPTION] COMMAND
+
+Options:
+  -c, --class &lt;class&gt;   scheduling class name or number
+                           0: none, 1: realtime, 2: best-effort, 3: idle
+  -n, --classdata &lt;num&gt; scheduling class data
+                           0-7 for realtime and best-effort classes
+  -p, --pid=PID         view or modify already running process
+  -t, --ignore          ignore failures
+  -V, --version         output version information and exit
+  -h, --help            display this help and exit
+</code></pre>
+
+<ul>
+<li>スケジューリングクラス(<code>-c</code>)について
+
+<ul>
+<li><code>1</code>(RealTime) &hellip; 最も優先度が高い。</li>
+<li><code>2</code>(Best-Effort) &hellip; <code>1</code>(RealTime) と <code>3</code>(Idle) の間。</li>
+<li><code>3</code>(Idle)  &hellip; 最も優先度が低い。</li>
+</ul>
+</li>
+<li>プライオリティ(<code>-n</code>)について
+
+<ul>
+<li>スケジューリングクラス <code>1</code>(RealTime) と <code>2</code>(Best-Effort) にのみ使用可能。</li>
+<li><code>0</code> 〜 <code>7</code> &hellip; 値が小さいほど優先度が高い。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>2. 使用例</h3>
+
+<p>以下は、コマンド <code>cmd</code> をディスク I/O 優先度を最高にして実行する例。</p>
+
+<pre><code class="text">$ ionice -c 1 cmd
+</code></pre>
+
+<p>以下は、コマンド <code>cmd</code> をディスク I/O 優先度を最低にして実行する例。</p>
+
+<pre><code class="text">$ ionice -c 3 cmd
+</code></pre>
+
+<p>以下は、コマンド <code>cmd</code> をディスク I/O 優先度をベストエフォート（優先度最低）にして実行する例。</p>
+
+<pre><code class="text">$ ionice -c 2 -n 7 cmd
+</code></pre>
+
+<p>以下は、プロセス番号 <code>1234</code> で実行中のプロセスのディスク I/O 優先度を確認する例。</p>
+
+<pre><code class="text">$ ionice -p 1234
+</code></pre>
+
+<p>以下は、プロセス番号 <code>1234</code> で実行中のプロセスのディスク I/O 優先度を最低に変更する例。</p>
+
+<pre><code class="text">$ ionice -c 3 -p 1234
+</code></pre>
+
+<p>以下は、コマンド <code>cmd</code> をプロセス優先度を最低、ディスク I/O 優先度も最低にして実行する例。（マシンに最も負荷をかけない方法）</p>
+
+<pre><code class="text">$ nice -n 19 ionice -c 3 cmd
+</code></pre>
+
+<hr />
+
+<p>非力なマシンで作業を行うことの多い当方にとっては、非常によく使用するコマンドです。</p>
+
+<p>当然ながら、ディスク I/O の負荷が低く抑えられる代わりに処理に時間がかかります。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,1122 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>* 株価 - 売買サインチェック（MACDシグナル版）！ - mk-mode BLOG</title>
+  <meta name="author" content="mk-mode.com">
+
+  
+  <meta name="description" content="松江をこよなく愛する mk-mode の BLOGページです。主にIT系(Tips、サーバ構築)等について記録しています。">
+  <meta name="keywords" content="プログラミング株式MySQLRuby">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://komasaru.github.io/blog/2012/02/25/25002022">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="mk-mode BLOG" type="application/atom+xml">
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Gorditas' rel='stylesheet' type='text/css'>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/javascripts/my_custom.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18154748-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">mk-mode BLOG</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://www.mk-mode.com/rails/" title="My homepage made by Ruby on Rails" target="_blank">Site</a></li>
+  <li><a href="http://www.mk-mode.com/rails/calendar/calendar/" title="The Calendar page on my homepage" target="_blank">Calendar</a></li>
+  <li><a href="http://twitter.com/ko_masaru" title="Go to my Twitter page" target="_blank">Twitter</a></li>
+  <li><a href="http://www.facebook.com/masaru.koizumi.5" title="Go to my Facebook page" target="_blank">Facebook</a></li>
+  <li><a href="https://github.com/komasaru" title="Go to my GitHub page." target="_blank">GitHub</a></li>
+  <li><a href="http://www.youtube.com/user/komasaru888" title="Go to my YouTube page" target="_blank">YouTube</a></li>
+  <li><a href="http://www.mk-mode.com/rails/jmaxml" title="The JMA XML page on my homepage" target="_blank">JMA XML</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+        <form class="pull-right navbar-search" action="http://www.google.co.jp/cse" id="cse-search-box">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-7320193476057758:6328726109" />
+            <input type="hidden" name="ie" value="UTF-8" />
+            <input class="search" type="text" name="q" placeholder="Google Custom Search" />
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      
+<article class="hentry span9" role="article">
+
+  
+  <header class="page-header">
+    
+      <h1 class="entry-title">* 株価 - 売買サインチェック（MACDシグナル版）！</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2012-02-25T00:20:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/プログラミング/'>プログラミング</a>, <a class='category' href='/blog/categories/株式/'>株式</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/mysql/'>MySQL</a>, <a class='tag' href='/blog/tags/ruby/'>Ruby</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>こんばんは。</p>
+
+<p>Ruby + MySQL で自作した株価取得のシステム。
+全市場（東京・大阪・名古屋・札幌・福岡）の全銘柄の2000年からの全取引データを取得しています。</p>
+
+<p>これまで、単純移動平均（= SMA）や指数移動平均線（= EMA）、またそれらのゴールデンクロス・デッドクロスを利用してを買いサイン・売りサインの動向を検証してみました。
+今回は、「MACDシグナル」というものを利用して同様の検証を行いました。</p>
+
+<!--more-->
+
+
+<p>※個人的な記録ですので、興味が無ければ読み飛ばしてください。
+※全体的にどんな傾向があるのかを把握するのと、Ruby の学習が目的です。
+※検証結果を取り纏めたものなので、掲載している結果自体ではあまり有効性は感じません。
+ ※ただ、個別に調べてみるとおもしろいものとなります。</p>
+
+<p>まず、「MACD」とは「移動平均・収束・拡散法」（= Moving Average Convergence/Divergence の略) で、「短期EMA - 長期EMA」 の値となります。
+そして、「MACDシグナル」とは MACD の単純移動平均で表されます。
+移動平均で使用される日数は、以下の日数が定番のようです。</p>
+
+<ul>
+<li>MACDの短期EMA ・・・ 12日</li>
+<li>MACDの長期EMA ・・・ 26日</li>
+<li>MACDシグナルのSMA ・・・ ９日</li>
+</ul>
+
+
+<p>MACD の値が MACDシグナル の値を上抜けた場合・下抜けた場合を買いサイン・売りサインとする考え方です。</p>
+
+<p>以下に、前提条件・検証結果を掲載します。</p>
+
+<h3>１．前提条件</h3>
+
+<p>以降に出てくる Long は買いサイン、Short は売りサインを表しています。</p>
+
+<h4>１．定義</h4>
+
+<p>何を以って、買いサイン・売りサインと見なすかですが、今回は３種類考えてみました。</p>
+
+<ul>
+<li><p>DEF-1</p></li>
+<li><p>その日のMACDがMACDシグナルを上抜けた場合を「買いサイン」とする</p></li>
+<li><p>その日のMACDがMACDシグナルを下抜けた場合を「売りサイン」とする</p></li>
+<li><p>DEF-2</p></li>
+<li><p>上記 DEF-1 の「買いサイン」がマイナス圏(MACD &lt; 0)で発生した場合を「買いサイン」とする</p></li>
+<li><p>上記 DEF-1 の「売りサイン」がプラス圏(MACD > 0)で発生した場合を「売りサイン」とする</p></li>
+<li><p>DEF-3</p></li>
+<li><p>上記 DEF-2 の「買いサイン」発生後、新たに売買サインが発生せずにゼロラインを上抜けた場合を「買いサイン」とする</p></li>
+<li>上記 DEF-2 の「売りサイン」発生後、新たに売買サインが発生せずにゼロラインを下抜けた場合を「売りサイン」とする</li>
+</ul>
+
+
+<p><a href="/images/2012/02/MACD_SIGNAL_1.jpg"><img src="/images/2012/02/MACD_SIGNAL_1.jpg" alt="MACD_SIGNAL_1" title="MACD_SIGNAL_1" width="356" height="202" class="alignnone size-full wp-image-6552" /></a></p>
+
+<p>この図は上記の DEF-2、DEF-3 を表したもの。
+実際の検証では、MACDの短期EMA・長期EMA、MACDシグナルのSMAは定番の 12日・26日・9日を使用しました
+また、調整後終値（株式分割があった場合の調整値）を考慮していません。</p>
+
+<h4>２．検証銘柄と検証期間</h4>
+
+<p>2012年2月17日現在上場している全市場の3,599銘柄を対象に、2000年1月1日から2011年12月31日の株価データを使用して検証しました。
+また、複数の市場に上場している銘柄については、優先市場のみで検証しました。
+※全取引件数は 7,960,496 件</p>
+
+<h3>２．検証結果</h3>
+
+<h4>１．サインが発生した件数</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[Long]  [Short]
+</span><span class='line'>[DEF-1]  340,739  340,237
+</span><span class='line'>[DEF-2]  224,207  194,572
+</span><span class='line'>[DEF-3]  105,391  101,909</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然、DEF-1よりDEF-2の方が、DEF-2よりDEF-3の方が絞られてくる。</p>
+
+<h4>２．各サイン発生○日後に上昇・変動なし・下降した件数</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ DEF-1 ]
+</span><span class='line'>[SIGN] [DAYS]  [UP   ] (     %) [EVEN ] (     %) [DOWN ] (     %)
+</span><span class='line'>Long   (  1 )  135,037 (39.66%)  39,452 (11.59%) 165,961 (48.75%)
+</span><span class='line'>Long   (  2 )  140,586 (41.32%)  24,369 ( 7.16%) 175,311 (51.52%)
+</span><span class='line'>Long   (  3 )  142,504 (41.90%)  18,971 ( 5.58%) 178,659 (52.53%)
+</span><span class='line'>Long   (  4 )  143,358 (42.17%)  16,253 ( 4.78%) 180,371 (53.05%)
+</span><span class='line'>Long   (  5 )  143,461 (42.21%)  14,416 ( 4.24%) 181,984 (53.55%)
+</span><span class='line'>Long   (  6 )  144,283 (42.47%)  13,222 ( 3.89%) 182,239 (53.64%)
+</span><span class='line'>Long   (  7 )  144,595 (42.57%)  12,209 ( 3.59%) 182,834 (53.83%)
+</span><span class='line'>Long   (  8 )  145,534 (42.86%)  11,354 ( 3.34%) 182,666 (53.80%)
+</span><span class='line'>Long   (  9 )  146,699 (43.21%)  10,801 ( 3.18%) 181,980 (53.61%)
+</span><span class='line'>Long   ( 10 )  147,789 (43.54%)  10,170 ( 3.00%) 181,454 (53.46%)
+</span><span class='line'>Long   ( 11 )  148,730 (43.83%)   9,575 ( 2.82%) 181,052 (53.35%)
+</span><span class='line'>Long   ( 12 )  148,867 (43.88%)   9,264 ( 2.73%) 181,140 (53.39%)
+</span><span class='line'>Long   ( 13 )  149,528 (44.08%)   8,865 ( 2.61%) 180,795 (53.30%)
+</span><span class='line'>Long   ( 14 )  150,055 (44.26%)   8,226 ( 2.43%) 180,780 (53.32%)
+</span><span class='line'>Long   ( 15 )  150,285 (44.34%)   7,982 ( 2.35%) 180,692 (53.31%)
+</span><span class='line'>Long   ( 16 )  150,504 (44.42%)   7,749 ( 2.29%) 180,598 (53.30%)
+</span><span class='line'>Long   ( 17 )  150,493 (44.43%)   7,482 ( 2.21%) 180,745 (53.36%)
+</span><span class='line'>Long   ( 18 )  150,535 (44.46%)   7,368 ( 2.18%) 180,704 (53.37%)
+</span><span class='line'>Long   ( 19 )  150,593 (44.51%)   7,140 ( 2.11%) 180,635 (53.38%)
+</span><span class='line'>Long   ( 20 )  150,986 (44.66%)   6,705 ( 1.98%) 180,410 (53.36%)
+</span><span class='line'>Long   ( 21 )  150,688 (44.62%)   6,676 ( 1.98%) 180,368 (53.41%)
+</span><span class='line'>Long   ( 22 )  150,662 (44.66%)   6,502 ( 1.93%) 180,161 (53.41%)
+</span><span class='line'>Long   ( 23 )  150,557 (44.69%)   6,278 ( 1.86%) 180,032 (53.44%)
+</span><span class='line'>Long   ( 24 )  150,557 (44.73%)   6,063 ( 1.80%) 179,980 (53.47%)
+</span><span class='line'>Long   ( 25 )  150,583 (44.75%)   5,902 ( 1.75%) 179,981 (53.49%)
+</span><span class='line'>Long   ( 26 )  150,576 (44.77%)   5,953 ( 1.77%) 179,793 (53.46%)
+</span><span class='line'>Short  (  1 )  157,347 (46.26%)  40,357 (11.86%) 142,453 (41.88%)
+</span><span class='line'>Short  (  2 )  163,947 (48.21%)  25,970 ( 7.64%) 150,120 (44.15%)
+</span><span class='line'>Short  (  3 )  165,622 (48.73%)  20,596 ( 6.06%) 153,638 (45.21%)
+</span><span class='line'>Short  (  4 )  167,281 (49.24%)  17,326 ( 5.10%) 155,092 (45.66%)
+</span><span class='line'>Short  (  5 )  167,387 (49.30%)  15,640 ( 4.61%) 156,500 (46.09%)
+</span><span class='line'>Short  (  6 )  166,948 (49.20%)  14,229 ( 4.19%) 158,156 (46.61%)
+</span><span class='line'>Short  (  7 )  166,661 (49.14%)  12,966 ( 3.82%) 159,515 (47.03%)
+</span><span class='line'>Short  (  8 )  165,931 (48.96%)  12,180 ( 3.59%) 160,768 (47.44%)
+</span><span class='line'>Short  (  9 )  165,066 (48.76%)  11,250 ( 3.32%) 162,184 (47.91%)
+</span><span class='line'>Short  ( 10 )  164,711 (48.71%)  10,629 ( 3.14%) 162,791 (48.14%)
+</span><span class='line'>Short  ( 11 )  164,512 (48.70%)  10,179 ( 3.01%) 163,140 (48.29%)
+</span><span class='line'>Short  ( 12 )  164,385 (48.68%)   9,610 ( 2.85%) 163,680 (48.47%)
+</span><span class='line'>Short  ( 13 )  163,539 (48.45%)   9,265 ( 2.74%) 164,746 (48.81%)
+</span><span class='line'>Short  ( 14 )  162,752 (48.23%)   8,801 ( 2.61%) 165,901 (49.16%)
+</span><span class='line'>Short  ( 15 )  162,185 (48.08%)   8,431 ( 2.50%) 166,720 (49.42%)
+</span><span class='line'>Short  ( 16 )  161,889 (48.00%)   7,901 ( 2.34%) 167,448 (49.65%)
+</span><span class='line'>Short  ( 17 )  161,008 (47.75%)   7,847 ( 2.33%) 168,310 (49.92%)
+</span><span class='line'>Short  ( 18 )  160,651 (47.66%)   7,590 ( 2.25%) 168,824 (50.09%)
+</span><span class='line'>Short  ( 19 )  160,366 (47.59%)   7,355 ( 2.18%) 169,281 (50.23%)
+</span><span class='line'>Short  ( 20 )  159,691 (47.40%)   7,091 ( 2.10%) 170,143 (50.50%)
+</span><span class='line'>Short  ( 21 )  159,303 (47.29%)   7,077 ( 2.10%) 170,475 (50.61%)
+</span><span class='line'>Short  ( 22 )  158,945 (47.20%)   6,911 ( 2.05%) 170,917 (50.75%)
+</span><span class='line'>Short  ( 23 )  158,344 (47.03%)   6,687 ( 1.99%) 171,667 (50.99%)
+</span><span class='line'>Short  ( 24 )  157,853 (46.90%)   6,665 ( 1.98%) 172,040 (51.12%)
+</span><span class='line'>Short  ( 25 )  157,728 (46.89%)   6,328 ( 1.88%) 172,332 (51.23%)
+</span><span class='line'>Short  ( 26 )  157,286 (46.78%)   6,308 ( 1.88%) 172,616 (51.34%)</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ DEF-2 ]
+</span><span class='line'>[SIGN] [DAYS]  [UP   ] (     %) [EVEN ] (     %) [DOWN ] (     %)
+</span><span class='line'>Long   (  1 )   88,039 (39.30%)  27,437 (12.25%) 108,549 (48.45%)
+</span><span class='line'>Long   (  2 )   91,411 (40.82%)  16,855 ( 7.53%) 115,645 (51.65%)
+</span><span class='line'>Long   (  3 )   92,394 (41.28%)  13,183 ( 5.89%) 118,256 (52.83%)
+</span><span class='line'>Long   (  4 )   92,891 (41.52%)  11,294 ( 5.05%) 119,563 (53.44%)
+</span><span class='line'>Long   (  5 )   92,545 (41.37%)  10,084 ( 4.51%) 121,045 (54.12%)
+</span><span class='line'>Long   (  6 )   92,884 (41.54%)   9,230 ( 4.13%) 121,490 (54.33%)
+</span><span class='line'>Long   (  7 )   92,988 (41.60%)   8,599 ( 3.85%) 121,950 (54.55%)
+</span><span class='line'>Long   (  8 )   93,690 (41.92%)   7,935 ( 3.55%) 121,861 (54.53%)
+</span><span class='line'>Long   (  9 )   94,526 (42.31%)   7,538 ( 3.37%) 121,374 (54.32%)
+</span><span class='line'>Long   ( 10 )   95,337 (42.68%)   7,165 ( 3.21%) 120,895 (54.12%)
+</span><span class='line'>Long   ( 11 )   96,112 (43.03%)   6,679 ( 2.99%) 120,565 (53.98%)
+</span><span class='line'>Long   ( 12 )   96,213 (43.09%)   6,585 ( 2.95%) 120,506 (53.96%)
+</span><span class='line'>Long   ( 13 )   96,573 (43.26%)   6,241 ( 2.80%) 120,433 (53.95%)
+</span><span class='line'>Long   ( 14 )   96,830 (43.39%)   5,822 ( 2.61%) 120,515 (54.00%)
+</span><span class='line'>Long   ( 15 )   97,091 (43.52%)   5,660 ( 2.54%) 120,345 (53.94%)
+</span><span class='line'>Long   ( 16 )   97,153 (43.56%)   5,436 ( 2.44%) 120,430 (54.00%)
+</span><span class='line'>Long   ( 17 )   96,959 (43.49%)   5,288 ( 2.37%) 120,682 (54.13%)
+</span><span class='line'>Long   ( 18 )   97,000 (43.53%)   5,218 ( 2.34%) 120,636 (54.13%)
+</span><span class='line'>Long   ( 19 )   96,990 (43.56%)   5,109 ( 2.29%) 120,576 (54.15%)
+</span><span class='line'>Long   ( 20 )   97,282 (43.73%)   4,709 ( 2.12%) 120,474 (54.15%)
+</span><span class='line'>Long   ( 21 )   97,183 (43.74%)   4,691 ( 2.11%) 120,285 (54.14%)
+</span><span class='line'>Long   ( 22 )   97,126 (43.79%)   4,636 ( 2.09%) 120,050 (54.12%)
+</span><span class='line'>Long   ( 23 )   97,140 (43.87%)   4,479 ( 2.02%) 119,790 (54.10%)
+</span><span class='line'>Long   ( 24 )   97,239 (43.96%)   4,304 ( 1.95%) 119,638 (54.09%)
+</span><span class='line'>Long   ( 25 )   97,465 (44.09%)   4,103 ( 1.86%) 119,502 (54.06%)
+</span><span class='line'>Long   ( 26 )   97,558 (44.15%)   4,169 ( 1.89%) 119,226 (53.96%)
+</span><span class='line'>Short  (  1 )   90,759 (46.66%)  21,885 (11.25%)  81,877 (42.09%)
+</span><span class='line'>Short  (  2 )   94,779 (48.74%)  14,044 ( 7.22%)  85,617 (44.03%)
+</span><span class='line'>Short  (  3 )   96,027 (49.42%)  11,085 ( 5.70%)  87,209 (44.88%)
+</span><span class='line'>Short  (  4 )   97,329 (50.12%)   9,290 ( 4.78%)  87,590 (45.10%)
+</span><span class='line'>Short  (  5 )   97,595 (50.28%)   8,336 ( 4.29%)  88,167 (45.42%)
+</span><span class='line'>Short  (  6 )   97,475 (50.25%)   7,664 ( 3.95%)  88,836 (45.80%)
+</span><span class='line'>Short  (  7 )   97,489 (50.29%)   6,853 ( 3.54%)  89,512 (46.17%)
+</span><span class='line'>Short  (  8 )   96,929 (50.04%)   6,426 ( 3.32%)  90,339 (46.64%)
+</span><span class='line'>Short  (  9 )   96,296 (49.77%)   5,893 ( 3.05%)  91,277 (47.18%)
+</span><span class='line'>Short  ( 10 )   95,743 (49.54%)   5,680 ( 2.94%)  91,857 (47.53%)
+</span><span class='line'>Short  ( 11 )   95,527 (49.47%)   5,358 ( 2.77%)  92,228 (47.76%)
+</span><span class='line'>Short  ( 12 )   95,262 (49.35%)   4,999 ( 2.59%)  92,767 (48.06%)
+</span><span class='line'>Short  ( 13 )   94,974 (49.22%)   4,818 ( 2.50%)  93,153 (48.28%)
+</span><span class='line'>Short  ( 14 )   94,584 (49.04%)   4,647 ( 2.41%)  93,659 (48.56%)
+</span><span class='line'>Short  ( 15 )   94,231 (48.87%)   4,365 ( 2.26%)  94,231 (48.87%)
+</span><span class='line'>Short  ( 16 )   93,813 (48.66%)   4,148 ( 2.15%)  94,820 (49.19%)
+</span><span class='line'>Short  ( 17 )   93,219 (48.36%)   4,154 ( 2.16%)  95,368 (49.48%)
+</span><span class='line'>Short  ( 18 )   92,764 (48.14%)   3,991 ( 2.07%)  95,933 (49.79%)
+</span><span class='line'>Short  ( 19 )   92,398 (47.96%)   3,878 ( 2.01%)  96,380 (50.03%)
+</span><span class='line'>Short  ( 20 )   91,939 (47.73%)   3,614 ( 1.88%)  97,064 (50.39%)
+</span><span class='line'>Short  ( 21 )   91,616 (47.57%)   3,695 ( 1.92%)  97,275 (50.51%)
+</span><span class='line'>Short  ( 22 )   91,319 (47.43%)   3,601 ( 1.87%)  97,629 (50.70%)
+</span><span class='line'>Short  ( 23 )   91,018 (47.28%)   3,492 ( 1.81%)  98,001 (50.91%)
+</span><span class='line'>Short  ( 24 )   90,843 (47.20%)   3,410 ( 1.77%)  98,202 (51.03%)
+</span><span class='line'>Short  ( 25 )   90,829 (47.21%)   3,236 ( 1.68%)  98,324 (51.11%)
+</span><span class='line'>Short  ( 26 )   90,702 (47.16%)   3,289 ( 1.71%)  98,350 (51.13%)</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ DEF-3 ]
+</span><span class='line'>[SIGN] [DAYS]  [UP   ] (     %) [EVEN ] (     %) [DOWN ] (     %)
+</span><span class='line'>Long   (  1 )   40,894 (38.83%)  11,789 (11.19%)  52,638 (49.98%)
+</span><span class='line'>Long   (  2 )   42,108 (39.99%)   7,402 ( 7.03%)  55,781 (52.98%)
+</span><span class='line'>Long   (  3 )   42,548 (40.42%)   5,662 ( 5.38%)  57,048 (54.20%)
+</span><span class='line'>Long   (  4 )   42,754 (40.63%)   4,800 ( 4.56%)  57,671 (54.81%)
+</span><span class='line'>Long   (  5 )   43,106 (40.99%)   4,386 ( 4.17%)  57,672 (54.84%)
+</span><span class='line'>Long   (  6 )   43,273 (41.17%)   3,918 ( 3.73%)  57,917 (55.10%)
+</span><span class='line'>Long   (  7 )   43,748 (41.64%)   3,593 ( 3.42%)  57,724 (54.94%)
+</span><span class='line'>Long   (  8 )   44,012 (41.91%)   3,322 ( 3.16%)  57,686 (54.93%)
+</span><span class='line'>Long   (  9 )   44,187 (42.09%)   3,115 ( 2.97%)  57,671 (54.94%)
+</span><span class='line'>Long   ( 10 )   44,404 (42.32%)   2,963 ( 2.82%)  57,569 (54.86%)
+</span><span class='line'>Long   ( 11 )   44,705 (42.63%)   2,840 ( 2.71%)  57,327 (54.66%)
+</span><span class='line'>Long   ( 12 )   44,832 (42.79%)   2,621 ( 2.50%)  57,319 (54.71%)
+</span><span class='line'>Long   ( 13 )   44,882 (42.89%)   2,532 ( 2.42%)  57,239 (54.69%)
+</span><span class='line'>Long   ( 14 )   44,995 (43.06%)   2,447 ( 2.34%)  57,062 (54.60%)
+</span><span class='line'>Long   ( 15 )   45,218 (43.32%)   2,270 ( 2.17%)  56,904 (54.51%)
+</span><span class='line'>Long   ( 16 )   45,280 (43.44%)   2,234 ( 2.14%)  56,729 (54.42%)
+</span><span class='line'>Long   ( 17 )   45,393 (43.61%)   2,094 ( 2.01%)  56,604 (54.38%)
+</span><span class='line'>Long   ( 18 )   45,594 (43.84%)   2,003 ( 1.93%)  56,393 (54.23%)
+</span><span class='line'>Long   ( 19 )   45,521 (43.84%)   1,956 ( 1.88%)  56,359 (54.28%)
+</span><span class='line'>Long   ( 20 )   45,488 (43.86%)   1,941 ( 1.87%)  56,279 (54.27%)
+</span><span class='line'>Long   ( 21 )   45,499 (43.92%)   1,906 ( 1.84%)  56,190 (54.24%)
+</span><span class='line'>Long   ( 22 )   45,382 (43.84%)   1,815 ( 1.75%)  56,313 (54.40%)
+</span><span class='line'>Long   ( 23 )   45,412 (43.90%)   1,804 ( 1.74%)  56,238 (54.36%)
+</span><span class='line'>Long   ( 24 )   45,345 (43.85%)   1,744 ( 1.69%)  56,325 (54.47%)
+</span><span class='line'>Long   ( 25 )   45,317 (43.83%)   1,692 ( 1.64%)  56,383 (54.53%)
+</span><span class='line'>Long   ( 26 )   45,161 (43.69%)   1,668 ( 1.61%)  56,541 (54.70%)
+</span><span class='line'>Short  (  1 )   47,781 (46.91%)  11,017 (10.82%)  43,066 (42.28%)
+</span><span class='line'>Short  (  2 )   49,779 (48.90%)   7,159 ( 7.03%)  44,864 (44.07%)
+</span><span class='line'>Short  (  3 )   50,656 (49.80%)   5,568 ( 5.47%)  45,503 (44.73%)
+</span><span class='line'>Short  (  4 )   51,026 (50.19%)   4,857 ( 4.78%)  45,785 (45.03%)
+</span><span class='line'>Short  (  5 )   51,291 (50.48%)   4,228 ( 4.16%)  46,082 (45.36%)
+</span><span class='line'>Short  (  6 )   51,130 (50.35%)   3,856 ( 3.80%)  46,557 (45.85%)
+</span><span class='line'>Short  (  7 )   51,012 (50.27%)   3,569 ( 3.52%)  46,900 (46.22%)
+</span><span class='line'>Short  (  8 )   50,919 (50.21%)   3,413 ( 3.37%)  47,088 (46.43%)
+</span><span class='line'>Short  (  9 )   50,647 (49.98%)   3,273 ( 3.23%)  47,415 (46.79%)
+</span><span class='line'>Short  ( 10 )   50,481 (49.85%)   3,066 ( 3.03%)  47,727 (47.13%)
+</span><span class='line'>Short  ( 11 )   50,183 (49.57%)   2,960 ( 2.92%)  48,088 (47.50%)
+</span><span class='line'>Short  ( 12 )   49,987 (49.39%)   2,842 ( 2.81%)  48,381 (47.80%)
+</span><span class='line'>Short  ( 13 )   49,522 (48.94%)   2,745 ( 2.71%)  48,932 (48.35%)
+</span><span class='line'>Short  ( 14 )   49,108 (48.54%)   2,631 ( 2.60%)  49,441 (48.86%)
+</span><span class='line'>Short  ( 15 )   48,857 (48.30%)   2,478 ( 2.45%)  49,826 (49.25%)
+</span><span class='line'>Short  ( 16 )   48,771 (48.22%)   2,411 ( 2.38%)  49,956 (49.39%)
+</span><span class='line'>Short  ( 17 )   48,658 (48.12%)   2,434 ( 2.41%)  50,029 (49.47%)
+</span><span class='line'>Short  ( 18 )   48,568 (48.04%)   2,329 ( 2.30%)  50,206 (49.66%)
+</span><span class='line'>Short  ( 19 )   48,657 (48.13%)   2,223 ( 2.20%)  50,207 (49.67%)
+</span><span class='line'>Short  ( 20 )   48,575 (48.06%)   2,148 ( 2.13%)  50,349 (49.81%)
+</span><span class='line'>Short  ( 21 )   48,347 (47.85%)   2,228 ( 2.20%)  50,474 (49.95%)
+</span><span class='line'>Short  ( 22 )   48,557 (48.07%)   2,023 ( 2.00%)  50,443 (49.93%)
+</span><span class='line'>Short  ( 23 )   48,497 (48.02%)   2,006 ( 1.99%)  50,498 (50.00%)
+</span><span class='line'>Short  ( 24 )   48,375 (47.92%)   1,940 ( 1.92%)  50,639 (50.16%)
+</span><span class='line'>Short  ( 25 )   48,256 (47.82%)   1,916 ( 1.90%)  50,735 (50.28%)
+</span><span class='line'>Short  ( 26 )   48,047 (47.64%)   1,906 ( 1.89%)  50,899 (50.47%)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>特に大きな特徴はないように思えるが、やはりDEF-1よりもDEF-2、定義2よりもDEF-3の方が絞られてくる。</p>
+
+<h4>３．何日後に最も上昇（買い）/下降（売り）したか</h4>
+
+<p>買いサイン発生後、何日後に最も上昇したか、
+売りサイン発生後、何日後に最も下降したか、を検証。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[DEF-1]-------------  [DEF-2]-------------  [DEF-3]-------------
+</span><span class='line'>[  1 ] 53,035 44,188  [  1 ] 35,025 25,618  [  1 ] 17,672 13,868
+</span><span class='line'>[  2 ] 30,316 26,679  [  2 ] 20,335 15,468  [  2 ]  9,685  8,077
+</span><span class='line'>[  3 ] 23,441 21,065  [  3 ] 15,831 11,978  [  3 ]  7,233  6,204
+</span><span class='line'>[  4 ] 19,609 17,860  [  4 ] 13,406 10,076  [  4 ]  5,928  5,252
+</span><span class='line'>[  5 ] 17,211 16,262  [  5 ] 11,561  9,025  [  5 ]  5,210  5,064
+</span><span class='line'>[  6 ] 15,606 15,299  [  6 ] 10,397  8,396  [  6 ]  4,541  4,605
+</span><span class='line'>[  7 ] 14,190 14,399  [  7 ]  9,424  7,664  [  7 ]  4,338  4,137
+</span><span class='line'>[  8 ] 13,461 13,546  [  8 ]  9,053  7,266  [  8 ]  4,092  3,896
+</span><span class='line'>[  9 ] 12,717 13,029  [  9 ]  8,536  7,102  [  9 ]  3,944  3,695
+</span><span class='line'>[ 10 ] 12,412 12,683  [ 10 ]  8,416  6,846  [ 10 ]  3,598  3,725
+</span><span class='line'>[ 11 ] 11,993 12,221  [ 11 ]  8,228  6,728  [ 11 ]  3,575  3,592
+</span><span class='line'>[ 12 ] 11,772 11,758  [ 12 ]  8,016  6,546  [ 12 ]  3,435  3,691
+</span><span class='line'>[ 13 ] 11,399 11,831  [ 13 ]  7,700  6,517  [ 13 ]  3,465  3,610
+</span><span class='line'>[ 14 ] 11,227 12,119  [ 14 ]  7,531  6,781  [ 14 ]  3,350  3,508
+</span><span class='line'>[ 15 ] 10,976 12,266  [ 15 ]  7,404  6,823  [ 15 ]  3,333  3,576
+</span><span class='line'>[ 16 ] 10,938 12,349  [ 16 ]  7,341  6,961  [ 16 ]  3,382  3,678
+</span><span class='line'>[ 17 ] 11,124 12,648  [ 17 ]  7,490  7,054  [ 17 ]  3,520  3,776
+</span><span class='line'>[ 18 ] 11,388 13,126  [ 18 ]  7,627  7,411  [ 18 ]  3,541  3,747
+</span><span class='line'>[ 19 ] 11,448 13,361  [ 19 ]  7,599  7,596  [ 19 ]  3,628  3,808
+</span><span class='line'>[ 20 ] 12,208 13,587  [ 20 ]  8,061  7,651  [ 20 ]  3,737  3,977
+</span><span class='line'>[ 21 ] 12,575 14,237  [ 21 ]  8,291  8,013  [ 21 ]  3,967  4,104
+</span><span class='line'>[ 22 ] 13,338 15,262  [ 22 ]  8,562  8,571  [ 22 ]  4,132  4,544
+</span><span class='line'>[ 23 ] 14,483 17,066  [ 23 ]  9,455  9,600  [ 23 ]  4,403  4,827
+</span><span class='line'>[ 24 ] 16,463 19,298  [ 24 ] 10,590 10,541  [ 24 ]  5,030  5,434
+</span><span class='line'>[ 25 ] 20,736 23,546  [ 25 ] 13,437 12,949  [ 25 ]  6,266  6,730
+</span><span class='line'>[ 26 ] 34,692 39,340  [ 26 ] 22,552 21,735  [ 26 ] 10,089 11,474</span></code></pre></td></tr></table></div></figure>
+
+
+<p>DEF-1・DEF-2・DEF-3ともに、買い（売り）サインが発生した翌日と26日後に大きく上昇（下降）している。
+※移動平均を計算するのに26日を使用していることから26日後までしか検証していない。</p>
+
+<h4>４．買いサイン発生から売りサイン発生までの間隔と差が ＋ か ０ か − を集計</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[DEF-1] [DAYS]     [+]      [0]      [-]
+</span><span class='line'>        [  1 ]      16      100   25,674
+</span><span class='line'>        [  2 ]      17       62   17,785
+</span><span class='line'>        [  3 ]      31       59   16,339
+</span><span class='line'>        [  4 ]      65       61   16,470
+</span><span class='line'>        [  5 ]     119       92   16,767
+</span><span class='line'>           :       :        :        :
+</span><span class='line'>        [ 11 ]   5,280      548    9,145
+</span><span class='line'>        [ 12 ]   5,899      459    7,548
+</span><span class='line'>        [ 13 ]   6,056      435    6,076
+</span><span class='line'>        [ 14 ]   6,047      370    4,950
+</span><span class='line'>        [ 15 ]   5,877      289    4,073
+</span><span class='line'>           :       :        :        :</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[DEF-2] [DAYS]     [+]      [0]      [-]
+</span><span class='line'>        [  1 ]       0        0        0
+</span><span class='line'>        [  2 ]       0        0        0
+</span><span class='line'>        [  3 ]       0        0        0
+</span><span class='line'>        [  4 ]       0        0        5
+</span><span class='line'>        [  5 ]       0        1       31
+</span><span class='line'>           :        :        :        :
+</span><span class='line'>        [ 11 ]   1,475      183    1,716
+</span><span class='line'>        [ 12 ]   2,030      196    1,487
+</span><span class='line'>        [ 13 ]   2,519      207    1,194
+</span><span class='line'>        [ 14 ]   2,882      188    1,067
+</span><span class='line'>        [ 15 ]   3,102      134      861
+</span><span class='line'>           :        :        :        :</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[DEF-3] [DAYS]     [+]      [0]      [-]
+</span><span class='line'>        [  1 ]       0        0        0
+</span><span class='line'>        [  2 ]       0        0        0
+</span><span class='line'>        [  3 ]       0        0        0
+</span><span class='line'>        [  4 ]       0        0       12
+</span><span class='line'>        [  5 ]       0        0      133
+</span><span class='line'>           :        :        :        :
+</span><span class='line'>        [ 35 ]     517       44      586
+</span><span class='line'>        [ 36 ]     499       35      518
+</span><span class='line'>        [ 37 ]     502       38      452
+</span><span class='line'>        [ 38 ]     514       31      408
+</span><span class='line'>        [ 39 ]     558       34      378
+</span><span class='line'>           :        :        :        :</span></code></pre></td></tr></table></div></figure>
+
+
+<p>DEF-1,2,3 ともに買いサインが発生した直後は株価が下降するが、DEF-1では14日後頃から、DEF-2では12日後頃から、DEF-3では37日後頃から上昇する傾向にある。</p>
+
+<hr />
+
+<p>これまでの、単純移動平均（= SMA）や指数移動平均線（= EMA）、またそれらのゴールデンクロス・デッドクロスを利用したものより実用性を感じます。
+冒頭でも書いたが、個別の銘柄について検証してみるとおもしろいです。
+Ruby 学習の延長で検証作業を行ってみましたが、こうして実際に実用的な何かを作成してみることで知識も深まっていきます。</p>
+
+<iframe style="width: 120px; height: 240px;" src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4873113946&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="320" height="240"></iframe>
+
+
+<iframe style="width: 120px; height: 240px;" src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4775971506&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="320" height="240"></iframe>
+
+
+<iframe style="width: 120px; height: 240px;" src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=477599039X&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="320" height="240"></iframe>
+
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+
+
+  <!-- Google AdSense -->
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7320193476057758";
+/* 468x15 枠線-背景_ｸﾞﾚｰ */
+google_ad_slot = "9411005151";
+google_ad_width = 468;
+google_ad_height = 15;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mk-mode.com</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2012-02-25T00:20:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>00:20</span></time>
+      [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/プログラミング/'>プログラミング</a>, <a class='category' href='/blog/categories/株式/'>株式</a>
+  
+</span>
+
+ ]
+      [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/mysql/'>MySQL</a>, <a class='tag' href='/blog/tags/ruby/'>Ruby</a>
+  
+</span>
+
+ ]
+    </p>
+    
+      <div class="sharing">
+  
+  <div class="tweet-button">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://komasaru.github.io/blog/2012/02/25/25002022/" data-via="ko_masaru" data-counturl="http://komasaru.github.io/blog/2012/02/25/25002022/" data-lang="ja" data-related="ko_masaru">ツイート</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  <div class="hatena-button">
+    <a href="http://b.hatena.ne.jp/entry/http://komasaru.github.io/blog/2012/02/25/25002022/" class="hatena-bookmark-button" data-hatena-bookmark-layout="simple-balloon" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+  </div>
+  
+  
+  <div class="google-plusone-button">
+    <div class="g-plusone" data-size="medium"></div>
+  </div>
+  
+  
+  <div class="fb-like-button">
+    <div class="fb-like" data-layout="button_count" data-send="false" data-show-faces="false"></div>
+  </div>
+  
+
+  <div class="blog-rank">
+    <a href="http://www.blogmura.com/" target="_blank"><img src="http://www.blogmura.com/img/www80_15_gold_2.gif" alt="ブログランキング・にほんブログ村へ" /></a>
+    <a href="http://blog.with2.net/link.php?746409" target="_blank"><img src="http://image.with2.net/img/banner/banner_12.gif" alt="人気ブログランキング・投票お願い！" /></a>
+    <a href="http://www.blogpeople.net/genre/genre2_1.html?key=0f0d42575b5b124a&amp;u=http%3A%2F%2Fwww.mk-mode.com%2Foctopress%2F" target="_blank"><img src="http://www.blogpeople.net/ranking/images/ranking-banner/ranking-small-blue.gif" alt="BlogPeople・投票お願い！" /></a>
+    <a href="http://www.doramix.com/rank/vote.php?id=53044" target="_blank"><img src="/images/bnr80_15_02.gif" alt="ブログ王・投票お願い！" /></a>
+  </div>
+</div>
+
+    
+    <div class="google-ad-1">
+  <!-- Google AdSense -->
+  <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- 468x15 枠線-背景_白 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:468px;height:15px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="8125126105"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- 468x60 枠線202020-背景202020 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:468px;height:60px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9593057202"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+    
+      <div class="related_posts">
+<h2>Related Posts</h2>
+<ul>
+
+  <li><a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
+
+  <li><a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a></li>
+
+  <li><a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a></li>
+
+  <li><a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a></li>
+
+  <li><a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a></li>
+
+</ul>
+</div>
+
+
+    
+    <div class="amazon-ad">
+<!-- Amazon Associate -->
+<script type="text/javascript"><!--
+amazon_ad_tag = "komasaru-22"; amazon_ad_width = "728"; amazon_ad_height = "90"; amazon_ad_link_target = "new"; amazon_ad_categories = "ace";//--></script>
+<script type="text/javascript" src="http://www.assoc-amazon.jp/s/ads.js"></script>
+</div>
+
+    
+    <section>
+      <h2>Comments</h2>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+    
+    <ul class="pager">
+      
+      <li class="previous"><a class="basic-alignment left"
+        href="/blog/2012/02/23/23002058/" title="Previous Post:
+        * Cygwin - procps パッケージ導入！">&laquo; * Cygwin - procps パッケージ導入！</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+      <li class="next"><a class="basic-alignment right" href="/blog/2012/02/27/27002028/"
+        title="Next Post: * 株価 - 売買サインチェック（RSI版）！">* 株価 - 売買サインチェック（RSI版）！
+        &raquo;</a></li>
+      
+    </ul>
+  </footer>
+  <!-- Google AdSense -->
+<script type="text/javascript"><!--
+google_ad_client = "pub-7320193476057758";
+/* 468x60 枠線6699CC-背景000000 */
+google_ad_slot = "5558274164";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</article>
+
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <span class="nav-header">Access Counter</span>
+  <table class="access">
+    <tr>
+     <td>ブログ開設日</td><td class="access-val">2009-01-05</td>
+    </tr>
+    <tr>
+      <td>サーバ連続稼働時間</td><td class="access-val"><div id="uptime">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">Page View 合計</td>
+      <td class="access-val"><div id="pv-total">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">今日</td>
+      <td class="access-val"><div id="pv-today">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">昨日</td>
+      <td class="access-val"><div id="pv-yesterday">Reading... </div></td>
+    </tr>
+  </table>
+</section>
+<section class="well">
+  <ul class="nav nav-list">
+    <li class="nav-header">Information</li>
+  </ul>
+  <a href="http://www.pref.shimane.lg.jp/" target="_blank"><img class="information" src="/images/shimanekoL.jpg" alt="島根県" title="「島根県」へのリンクです。" /></a>
+  <a href="http://shimane-goen.jp/" target="_blank"><img class="information" src="/images/goen_2015_234_60.png" alt="ご縁の国しまね" title="「ご縁の国しまね」へのリンクです。" /></a>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- mk-mode BLOG Sidebar-2 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:200px;height:90px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9601859305"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</section>
+<section class="well">
+  <ul id="sponsord-link" class="nav nav-list">
+    <li class="nav-header">About Me</li>
+  </ul>
+  <p>趣味で自作の自宅Linuxサーバ運用。ブログではIT系(サーバ構築(Linux etc)、PG(Ruby etc)、PC Tips)についての話題を中心に公開。ルービックキューブも人生何回目かのマイブームで、今は非公式ながら Sub25！</p>
+  <a href="http://www.mk-mode.com/" target="_blank">Site</a>
+  <a href="http://twitter.com/ko_masaru/" target="_blank">Twitter</a>
+  <a href="http://www.facebook.com/masaru.koizumi.5" target="_blank">Facebook</a>
+  <a href="https://github.com/komasaru" target="_blank">GitHub</a>
+  <a href="http://www.youtube.com/user/komasaru888" target="_blank">YouTube</a>
+</section>
+<section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a>
+      </li>
+    
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Categories</li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (251)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (524)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (199)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (334)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Tag Cloud</li>
+  </ul>
+  <a href='/blog/tags/ajax' style='font-size: 100.58064516129032%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.16129032258064%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.64516129032258%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.58064516129032%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.16129032258064%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19354838709677%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.48387096774194%'>bash(18)</a> <a href='/blog/tags/bash' style='font-size: 100.19354838709677%'>Bash(1)</a> <a href='/blog/tags/bitly' style='font-size: 100.38709677419355%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19354838709677%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38709677419355%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.67741935483872%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19354838709677%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19354838709677%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19354838709677%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.74193548387096%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 106.0%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.96774193548387%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.58064516129032%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.83870967741936%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38709677419355%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19354838709677%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.74193548387096%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.70967741935483%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19354838709677%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7741935483871%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.35483870967742%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.80645161290323%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.16129032258064%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.96774193548387%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.64516129032258%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19354838709677%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.12903225806451%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.58064516129032%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.2258064516129%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.12903225806451%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38709677419355%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.96774193548387%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19354838709677%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.93548387096774%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.58064516129032%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38709677419355%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.51612903225806%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7741935483871%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19354838709677%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.54838709677419%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.70967741935483%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.58064516129032%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.58064516129032%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38709677419355%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.58064516129032%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.06451612903226%'>Linux(300)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.2258064516129%'>LinuxMint(58)</a> <a href='/blog/tags/lokka' style='font-size: 100.38709677419355%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 105.03225806451613%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.38709677419355%'>MariaDB(33)</a> <a href='/blog/tags/markdown' style='font-size: 101.16129032258064%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.58064516129032%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19354838709677%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.90322580645162%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 130.96774193548387%'>MySQL(160)</a> <a href='/blog/tags/namazu' style='font-size: 100.19354838709677%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.48387096774194%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.16129032258064%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.58064516129032%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38709677419355%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.35483870967742%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7741935483871%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19354838709677%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.41935483870968%'>Octopress(59)</a> <a href='/blog/tags/office' style='font-size: 100.19354838709677%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19354838709677%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.16129032258064%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19354838709677%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.38709677419355%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.0%'>Postfix(31)</a> <a href='/blog/tags/proxy' style='font-size: 100.38709677419355%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38709677419355%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.16129032258064%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.74193548387096%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.3225806451613%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.61290322580645%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38709677419355%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19354838709677%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19354838709677%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.16129032258064%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(310)</a> <a href='/blog/tags/samba' style='font-size: 101.74193548387096%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.58064516129032%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.54838709677419%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19354838709677%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38709677419355%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19354838709677%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38709677419355%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19354838709677%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.16129032258064%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.93548387096774%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7741935483871%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19354838709677%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.96774193548387%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19354838709677%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7741935483871%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.61290322580645%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38709677419355%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.96774193548387%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.54838709677419%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19354838709677%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.74193548387096%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.96774193548387%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.35483870967742%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.58064516129032%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7741935483871%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19354838709677%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.35483870967742%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.12903225806451%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19354838709677%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.93548387096774%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.7741935483871%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.74193548387098%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.58064516129032%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.74193548387098%'>XML(40)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38709677419355%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19354838709677%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.16129032258064%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.51612903225806%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19354838709677%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.16129032258064%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19354838709677%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.6774193548387%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.16129032258064%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38709677419355%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19354838709677%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.96774193548387%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.16129032258064%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.58064516129032%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19354838709677%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.74193548387096%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.6774193548387%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.09677419354838%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38709677419355%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19354838709677%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.54838709677419%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19354838709677%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19354838709677%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.16129032258064%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.96774193548387%'>端末(5)</a> 
+</section>
+<section class="well">
+  <ul id="month-list" class="nav nav-list">
+    <li class="nav-header">Monthly Archives</li>
+  </ul>
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/08/'>2015-08 (7)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1397 posts
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/komasaru">@komasaru</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'komasaru',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="well">
+  <ul id="twitter-timeline" class="nav">
+    <li class="nav-header">Latest Tweets</li>
+  </ul>
+  <a class="twitter-timeline"  href="https://twitter.com/ko_masaru"  data-widget-id="293992385095016448">@ko_masaru からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+
+
+<section class="well">
+  <ul id="sponsord-link" class="nav">
+    <li class="nav-header">Sponsored Link</li>
+  </ul>
+  <span id="sponsored-link">
+    <object data="http://komasaru.github.io/obj_sponsored_link.html" type="text/html" width="254" height="200"></object>
+  </span>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p id="page-top">
+  <a href="#wrapper">
+    <img src="/images/pagetop.png" alt="PAGE TOP" />
+  </a>
+</p>
+<p>
+  Copyright &copy; 2015 - mk-mode.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mkmodeblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://komasaru.github.io/blog/2012/02/25/25002022/';
+        var disqus_url = 'http://komasaru.github.io/blog/2012/02/25/25002022/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

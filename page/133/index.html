@@ -1,0 +1,1949 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>mk-mode BLOG</title>
+  <meta name="author" content="mk-mode.com">
+
+  
+  <meta name="description" content="松江をこよなく愛する mk-mode の BLOGページです。主にIT系(Tips、サーバ構築)等について記録しています。">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://komasaru.github.io/page/133">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="mk-mode BLOG" type="application/atom+xml">
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Gorditas' rel='stylesheet' type='text/css'>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/javascripts/my_custom.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18154748-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">mk-mode BLOG</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://www.mk-mode.com/rails/" title="My homepage made by Ruby on Rails" target="_blank">Site</a></li>
+  <li><a href="http://www.mk-mode.com/rails/calendar/calendar/" title="The Calendar page on my homepage" target="_blank">Calendar</a></li>
+  <li><a href="http://twitter.com/ko_masaru" title="Go to my Twitter page" target="_blank">Twitter</a></li>
+  <li><a href="http://www.facebook.com/masaru.koizumi.5" title="Go to my Facebook page" target="_blank">Facebook</a></li>
+  <li><a href="https://github.com/komasaru" title="Go to my GitHub page." target="_blank">GitHub</a></li>
+  <li><a href="http://www.youtube.com/user/komasaru888" title="Go to my YouTube page" target="_blank">YouTube</a></li>
+  <li><a href="http://www.mk-mode.com/rails/jmaxml" title="The JMA XML page on my homepage" target="_blank">JMA XML</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+        <form class="pull-right navbar-search" action="http://www.google.co.jp/cse" id="cse-search-box">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-7320193476057758:6328726109" />
+            <input type="hidden" name="ie" value="UTF-8" />
+            <input class="search" type="text" name="q" placeholder="Google Custom Search" />
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span9">
+  
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/15/15004951/">* WindowsXPにWordPress！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-15T00:49:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:49</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/ブログ/'>ブログ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>, <a class='tag' href='/blog/tags/wordpress/'>WordPress</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今夜は、
+うちのメインマシン（ WindowsXP ）にＷｏｒｄＰｒｅｓｓをインストールしました。
+（ 自宅Ｆｅｄｏｒａサーバの予備用として稼動させるため ）</p>
+
+<h3>導入記録</h3>
+
+<p>※前提条件は、
+ＷｉｎｄｏｗｓＸＰ（ＳＰ３）にＷｅｂサーバがＡｐａｃｈｅ２、ＭｙＳＱＬ、ＰＨＰ５がインストール済み。
+です。
+ご自分の環境と違う場合は若干異なることがあるかもしれません。</p>
+
+<h4>１．アーカイブファイルのダウンロード</h4>
+
+<p>こちらの（ <a href="http://ja.wordpress.org/install/" title="http://ja.wordpress.org/install/">http://ja.wordpress.org/install/</a> ）のページからＺＩＰファイルをダウンロードする。
+※当記事執筆時点では、「 wordpress-2.7.1-ja.zip 」が最新でした。</p>
+
+<h4>２．アーカイブファイルの展開</h4>
+
+<p>先ほどダウンロードした wordpress-2.7.1-ja.zip を適当な場所に展開する。</p>
+
+<h4>３．フォルダのコピー</h4>
+
+<p>展開されてできた「 wordpress 」フォルダをApache2のドキュメントルートへコピーする。
+※うちの場合、ドキュメントルート「 D:\00_MyDocuments\01_WWW\html_work 」にコピーした
+ドキュメントルートを変更してなければ、
+「 C:\Program Files\Apache Software Foundation\Apache2.2\htdocs 」です。</p>
+
+<p><a href="/images/2009/02/win_wp_01.jpg"><img src="/images/2009/02/win_wp_01-150x69.jpg" alt="win_wp_01" title="win_wp_01" width="150" height="69" class="alignnone size-thumbnail wp-image-950" /></a></p>
+
+<h4>４．データベースの作成</h4>
+
+<p>ＭｙＳＱＬサービスが停止していれば、サービスを開始する。
+コマンドプロンプトより、以下のようにデータベースを作成する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:\mysql\bin>mysql -u root -p　　←　MySQLへrootでログイン
+</span><span class='line'>Enter password: ***************　　←　MySQLのrootパスワード応答
+</span><span class='line'>Welcome to the MySQL monitor.  Commands end with ; or \g.
+</span><span class='line'>Your MySQL connection id is 1
+</span><span class='line'>Server version: 5.0.67-community MySQL Community Edition (GPL)
+</span><span class='line'>
+</span><span class='line'>Type 'help;' or '\h' for help. Type '\c' to clear the buffer.
+</span><span class='line'>
+</span><span class='line'>mysql> create database wordpress;　　←　wordpressデータベース作成
+</span><span class='line'>Query OK, 1 row affected (0.01 sec)
+</span><span class='line'>
+</span><span class='line'>mysql> grant all privileges on wordpress.* to wordpress@localhost identified by 'パスワード';　　←　wordpressユーザ作成
+</span><span class='line'>Query OK, 0 rows affected (0.02 sec)
+</span><span class='line'>
+</span><span class='line'>mysql> exit　　←　MySQLからログアウト
+</span><span class='line'>Bye
+</span><span class='line'>
+</span><span class='line'>C:\mysql\bin></span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．ＷｏｒｄＰｒｅｓｓのインストール</h4>
+
+<p>Ａｐａｃｈｅ２サービスが停止していれば、サービスを開始する。
+ブラウザより <a href="http://localhost/wordpress/">http://localhost/wordpress/</a> にアクセスすると、以下のように wp-config.php ファイルが存在しないと表示させるので、</p>
+
+<p><a href="/images/2009/02/win_wp_02.jpg"><img src="/images/2009/02/win_wp_02-150x50.jpg" alt="win_wp_02" title="win_wp_02" width="150" height="50" class="alignnone size-thumbnail wp-image-951" /></a></p>
+
+<p>「 wp-config.php ファイルを作成する 」のボタンをクリック。</p>
+
+<p><a href="/images/2009/02/win_wp_03.jpg"><img src="/images/2009/02/win_wp_03-150x99.jpg" alt="win_wp_03" title="win_wp_03" width="150" height="99" class="alignnone size-thumbnail wp-image-952" /></a></p>
+
+<p>「 次に進みましょう 」のボタンをクリック。</p>
+
+<p><a href="/images/2009/02/win_wp_04.jpg"><img src="/images/2009/02/win_wp_04-150x115.jpg" alt="win_wp_04" title="win_wp_04" width="150" height="115" class="alignnone size-thumbnail wp-image-953" /></a></p>
+
+<p>データベース名・ユーザ名・パスワードをＭｙＳＱＬに作成したＷｏｒｄＰｒｅｓｓ用のものに合わせて修正する。
+他はデフォルトのままでかまいません。
+「 作成する 」のボタンをクリック。</p>
+
+<p><a href="/images/2009/02/win_wp_05.jpg"><img src="/images/2009/02/win_wp_05-150x50.jpg" alt="win_wp_05" title="win_wp_05" width="150" height="50" class="alignnone size-thumbnail wp-image-954" /></a></p>
+
+<p>「 インストールを実行しましょう！ 」のボタンをクリック。</p>
+
+<p><a href="/images/2009/02/win_wp_06.jpg"><img src="/images/2009/02/win_wp_06-150x120.jpg" alt="win_wp_06" title="win_wp_06" width="150" height="120" class="alignnone size-thumbnail wp-image-955" /></a></p>
+
+<p>ブログタイトル・メールアドレスを入力し、
+「 ＷｏｒｄＰｒｅｓｓ をインストール 」のボタンをクリック。
+成功すると以下のような画面になるはず。</p>
+
+<p><a href="/images/2009/02/win_wp_07.jpg"><img src="/images/2009/02/win_wp_07-150x86.jpg" alt="win_wp_07" title="win_wp_07" width="150" height="86" class="alignnone size-thumbnail wp-image-956" /></a></p>
+
+<p>パスワードをメモって、「 ログイン 」のボタンをクリック。</p>
+
+<p><a href="/images/2009/02/win_wp_08.jpg"><img src="/images/2009/02/win_wp_08-148x150.jpg" alt="win_wp_08" title="win_wp_08" width="148" height="150" class="alignnone size-thumbnail wp-image-957" /></a></p>
+
+<p>ユーザ名に「 admin 」、パスワードに先ほどメモったものを入力して、
+「 ログイン 」ボタンをクリック。
+ログインに成功すると以下のようにダッシュボートの画面が表示されるはず。</p>
+
+<p><a href="/images/2009/02/win_wp_09.jpg"><img src="/images/2009/02/win_wp_09-150x92.jpg" alt="win_wp_09" title="win_wp_09" width="150" height="92" class="alignnone size-thumbnail wp-image-958" /></a></p>
+
+<h4>６．adminユーザのパスワード変更</h4>
+
+<p>adminユーザのパスワードはインストール時にランダムに作成されたものになっているので、自分のいいように修正する。
+「 ユーザー 」の画面を開き、adminユーザーをクリックする。</p>
+
+<p><a href="/images/2009/02/win_wp_10.jpg"><img src="/images/2009/02/win_wp_10-150x110.jpg" alt="win_wp_10" title="win_wp_10" width="150" height="110" class="alignnone size-thumbnail wp-image-959" /></a></p>
+
+<p><a href="/images/2009/02/win_wp_11.jpg"><img src="/images/2009/02/win_wp_11-150x109.jpg" alt="win_wp_11" title="win_wp_11" width="150" height="109" class="alignnone size-thumbnail wp-image-960" /></a></p>
+
+<p>当ページの一番下の「 新しいパスワード 」を適当に入力して、
+「 プロフィールを更新 」ボタンをクリック。
+成功すると以下のようになるはず。</p>
+
+<p><a href="/images/2009/02/win_wp_12.jpg"><img src="/images/2009/02/win_wp_12-150x109.jpg" alt="win_wp_12" title="win_wp_12" width="150" height="109" class="alignnone size-thumbnail wp-image-961" /></a></p>
+
+<p>これで、次からは新しいパスワードでログインできます。</p>
+
+<h4>７．動作確認</h4>
+
+<p>ブラウザより <a href="http://localhost/wordpress/">http://localhost/wordpress/</a> にアクセスすると以下のようにブログの画面が表示される。</p>
+
+<p><a href="/images/2009/02/win_wp_13.jpg"><img src="/images/2009/02/win_wp_13-150x144.jpg" alt="win_wp_13" title="win_wp_13" width="150" height="144" class="alignnone size-thumbnail wp-image-962" /></a></p>
+
+<hr />
+
+<p>今日はここまで。
+後はＦｅｄｏｒａサーバと同じ様にユーザを追加したり、プラグインを追加したりするつもり。。。</p>
+
+<p>その後Ｆｅｄｏｒａサーバ側のＷｏｒｄＰｒｅｓｓのデータベースをＷｉｎｄｏｗｓ側のデータベースに移行（複写）する予定。
+データベースの移行についてはまたアップします。
+（できるんかな？）</p>
+
+<p>では、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/14/14003921/">* WindowsXPにMySQL＋phpMyAdmin！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-14T00:39:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:39</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/ブログ/'>ブログ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/mysql/'>MySQL</a>, <a class='tag' href='/blog/tags/php/'>PHP</a>, <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>昨夜ＭｙＳＱＬをＷｉｎｄｏｗｓマシンにインストールしたんだけど、
+そういえば、
+ＭｙＳＱＬ入れたらこれも入れておかないといけいない。
+ってことを忘れてた。</p>
+
+<p>そう、
+<strong>ｐｈｐＭｙＡｄｍｉｎ</strong>
+というＭｙＳＱＬ管理用のツール。</p>
+
+<p>ということで、入れてみました。</p>
+
+<p>※あくまでも、ＷｉｎｄｏｗｓＸＰ（ＳＰ３）にＷｅｂサーバがＡｐａｃｈｅ２、ＭｙＳＱＬ、ＰＨＰ５がインストール済み、ってことが前提条件ですので、ご自分の環境と違う場合は若干異なることがあるかもしれません。
+（XAMPP for Windows とかで一括でインストールした場合等？）</p>
+
+<h3>導入記録</h3>
+
+<p>※最後まで読んでいただければわかりますが、エラーが出るたびに修正しています。
+最初からわかっていれば、あらかじめ正しく設定していくのですが、なにぶん初心者なんで。。。
+わかる方は、適宜設定手順を変えてください。</p>
+
+<h4>１．アーカイブファイルのダウンロード</h4>
+
+<p>こちら（ <a href="http://www.phpmyadmin.net/home_page/" title="http://www.phpmyadmin.net/home_page/">http://www.phpmyadmin.net/home_page/</a> ）のページからＺＩＰファイルをダウンロードする。
+※当記事執筆時点では、「 phpMyAdmin-3.1.2-all-languages.zip 」が最新でした。</p>
+
+<h4>２．アーカイブファイルの展開</h4>
+
+<p>先ほどダウンロードした phpMyAdmin-3.1.2-all-languages.zip を適当な場所に展開する。</p>
+
+<h4>３．フォルダのコピー</h4>
+
+<p>展開されたフォルダはフォルダ名が長いので、適当な名前に変更して、Ｗｅｂサーバのドキュメントルートへコピーする。
+※うちの場合、フォルダ名を「 phpmyadmin 」にして、ドキュメントルート「 D:\00_MyDocuments\01_WWW\html_work 」にコピーした。</p>
+
+<p><a href="/images/2009/02/phpmyadmin_01.jpg"><img src="/images/2009/02/phpmyadmin_01-150x71.jpg" alt="phpmyadmin_01" title="phpmyadmin_01" width="150" height="71" class="alignnone size-thumbnail wp-image-919" /></a></p>
+
+<h4>４．動作確認</h4>
+
+<p>ブラウザより <a href="http://localhost/phpmyadmin/index.php">http://localhost/phpmyadmin/index.php</a> （当方の場合）にアクセスしてみる。</p>
+
+<p><a href="/images/2009/02/phpmyadmin_02.jpg"><img src="/images/2009/02/phpmyadmin_02-150x140.jpg" alt="phpmyadmin_02" title="phpmyadmin_02" width="150" height="140" class="alignnone size-thumbnail wp-image-922" /></a></p>
+
+<h4>５．ＤＬＬを導入</h4>
+
+<p>上記のように
+「 mcrypt 拡張をロードできません。PHP の設定を確認してください 」とエラーが出る場合、なんだか「 mcrypt 」というものがたりないみたい。正確には「 libmcrypt.dll 」というＤＬＬが不足しているようです。
+まず、ＰＨＰをインストールした時にかまったことのある「 PHP.ini 」を以下のように変更。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>extension=php_mcrypt.dll　　（&lt; - - - ;を削除して有効にする）</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に、
+ダウンロードできるところはいろいろあるみたいですが、僕は
+こちら（ <a href="http://www.dlldll.com/libmcrypt.dll_download.html" title="http://www.dlldll.com/libmcrypt.dll_download.html">http://www.dlldll.com/libmcrypt.dll_download.html</a> ）から「 libmcrypt.dll 」をダウンロードしました。
+そして「 C:¥WINDOWS¥system32 」フォルダに配置します。</p>
+
+<h4>６．再度、動作確認</h4>
+
+<p>Ｗｅｂサーバ（当方はＡｐａｃｈｅ２）を再起動。
+ブラウザより <a href="http://localhost/phpmyadmin/index.php">http://localhost/phpmyadmin/index.php</a> （当方の場合）にアクセスしてみる。</p>
+
+<p><a href="/images/2009/02/phpmyadmin_03.jpg"><img src="/images/2009/02/phpmyadmin_03-150x140.jpg" alt="phpmyadmin_03" title="phpmyadmin_03" width="150" height="140" class="alignnone size-thumbnail wp-image-923" /></a></p>
+
+<p>無事エラーは消えました。</p>
+
+<h4>７．ログイン確認</h4>
+
+<p>ユーザ名・パスワードにＭｙＳＱＬのユーザ名・パスワードを入力して、「実行する」ボタンをクリックする。
+（ここでは、まだ"root"ユーザしか存在しないので、"root"ユーザでログインします）
+成功すれば、以下のような画面が出るはずです。</p>
+
+<p><a href="/images/2009/02/phpmyadmin_04.jpg"><img src="/images/2009/02/phpmyadmin_04-150x79.jpg" alt="phpmyadmin_04" title="phpmyadmin_04" width="150" height="79" class="alignnone size-thumbnail wp-image-924" /></a></p>
+
+<h4>８．blowfishのパスワード設定</h4>
+
+<p>上記のように
+「 設定ファイルが秘密のパスフレーズ (blowfish_secret) を必要とするようになりました 」とエラーが出る場合、ドキュメントルートの「 ¥phpmyadmin¥libraries 」フォルダにある「 config.default.php 」ファイルを開き以下のようにblowfishのパスワードを何でもいいので設定する。（ホントに何でもいいみたい）
+※ちなみに「 blowfish 」とは、ライセンスフリーの暗号化方式のことみたい。。。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$cfg['blowfish_secret'] = '8888';</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>９．再度、ログイン確認</h4>
+
+<p>ユーザ名・パスワードを入力して、「実行する」ボタンをクリックする。
+成功すれば、以下のような画面がでるはずです。</p>
+
+<p><a href="/images/2009/02/phpmyadmin_05.jpg"><img src="/images/2009/02/phpmyadmin_05-149x74.jpg" alt="phpmyadmin_05" title="phpmyadmin_05" width="149" height="74" class="alignnone size-thumbnail wp-image-925" /></a></p>
+
+<p>まだ何か警告が出てる・・・</p>
+
+<h4>１０．警告の検証</h4>
+
+<p>警告「 お使いの PHP MySQL ライブラリのバージョン 5.0.51a が MySQL サーバのバージョン 5.1.31 と異なります。これは予期しない不具合を起こす可能性があります。 」などとでいる。
+アレコレ調べてみると、おそらくＭｙＳＱＬのバージョンが新しいからダメみたい。</p>
+
+<h4>１１．ＭｙＳＱＬ再インストール</h4>
+
+<p>せっかくインストールしたＭｙＳＱＬ（5.1.31）を（5.0.67）にインストールし直しました。
+インストール方法は <a href="http://www.mk-mode.com/wordpress/?p=883" title="こちら">こちら</a> と同じ方法で。</p>
+
+<h4>１２．またまた、ログイン確認</h4>
+
+<p>念のため、Ａｐａｃｈｅ２を再起動。
+ユーザ名・パスワードを入力して、「実行する」ボタンをクリックする。
+成功すれば、以下のような画面がでるはずです。</p>
+
+<p><a href="/images/2009/02/phpmyadmin_06.jpg"><img src="/images/2009/02/phpmyadmin_06-150x73.jpg" alt="phpmyadmin_06" title="phpmyadmin_06" width="150" height="73" class="alignnone size-thumbnail wp-image-926" /></a></p>
+
+<p>とりあえず、成功！
+多少あれこれクリックしてみても、大丈夫そう。。。</p>
+
+<hr />
+
+<p>※なんかエラーが出るたびに修正を加えてきたが、わかってれば最初から設定しておいても良かったことなので、その辺は自分のいいようにしてください。
+それと、
+手順が前後しているせいで実は不要なことをしているかも（？）
+もしくはやらないといけないことが抜けているかも（？）</p>
+
+<p>次は、いよいよ <strong>ＷｉｎｄｏｗｓＸＰ</strong> に <strong>ＷｏｒｄＰｒｅｓｓ</strong> かな！？</p>
+
+<p>じゃ、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/13/13013058/">* WindowsXPにMySQL！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-13T01:30:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>01:30</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/ブログ/'>ブログ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/mysql/'>MySQL</a>, <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今夜は、ふと、Apache2＋PHPの導入ができたうちのメインマシン（WindowsXP）にデータベース <strong>MySQL</strong>を入れたくなったんで、入れてみました。
+（実はいずれブログ WordPress を Windows でも使えるようにしたくて）</p>
+
+<h3>導入記録</h3>
+
+<h4>１．アーカイブファイルのダウンロード</h4>
+
+<p>MySQLサイトの <a href="http://dev.mysql.com/downloads/mysql/5.0.html" title="ダウンロードページ">ダウンロードページ</a> から Windows 用の &ldquo;Without installer&rdquo; ファイルをダウンロードします。
+（当記事執筆時点での最新は 5.1.31 でした）
+※今回は、 「 Windows Essentials (x86) 」 や 「 Windows MSI Installer (x86) 」 のインストーラは使用せず、ＺＩＰファイルをダウンロード後解凍して設定していくことにしました。</p>
+
+<p><a href="/images/2009/02/mysql_01.gif"><img src="/images/2009/02/mysql_01-150x32.gif" alt="mysql_01" title="mysql_01" width="150" height="32" class="alignnone size-thumbnail wp-image-890" /></a></p>
+
+<p>「 Pick a mirror 」というところをクリックするとユーザ登録画面となる。</p>
+
+<p><a href="/images/2009/02/mysql_02.gif"><img src="/images/2009/02/mysql_02-150x85.gif" alt="mysql_02" title="mysql_02" width="150" height="85" class="alignnone size-thumbnail wp-image-891" /></a></p>
+
+<p>今回はユーザ登録せず、ダウンロードするだけなので、
+「 >> No thanks, just take me to the downloads! 」 をクリックして、適当なミラーサイトからダウンロードする。
+たいてい、日の丸のところでしょう。。。</p>
+
+<p><a href="/images/2009/02/mysql_03.gif"><img src="/images/2009/02/mysql_03-150x78.gif" alt="mysql_03" title="mysql_03" width="150" height="78" class="alignnone size-thumbnail wp-image-892" /></a></p>
+
+<h4>２．展開＆コピー</h4>
+
+<p>先ほどダウンロードしたＺＩＰファイルを展開し、展開されたフォルダを適当な場所に適当なフォルダ名に変更してコピーする。
+（当方ではＣドライブ直下に 「 mysql 」 として配置しました）</p>
+
+<h4>３．設定ファイルの作成</h4>
+
+<p>C:¥WINDOWS フォルダに以下の内容の 「my.ini」ファイルを作成する。
+※フォルダ「C:¥mysql¥」は当方の場合</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[mysqld]
+</span><span class='line'>basedir="C:¥mysql¥"
+</span><span class='line'>datadir="C:¥mysql¥data¥"
+</span><span class='line'>default-character-set=cp932
+</span><span class='line'>
+</span><span class='line'>[mysql]
+</span><span class='line'>default-character-set=cp932</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>４．Windowsサービスの登録</h4>
+
+<p>MySQLサーバーをWindowsの「サービス」として動作させるために、¥mysql¥binフォルダ内の「mysqld-nt.exe」に以下のようにインストールオプションを与える。
+（コマンドプロンプトにて）
+※フォルダ「C:¥mysql¥」は当方の場合</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:¥>cd ¥mysql¥bin
+</span><span class='line'>
+</span><span class='line'>C:¥mysql¥bin>mysqld.exe --install
+</span><span class='line'>Service successfully installed.</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．Windowsサービスの開始</h4>
+
+<p>以下のように入力しMySQLのサービスを起動する。
+[コントールパネル]−[管理ツール]−[サービス]からMySQLサービスを開始させてもよい。
+※サービス登録時MySQLのサービスは「自動」となっているはずなので、次回からはＰＣ起動時に自動でMySQLサービスは開始させるはず。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:¥mysql¥bin>net start mysql
+</span><span class='line'>MySQL サービスを開始します。
+</span><span class='line'>MySQL サービスは正常に開始されました。</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>６．ＭｙＳＱＬの接続確認</h4>
+
+<p>以下のように入力後、「mysql>」プロンプトの画面がでれば、接続できたということ。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:¥mysql¥bin>mysql.exe -u root mysql　　（&lt; - - - rootユーザでmysqlというdatabaseに接続するという意味） Welcome to the MySQL monitor.  Commands end with ; or \g. Your MySQL connection id is 2 Server version: 5.1.31-community MySQL Community Server (GPL) Type 'help;' or '\h' for help. Type '\c' to clear the buffer. mysql></span></code></pre></td></tr></table></div></figure>
+
+
+<h4>７．rootユーザのパスワード設定</h4>
+
+<p>インストール直後は rootユーザ と 匿名ユーザ のユーザがあるが、rootユーザにはパスワードが無いようです。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql> select host, user, password from user;
+</span><span class='line'>+-----------+------+----------+
+</span><span class='line'>| host      | user | password |
+</span><span class='line'>+-----------+------+----------+
+</span><span class='line'>| localhost | root |          |
+</span><span class='line'>| 127.0.0.1 | root |          |
+</span><span class='line'>| localhost |      |          |
+</span><span class='line'>+-----------+------+----------+
+</span><span class='line'>3 rows in set (0.03 sec)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これではまずいので、rootユーザにパスワードを設定する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql> update user set password=password('rootのパスワード')
+</span><span class='line'>    -> where user='root';
+</span><span class='line'>Query OK, 2 rows affected (0.03 sec)
+</span><span class='line'>Rows matched: 2  Changed: 2  Warnings: 0
+</span><span class='line'>
+</span><span class='line'>mysql> flush privileges;
+</span><span class='line'>Query OK, 0 rows affected (0.00 sec)</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>８．匿名ユーザの削除</h4>
+
+<p>匿名ユーザは不要なので削除する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql> delete from user where user='';
+</span><span class='line'>Query OK, 1 row affected (0.00 sec)
+</span><span class='line'>
+</span><span class='line'>mysql> flush privileges;
+</span><span class='line'>Query OK, 0 rows affected (0.00 sec)</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>９．MySQLの終了</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql> quit　　（もしくは exit）
+</span><span class='line'>Bye</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>●次から、コマンドプロンプトからMySQLに入るには以下のようにする。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:¥mysql¥bin>mysql.exe -u root -p mysql　　（&lt; - - - rootユーザでパスワード認証してmysqlというdatabaseに接続するという意味）
+</span><span class='line'>Enter password: ***************
+</span><span class='line'>Welcome to the MySQL monitor.  Commands end with ; or \g.
+</span><span class='line'>Your MySQL connection id is 12
+</span><span class='line'>Server version: 5.1.31-community MySQL Community Server (GPL)
+</span><span class='line'>
+</span><span class='line'>Type 'help;' or '\h' for help. Type '\c' to clear the buffer.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>※データベースについて基本的な事からイマイチな方は、別途勉強された方が良いかも知れません。
+僕は昔、開発の仕事で Oracle（SQL、 PL／SQL） とか SQLServer（SQL、ストアド） とか使ってたんで。。。</p>
+
+<p>※あと、MySQLのサービスは自動設定だとPC起動時に自動で開始されるので、
+うっとおしい（普段は使わないのに重くなる感じしてイヤ）とかあれば、
+手動に設定してMySQL使うときだけサービスを開始するということにしてもオッケー！</p>
+
+<p>で、
+うちのメインマシン（WindowsXP）にApache2、PHP、MySQL と導入できたわけですが、
+実はこれらは XAMPP for Windows</p>
+
+<p>とかいうので、イッパツで全部インストールできちゃうみたい。</p>
+
+<p>ここまでくると、
+次はやっぱり、今Fedoraサーバ側でやってる WordPress もWindowsで動かせるようにしたいなあ～。</p>
+
+<p>そうすれば、
+Fedoraサーバ側で障害が発生したときに、Windowsマシンで代用できるんじゃないかなと。
+バックアップは毎日とってるんで、それをリストアして。
+（LinuxでバックアップしたものからWindows側に復元できるんかな？）</p>
+
+<p>でも、
+あくまでもWindows側は開発用（検証用）としてですが。。。</p>
+
+<p>※ちなみに、
+僕はサーバ用に用意したマシン（ショボイですが）にFedoraを導入する前には、
+いつも Windowsマシン に 仮想マシン（VMware）を準備して、その仮想マシン内にFedoraサーバを構築してみて成功しそうだったら実機に構築するという形をとっています。
+なので、いざというときはWindows上の仮想マシンでFedoraサーバ運用することも可能ですが・・・
+（実際、昔はそうしてた。。。）</p>
+
+<p>仮想マシン VMｗare についてもいつか書いてみましょうかね～。</p>
+
+<p>そのまえにWindowsで WordPress かっ！</p>
+
+<p>では、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/13/13000215/">* LOTO6 No.432</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-13T00:02:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:02</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ロト６/'>ロト６</a>
+  
+</span>
+
+ ]
+        [ 
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>まいど。</p>
+
+<p>日付が変わって昨日のロト６（第４３２回）も
+結果は、、、
+全然でした。。。</p>
+
+<p>考え方を変えないとダメかな？</p>
+
+<p>というわけで、
+ダウンロード用ＣＳＶファイルを最新に更新しました。
+こちら - - - > <strong><a href="http://www.mk-mode.com/rails/loto/loto6" title="mk-mode SITE">mk-mode SITE</a></strong></p>
+
+<p><a href="http://www.mk-mode.com/rails/loto/LOTO6_ALL.csv" title="こちら">こちら</a> でもＯＫ。
+（右クリックで対象ファイルを保存！）</p>
+
+<p>どうぞ、ご活用下さい。</p>
+
+<p><strong><font color="red">※当方のデータは保証できるものではありません。
+　あくまでも、個人で分析するために活用しているだけです。</font></strong></p>
+
+<p><strong><font color="red">※正式なデータは「みずほ」宝くじコーナーでご確認ください。</font></strong></p>
+
+<p><strong><font color="red">※データに不具合があれば教えてください。</font></strong></p>
+
+<p>　　
+ではまた。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/12/12001517/">* WindowsXPでＰＨＰ５！（＋Ａｐａｃｈｅ２）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-12T00:15:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:15</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/ホームページ/'>ホームページ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/apache/'>Apache</a>, <a class='tag' href='/blog/tags/php/'>PHP</a>, <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>昨日は、うちのメインマシン（WindowsXP）に AN HTTPD 、 PHP5 をインストールして
+<a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ で編集できるようにしたんだけど、、、</p>
+
+<p>やっぱり Apache2 も入れてみたくなり、早速インストール＆設定しました。</p>
+
+<h3>作業記録</h3>
+
+<h4>１．インストール前の準備</h4>
+
+<p>IIS というWebサーバが動いているとApache2のインストールに失敗するので、サービスを「無効」にする。
+IIS自体をインストールしていなければいいですが、僕の場合VBでメールを送信するようなプログラミングをするためにインストールしていて、普段はIISサービス自体を停止させてサービス開始は手動で行うように設定していたつもりが、IISは手動開始に設定していても、なんか勝手にサービスが開始されてしまう。
+（なぜかは今のところ不明！）
+多分それが原因でApache2をインストールしようとしてもよく失敗していたみたい。。。
+当然、AN HTTPD も停止。</p>
+
+<h4>２．Apache2 のダウンロード</h4>
+
+<p>こちらの <a href="http://httpd.apache.org/" title="Apacheのサイト">Apacheのサイト</a> の「 Download 」に入り以下のインストーラをダウンロード。
+&ldquo;apache_2.2.11-win32-x86-no_ssl.msi&rdquo;
+（当記事執筆時点の最新。今回は外部には公開しないので no_ssl を選びました。）</p>
+
+<h4>３．Apache2 のインストール</h4>
+
+<p>先ほどダウンロードしたインストーラを実行して、すべてデフォルトのままの設定でインストールしました。
+途中で入力すべき箇所は以下のように設定。
+・Network Domain :
+- - - > 「 localhost 」
+・Server Name :
+- - - > 「 localhost 」
+・Administrator&rsquo;s Email Address :
+- - - > 「 <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;&#x3a;&#x77;&#x65;&#98;&#x6d;&#x61;&#115;&#x74;&#101;&#x72;&#64;&#x6d;&#x6b;&#45;&#109;&#x6f;&#x64;&#101;&#x2e;&#99;&#x6f;&#x6d;">&#x77;&#x65;&#98;&#109;&#x61;&#x73;&#116;&#x65;&#x72;&#x40;&#109;&#107;&#x2d;&#x6d;&#111;&#x64;&#101;&#46;&#99;&#x6f;&#109;</a> 」 （うちの場合）</p>
+
+<h4>４．Apache2 起動確認</h4>
+
+<p>インストールが正常終了すると、タスクトレイに ApacheMonitor アイコンができて、Apache開始状態（きみどり色の三角マーク）になっているはず。
+（もしApache2が起動していなければ、Windowsのスタートボタンから入って ApacheMonitor を起動させてApache２も開始する。）
+ブラウザに 「 <a href="http://localhost/">http://localhost/</a> 」 もしくは 「 <a href="http://127.0.0.1/">http://127.0.0.1/</a> 」 と入力して、画面が表示されるのを確認する。
+今回インストールしたApache2のバージョンではブラウザ上に「 It works! 」 と表示されればOK！
+ちょっと古いバージョンなら、「 あなたの予想に反して、・・・ 」 と、Apacheのロゴ付きの画面がでるはず。
+※必要に応じて、サービス画面でApache2サービスを自動起動か手動起動かを設定してもよい。</p>
+
+<h4>５．「 httpd.conf 」の修正</h4>
+
+<p>「 C:\Program Files\Apache Software Foundation\Apache2.2\conf 」フォルダにある 「 httpd.conf 」 をテキストエディタで開き、以下のように修正。
+・LoadModule ・・・と記述があるところの最後に以下を追加
+（↓ PHPを &ldquo;C:¥php&rdquo; にインストールしていて、Apache2.2.?の場合）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>LoadModule php5_module "C:/php/php5apache2_2.dll"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>・DocumentRoot を自分の環境に合わせて変更。
+（↓ うちの場合）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#DocumentRoot "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs"
+</span><span class='line'>DocumentRoot "D:\00_MyDocuments\01_WWW\html_work"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>・<Directory "C:/～"> を自分の環境に合わせて変更。
+（↓ うちの場合）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#&lt;Directory "C:/Program Files/Apache Software Foundation/Apache2.2/htdocs">
+</span><span class='line'>&lt;Directory "D:\00_MyDocuments\01_WWW\html_work"></span></code></pre></td></tr></table></div></figure>
+
+
+<p>・DirectoryIndex・・・と記述があるところをとりあえず以下のように修正。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#DirectoryIndex index.html
+</span><span class='line'>    DirectoryIndex index.htm index.html index.cgi index.php</span></code></pre></td></tr></table></div></figure>
+
+
+<p>・AddType・・・と記述があるところの最後に以下を追加</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>AddType application/x-httpd-php .php
+</span><span class='line'>    AddType application/x-httpd-php .phtml
+</span><span class='line'>    AddType application/x-httpd-php-source .phps</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>６．Apache2 の再起動</h4>
+
+<p>WindowsのスタートメニューもしくはタスクトレイのApacheMonitor でＡｐａｃｈｅ2を再起動させる。</p>
+
+<h4>７．ＰＨＰの動作確認</h4>
+
+<p>（PHPのインストールについては、<a href="http://www.mk-mode.com/wordpress/?p=837" title="こちら">こちら</a> を参照！）
+ドキュメントルートに以下のようなファイルをつくる
+（ここではファイル名を phpinfo.php とした）</p>
+
+<div class="pre-code">
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="nb">phpinfo</span><span class="p">();</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure>
+</div>
+
+
+<p>ブラウザから 「 <a href="http://localhost/phpinfo.php">http://localhost/phpinfo.php</a> 」もしくは 「 <a href="http://127.0.0.1/phpinfo.php">http://127.0.0.1/phpinfo.php</a> 」 にアクセスし、以下のようなＰＨＰ情報の画面がでればＯＫ！</p>
+
+<p><a href="/images/2009/02/phpinfo.gif"><img src="/images/2009/02/phpinfo-123x150.gif" alt="phpinfo" title="phpinfo" width="123" height="150" class="alignnone size-thumbnail wp-image-873" /></a></p>
+
+<hr />
+
+<p>以上です。</p>
+
+<p>この間 AN HTTPD と PHP をインストールして確認した自分のホームページは、行間とか若干レイアウトが崩れていたが、
+今回のApache2 と PHP では期待通りの結果がでました。（パチパチ！）</p>
+
+<p>今のところ、</p>
+
+<p><a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ でPHP使うとプレビューでレイアウトが崩れるので、</p>
+
+<p><a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ はとりあえず文法チェックをメインに使うことにし、
+Apache2でレイアウト確認し、
+OKなら自宅Ｆｅｄｏｒａサーバへアップする、
+ってことにしようっと。。。</p>
+
+<p>じゃ、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/11/11014450/">* WindowsXPでＰＨＰ５！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-11T01:44:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>01:44</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/ホームページ/'>ホームページ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/php/'>PHP</a>, <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>まず、うちのサーバはＦｅｄｏｒａ１０であれこれ構築してます。</p>
+
+<p>そして今は、実際にホームページを作成するときはメインのＷｉｎＸＰマシンで
+<a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ を使ってコーディングしてから、ＦｅｄｏｒａサーバへＦＴＰアップロードしています。</p>
+
+<p>が、
+最近
+<a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ でＰＨＰも使えることを知ったため、ＷｉｎＸＰマシンにＰＨＰを導入しました。</p>
+
+<p>忘れないように、メモっときます。</p>
+
+<h3>作業記録</h3>
+
+<p>（ 本当はＷｅｂサーバとして Ａｐａｃｈｅ をいれたかったが、
+<a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ ではＷｅｂサーバとして ＡＮ ＨＴＴＰＤ が対応のでしたので、今回は ＡＮ ＨＴＴＰＤ を導入）</p>
+
+<h4>１．ＰＨＰのダウンロード</h4>
+
+<p>こちらの <a href="http://www.php.net/downloads.php" title="PHP: Download">PHP: Download</a> から、「 Windows Binaries 」 の 「 PHP 5.2.8 zip package 」 をクリックして開いたページから 「 php-5.2.8-Win32.zip 」（「5.2.8」は執筆時点の最新）をダウンロード。
+※「 PHP 5.2.8 installer 」というのではない！
+（いろんなサイトの記述によると多分 ＳｅｒｖｅｒＡＰＩ というのが含まれていないものなので）</p>
+
+<h4>２．解凍</h4>
+
+<p>先ほどダウンロードした php-5.2.8-Win32.zip を解凍。</p>
+
+<h4>３．フォルダを移動</h4>
+
+<p>解凍して出来たフォルダの名前を 「 php 」 に変更して、 「 C:\ 」 に移動。
+（移動先はどこでもＯＫ）</p>
+
+<h4>４．「 php5ts.dll 」 をコピー</h4>
+
+<p>C:\php\php5ts.dll を C:\Windows\system32 フォルダにコピー。</p>
+
+<h4>５．「 php.ini-dist 」 をコピー</h4>
+
+<p>C:\php\php.ini-dist を C:\Windows フォルダにコピーして、ファイル名を 「 php.ini 」 に変更。</p>
+
+<h4>６．ＡＮ ＨＴＴＰＤ のダウンロード</h4>
+
+<p>こちらの <a href="http://www.st.rim.or.jp/~nakata/" title="ＡＮ ＨＴＴＰＤ Ｈｏｍｅ Ｐａｇｅ">ＡＮ ＨＴＴＰＤ Ｈｏｍｅ Ｐａｇｅ</a> から、「 httpd142p.zip 」 をダウンロード。</p>
+
+<h4>７．解凍</h4>
+
+<p>先ほどダウンロードした 「 httpd142p.zip 」 を解凍する。</p>
+
+<h4>８．フォルダを移動</h4>
+
+<p>解凍して出来たフォルダを 「 C:\Program Files 」 フォルダに移動。
+（移動先はどこでもＯＫ）</p>
+
+<h4>９．ＡＮ ＨＴＴＰＤ の設定</h4>
+
+<p>「 httpd.exe 」 を実行後、タスクトレイアイコン右クリックして 「 オプション 一般（Ｇ） 」 を開く。
+「 一般 」タグのドキュメントルートを設定。（index.php等のあるフォルダ）
+同じ「 一般 」タグ内の実行プログラムのところで追加ボタンを押して、
+拡張子
+- - - > 「 .php,.php3,.phtml 」（拡張子の前のドット必須）、
+実行プログラム
+- - - > 「 C:\php\php-cgi.exe 」
+にし、
+「 実行する 」、
+「 一般パスでも実行する 」、
+「 PATH_TRANSLATEDを使う 」
+にチェックを入れる。</p>
+
+<h4>１０．ＰＨＰ．ｉｎｉ の設定</h4>
+
+<p>以下のように設定。
+（コメント化を解除したり、値を変更する）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cgi.force_redirect = 0
+</span><span class='line'>
+</span><span class='line'>extension_dir = C:\php\ext (PHP4では C:\php\extensions であった)
+</span><span class='line'>extension=php_mbstring.dll（アンコメント）
+</span><span class='line'>output_handler = mb_output_handler
+</span><span class='line'>magic_quotes_gpc = Off
+</span><span class='line'>
+</span><span class='line'>[mbstring]
+</span><span class='line'>mbstring.language = Japanese
+</span><span class='line'>mbstring.internal_encoding = EUC-JP
+</span><span class='line'>mbstring.http_input = auto
+</span><span class='line'>mbstring.http_output = pass　（SJIS では文字化けすることがある）
+</span><span class='line'>mbstring.encoding_translation = On　（Off を On に. 文字化けするようなら Offに）
+</span><span class='line'>mbstring.detect_order = auto
+</span><span class='line'>mbstring.substitute_character = none;
+</span><span class='line'>mbstring.func_overload = 0</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>１１．ＰＨＰの動作確認</h4>
+
+<p>ドキュメントルートに以下のようなファイルをつくる
+（ここではファイル名を phpinfo.php とした）</p>
+
+<div class="pre-code"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span> <span class="nb">phpinfo</span><span class="p">();</span> <span class="cp">?&gt;</span><span class="x"></span>
+</span></code></pre></td></tr></table></div></figure></div>
+
+
+<p>ブラウザから 「 <a href="http://127.0.0.1/phpinfo.php">http://127.0.0.1/phpinfo.php</a> 」 にアクセスし、ＰＨＰ情報の画面がでればＯＫ！</p>
+
+<hr />
+
+<p>のはず・・・</p>
+
+<p>しかし、うちのマシンではＰＨＰの動作確認でブラウザでは phpinfo の画面が出るものの、色の付いたきれいな画面（よくあるphpinfoの画面）が表示されず、文字だけの画面が表示されてしまう。。。
+こんなの</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>System => Windows NT PULSAR 5.1 build 2600
+</span><span class='line'>Build Date => Dec  8 2008 19:30:48
+</span><span class='line'>Configure Command => cscript /nologo configure.js  "--enable-snapshot-build" "--enable-debug-pack" "--with-snapshot-template=d:\php-sdk\snap_5_2\vc6\x86\template" "--with-php-build=d:\php-sdk\snap_5_2\vc6\x86\php_build" "--with-pdo-oci=D:\php-sdk\oracle\instantclient10\sdk,shared" "--with-oci8=D:\php-sdk\oracle\instantclient10\sdk,shared"
+</span><span class='line'>Server API => Command Line Interface
+</span><span class='line'>Virtual Directory Support => enabled
+</span><span class='line'>Configuration File (php.ini) Path => C:\WINDOWS
+</span><span class='line'>Loaded Configuration File => C:\WINDOWS\php.ini
+</span><span class='line'>Scan this dir for additional .ini files => (none)
+</span><span class='line'>additional .ini files parsed => (none)
+</span><span class='line'>PHP API => 20041225
+</span><span class='line'>PHP Extension => 20060613
+</span><span class='line'>Zend Extension => 220060519
+</span><span class='line'>Debug Build => no
+</span><span class='line'>Thread Safety => enabled
+</span><span class='line'>Zend Memory Manager => enabled
+</span><span class='line'>IPv6 Support => enabled
+</span><span class='line'>Registered PHP Streams => php, file, data, http, ftp, compress.zlib
+</span><span class='line'>Registered Stream Socket Transports => tcp, udp
+</span><span class='line'>Registered Stream Filters => convert.iconv.*, string.rot13, string.toupper, string.tolower, string.strip_tags, convert.*, consumed, zlib.*
+</span><span class='line'>
+</span><span class='line'>This program makes use of the Zend Scripting Language Engine:
+</span><span class='line'>Zend Engine v2.2.0, Copyright (c) 1998-2008 Zend Technologies
+</span><span class='line'>
+</span><span class='line'> _______________________________________________________________________
+</span><span class='line'>
+</span><span class='line'>Configuration
+</span><span class='line'>
+</span><span class='line'>PHP Core
+</span><span class='line'>
+</span><span class='line'>Directive => Local Value => Master Value
+</span><span class='line'>allow_call_time_pass_reference => On => On
+</span><span class='line'>allow_url_fopen => On => On
+</span><span class='line'>・
+</span><span class='line'>・・
+</span><span class='line'>・・・</span></code></pre></td></tr></table></div></figure>
+
+
+<p>内容的にはＰＨＰはちゃんと動いている感じ。。。
+同じＰＨＰをＦｅｄｏｒａサーバにアップしてみるとちゃんとこんな画面がでるのだが・・・</p>
+
+<p><a href="/images/2009/02/php.jpg"><img src="/images/2009/02/php-149x150.jpg" alt="php" title="php" width="149" height="150" class="alignnone size-thumbnail wp-image-848" /></a></p>
+
+<p>しかし、自分のホームページのindex.php はほぼきれいに表示される。
+※若干Ｆｅｄｏｒａサーバで動かしている画面と行間とか、微妙にずれるが・・・</p>
+
+<p>なぜだか？</p>
+
+<p>ま、
+<a href="http://www.w-frontier.com/" target="_blank"><img src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" width="80" height="15" class="non-border" /></a>
+ のほうでもヘルプをみながら ＰＨＰ の設定をしたら、使えるようになったんでとりあえずは ヨシ としようか。。</p>
+
+<p>細かいことはこれから使っていくうちに判明するものと信じて・・・</p>
+
+<p>でも、ＷｅｂサーバにＡｐａｃｈｅ入れて、ＥｃｌｉｐｓｅでＰＨＰ使うってのもやってみたいなあ～。
+Ｅｃｌｉｐｓｅは昔仕事でＪａｖａ系のシステム開発の時に使ってたことがあるんで。。。</p>
+
+<p>※今回主に参考にしたサイトはこちらです。（感謝、感謝！）
+「 <a href="http://homepage1.nifty.com/yito/anhttpd/faq/php5.html" title="AN HTTPDでＰＨＰ５を動かす">AN HTTPDでＰＨＰ５を動かす</a> 」</p>
+
+<p>では、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/10/10001036/">* HTMLエディタ！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-10T00:10:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:10</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ホームページ/'>ホームページ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/html/'>HTML</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+今日は僕が自分の <a href="http://www.mk-mode.com/rails/" title="ホームページ">ホームページ</a> を作る際に使っているＨＴＭＬエディタをご紹介。</p>
+
+<p>現在は、
+昔の職場（システム開発）でＷｅｂ系システムを作る際に、
+当時Ｗｅｂ系に乏しかった僕に
+Ｗｅｂ系に強かった後輩が勧めてくれたＨＴＭＬエディタを使用しています。</p>
+
+<p>ホームページビルダとかＦｒｏｎｔＰａｇｅとかでもホームページは作れるけど、
+やっぱり、自分で意識してＨＴＭＬタグを付けることが大事（？）と思って、
+自分でプログラミングしてます。</p>
+
+<p>しかも、基本テキストエディタさえあればできるし、
+全て無料で使えるし。。。</p>
+
+<p>ま、ちょっとしたこだわり！
+（当然かも知れんけど）</p>
+
+<p>その僕が使っているＨＴＭＬエディタは、</p>
+
+<p><a href="http://www.w-frontier.com/" target="_blank"><img class="non-border" src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" width="80" height="15" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" /></a>
+ です。</p>
+
+<p>当然ながら、
+・タグ等に色が付くし、
+・構文チェックもあるし、
+・ブレビューもできるし、
+等々。。。</p>
+
+<p>そして、最近ではＰＨＰにも対応しているみたい。</p>
+
+<p>　　
+実はこれからＰＨＰを本格的に触りたいと思ってＰＨＰ用エディタを探していたんだけど、
+せっかく
+<a href="http://www.w-frontier.com/" target="_blank"><img class="non-border" src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" width="80" height="15" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" /></a>
+ を使って慣れていたのにもったいないなあと思ってたところ、</p>
+
+<p><a href="http://www.w-frontier.com/" target="_blank"><img class="non-border" src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" width="80" height="15" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" /></a>
+ のサイトをみてたらＰＨＰ対応されていたので、超ラッキー！でした。</p>
+
+<p>僕の場合、ＷｅｂサーバやＰＨＰはＦｅｄｏｒａサーバには入れてるけど、
+メインマシン（WindowsXP）には入れてないんで、
+これからＰＨＰをインストールすれば、
+完全にＰＨＰ環境は整うと思っている次第。。。</p>
+
+<p>よって、今は
+<a href="http://www.w-frontier.com/" target="_blank"><img class="non-border" src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" width="80" height="15" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" /></a>
+ をバージョンアップして使ってます。
+今のバージョンはＢｅｔａ版みたいだけど、完成度も高いんで安心して使わせてもらってます。</p>
+
+<p>最近はリンクウェアにされてるようなんで、
+自分のホームページにリンクバナーを貼っておきました。
+いろんなのあったけどこんなのにしました。→
+<a href="http://www.w-frontier.com/" target="_blank"><img class="non-border" src="http://www.mk-mode.com/rails/images/ezHTML_b.gif" width="80" height="15" alt="高機能HTML/XHTML/スタイルシート対応エディタ(Web Frontier)" /></a></p>
+
+<p>みなさんもぜひお試しあれ。</p>
+
+<p>　　
+ＰＨＰについてはまたご報告します。</p>
+
+<p>　　
+じゃ。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/09/09004501/">* まるごとPHP購入！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-09T00:45:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:45</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ホームページ/'>ホームページ</a>, <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/php/'>PHP</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+最近、
+「 PHP 」が気になって仕方ないので、</p>
+
+<p>本屋で「 PHP 」の本で、
+初心者向け＆実用的そうなのを
+探してみました。</p>
+
+<p>　　
+結局、
+昔からなんか好きだった
+インプレスジャパンの「<strong>まるごとシリーズ</strong>」のムックを
+買いました。
+※前にもこのシリーズのＪａｖａ等のムック買ったことがあるし、
+初心者から中・上級者まで使えるシリーズなんで。</p>
+
+<p>　　
+しか～しっ、
+その本屋には新しいほうの
+第２弾（Vol.２）しか無かった。。。</p>
+
+<p>仕方なく Vol．２を買ったんだが・・・、</p>
+
+<p>ちらっと目を通してみたけど、
+やっぱり中身は
+Vol．１ を読んだ人でないとわからないような内容だった。
+（PHPは初心者なんで・・・）</p>
+
+<p>　　
+地元のほかの本屋にも Vol．1 は無かった（涙・・・）</p>
+
+<p>　　
+なので、
+Amazon に注文しました。</p>
+
+<p>今回Amazonで注文したのはVol．１の方です。</p>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4844320254&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4844326368&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<p>　　
+たぶん、
+Vol．１ の方は、
+PHP初心者にもわかりやすい内容だろう！と思って。
+（Amazonのコメント見る限り・・・）</p>
+
+<p>　　
+そして、
+本日届きました。</p>
+
+<p>肝心な内容の方は・・・</p>
+
+<p>予想通りの初心者向けで安心したところです。</p>
+
+<ul>
+<li>ＰＨＰとはなんぞや？</li>
+<li>Windows、ＬｉｎｕｘへのＰＨＰ環境の作成！</li>
+<li>ＰＨＰの基本的なプログラミングについて。</li>
+</ul>
+
+
+<p>などが載ってて、とりあえずは満足です。</p>
+
+<p>　　
+これで勉強すれば、
+あとはどんなPHP本でもすんなり入っていけるでしょう（？）</p>
+
+<p>勉強しま～っす。。。</p>
+
+<p>　　
+じゃまた。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/08/08014637/">* Fedoraのお気に入り！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-08T01:46:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>01:46</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+今日は、
+僕が自宅サーバを構築する上でいつも参考にさせてもらっているサイトをご紹介します。</p>
+
+<p>　　
+僕の自宅サーバは無料のＬｉｎｕｘである Ｆｅｄｏｒａ で構築しています。
+（現在はＦｅｄｏｒａ１０で運用中）
+Ｗｅｂサーバ、メールサーバ、ＦＴＰサーバ、ファイルサーバ、ＤＢサーバ、ブログ等々・・・
+Ｗｅｂ、メール、ブログがメインです。</p>
+
+<p>　　
+ちなみに Ｌｉｎｕｘ は ＦｅｄｏｒａＣｏｒｅ５ くらいの時から本格的に触りだしました。</p>
+
+<p>それ以前も雑誌の付録で付いている Ｌｉｎｕｘ は使ってみたことはありますが・・・。</p>
+
+<p>Ｆｅｄｏｒａでサーバを構築するにあたってよく参考にさせてもらっているのが、
+以下の２つです。</p>
+
+<p><a href="http://fedorasrv.com/" target="_blank"><img class="non-border" src="http://www.mk-mode.com/wordpress/wp-content/themes/mk-mode/images/fedorasrv.gif" width="88" height="31" border="1" alt="Fedoraで自宅サーバー構築" /></a>
+ <strong>Fedoraで自宅サーバー構築</strong></p>
+
+<p><a href="http://kajuhome.com" target="_blank"><img class="non-border" src="http://kajuhome.com/image/banner.gif" width="88" height="31" border="1" alt="はじめての自宅サーバ構築 - Fedora/CentOS -" /></a>
+ <strong>はじめての自宅サーバ構築 - Fedora/CentOS -</strong></p>
+
+<p>僕の自宅Ｆｅｄｏｒａサーバはこの２つがあるからこそ成り立っています。
+何かわからないことがあれば、お世話になり、
+ひじょーに感謝している次第です。</p>
+
+<p>　　
+他にもありますが、僕はこの２つで大体のことがわかります。
+Ｑ＆Ａなんかも丁寧に対応されてます。</p>
+
+<p>　　
+もし Ｆｅｄｏｒａ でサーバ構築される方がおられたら、
+ぜひおすすめです。</p>
+
+<p>　　
+リンクフリーでしたので、
+当 <strong><a href="http://www.mk-mode.com/wordpress/" title="ブログ">ブログ</a></strong> と <strong><a href="http://www.mk-mode.com/rails/" title="ホームページ">ホームページ</a></strong> にバナー貼らせてもらいました。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/02/07/07161539/">* W3Cのチェック（ＣＳＳ）！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-02-07T16:15:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>16:15</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ブログ/'>ブログ</a>, <a class='category' href='/blog/categories/ホームページ/'>ホームページ</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/w3c/'>W3C</a>, <a class='tag' href='/blog/tags/wordpress/'>WordPress</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんちは。</p>
+
+<p>　　
+先日、<a href="http://www.w3.org/" title="Ｗ３Ｃ">Ｗ３Ｃ</a> のチェックをした話をしました。
+（<a href="http://www.mk-mode.com/wordpress/?p=762" title="こちら">こちら</a> を参照）</p>
+
+<p>そこではＨＴＭＬのチェックをしたんだけど、
+ＣＳＳ（スタイルシート）も基準をクリアしているかどうかチェックができるので、
+今日は、ＣＳＳのチェックをしてみました。</p>
+
+<p>エラーありました。
+８コ 。。。</p>
+
+<p>　　
+<a href="http://www.mk-mode.com/rails/" title="ホームページ">ホームページ</a> の方はエラーゼロになりました。</p>
+
+<p>ということで早速、<a href="http://www.mk-mode.com/rails/" title="ホームページ">ホームページ</a> の方には <a href="http://www.w3.org/" title="Ｗ３Ｃ">Ｗ３Ｃ</a> ＣＳＳ用のバナーを貼りました。
+こんなの。
+<a href="http://jigsaw.w3.org/css-validator/check/referer">
+<img class="non-border" style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" alt="正当なCSSです!" />
+</a>
+（このボタンは今表示している画面についての結果を表示します。<a href="http://www.mk-mode.com/wordpress/" title="ブログ">ブログ</a>の方は未チェックなので、エラー多数だと思います。）</p>
+
+<p>　　
+エラーとは何だったかというと。。。
+僕の <a href="http://www.mk-mode.com/rails/" title="ホームページ">ホームページ</a> では、以下のような感じでした。</p>
+
+<ul>
+<li>スクロールバー設定の記述があった。</li>
+<li><ul>
+<li><ul>
+<li><blockquote><p>ＩＥ以外では使えないからか、エラーになってた。</p></blockquote></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>定義のだぶりがあった。</li>
+<li><ul>
+<li><ul>
+<li><blockquote><p>container の backgound の色と、<a> の文字色 が同じだった。</p></blockquote></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<p>でした。</p>
+
+<p>今後はＨＴＭＬ同様、サイト更新のつど ＣＳＳも <a href="http://www.w3.org/" title="Ｗ３Ｃ">Ｗ３Ｃ</a>チェックしまっす。
+（とりあえずホームページの方だけ）</p>
+
+<p>この<a href="http://www.w3.org/" title="Ｗ３Ｃ">Ｗ３Ｃ</a>ボタンは、
+水色系のほかにうす茶色系のバージョンもあります。</p>
+
+<p>　　
+さあ、ブログの方どうしよっかな～・・・</p>
+
+<p>　　
+ではまた。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <ul class="pager">
+    
+    <li class="previous"><a href="page/134">&larr; Older</a></li>
+    
+    <li><a href="/blog/archives">Blog Archives</a></li>
+    
+    <li class="next"><a href="page/132">Newer &rarr;</a></li>
+    
+  </ul>
+</div>
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <span class="nav-header">Access Counter</span>
+  <table class="access">
+    <tr>
+     <td>ブログ開設日</td><td class="access-val">2009-01-05</td>
+    </tr>
+    <tr>
+      <td>サーバ連続稼働時間</td><td class="access-val"><div id="uptime">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">Page View 合計</td>
+      <td class="access-val"><div id="pv-total">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">今日</td>
+      <td class="access-val"><div id="pv-today">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">昨日</td>
+      <td class="access-val"><div id="pv-yesterday">Reading... </div></td>
+    </tr>
+  </table>
+</section>
+<section class="well">
+  <ul class="nav nav-list">
+    <li class="nav-header">Information</li>
+  </ul>
+  <a href="http://www.pref.shimane.lg.jp/" target="_blank"><img class="information" src="/images/shimanekoL.jpg" alt="島根県" title="「島根県」へのリンクです。" /></a>
+  <a href="http://shimane-goen.jp/" target="_blank"><img class="information" src="/images/goen_2015_234_60.png" alt="ご縁の国しまね" title="「ご縁の国しまね」へのリンクです。" /></a>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- mk-mode BLOG Sidebar-2 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:200px;height:90px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9601859305"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</section>
+<section class="well">
+  <ul id="sponsord-link" class="nav nav-list">
+    <li class="nav-header">About Me</li>
+  </ul>
+  <p>趣味で自作の自宅Linuxサーバ運用。ブログではIT系(サーバ構築(Linux etc)、PG(Ruby etc)、PC Tips)についての話題を中心に公開。ルービックキューブも人生何回目かのマイブームで、今は非公式ながら Sub25！</p>
+  <a href="http://www.mk-mode.com/" target="_blank">Site</a>
+  <a href="http://twitter.com/ko_masaru/" target="_blank">Twitter</a>
+  <a href="http://www.facebook.com/masaru.koizumi.5" target="_blank">Facebook</a>
+  <a href="https://github.com/komasaru" target="_blank">GitHub</a>
+  <a href="http://www.youtube.com/user/komasaru888" target="_blank">YouTube</a>
+</section>
+<section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a>
+      </li>
+    
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Categories</li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (251)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (524)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (199)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (334)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Tag Cloud</li>
+  </ul>
+  <a href='/blog/tags/ajax' style='font-size: 100.58064516129032%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.16129032258064%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.64516129032258%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.58064516129032%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.16129032258064%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19354838709677%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.48387096774194%'>bash(18)</a> <a href='/blog/tags/bash' style='font-size: 100.19354838709677%'>Bash(1)</a> <a href='/blog/tags/bitly' style='font-size: 100.38709677419355%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19354838709677%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38709677419355%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.67741935483872%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19354838709677%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19354838709677%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19354838709677%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.74193548387096%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 106.0%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.96774193548387%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.58064516129032%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.83870967741936%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38709677419355%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19354838709677%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.74193548387096%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.70967741935483%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19354838709677%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7741935483871%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.35483870967742%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.80645161290323%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.16129032258064%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.96774193548387%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.64516129032258%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19354838709677%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.12903225806451%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.58064516129032%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.2258064516129%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.12903225806451%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38709677419355%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.96774193548387%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19354838709677%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.93548387096774%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.58064516129032%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38709677419355%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.51612903225806%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7741935483871%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19354838709677%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.54838709677419%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.70967741935483%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.58064516129032%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.58064516129032%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38709677419355%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.58064516129032%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.06451612903226%'>Linux(300)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.2258064516129%'>LinuxMint(58)</a> <a href='/blog/tags/lokka' style='font-size: 100.38709677419355%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 105.03225806451613%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.38709677419355%'>MariaDB(33)</a> <a href='/blog/tags/markdown' style='font-size: 101.16129032258064%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.58064516129032%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19354838709677%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.90322580645162%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 130.96774193548387%'>MySQL(160)</a> <a href='/blog/tags/namazu' style='font-size: 100.19354838709677%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.48387096774194%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.16129032258064%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.58064516129032%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38709677419355%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.35483870967742%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7741935483871%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19354838709677%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.41935483870968%'>Octopress(59)</a> <a href='/blog/tags/office' style='font-size: 100.19354838709677%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19354838709677%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.16129032258064%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19354838709677%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.38709677419355%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.0%'>Postfix(31)</a> <a href='/blog/tags/proxy' style='font-size: 100.38709677419355%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38709677419355%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.16129032258064%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.74193548387096%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.3225806451613%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.61290322580645%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38709677419355%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19354838709677%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19354838709677%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.16129032258064%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(310)</a> <a href='/blog/tags/samba' style='font-size: 101.74193548387096%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.58064516129032%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.54838709677419%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19354838709677%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38709677419355%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19354838709677%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38709677419355%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19354838709677%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.16129032258064%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.93548387096774%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7741935483871%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19354838709677%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.96774193548387%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19354838709677%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7741935483871%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.61290322580645%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38709677419355%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.96774193548387%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.54838709677419%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19354838709677%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.74193548387096%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.96774193548387%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.35483870967742%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.58064516129032%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7741935483871%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19354838709677%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.35483870967742%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.12903225806451%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19354838709677%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.93548387096774%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.7741935483871%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.74193548387098%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.58064516129032%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.74193548387098%'>XML(40)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38709677419355%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19354838709677%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.16129032258064%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.51612903225806%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19354838709677%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.16129032258064%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19354838709677%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.6774193548387%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.16129032258064%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38709677419355%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19354838709677%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.96774193548387%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.16129032258064%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.58064516129032%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19354838709677%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.74193548387096%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.6774193548387%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.09677419354838%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38709677419355%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19354838709677%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.54838709677419%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19354838709677%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19354838709677%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.16129032258064%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.96774193548387%'>端末(5)</a> 
+</section>
+<section class="well">
+  <ul id="month-list" class="nav nav-list">
+    <li class="nav-header">Monthly Archives</li>
+  </ul>
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/08/'>2015-08 (7)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1397 posts
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/komasaru">@komasaru</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'komasaru',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="well">
+  <ul id="twitter-timeline" class="nav">
+    <li class="nav-header">Latest Tweets</li>
+  </ul>
+  <a class="twitter-timeline"  href="https://twitter.com/ko_masaru"  data-widget-id="293992385095016448">@ko_masaru からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+
+
+<section class="well">
+  <ul id="sponsord-link" class="nav">
+    <li class="nav-header">Sponsored Link</li>
+  </ul>
+  <span id="sponsored-link">
+    <object data="http://komasaru.github.io/obj_sponsored_link.html" type="text/html" width="254" height="200"></object>
+  </span>
+</section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p id="page-top">
+  <a href="#wrapper">
+    <img src="/images/pagetop.png" alt="PAGE TOP" />
+  </a>
+</p>
+<p>
+  Copyright &copy; 2015 - mk-mode.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mkmodeblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

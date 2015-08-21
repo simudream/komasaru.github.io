@@ -1,0 +1,1006 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 数学 | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/数学/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - 円周率計算（BBP の公式使用）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/05/19/ruby-pi-computation-by-bbp/"/>
+    <updated>2015-05-19T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/05/19/ruby-pi-computation-by-bbp</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>前回、 BBP(Bailey, Borwein, Plouffe) の公式を使用して任意の桁の円周率を16進で計算するアルゴリズムを C++ で実装しました。</p>
+
+<ul>
+<li><a href="/2015/05/17/cpp-pi-computation-by-bbp/" title="C++ - 円周率計算（BBP の公式使用）！">C++ - 円周率計算（BBP の公式使用）！</a></li>
+</ul>
+
+
+<p>今回は、同じアルゴリズムを Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>ruby 2.2.2-p95 での作業を想定。</li>
+<li>計算に使用したマシンは CPU: Intel Core2Duo E8500 ( 3.16GHz ), MEM: 3.9GiB</li>
+</ul>
+
+
+<h3>1. BBP の公式を使用した円周率計算について</h3>
+
+<p>前回の記事を参照。</p>
+
+<ul>
+<li><a href="/2015/05/17/cpp-pi-computation-by-bbp/" title="C++ - 円周率計算（BBP の公式使用）！">C++ - 円周率計算（BBP の公式使用）！</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>第1引数で計算を開始する桁を指定し、その桁から 10 桁を出力する仕様。（べき剰余の演算も自前で実装。「<a href="/2015/05/15/ruby-implementation-of-modular-exponentiation" title="Ruby - べき剰余アルゴリズムの実装！">Ruby - べき剰余アルゴリズムの実装！</a>」参照）</p>
+
+<pre><code class="ruby pi_bbp.rb">#!/usr/local/bin/ruby
+#=======================================
+# Computation of pi by BBP algorithm.
+#=======================================
+require 'benchmark'
+
+class PiBbp
+  EPS = 1.0e-17  # Loop-exit accuration of the right summation
+
+  def comp_pi(d)
+    d -= 1
+    pi = (4 * s(1, d) - 2 * s(4, d) - s(5, d) - s(6, d)) % 1.0
+    printf("FRACTION  : %.15f\n", pi)
+    printf("HEX DIGITS: %10x\n", (pi * 16 ** 10).truncate)
+  end
+
+  def s(j, d)
+    # Left sum
+    s = 0.0
+    k = 0
+    while k &lt;= d
+      r = 8 * k + j
+      t = mod_exp(16, d - k, r)
+      t /= r.to_f
+      s += t % 1.0
+      s %= 1.0
+      k += 1
+    end
+
+    # Right sum
+    loop do
+      r = 8 * k + j
+      t = 16.0 ** (d - k) / r
+      break if t &lt; EPS
+      s += t
+      s %= 1.0
+      k += 1
+    end
+
+    return s
+  end
+
+  def mod_exp(b, e, m)
+    return 1 if e == 0
+    ans = mod_exp(b, e / 2, m)
+    ans = (ans * ans) % m
+    ans = (ans * b) % m if e % 2 == 1
+    return ans
+  end
+end
+
+exit unless __FILE__ == $0
+exit unless ARGV[0]
+obj = PiBbp.new
+res = Benchmark.realtime do
+  obj.comp_pi(ARGV[0].to_i)
+end
+puts "( TIME: #{res} seconds )"
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/a091c46595cdbc8d276a" title="Gist - Ruby script code to compute pi with BBP formula.">Gist - Ruby script to compute pi with BBP formula.</a></li>
+</ul>
+
+
+<h3>3. 動作確認</h3>
+
+<p><code>HEX DIGITS</code> が求める円周率（16進）。（但し、計算公式の特性上、後半の桁の値は保証されない）</p>
+
+<pre><code class="text">$ ./pi_bbp.rb 1
+FRACTION  : 0.141592653589793
+HEX DIGITS: 243f6a8885
+TIME: 0.00012832199718104675 seconds )
+
+$ ./pi_bbp.rb 91
+FRACTION  : 0.910345837630448
+HEX DIGITS: e90c6cc0ac
+TIME: 0.0006358680002449546 seconds )
+
+$ ./pi_bbp.rb 991
+FRACTION  : 0.284592623548894
+HEX DIGITS: 48db0fead3
+TIME: 0.008182067002053373 seconds )
+
+$ ./pi_bbp.rb 9991
+FRACTION  : 0.151042259944499
+HEX DIGITS: 26aab49ec6
+( TIME: 0.10906490000343183 seconds )
+
+$ ./pi_bbp.rb 99991
+FRACTION  : 0.633399233605157
+HEX DIGITS: a22673c1a5
+( TIME: 1.3719816630000423 seconds )
+
+$ ./pi_bbp.rb 999991
+FRACTION  : 0.624957331312628
+HEX DIGITS: 9ffd342362
+( TIME: 14.838047453999025 seconds )
+
+$ ./pi_bbp.rb 9999991
+FRACTION  : 0.756411434763846
+HEX DIGITS: c1a42e06a1
+TIME: 177.62035008599923 seconds
+</code></pre>
+
+<p>（99,999,991桁目からの10桁（1億桁目まで）は計算していないが、当方の環境では30分少しかかりそう）</p>
+
+<h3>4. 計算結果の検証</h3>
+
+<p>&ldquo;<a href="http://bellard.org/pi/pi2700e9/pidigits.html" title="Pi Digits">Pi Digits</a>&rdquo; の計算結果と比較し、任意のあらゆる部分が一致することを確認した。</p>
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://xn--w6q13e505b.jp/" title="円周率.jp">円周率.jp</a></li>
+<li><a href="http://www.experimentalmath.info/bbp-codes/" title="BBP Code Directory">BBP Code Directory</a></li>
+<li><a href="http://bellard.org/pi/pi2700e9/announce.html" title="Pi Computation Record">Pi Computation Record</a></li>
+</ul>
+
+
+<hr />
+
+<p>当然ながら同じアルゴリズムを C++ に実装した場合と比べると随分と速度が遅いです。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[C++ - 円周率計算（BBP の公式使用）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/05/17/cpp-pi-computation-by-bbp/"/>
+    <updated>2015-05-17T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/05/17/cpp-pi-computation-by-bbp</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>円周率を計算する際、小数点以下1桁目から希望の桁までを全て計算する方法以外に、希望の桁だけを計算する方法もあります。</p>
+
+<p>小数点以下1桁目から希望の桁までを全て計算した後、任意の桁の値が正しいかどうかを検証するために使用したりします。</p>
+
+<p>今回は BBP(Bailey, Borwein, Plouffe ) の公式を使用して任意の桁の円周率を16進で計算するアルゴリズムを、C++ で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>計算に使用したマシンは CPU: Intel Core2Duo E8500 ( 3.16GHz ), MEM: 3.9GiB</li>
+</ul>
+
+
+<h3>1. BBP の公式を使用した円周率計算について</h3>
+
+<p>（数式が多いので <script type="math/tex">\LaTeX</script> で作成した文書を貼り付け）（PDF ファイルは「<a href="http://www.mk-mode.com/rails/archive#arc-math" title="mk-mode SITE: アーカイブ">mk-mode SITE: アーカイブ</a>」に置いた）</p>
+
+<p><img src="/images/2015/05/17/PI_BBP.png" title="PI_BBP" alt="PI_BBP" /></p>
+
+<h3>2. C++ ソースコードの作成</h3>
+
+<p>第1引数で計算を開始する桁を指定し、その桁から 14 桁ほど計算後に先頭 10 桁を出力する仕様。（べき剰余の演算も自前で実装。「<a href="/2015/05/13/cpp-implementation-of-modular-exponentiation" title="C++ - べき剰余アルゴリズムの実装！">C++ - べき剰余アルゴリズムの実装！</a>」参照）</p>
+
+<pre><code class="c pi_bbp.cpp">/***************************************************************
+ * Computing pi with BBP formula.
+ **************************************************************/
+#include &lt;math.h&gt;
+#include &lt;iostream&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+using namespace std;
+
+class Bbp
+{
+    // Declaration
+    int     d;                          // Digits to compute
+    double  pi;                         // Pi
+    char    pi_hex[14];                 // Pi(Hex)
+    clock_t t0, t1;                     // Time
+    double  S(int);                     // Compute S
+    long    compModExp(int, int, int);  // Computer Modular Exponentiation
+    void    convHex(double, char[]);    // Convert Pi to Hex-string
+
+public:
+    Bbp(int);            // Constructor
+    void compPi();       // Compute PI
+};
+
+/*
+ * Constructor
+ */
+Bbp::Bbp(int d)
+{
+    cout &lt;&lt; "**** PI Computation ( digit: " &lt;&lt; d &lt;&lt; " )" &lt;&lt; endl;
+    this-&gt;d = d - 1;
+}
+
+/*
+ * Compute PI
+ */
+void Bbp::compPi()
+{
+    // Time (start)
+    t0 = clock();
+
+    // Compute Pi
+    pi = 4.0 * S(1) - 2.0 * S(4) - S(5) - S(6);
+    pi = pi - (int)pi + 1.0;
+    convHex(pi, pi_hex);
+    printf("FRACTION  : %.15f\n",   pi);
+    printf("HEX DIGITS: %10.10s\n", pi_hex);
+
+    // Time (end of computation)
+    t1 = clock();
+    cout &lt;&lt; "( TIME: " &lt;&lt; (double)(t1 - t0) / CLOCKS_PER_SEC
+         &lt;&lt; " seconds )" &lt;&lt; endl;
+}
+
+/*
+ * Compute S
+ */
+double Bbp::S(int j)
+{
+    double s = 0.0;        // Summation of Total, Left
+    double t;              // Each term of right summation
+    int    r;              // Denominator
+    int    k;              // Loop index
+    double EPS = 1.0e-17;  // Loop-exit accuration of the right summation
+
+    // Left Sum (0 ... d)
+    for (k = 0; k &lt;= d; k++) {
+        r = 8 * k + j;
+        t = (double)compModExp(16, d - k, r);
+        t /= r;
+        s += t - (int)t;
+        s -= (int)s;
+    }
+
+    // Right sum (d + 1 ...)
+    while (1) {
+        r = 8 * k + j;
+        t = pow(16.0, (double)(d - k));
+        t /= (double)r;
+        if (t &lt; EPS) break;
+        s += t;
+        s -= (int)s;
+        k ++;
+    }
+
+    return s;
+}
+
+/*
+ * Compute Modular Exponentiation
+ */
+long Bbp::compModExp(int b, int e, int m)
+{
+    long ans;
+
+    if (e == 0) return 1;
+
+    ans = compModExp(b, e / 2, m);
+    ans = (ans * ans) % m;
+    if ((e % 2) == 1) ans = (ans * b) % m;
+
+    return ans;
+}
+
+/*
+ * Convert Pi to Hex-strings
+ */
+void Bbp::convHex(double x, char chx[]) {
+    double y;
+    int i;
+    const char hx[] = "0123456789ABCDEF";
+
+    y = fabs(x);
+    for (i = 0; i &lt; 16; i++) {
+        y = 16.0 * (y - floor(y));
+        chx[i] = hx[(int)(y)];
+    }
+}
+
+int main(int argc, char** argv)
+{
+    try
+    {
+        // Getting arguments
+        if (argc == 1) {
+            cout &lt;&lt; "Please input a digit to compute!" &lt;&lt; endl;
+            return EXIT_FAILURE;
+        }
+        int d = atoi(argv[1]);
+
+        // Instantiation
+        Bbp objMain(d);
+
+        // Compute PI
+        objMain.compPi();
+    }
+    catch (...) {
+        cout &lt;&lt; "ERROR!" &lt;&lt; endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/9e418eb666ab649ef589" title="Gist - C++ source code to compute pi with BBP formula.">Gist - C++ source code to compute pi with BBP formula.</a></li>
+</ul>
+
+
+<h3>3. C++ ソースコードのコンパイル</h3>
+
+<p>作成した C++ ソースコードを以下のようにコンパイル。<br/>
+（<code>-Wall</code> 警告も出力するオプション、<code>-O2</code> 最適化のオプション）</p>
+
+<pre><code class="text">$ g++ -Wall -O2 -o pi_bbp pi_bbp.cpp
+</code></pre>
+
+<h3>4. 動作確認</h3>
+
+<p><code>HEX DIGITS</code> が求める円周率（16進）。（但し、計算公式の特性上、後半の桁の値は保証されない）</p>
+
+<pre><code class="text">$ ./pi_bbp 1
+**** PI Computation ( digit: 1 )
+FRACTION  : 0.141592653589793
+HEX DIGITS: 243F6A8885
+( TIME: 5.1e-05 seconds )
+
+$ ./pi_bbp 91
+**** PI Computation ( digit: 91 )
+FRACTION  : 0.910345837630448
+HEX DIGITS: E90C6CC0AC
+( TIME: 0.0001 seconds )
+
+$ ./pi_bbp 991
+**** PI Computation ( digit: 991 )
+FRACTION  : 0.284592623548894
+HEX DIGITS: 48DB0FEAD3
+( TIME: 0.001648 seconds )
+
+$ ./pi_bbp 9991
+**** PI Computation ( digit: 9991 )
+FRACTION  : 1.151042259944499
+HEX DIGITS: 26AAB49EC6
+( TIME: 0.015286 seconds )
+
+$ ./pi_bbp 99991
+**** PI Computation ( digit: 99991 )
+FRACTION  : 1.633399233605157
+HEX DIGITS: A22673C1A5
+( TIME: 0.173048 seconds )
+
+$ ./pi_bbp 999991
+**** PI Computation ( digit: 999991 )
+FRACTION  : 1.624957331312628
+HEX DIGITS: 9FFD342362
+( TIME: 2.06615 seconds )
+
+$ ./pi_bbp 9999991
+**** PI Computation ( digit: 9999991 )
+FRACTION  : 0.756411434763846
+HEX DIGITS: C1A42E06A1
+( TIME: 24.2591 seconds )
+
+$ ./pi_bbp 99999991
+**** PI Computation ( digit: 99999991 )
+FRACTION  : 0.610248188412270
+HEX DIGITS: 9C3939ABAC
+( TIME: 280.681 seconds )
+</code></pre>
+
+<h3>5. 計算結果検証</h3>
+
+<p>&ldquo;<a href="http://bellard.org/pi/pi2700e9/pidigits.html" title="Pi Digits">Pi Digits</a>&rdquo; の計算結果と比較し、任意のあらゆる部分が一致することを確認した。</p>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://xn--w6q13e505b.jp/" title="円周率.jp">円周率.jp</a></li>
+<li><a href="http://www.experimentalmath.info/bbp-codes/" title="BBP Code Directory">BBP Code Directory</a></li>
+<li><a href="http://bellard.org/pi/pi2700e9/announce.html" title="Pi Computation Record">Pi Computation Record</a></li>
+</ul>
+
+
+<hr />
+
+<p>Chudnovsky の公式を使用して小数点以下1桁目から1億桁目まで計算するのと、 BBP の公式を使用して1億桁目（但し、16進）を計算するのとではあまり計算時間に差がないようなので、円周率の任意の桁の値を検証するのにそれほどストレスを感じないでしょう。（当然、環境にもよるでしょうが）</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - べき剰余アルゴリズムの実装！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/05/15/ruby-implementation-of-modular-exponentiation/"/>
+    <updated>2015-05-15T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/05/15/ruby-implementation-of-modular-exponentiation</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>前回 C++ で「べき剰余」のアルゴリズムを実装しました。</p>
+
+<ul>
+<li><a href="/2015/05/13/cpp-implementation-of-modular-exponentiation" title="C++ - べき剰余アルゴリズムの実装！">C++ - べき剰余アルゴリズムの実装！</a></li>
+</ul>
+
+
+<p>今回は Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>Ruby 2.2.2-p95 での作業を想定。</li>
+</ul>
+
+
+<h3>1. べき剰余、べき剰余演算アルゴリズムについて</h3>
+
+<p>前回の記事を参照。</p>
+
+<ul>
+<li><a href="/2015/05/13/cpp-implementation-of-modular-exponentiation" title="C++ - べき剰余アルゴリズムの実装！">C++ - べき剰余アルゴリズムの実装！</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>まず、非再帰的な記述方法で作成。</p>
+
+<pre><code class="ruby modular_exponentiation_1.rb">#!/usr/local/bin/ruby
+#*************************************
+# Modular Exponentiation (iterative). 
+#*************************************
+class ModularExponentiation
+  def comp_mod_exp(b, e, m)
+    ans = 1
+    while e &gt; 0
+      ans = (ans * b) % m if (e &amp; 1) == 1
+      e &gt;&gt;= 1
+      b = (b * b) % m
+    end
+    return ans
+  rescue =&gt; e
+    raise
+  end
+end
+
+exit unless __FILE__ == $0
+
+begin
+  # me = b^e mod m
+  b, e, m = 12345, 6789, 4567
+  obj = ModularExponentiation.new
+  me = obj.comp_mod_exp(b, e, m)
+  puts "#{b}^#{e} mod #{m} = #{me}"
+rescue =&gt; e
+  puts "[#{e.class}] #{e.message}"
+  e.backtrace.each{ |bt| puts "\t#{bt}" }
+  exit 1
+end
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/bcbd785acda1bc2abb69" title="Gist - Ruby script to compute modular-exponentiation iteratively.">Gist - Ruby script to compute modular-exponentiation iteratively.</a></li>
+</ul>
+
+
+<p>次に、再帰的な記述方法で作成。(<code>comp_mod_exp</code> メソッドの内容が異なるだけ）</p>
+
+<pre><code class="ruby modular_exponentiation_2.rb">#!/usr/local/bin/ruby
+#*************************************
+# Modular Exponentiation (recursive). 
+#*************************************
+class ModularExponentiation
+  def comp_mod_exp(b, e, m)
+    return 1 if e == 0
+    ans = comp_mod_exp(b, e / 2, m)
+    ans = (ans * ans) % m
+    ans = (ans * b) % m if e % 2 == 1
+    return ans
+  rescue =&gt; e
+    raise
+  end
+end
+
+exit unless __FILE__ == $0
+
+begin
+  # me = b^e mod m
+  b, e, m = 12345, 6789, 4567
+  obj = ModularExponentiation.new
+  me = obj.comp_mod_exp(b, e, m)
+  puts "#{b}^#{e} mod #{m} = #{me}"
+rescue =&gt; e
+  puts "[#{e.class}] #{e.message}"
+  e.backtrace.each{ |bt| puts "\t#{bt}" }
+  exit 1
+end
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/3b68332a54f297a66016" title="Gist - Ruby script to compute modular-exponentiation recursively.">Gist - Ruby script to compute modular-exponentiation recursively.</a></li>
+</ul>
+
+
+<h3>3. 動作確認</h3>
+
+<pre><code class="text">$ ./modular_exponentiation_1
+12345^6789 mod 4567 = 62
+
+$ ./modular_exponentiation_2
+12345^6789 mod 4567 = 62
+</code></pre>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://ja.wikipedia.org/wiki/%E5%86%AA%E5%89%B0%E4%BD%99" title="冪剰余 - Wikipedia">冪剰余 - Wikipedia</a></li>
+</ul>
+
+
+<hr />
+
+<p>Ruby で「べき剰余」を計算する際に役立ちます。（実際、個人的にべき剰余の計算が必要な局面があるので）</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[C++ - べき剰余アルゴリズムの実装！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/05/13/cpp-implementation-of-modular-exponentiation/"/>
+    <updated>2015-05-13T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/05/13/cpp-implementation-of-modular-exponentiation</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>C++ に「べき剰余アルゴリズム」を実装したい事案があったので、記録しておきます。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>G++ 4.8.2, 4.9.1 での作業を想定。（特別なことはしていないので、他のバージョンでも問題ないはず）</li>
+</ul>
+
+
+<h3>1. べき剰余について</h3>
+
+<p>その名のとおり、べき乗の剰余のことである。</p>
+
+<p>底を <script type="math/tex">b(\in\mathbb{Z})</script> 、べき指数を <script type="math/tex">e(\in\mathbb{Z})</script> 、剰余を <script type="math/tex">m(\in\mathbb{Z})</script> とすると、べき剰余 <script type="math/tex">c</script> は次のように表される。</p>
+
+<p><script type="math/tex; mode=display">
+c \equiv b<sup>e</sup> \pmod m
+</script></p>
+
+<h3>2. べき剰余演算アルゴリズムについて</h3>
+
+<p>当然単純にべき乗後に剰余を計算してもよいが、計算機ではべき乗時にすぐにオーバーフローしてしまうことは目に見えている。（この場合の計算量は、 <script type="math/tex">O(\log(e))</script>回の乗算と最後の剰余１回となる）<br/>
+そこで、計算機での計算に都合のいいように計算しなければならない。</p>
+
+<p>たとえば、<script type="math/tex">a, b (\in\mathbb{Z})</script> があるとき、</p>
+
+<p><script type="math/tex; mode=display">
+(a \times b)\pmod m \equiv ((a\pmod m) \times (b\pmod m))\pmod m
+</script></p>
+
+<p>と変形できる。このアルゴリズムを使用すると、剰余計算が<script type="math/tex">O(\log(e))</script>回に増えるが乗算それぞれの計算コストは低くなるため、計算機にとってはパフォーマンスが良くなる。</p>
+
+<p>また、プログラミングで実装する際、</p>
+
+<p><script type="math/tex; mode=display">
+b<sup>e</sup> =
+\begin{cases}
+    b \, ( b^{2})^{\frac{e - 1}{2}} &amp; \mbox{( } e \mbox{ ：奇数)} \
+    (b^{2})^{\frac{e}{2}} &amp; \mbox{( } e \mbox{ ：偶数)}
+\end{cases}
+</script></p>
+
+<p>であることを再帰的に利用するとパフォーマンスがよくなるだろう。</p>
+
+<h3>3. C++ ソースコードの作成</h3>
+
+<p>まず、比較のために非再帰的な記述方法で作成。</p>
+
+<pre><code class="c ModularExponentiation1.cpp">/***************************************************************
+ * Modular Exponentiation (iterative).
+ **************************************************************/
+#include &lt;iostream&gt;
+#include &lt;stdlib.h&gt;
+
+using namespace std;
+
+class ModularExponentiation
+{
+    int ans;                    // Answer
+public:
+    int compME(int, int, int);  // Compute Modular Exponentiation
+};
+
+/*
+ * Compute Modular Exponentiation
+ */
+int ModularExponentiation::compME(int b, int e, int m)
+{
+    ans = 1;
+
+    while (e &gt; 0) {
+       if ((e &amp; 1) == 1) ans = (ans * b) % m;
+       e &gt;&gt;= 1;
+       b = (b * b) % m;
+    }
+
+    return ans;
+}
+
+int main()
+{
+    try
+    {
+        // Declaration
+        int b, e, m, me;  // me = b^e mod m
+        b = 12345; e = 6789; m = 4567;
+
+        // Instantiation
+        ModularExponentiation objMain;
+
+        // Modular Exponentiation Computation
+        me = objMain.compME(b, e, m);
+
+        // Display
+        cout &lt;&lt; b &lt;&lt; "^" &lt;&lt; e &lt;&lt; " mod " &lt;&lt; m &lt;&lt; " = "
+             &lt;&lt; me &lt;&lt; endl;
+    }
+    catch (...) {
+        cout &lt;&lt; "ERROR!" &lt;&lt; endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/573f949235ef5d57ea2f" title="Gist - C++ source code to compute modular exponetiation iteratively.">Gist - C++ source code to compute modular exponetiation iteratively.</a></li>
+</ul>
+
+
+<p>次に、再帰的な記述方法で作成。(<code>compME</code> 関数の内容が異なるだけ）</p>
+
+<pre><code class="c ModularExponentiation2.cpp">/***************************************************************
+ * Modular Exponentiation (recursive).
+ **************************************************************/
+#include &lt;iostream&gt;
+#include &lt;stdlib.h&gt;
+
+using namespace std;
+
+class ModularExponentiation
+{
+    int ans;                    // Answer
+public:
+    int compME(int, int, int);  // Compute Modular Exponentiation
+};
+
+/*
+ * Compute Modular Exponentiation
+ */
+int ModularExponentiation::compME(int b, int e, int m)
+{
+    if (e == 0) return 1;
+
+    ans = compME(b, e / 2, m);
+    ans = (ans * ans) % m;
+    if (e % 2 == 1) ans = (ans * b) % m;
+
+    return ans;
+}
+
+int main()
+{
+    try
+    {
+        int b, e, m, me;  // me = b^e mod m
+        b = 12345; e = 6789; m = 4567;
+
+        // Instantiation
+        ModularExponentiation objMain;
+
+        // Compute Modular Exponentiation
+        me = objMain.compME(b, e, m);
+
+        // Display
+        cout &lt;&lt; b &lt;&lt; "^" &lt;&lt; e &lt;&lt; " mod " &lt;&lt; m &lt;&lt; " = "
+             &lt;&lt; me &lt;&lt; endl;
+    }
+    catch (...) {
+        cout &lt;&lt; "ERROR!" &lt;&lt; endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/03c42ccb8ea0eda3722e" title="Gist - C++ source code to compute modular exponetiation recursively.">Gist - C++ source code to compute modular exponetiation recursively.</a></li>
+</ul>
+
+
+<h3>4. C++ ソースコードのコンパイル</h3>
+
+<p>作成した C++ ソースコードを以下のようにコンパイル。<br/>
+（<code>-Wall</code> 警告も出力するオプション、<code>-O2</code> 最適化のオプション）</p>
+
+<pre><code class="text">$ g++ -Wall -O2 -o ModularExponentiation1 ModularExponentiation1.cpp
+$ g++ -Wall -O2 -o ModularExponentiation2 ModularExponentiation2.cpp
+</code></pre>
+
+<h3>5. 動作確認</h3>
+
+<pre><code class="text">$ ./ModularExponentiation1
+12345^6789 mod 4567 = 62
+
+$ ./ModularExponentiation2
+12345^6789 mod 4567 = 62
+</code></pre>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://ja.wikipedia.org/wiki/%E5%86%AA%E5%89%B0%E4%BD%99" title="冪剰余 - Wikipedia">冪剰余 - Wikipedia</a></li>
+</ul>
+
+
+<hr />
+
+<p>べき乗の計算だけで莫大な桁数になるものが、整数型の範囲内でコストをかけずに瞬時に計算できるのはよいですね。</p>
+
+<p>プログラミングで実装する際のアルゴリズム考察は重要であると再認識した次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - 円周率計算（Chudnovsky の公式使用）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/05/08/ruby-pi-computation-by-chudnovsky-bsa-with-gmp/"/>
+    <updated>2015-05-08T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/05/08/ruby-pi-computation-by-chudnovsky-bsa-with-gmp</id>
+    <content type="html"><![CDATA[<p>こんにちは。</p>
+
+<p>前回、C++ で Chudnovsky の公式を使用して円周率を１億桁まで計算しました。（任意精度算術ライブラリ GMP(The GNU Multi Precision Arithmetic Library) を使用）</p>
+
+<p>今回は、同じことを Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.1(64bit) での作業を想定。</li>
+<li>演算には GMP(The GNU Multi Precision Arithmetic Library) 任意精度算術ライブラリを Ruby 用にラップした gmp という RubyGems ライブラリ使用するので、インストール済みであること。</li>
+<li>RubyGems ライブラリ gmp で浮動小数点数を扱う場合は MPFR(The GNU Multiple Precision Floating-Point Reliably) ライブラリが必要であるので、インストール済みであること。（後日、ソースをビルドしてインストール方法は紹介する予定）</li>
+<li>計算に使用したマシンは CPU: Intel Core2Duo E8500 ( 3.16GHz ), MEM: 3.9GiB</li>
+</ul>
+
+
+<h3>1. Chudonvsky の公式を使用した円周率計算について</h3>
+
+<p>前回の記事を参照。（「<a href="/2015/05/06/cpp-pi-computation-by-chudnovsky-bsa-with-gmp/" title="C++ - 円周率計算（Chudnovsky の公式使用）！">C++ - 円周率計算（Chudnovsky の公式使用）！</a>」）</p>
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>級数計算部分で Binary Splitting Algorithm を適用し、四則演算・平方根計算では GMP ライブラリを使用する。</p>
+
+<p>注意する点は、</p>
+
+<ul>
+<li><code>n</code> を 1 進める度に <script type="math/tex">log(53360^{3}) / log(10) \simeq 14.1816</script> 桁精度が上昇する。（14桁に丸めても問題ない）</li>
+<li>浮動小数点の精度を <script type="math/tex">a</script> とする場合、バイナリ <code>mpf_class</code> の精度は <script type="math/tex">a \times log_2(10)</script> となる。</li>
+<li>【疑問点】スクリプト中で <code>@n</code>, <code>@prec</code> 設定時に <code>@digits</code> を <code>+ 1</code> しているのは、こうしないと最後の１桁が合わなくなるため。</li>
+</ul>
+
+
+<pre><code class="ruby chudnovsky.rb">#!/usr/local/bin/ruby
+#**************************************************************
+# Computing pi by Binary Splitting Algorithm with GMP libarary.
+#**************************************************************
+require 'gmp'
+
+class Chudnovsky
+  # Constants
+  A = 13591409
+  B = 545140134
+  C = 640320
+  D = 426880
+  E = 10005
+  DIGITS_PER_TERM = Math.log(53360 ** 3) / Math.log(10)  # = 14.1816474627254776555
+
+  def initialize(digits)
+    @digits = digits
+    @c3_24  = C ** 3 / 24
+    @n      = ((@digits + 1) / DIGITS_PER_TERM).truncate  # Somehow, need to add 1 to digits.
+    @prec   = ((@digits + 1) * Math.log2(10)).truncate    # Somehow, need to add 1 to digits.
+  end
+
+  # Compute PI
+  def comp_pi
+    puts "**** PI Computation ( #{@digits} digits )"
+
+    begin
+      # Compute Pi
+      pqt = comp_pqt(0, @n)
+      pi  = GMP.F(D)
+      pi *= GMP.F(E, @prec).sqrt
+      pi *= pqt[:q]
+      pi /= A * pqt[:q] + pqt[:t]
+
+      # Output
+      File.open("pi.txt", "w") { |f| f.puts pi }
+    rescue =&gt; e
+      raise
+    end
+  end
+
+private
+
+  # Compute PQT (by Binary Splitting Algorith)
+  def comp_pqt(n1, n2)
+    pqt = Hash.new
+
+    begin
+      if n1 + 1 == n2
+        pqt[:p]  = GMP.Z(2 * n2 - 1)
+        pqt[:p] *= GMP.Z(6 * n2 - 1)
+        pqt[:p] *= GMP.Z(6 * n2 - 5)
+        pqt[:q]  = GMP.Z(@c3_24 * n2 * n2 * n2)
+        pqt[:t]  = GMP.Z((A + B * n2) * pqt[:p])
+        pqt[:t]  = pqt[:t].neg if (n2 &amp; 1) == 1
+      else
+        m = (n1 + n2) / 2
+        res1 = comp_pqt(n1, m)
+        res2 = comp_pqt(m, n2)
+        pqt[:p] = res1[:p] * res2[:p]
+        pqt[:q] = res1[:q] * res2[:q]
+        pqt[:t] = res1[:t] * res2[:q]+ res1[:p] * res2[:t]
+      end
+
+      return pqt
+    rescue =&gt; e
+      raise
+    end
+  end
+end
+
+exit unless __FILE__ ==$0
+
+begin
+  digits = ARGV[0] ? ARGV[0].to_i : 100
+  obj = Chudnovsky.new(digits)
+  res = Benchmark.realtime { obj.comp_pi }
+  puts "( TIME: #{res} seconds )"
+rescue =&gt; e
+  puts "[#{e.class}] #{e.message}\n"
+  e.backtrace.each{ |tr| puts "\t#{tr}" }
+  exit 1
+end
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/a5639355b3b37302a970" title="Gist - Ruby script to compute pi with Chudnovsky formula and Binary Splitting Algorithm using GMP libarary.">Gist - Ruby script to compute pi by Chudnovsky formula and Binary Splitting Algorithm using GMP libarary.</a></li>
+</ul>
+
+
+<h3>3. 動作確認</h3>
+
+<p>引数に計算したい桁数を指定して実行する。（以下は 1,000,000 桁を計算する例。引数a指定しない場合のデフォルト値は <code>100</code>）</p>
+
+<pre><code class="text">$ ./chudnovsky.rb 1000000
+**** PI Computation ( 1000000 digits )
+( TIME: 1.8596882179990644 seconds )
+</code></pre>
+
+<p>計算結果は &ldquo;pi.txt&rdquo; ファイルに出力される。<br/>
+以下は、1,000,000 桁のうち最初と最後の150桁を抜粋後、可読性を高めるために整形。また、指数表現で出力されることに留意。</p>
+
+<pre><code class="text pi.txt">0.314159265358979323846264338327950288419716939937510
+   58209749445923078164062862089986280348253421170679
+   82148086513282306647093844609550582231725359408128
+                      :
+                      :
+                      :
+   99779937654232062337471732470336976335792589151526
+   03156140333212728491944184371506965520875424505989
+   567879613033116462839963464604220901061057794581514e+1
+</code></pre>
+
+<h3>4. 計算結果検証</h3>
+
+<p>本来は別の公式・アルゴリズムで計算した結果と比較すべきでしょうが、（今回は計算桁数も少なくテキストエディタで開けるので）取り急ぎ任意の桁の数字が誤っていないかを別途計算済みの結果と目視で比較確認する。</p>
+
+<p>当方は &ldquo;<a href="http://bellard.org/pi/pi2700e9/pidigits.html" title="Pi Digits">Pi Digits</a>&rdquo; の計算結果と比較し、最初・中間・最後の部分が一致することを確認した。（現時点では１億桁までは）</p>
+
+<p>テキストファイルのサイズは 1,000 万桁で 10MB(約 9.5 MiB), 1 億桁で 100MB(約 95.4MiB) になる。非力なマシンの場合は（そうでない場合も）テキストエディタで開くのに注意すること！</p>
+
+<h3>5. 桁別計算時間検証</h3>
+
+<table class="common">
+  <tr><td class="right">計算桁数(桁)</td><td class="right">計算時間(秒)（結果出力時間を含む）</td></tr>
+  <tr><td class="right">        100</td><td class="right">  0.00043896799616049975</td></tr>
+  <tr><td class="right">      1,000</td><td class="right">  0.00116081099986331540</td></tr>
+  <tr><td class="right">     10,000</td><td class="right">  0.01096508799673756600</td></tr>
+  <tr><td class="right">    100,000</td><td class="right">  0.13042284899711376000</td></tr>
+  <tr><td class="right">  1,000,000</td><td class="right">  1.86623293700540670000</td></tr>
+  <tr><td class="right"> 10,000,000</td><td class="right"> 26.85289008899417200000</td></tr>
+  <tr><td class="right">100,000,000</td><td class="right">440.39495715600060000000</td></tr>
+</table>
+
+
+<h3>6. 参考サイト</h3>
+
+<ol>
+<li><a href="http://xn--w6q13e505b.jp/" title="円周率.jp">円周率.jp</a></li>
+<li><a href="http://bellard.org/pi/pi2700e9/announce.html" title="Pi Computation Record">Pi Computation Record</a></li>
+</ol>
+
+
+<p>（計算アルゴリズムは 2 内の &ldquo;pipcrecord.pdf&rdquo; を参考にした）</p>
+
+<hr />
+
+<p>当然ながら C++ より計算に時間がかかりますが、それでも１億桁を計算してファイル出力するのに約７分少ししかかからないのには一種の感動を覚えます。（ライブラリのおかげで）</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+</feed>

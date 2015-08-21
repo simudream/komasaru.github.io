@@ -1,0 +1,1492 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>* Ruby - UNIX MBOX メールヘッダ「From」検証！ - mk-mode BLOG</title>
+  <meta name="author" content="mk-mode.com">
+
+  
+  <meta name="description" content="松江をこよなく愛する mk-mode の BLOGページです。主にIT系(Tips、サーバ構築)等について記録しています。">
+  <meta name="keywords" content="プログラミングMailRuby">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://komasaru.github.io/blog/2011/10/16/16002036">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="mk-mode BLOG" type="application/atom+xml">
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Gorditas' rel='stylesheet' type='text/css'>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/javascripts/my_custom.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18154748-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">mk-mode BLOG</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://www.mk-mode.com/rails/" title="My homepage made by Ruby on Rails" target="_blank">Site</a></li>
+  <li><a href="http://www.mk-mode.com/rails/calendar/calendar/" title="The Calendar page on my homepage" target="_blank">Calendar</a></li>
+  <li><a href="http://twitter.com/ko_masaru" title="Go to my Twitter page" target="_blank">Twitter</a></li>
+  <li><a href="http://www.facebook.com/masaru.koizumi.5" title="Go to my Facebook page" target="_blank">Facebook</a></li>
+  <li><a href="https://github.com/komasaru" title="Go to my GitHub page." target="_blank">GitHub</a></li>
+  <li><a href="http://www.youtube.com/user/komasaru888" title="Go to my YouTube page" target="_blank">YouTube</a></li>
+  <li><a href="http://www.mk-mode.com/rails/jmaxml" title="The JMA XML page on my homepage" target="_blank">JMA XML</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+        <form class="pull-right navbar-search" action="http://www.google.co.jp/cse" id="cse-search-box">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-7320193476057758:6328726109" />
+            <input type="hidden" name="ie" value="UTF-8" />
+            <input class="search" type="text" name="q" placeholder="Google Custom Search" />
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      
+<article class="hentry span9" role="article">
+
+  
+  <header class="page-header">
+    
+      <h1 class="entry-title">* Ruby - UNIX MBOX メールヘッダ「From」検証！</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2011-10-16T00:20:00+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2011</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/プログラミング/'>プログラミング</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/mail/'>Mail</a>, <a class='tag' href='/blog/tags/ruby/'>Ruby</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>こんばんは。</p>
+
+<p>先日は、Ruby でメールの UNIX MBOX データのの Date 属性を検証してみました。</p>
+
+<ul>
+<li><a href="/2011/10/14/14002049/" title="Ruby - UNIX MBOX メールヘッダ「Date」検証！">Ruby - UNIX MBOX メールヘッダ「Date」検証！</a></li>
+</ul>
+
+
+<p>引き続いて今回は、Ruby でメールヘッダの「From」属性を検証してみました。</p>
+
+<!--more-->
+
+
+<p>From属性にはメールの送信者（実質的には作成者）がメールアドレス＋αで設定されているはずです。
+大抵は１件が設定されていますが、作成者は１人とは限らず、複数設定されているケースもまれにあります。
+複数設定は正常なので問題ありませんが、Fromが設定されていないものがあります。</p>
+
+<p>また、設定されるメールアドレスは「Date」同様「RFC 5322」（「RFC 2822」・「RFC 822」) に準拠した書式でなければなりません。
+参考サイト</p>
+
+<ul>
+<li><a href="http://datatracker.ietf.org/doc/rfc5322/?include_text=1" title="RFC 5322">RFC 5322</a></li>
+</ul>
+
+
+<p>※RFCの詳細はWeb等で検索してみてください。</p>
+
+<p>この「From」属性のメールアドレスが「RFC 5322」に準拠した書式となっているかどうかを「正規表現」を使用してチェックしてみようと思いましたが、正確にチェックするには非常に複雑なので、ある程度のチェックにとどめました。
+大抵はプロバイダ側で制限しているので問題になるようなアドレスは設定されないはずです。
+正確に正規表現でチェックしようと思ったら、こちら「<a href="http://www.din.or.jp/~ohzaki/mail_regex.htm#RFC" title="メールアドレスの正規表現">メールアドレスの正規表現</a>」を参考にされるとよいと思います。（あまりの長さにびっくりすると思います）</p>
+
+<p>今回は以下のような「From」属性のグループ分けとこれらにマッチしないもの、「From」属性が設定されていないものをチェックしてみます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0 : "xxxx" &lt;xxx@xxx.xxx>
+</span><span class='line'>1 : "" &lt;xxx@xxx.xxx>
+</span><span class='line'>2 : xxxx &lt;xxx@xxx.xxx>
+</span><span class='line'>3 : &lt;xxx@xxx.xxx>
+</span><span class='line'>4 : "xxxx" &lt;xxx@xxx.xxx> xxxx
+</span><span class='line'>5 : "" &lt;xxx@xxx.xxx> xxxx
+</span><span class='line'>6 : xxxx &lt;xxx@xxx.xxx> xxxx
+</span><span class='line'>7 : &lt;xxx@xxx.xxx> xxxx
+</span><span class='line'>8 : xxx@xxx.xxx
+</span><span class='line'>9 : xxx@xxx.xxx xxxx</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Rubyサンプルスクリプト</h4>
+
+<p><a href="/2011/10/14/14002049/" title="Ruby - UNIX MBOX メールヘッダ「Date」検証！">Ruby - UNIX MBOX メールヘッダ「Date」検証！</a>で紹介したRubyスクリプトを流用しています。
+前述のグループ分けの0～7用の正規表現と8・9用の正規表現を使用しています。
+●ファイル名：ana_mbox_check_from.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+<span class='line-number'>340</span>
+<span class='line-number'>341</span>
+<span class='line-number'>342</span>
+<span class='line-number'>343</span>
+<span class='line-number'>344</span>
+<span class='line-number'>345</span>
+<span class='line-number'>346</span>
+<span class='line-number'>347</span>
+<span class='line-number'>348</span>
+<span class='line-number'>349</span>
+<span class='line-number'>350</span>
+<span class='line-number'>351</span>
+<span class='line-number'>352</span>
+<span class='line-number'>353</span>
+<span class='line-number'>354</span>
+<span class='line-number'>355</span>
+<span class='line-number'>356</span>
+<span class='line-number'>357</span>
+<span class='line-number'>358</span>
+<span class='line-number'>359</span>
+<span class='line-number'>360</span>
+<span class='line-number'>361</span>
+<span class='line-number'>362</span>
+<span class='line-number'>363</span>
+<span class='line-number'>364</span>
+<span class='line-number'>365</span>
+<span class='line-number'>366</span>
+<span class='line-number'>367</span>
+<span class='line-number'>368</span>
+<span class='line-number'>369</span>
+<span class='line-number'>370</span>
+<span class='line-number'>371</span>
+<span class='line-number'>372</span>
+<span class='line-number'>373</span>
+<span class='line-number'>374</span>
+<span class='line-number'>375</span>
+<span class='line-number'>376</span>
+<span class='line-number'>377</span>
+<span class='line-number'>378</span>
+<span class='line-number'>379</span>
+<span class='line-number'>380</span>
+<span class='line-number'>381</span>
+<span class='line-number'>382</span>
+<span class='line-number'>383</span>
+<span class='line-number'>384</span>
+<span class='line-number'>385</span>
+<span class='line-number'>386</span>
+<span class='line-number'>387</span>
+<span class='line-number'>388</span>
+<span class='line-number'>389</span>
+<span class='line-number'>390</span>
+<span class='line-number'>391</span>
+<span class='line-number'>392</span>
+<span class='line-number'>393</span>
+<span class='line-number'>394</span>
+<span class='line-number'>395</span>
+<span class='line-number'>396</span>
+<span class='line-number'>397</span>
+<span class='line-number'>398</span>
+<span class='line-number'>399</span>
+<span class='line-number'>400</span>
+<span class='line-number'>401</span>
+<span class='line-number'>402</span>
+<span class='line-number'>403</span>
+<span class='line-number'>404</span>
+<span class='line-number'>405</span>
+<span class='line-number'>406</span>
+<span class='line-number'>407</span>
+<span class='line-number'>408</span>
+<span class='line-number'>409</span>
+<span class='line-number'>410</span>
+<span class='line-number'>411</span>
+<span class='line-number'>412</span>
+<span class='line-number'>413</span>
+<span class='line-number'>414</span>
+<span class='line-number'>415</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;find&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;kconv&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">AnaMboxCheckFrom</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># MBOXディレクトリ</span>
+</span><span class='line'>  <span class="no">DIR_MBOX</span> <span class="o">=</span> <span class="s2">&quot;D:&amp;#92;&amp;#48;1_Mail\Thunderbird&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># 正規表現 ( From )</span>
+</span><span class='line'>  <span class="c1"># （一般的なメールアドレス正規表現を使用する場合）</span>
+</span><span class='line'>  <span class="c1"># REG_FROM_1 = /^(.*)&lt;([\w\-\.]+@[\w\-\.]+\.[a-zA-Z]+)&gt;(.*)?$/</span>
+</span><span class='line'>  <span class="c1"># REG_FROM_2 = /^([\w\-\.]+@[\w\-\.]+\.[a-zA-Z]+)(.*)?$/</span>
+</span><span class='line'>  <span class="c1"># （上記を更に改良したバージョン）</span>
+</span><span class='line'>  <span class="no">REG_FROM_1</span> <span class="o">=</span> <span class="sr">/^(.*)&lt;([\w+-=?^-~]+(?:\.[\w+-=?^-~]+)*@[-\w]+(?:\.[-\w]+)*\.[a-zA-Z]+)&gt;(.*)?$/</span>
+</span><span class='line'>  <span class="no">REG_FROM_2</span> <span class="o">=</span> <span class="sr">/^([\w+-=?^-~]+(?:\.[\w+-=?^-~]+)*@[-\w]+(?:\.[-\w]+)*\.[a-zA-Z]+)(.*)?$/</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># [CLASS] 解析</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Analyze</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># INTIALIZE</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># 読み込みシーケンスNo</span>
+</span><span class='line'>      <span class="vi">@seq</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>      <span class="c1"># Fromが非設定のものの件数</span>
+</span><span class='line'>      <span class="vi">@cnt_non</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>      <span class="c1"># 正規表現にマッチしたものの件数</span>
+</span><span class='line'>      <span class="vi">@cnt_match_0</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># &quot;xxxx&quot; &lt;xxx@xxx.xxx&gt;</span>
+</span><span class='line'>      <span class="vi">@cnt_match_1</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># &quot;&quot; &lt;xxx@xxx.xxx&gt;</span>
+</span><span class='line'>      <span class="vi">@cnt_match_2</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># xxxx &lt;xxx@xxx.xxx&gt;</span>
+</span><span class='line'>      <span class="vi">@cnt_match_3</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># &lt;xxx@xxx.xxx&gt;</span>
+</span><span class='line'>      <span class="vi">@cnt_match_4</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># &quot;xxxx&quot; &lt;xxx@xxx.xxx&gt; xxxx</span>
+</span><span class='line'>      <span class="vi">@cnt_match_5</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># &quot;&quot; &lt;xxx@xxx.xxx&gt; xxxx</span>
+</span><span class='line'>      <span class="vi">@cnt_match_6</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># xxxx &lt;xxx@xxx.xxx&gt; xxxx</span>
+</span><span class='line'>      <span class="vi">@cnt_match_7</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># &lt;xxx@xxx.xxx&gt; xxxx</span>
+</span><span class='line'>      <span class="vi">@cnt_match_8</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># xxx@xxx.xxx</span>
+</span><span class='line'>      <span class="vi">@cnt_match_9</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># xxx@xxx.xxx xxxx</span>
+</span><span class='line'>      <span class="c1"># 正規表現にマッチしないものの件数</span>
+</span><span class='line'>      <span class="vi">@cnt_notmatch</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Mailbox名一覧取得</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get_mailbox_list</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># 指定ディレクトリ配下のディレクトリ一覧</span>
+</span><span class='line'>        <span class="n">res</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>        <span class="no">Dir</span><span class="o">::</span><span class="n">entries</span><span class="p">(</span> <span class="no">DIR_MBOX</span> <span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">d</span><span class="o">|</span>
+</span><span class='line'>          <span class="k">if</span> <span class="no">File</span><span class="o">::</span><span class="n">ftype</span><span class="p">(</span> <span class="no">DIR_MBOX</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">d</span> <span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;directory&quot;</span>
+</span><span class='line'>            <span class="n">res</span> <span class="o">&lt;&lt;</span> <span class="n">d</span> <span class="k">unless</span> <span class="p">(</span> <span class="n">d</span><span class="o">.</span><span class="n">to_s</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="o">||</span> <span class="n">d</span><span class="o">.</span><span class="n">to_s</span> <span class="o">==</span> <span class="s2">&quot;..&quot;</span> <span class="o">||</span> <span class="n">d</span><span class="o">.</span><span class="n">to_s</span> <span class="o">==</span> <span class="s2">&quot;local&quot;</span> <span class="p">)</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">res</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># エラーメッセージ</span>
+</span><span class='line'>        <span class="n">str_msg</span> <span class="o">=</span> <span class="s2">&quot;[EXCEPTION][&quot;</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.get_mailbox_list] &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>        <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span> <span class="n">str_msg</span> <span class="p">)</span>
+</span><span class='line'>        <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># MBOXファイル一覧取得</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">get_mbox_list</span><span class="p">(</span> <span class="n">mailbox</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># 指定ディレクトリ配下のファイル一覧</span>
+</span><span class='line'>        <span class="n">res</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>        <span class="no">Find</span><span class="o">.</span><span class="n">find</span><span class="p">(</span> <span class="no">DIR_MBOX</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">mailbox</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>          <span class="c1"># ファイルのみ抽出</span>
+</span><span class='line'>          <span class="k">unless</span> <span class="no">File</span><span class="o">::</span><span class="n">ftype</span><span class="p">(</span> <span class="n">f</span> <span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;directory&quot;</span>
+</span><span class='line'>            <span class="c1"># ファイルを読み込み１行目の先頭がFromならMBOXと判定</span>
+</span><span class='line'>            <span class="nb">open</span><span class="p">(</span> <span class="n">f</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+</span><span class='line'>              <span class="n">l</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">gets</span>
+</span><span class='line'>              <span class="k">if</span> <span class="n">l</span> <span class="o">=~</span> <span class="sr">/^From/</span>
+</span><span class='line'>                <span class="n">res</span> <span class="o">&lt;&lt;</span> <span class="n">f</span>
+</span><span class='line'>              <span class="k">end</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">res</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># エラーメッセージ</span>
+</span><span class='line'>        <span class="n">str_msg</span> <span class="o">=</span> <span class="s2">&quot;[EXCEPTION][&quot;</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.get_mbox_list] &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>        <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span> <span class="n">str_msg</span> <span class="p">)</span>
+</span><span class='line'>        <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># MBOXファイル解析</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">ana_mbox</span><span class="p">(</span> <span class="n">mbox</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># 1つのMBOXファイルを開く</span>
+</span><span class='line'>        <span class="nb">open</span><span class="p">(</span> <span class="n">mbox</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">f</span><span class="o">.</span><span class="n">slice_before</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># &quot;From &quot;を１グループの先頭とみなす。</span>
+</span><span class='line'>            <span class="n">line</span><span class="o">.</span><span class="n">start_with?</span> <span class="s2">&quot;From &quot;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">end</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">mail</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">header</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># HEADER読み込み</span>
+</span><span class='line'>            <span class="n">mail</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="n">line</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">kconv</span><span class="p">(</span> <span class="no">Kconv</span><span class="o">::</span><span class="no">UTF8</span><span class="p">,</span> <span class="no">Kconv</span><span class="o">::</span><span class="no">AUTO</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="c1"># 行最後の改行文字を削除</span>
+</span><span class='line'>              <span class="n">line</span><span class="o">.</span><span class="n">chop!</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="c1"># &quot;From &quot;で始まる行を読み飛ばし</span>
+</span><span class='line'>              <span class="k">next</span> <span class="k">if</span> <span class="sr">/^From /</span> <span class="o">=~</span> <span class="n">line</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="c1"># HEADERの終了</span>
+</span><span class='line'>              <span class="k">break</span> <span class="k">if</span> <span class="sr">/^$/</span> <span class="o">=~</span> <span class="n">line</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="c1"># 属性と値を取得</span>
+</span><span class='line'>              <span class="k">if</span> <span class="sr">/^(\S+?):\s*(.*)/</span> <span class="o">=~</span> <span class="n">line</span>
+</span><span class='line'>                <span class="p">(</span> <span class="vi">@attr</span> <span class="o">=</span> <span class="vg">$1</span> <span class="p">)</span><span class="o">.</span><span class="n">capitalize!</span>
+</span><span class='line'>                <span class="n">header</span><span class="o">[</span><span class="vi">@attr</span><span class="o">]</span> <span class="o">=</span> <span class="vg">$2</span>
+</span><span class='line'>              <span class="k">elsif</span> <span class="vi">@attr</span>
+</span><span class='line'>                <span class="c1"># 複数行にわたる場合は結合</span>
+</span><span class='line'>                <span class="n">line</span><span class="o">.</span><span class="n">sub!</span><span class="p">(</span> <span class="sr">/^\s*/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span> <span class="p">)</span>
+</span><span class='line'>                <span class="c1"># From, Subjectの場合は改行せずに結合</span>
+</span><span class='line'>                <span class="k">if</span> <span class="vi">@attr</span> <span class="o">==</span> <span class="s2">&quot;From&quot;</span> <span class="o">||</span> <span class="vi">@attr</span> <span class="o">==</span> <span class="s2">&quot;Subject&quot;</span>
+</span><span class='line'>                  <span class="n">header</span><span class="o">[</span><span class="vi">@attr</span><span class="o">]</span> <span class="o">+=</span> <span class="n">line</span>
+</span><span class='line'>                <span class="k">else</span>
+</span><span class='line'>                  <span class="n">header</span><span class="o">[</span><span class="vi">@attr</span><span class="o">]</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">line</span>
+</span><span class='line'>                <span class="k">end</span>
+</span><span class='line'>              <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># nilなら&quot;&quot;を設定</span>
+</span><span class='line'>            <span class="n">header</span><span class="o">[</span><span class="s1">&#39;Date&#39;</span><span class="o">]</span>    <span class="o">||=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>            <span class="n">header</span><span class="o">[</span><span class="s1">&#39;Subject&#39;</span><span class="o">]</span> <span class="o">||=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>            <span class="n">header</span><span class="o">[</span><span class="s1">&#39;From&#39;</span><span class="o">]</span>    <span class="o">||=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># Fromを配列化</span>
+</span><span class='line'>            <span class="n">header</span><span class="o">[</span><span class="s1">&#39;From&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">make_array</span><span class="p">(</span> <span class="n">header</span><span class="o">[</span><span class="s1">&#39;From&#39;</span><span class="o">]</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1"># Fromが非設定のもの</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">header</span><span class="o">[</span><span class="s1">&#39;From&#39;</span><span class="o">].</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="c1"># 読み込みSEQインクリメント</span>
+</span><span class='line'>              <span class="vi">@seq</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="vi">@cnt_non</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="n">header</span><span class="o">[</span><span class="s1">&#39;From&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">from</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1"># 読み込みSEQインクリメント</span>
+</span><span class='line'>                <span class="vi">@seq</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1"># REG_FROM_1</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">from</span> <span class="o">=~</span> <span class="no">REG_FROM_1</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># nil なら &quot;&quot; をセット</span>
+</span><span class='line'>                  <span class="n">str_disp_name</span>    <span class="o">=</span> <span class="p">(</span> <span class="vg">$1</span> <span class="o">==</span> <span class="kp">nil</span> <span class="p">?</span> <span class="s2">&quot;&quot;</span> <span class="p">:</span> <span class="vg">$1</span> <span class="p">)</span>
+</span><span class='line'>                  <span class="n">str_mail_address</span> <span class="o">=</span> <span class="p">(</span> <span class="vg">$2</span> <span class="o">==</span> <span class="kp">nil</span> <span class="p">?</span> <span class="s2">&quot;&quot;</span> <span class="p">:</span> <span class="vg">$2</span> <span class="p">)</span>
+</span><span class='line'>                  <span class="n">str_memo</span>         <span class="o">=</span> <span class="p">(</span> <span class="vg">$3</span> <span class="o">==</span> <span class="kp">nil</span> <span class="p">?</span> <span class="s2">&quot;&quot;</span> <span class="p">:</span> <span class="vg">$3</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># 前後の半角スペースを削除</span>
+</span><span class='line'>                  <span class="n">str_disp_name</span>    <span class="o">=</span> <span class="n">str_disp_name</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/^\s/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\s$/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span>
+</span><span class='line'>                  <span class="n">str_mail_address</span> <span class="o">=</span> <span class="n">str_mail_address</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/^\s/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\s$/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span>
+</span><span class='line'>                  <span class="n">str_memo</span>         <span class="o">=</span> <span class="n">str_memo</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/^\s/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\s$/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># メールアドレスの後ろの備考が無い場合</span>
+</span><span class='line'>                  <span class="k">if</span> <span class="n">str_memo</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1"># 表示名にダブルクォーテーションが有る場合</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">str_disp_name</span> <span class="o">=~</span> <span class="sr">/\&quot;(.*)\&quot;/</span>
+</span><span class='line'>                      <span class="k">unless</span> <span class="n">str_disp_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_0</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">else</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_1</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">end</span>
+</span><span class='line'>                    <span class="c1"># 表示名にダブルクォーテーションが無い場合</span>
+</span><span class='line'>                    <span class="k">else</span>
+</span><span class='line'>                      <span class="k">unless</span> <span class="n">str_disp_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_2</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">else</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_3</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">end</span>
+</span><span class='line'>                    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># メールアドレスの後ろの備考が有る場合</span>
+</span><span class='line'>                  <span class="k">else</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c1"># 表示名にダブルクォーテーションが有る場合</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">str_disp_name</span> <span class="o">=~</span> <span class="sr">/\&quot;(.*)\&quot;/</span>
+</span><span class='line'>                      <span class="k">unless</span> <span class="n">str_disp_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_4</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">else</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_5</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">end</span>
+</span><span class='line'>                    <span class="c1"># 表示名にダブルクォーテーションが無い場合</span>
+</span><span class='line'>                    <span class="k">else</span>
+</span><span class='line'>                      <span class="k">unless</span> <span class="n">str_disp_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_6</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">else</span>
+</span><span class='line'>                        <span class="vi">@cnt_match_7</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                      <span class="k">end</span>
+</span><span class='line'>                    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1"># REG_FROM_2</span>
+</span><span class='line'>                <span class="k">elsif</span> <span class="n">from</span> <span class="o">=~</span> <span class="no">REG_FROM_2</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># nil なら &quot;&quot; をセット</span>
+</span><span class='line'>                  <span class="n">str_disp_name</span>    <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>                  <span class="n">str_mail_address</span> <span class="o">=</span> <span class="vg">$1</span>
+</span><span class='line'>                  <span class="n">str_memo</span>         <span class="o">=</span> <span class="p">(</span> <span class="vg">$2</span> <span class="o">==</span> <span class="kp">nil</span> <span class="p">?</span> <span class="s2">&quot;&quot;</span> <span class="p">:</span> <span class="vg">$2</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># 前後の半角スペースを削除</span>
+</span><span class='line'>                  <span class="n">str_mail_address</span> <span class="o">=</span> <span class="n">str_mail_address</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/^\s/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\s$/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span>
+</span><span class='line'>                  <span class="n">str_memo</span>         <span class="o">=</span> <span class="n">str_memo</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/^\s/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\s$/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># メールアドレスの後ろの備考が無い場合</span>
+</span><span class='line'>                  <span class="k">if</span> <span class="n">str_memo</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="vi">@cnt_match_8</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="c1"># メールアドレスの後ろの備考が有る場合</span>
+</span><span class='line'>                  <span class="k">else</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="vi">@cnt_match_9</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                    <span class="c1">#### DEBUG ####</span>
+</span><span class='line'>                    <span class="c1"># puts &quot;SEQ.#{@seq} From: #{from}&quot;</span>
+</span><span class='line'>                    <span class="c1"># puts &quot;\tDisplayName : #{str_disp_name}&quot;</span>
+</span><span class='line'>                    <span class="c1"># puts &quot;\tMailAddress : #{str_mail_address}&quot;</span>
+</span><span class='line'>                    <span class="c1"># puts &quot;\tMemo        : #{str_memo}&quot;</span>
+</span><span class='line'>                    <span class="c1">#### DEBUG ####</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1"># 上記以外</span>
+</span><span class='line'>                <span class="k">else</span>
+</span><span class='line'>
+</span><span class='line'>                  <span class="vi">@cnt_notmatch</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                  <span class="nb">puts</span> <span class="s2">&quot;SEQ.</span><span class="si">#{</span><span class="vi">@seq</span><span class="si">}</span><span class="s2"> From: </span><span class="si">#{</span><span class="n">from</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># エラーメッセージ</span>
+</span><span class='line'>        <span class="n">str_msg</span> <span class="o">=</span> <span class="s2">&quot;[EXCEPTION][&quot;</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.ana_mbox] &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>        <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span> <span class="n">str_msg</span> <span class="p">)</span>
+</span><span class='line'>        <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># カンマ区切りを配列化</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">make_array</span><span class="p">(</span> <span class="n">str_from</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># ダブルクォーテーション内に&quot;,&quot;が有る場合、</span>
+</span><span class='line'>        <span class="c1"># splitで不具合を起こすので一旦&quot;=&quot;に置き換える</span>
+</span><span class='line'>        <span class="n">str_from</span> <span class="o">=</span> <span class="n">str_from</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\&quot;([^\&quot;]*)\&quot;/</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">match</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">match</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/,/</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span> <span class="p">)</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># From複数存在に対応するため配列化</span>
+</span><span class='line'>        <span class="n">ary_from</span> <span class="o">=</span> <span class="n">str_from</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="s1">&#39;,&#39;</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># &quot;=&quot;を&quot;,&quot;に戻す</span>
+</span><span class='line'>        <span class="c1"># 0.upto( ary_from.length - 1 ) do |i|</span>
+</span><span class='line'>        <span class="n">ary_from</span> <span class="o">=</span> <span class="n">ary_from</span><span class="o">.</span><span class="n">collect</span> <span class="k">do</span> <span class="o">|</span><span class="n">from</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">from</span> <span class="o">=</span> <span class="n">from</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/^\s/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span> <span class="c1"># 先頭の空白を削除</span>
+</span><span class='line'>          <span class="n">from</span> <span class="o">=</span> <span class="n">from</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\s$/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">)</span> <span class="c1"># 最後の空白を削除</span>
+</span><span class='line'>          <span class="n">from</span> <span class="o">=</span> <span class="n">from</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="sr">/\&quot;(.*)\&quot;/</span> <span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">match</span><span class="o">|</span>
+</span><span class='line'>            <span class="n">match</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span> <span class="o">/=</span><span class="sr">/, &quot;,&quot; )</span>
+</span><span class='line'><span class="sr">          end</span>
+</span><span class='line'><span class="sr">        end</span>
+</span><span class='line'><span class="sr">        </span>
+</span><span class='line'><span class="sr">        return ary_from</span>
+</span><span class='line'><span class="sr">        </span>
+</span><span class='line'><span class="sr">      rescue =&gt; e</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">        # エラーメッセージ</span>
+</span><span class='line'><span class="sr">        str_msg = &quot;[EXCEPTION][&quot; + self.class.name + &quot;.make_array] &quot; + e.to_s</span>
+</span><span class='line'><span class="sr">        STDERR.puts( str_msg )</span>
+</span><span class='line'><span class="sr">        exit 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">      end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'><span class="sr">    </span>
+</span><span class='line'><span class="sr">    def seq</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">      return @seq</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    def cnt_non</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">      return @cnt_non</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    def cnt_match( no )</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">      case no</span>
+</span><span class='line'><span class="sr">      when 0</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_0</span>
+</span><span class='line'><span class="sr">      when 1</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_1</span>
+</span><span class='line'><span class="sr">      when 2</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_2</span>
+</span><span class='line'><span class="sr">      when 3</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_3</span>
+</span><span class='line'><span class="sr">      when 4</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_4</span>
+</span><span class='line'><span class="sr">      when 5</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_5</span>
+</span><span class='line'><span class="sr">      when 6</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_6</span>
+</span><span class='line'><span class="sr">      when 7</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_7</span>
+</span><span class='line'><span class="sr">      when 8</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_8</span>
+</span><span class='line'><span class="sr">      when 9</span>
+</span><span class='line'><span class="sr">        ret = @cnt_match_9</span>
+</span><span class='line'><span class="sr">      end</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">      return ret</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    def cnt_notmatch</span>
+</span><span class='line'><span class="sr">    </span>
+</span><span class='line'><span class="sr">      return @cnt_notmatch</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  ##############</span>
+</span><span class='line'><span class="sr">  #### MAIN ####</span>
+</span><span class='line'><span class="sr">  ##############</span>
+</span><span class='line'><span class="sr">  begin</span>
+</span><span class='line'><span class="sr">    </span>
+</span><span class='line'><span class="sr">    puts &quot;====&lt; START &gt;====&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    # 解析クラスインスタンス化</span>
+</span><span class='line'><span class="sr">    obj_ana = Analyze.new</span>
+</span><span class='line'><span class="sr">    </span>
+</span><span class='line'><span class="sr">    # Mailbox名一覧取得</span>
+</span><span class='line'><span class="sr">    mailbox_list = obj_ana.get_mailbox_list</span>
+</span><span class='line'><span class="sr">    </span>
+</span><span class='line'><span class="sr">    # Mailbox分ループ</span>
+</span><span class='line'><span class="sr">    mailbox_list.each do |mailbox|</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">      # MBOXファイル一覧取得</span>
+</span><span class='line'><span class="sr">      mbox_list = obj_ana.get_mbox_list( mailbox )</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">      # MBOXファイル分ループ</span>
+</span><span class='line'><span class="sr">      mbox_list.each do |mbox|</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">        # MBOXファイル解析</span>
+</span><span class='line'><span class="sr">        obj_ana.ana_mbox( mbox )</span>
+</span><span class='line'><span class="sr">        </span>
+</span><span class='line'><span class="sr">      end</span>
+</span><span class='line'><span class="sr">      </span>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    puts &quot;TOTAL COUNT = </span><span class="si">#{</span><span class="n">obj_ana</span><span class="o">.</span><span class="n">seq</span><span class="si">}</span><span class="sr">&quot;</span>
+</span><span class='line'><span class="sr">    puts &quot;COUNT Non = </span><span class="si">#{</span><span class="n">obj_ana</span><span class="o">.</span><span class="n">cnt_non</span><span class="si">}</span><span class="sr">&quot;</span>
+</span><span class='line'><span class="sr">    0.upto( 9 ) do |i|</span>
+</span><span class='line'><span class="sr">      puts &quot;Match(</span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="sr">)  = </span><span class="si">#{</span><span class="n">obj_ana</span><span class="o">.</span><span class="n">cnt_match</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span><span class="si">}</span><span class="sr">&quot;</span>
+</span><span class='line'><span class="sr">    end</span>
+</span><span class='line'><span class="sr">    puts &quot;Not Match = </span><span class="si">#{</span><span class="n">obj_ana</span><span class="o">.</span><span class="n">cnt_notmatch</span><span class="si">}</span><span class="sr">&quot;</span>
+</span><span class='line'><span class="sr">    puts &quot;====&lt; E N D &gt;====&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  rescue =&gt; e</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    # エラーメッセージ</span>
+</span><span class='line'><span class="sr">    str_msg = &quot;[EXCEPTION] &quot; + e.to_s</span>
+</span><span class='line'><span class="sr">    STDERR.puts( str_msg )</span>
+</span><span class='line'><span class="sr">    exit 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>検証結果</h4>
+
+<p>当方で検証した結果は以下のとおり。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SEQ.12514 From: WordPress &lt;wordpress@192.168.11.3>
+</span><span class='line'>SEQ.12539 From: WordPress &lt;wordpress@192.168.11.2>
+</span><span class='line'>SEQ.25101 From: mk-mode BLOG &lt;wordpress@192.168.11.101>
+</span><span class='line'>
+</span><span class='line'>TOTAL COUNT = 61689
+</span><span class='line'>COUNT Non = 4
+</span><span class='line'>Match(0)  = 5856
+</span><span class='line'>Match(1)  = 0
+</span><span class='line'>Match(2)  = 33460
+</span><span class='line'>Match(3)  = 358
+</span><span class='line'>Match(4)  = 0
+</span><span class='line'>Match(5)  = 0
+</span><span class='line'>Match(6)  = 5
+</span><span class='line'>Match(7)  = 0
+</span><span class='line'>Match(8)  = 10729
+</span><span class='line'>Match(9)  = 11274
+</span><span class='line'>Not Match = 3</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この結果には表示されませんがメール件数は61,665件です。
+4件に「From」属性が設定されておらず、正規表現にマッチしなかったものが3件という結果になりました。（→不正）
+また、27件( = 61,689 - ( 61,665 - 3 ) ) は何件かのメールに複数「From」属性が設定されていたということになります。（→正常）
+今回マッチしなかったものはすべて当方のサーバで内部的に使用していたものでしたので、「From」属性が設定されているものでは不正なものはなかったということになります。
+それ以前に、不正なメールはメールサーバやメーラでふるい落としているということでしょう。</p>
+
+<h4>参考書籍</h4>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=komasaru-22&o=9&p=8&l=as1&asins=4774126713&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+
+<hr />
+
+<p>今回は、メールヘッダの「From」属性をチェックしましたが、「To」属性や「Reply-to」属性、「Return-Path」属性等にも応用が可能です。
+今後随時チェックしてみようと思います。</p>
+
+<p>以上。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+
+
+  <!-- Google AdSense -->
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7320193476057758";
+/* 468x15 枠線-背景_ｸﾞﾚｰ */
+google_ad_slot = "9411005151";
+google_ad_width = 468;
+google_ad_height = 15;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">mk-mode.com</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2011-10-16T00:20:00+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2011</span></span> <span class='time'>00:20</span></time>
+      [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/プログラミング/'>プログラミング</a>
+  
+</span>
+
+ ]
+      [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/mail/'>Mail</a>, <a class='tag' href='/blog/tags/ruby/'>Ruby</a>
+  
+</span>
+
+ ]
+    </p>
+    
+      <div class="sharing">
+  
+  <div class="tweet-button">
+    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://komasaru.github.io/blog/2011/10/16/16002036/" data-via="ko_masaru" data-counturl="http://komasaru.github.io/blog/2011/10/16/16002036/" data-lang="ja" data-related="ko_masaru">ツイート</a>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+  </div>
+  
+  
+  <div class="hatena-button">
+    <a href="http://b.hatena.ne.jp/entry/http://komasaru.github.io/blog/2011/10/16/16002036/" class="hatena-bookmark-button" data-hatena-bookmark-layout="simple-balloon" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+  </div>
+  
+  
+  <div class="google-plusone-button">
+    <div class="g-plusone" data-size="medium"></div>
+  </div>
+  
+  
+  <div class="fb-like-button">
+    <div class="fb-like" data-layout="button_count" data-send="false" data-show-faces="false"></div>
+  </div>
+  
+
+  <div class="blog-rank">
+    <a href="http://www.blogmura.com/" target="_blank"><img src="http://www.blogmura.com/img/www80_15_gold_2.gif" alt="ブログランキング・にほんブログ村へ" /></a>
+    <a href="http://blog.with2.net/link.php?746409" target="_blank"><img src="http://image.with2.net/img/banner/banner_12.gif" alt="人気ブログランキング・投票お願い！" /></a>
+    <a href="http://www.blogpeople.net/genre/genre2_1.html?key=0f0d42575b5b124a&amp;u=http%3A%2F%2Fwww.mk-mode.com%2Foctopress%2F" target="_blank"><img src="http://www.blogpeople.net/ranking/images/ranking-banner/ranking-small-blue.gif" alt="BlogPeople・投票お願い！" /></a>
+    <a href="http://www.doramix.com/rank/vote.php?id=53044" target="_blank"><img src="/images/bnr80_15_02.gif" alt="ブログ王・投票お願い！" /></a>
+  </div>
+</div>
+
+    
+    <div class="google-ad-1">
+  <!-- Google AdSense -->
+  <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- 468x15 枠線-背景_白 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:468px;height:15px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="8125126105"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- 468x60 枠線202020-背景202020 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:468px;height:60px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9593057202"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+    
+      <div class="related_posts">
+<h2>Related Posts</h2>
+<ul>
+
+  <li><a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
+
+  <li><a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a></li>
+
+  <li><a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a></li>
+
+  <li><a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a></li>
+
+  <li><a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a></li>
+
+</ul>
+</div>
+
+
+    
+    <div class="amazon-ad">
+<!-- Amazon Associate -->
+<script type="text/javascript"><!--
+amazon_ad_tag = "komasaru-22"; amazon_ad_width = "728"; amazon_ad_height = "90"; amazon_ad_link_target = "new"; amazon_ad_categories = "ace";//--></script>
+<script type="text/javascript" src="http://www.assoc-amazon.jp/s/ads.js"></script>
+</div>
+
+    
+    <section>
+      <h2>Comments</h2>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+    
+    <ul class="pager">
+      
+      <li class="previous"><a class="basic-alignment left"
+        href="/blog/2011/10/14/14002049/" title="Previous Post:
+        * Ruby - UNIX MBOX メールヘッダ「Date」検証！">&laquo; * Ruby - UNIX MBOX メールヘッダ「Date」検証！</a></li>
+      
+      <li><a href="/blog/archives">Blog Archives</a></li>
+      
+      <li class="next"><a class="basic-alignment right" href="/blog/2011/10/17/17002009/"
+        title="Next Post: * Ruby - UNIX MBOX メールヘッダ・アドレス系属性の検証！">* Ruby - UNIX MBOX メールヘッダ・アドレス系属性の検証！
+        &raquo;</a></li>
+      
+    </ul>
+  </footer>
+  <!-- Google AdSense -->
+<script type="text/javascript"><!--
+google_ad_client = "pub-7320193476057758";
+/* 468x60 枠線6699CC-背景000000 */
+google_ad_slot = "5558274164";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</article>
+
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <span class="nav-header">Access Counter</span>
+  <table class="access">
+    <tr>
+     <td>ブログ開設日</td><td class="access-val">2009-01-05</td>
+    </tr>
+    <tr>
+      <td>サーバ連続稼働時間</td><td class="access-val"><div id="uptime">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">Page View 合計</td>
+      <td class="access-val"><div id="pv-total">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">今日</td>
+      <td class="access-val"><div id="pv-today">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">昨日</td>
+      <td class="access-val"><div id="pv-yesterday">Reading... </div></td>
+    </tr>
+  </table>
+</section>
+<section class="well">
+  <ul class="nav nav-list">
+    <li class="nav-header">Information</li>
+  </ul>
+  <a href="http://www.pref.shimane.lg.jp/" target="_blank"><img class="information" src="/images/shimanekoL.jpg" alt="島根県" title="「島根県」へのリンクです。" /></a>
+  <a href="http://shimane-goen.jp/" target="_blank"><img class="information" src="/images/goen_2015_234_60.png" alt="ご縁の国しまね" title="「ご縁の国しまね」へのリンクです。" /></a>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- mk-mode BLOG Sidebar-2 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:200px;height:90px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9601859305"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</section>
+<section class="well">
+  <ul id="sponsord-link" class="nav nav-list">
+    <li class="nav-header">About Me</li>
+  </ul>
+  <p>趣味で自作の自宅Linuxサーバ運用。ブログではIT系(サーバ構築(Linux etc)、PG(Ruby etc)、PC Tips)についての話題を中心に公開。ルービックキューブも人生何回目かのマイブームで、今は非公式ながら Sub25！</p>
+  <a href="http://www.mk-mode.com/" target="_blank">Site</a>
+  <a href="http://twitter.com/ko_masaru/" target="_blank">Twitter</a>
+  <a href="http://www.facebook.com/masaru.koizumi.5" target="_blank">Facebook</a>
+  <a href="https://github.com/komasaru" target="_blank">GitHub</a>
+  <a href="http://www.youtube.com/user/komasaru888" target="_blank">YouTube</a>
+</section>
+<section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a>
+      </li>
+    
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Categories</li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (251)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (524)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (199)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (334)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Tag Cloud</li>
+  </ul>
+  <a href='/blog/tags/ajax' style='font-size: 100.58064516129032%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.16129032258064%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.64516129032258%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.58064516129032%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.16129032258064%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19354838709677%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.48387096774194%'>bash(18)</a> <a href='/blog/tags/bash' style='font-size: 100.19354838709677%'>Bash(1)</a> <a href='/blog/tags/bitly' style='font-size: 100.38709677419355%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19354838709677%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38709677419355%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.67741935483872%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19354838709677%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19354838709677%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19354838709677%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.74193548387096%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 106.0%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.96774193548387%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.58064516129032%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.83870967741936%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38709677419355%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19354838709677%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.74193548387096%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.70967741935483%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19354838709677%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7741935483871%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.35483870967742%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.80645161290323%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.16129032258064%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.96774193548387%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.64516129032258%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19354838709677%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.12903225806451%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.58064516129032%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.2258064516129%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.12903225806451%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38709677419355%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.96774193548387%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19354838709677%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.93548387096774%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.58064516129032%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38709677419355%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.51612903225806%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7741935483871%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19354838709677%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.54838709677419%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.70967741935483%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.58064516129032%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.58064516129032%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38709677419355%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.58064516129032%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.06451612903226%'>Linux(300)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.2258064516129%'>LinuxMint(58)</a> <a href='/blog/tags/lokka' style='font-size: 100.38709677419355%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 105.03225806451613%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.38709677419355%'>MariaDB(33)</a> <a href='/blog/tags/markdown' style='font-size: 101.16129032258064%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.58064516129032%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19354838709677%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.90322580645162%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 130.96774193548387%'>MySQL(160)</a> <a href='/blog/tags/namazu' style='font-size: 100.19354838709677%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.48387096774194%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.16129032258064%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.58064516129032%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38709677419355%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.35483870967742%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7741935483871%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19354838709677%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.41935483870968%'>Octopress(59)</a> <a href='/blog/tags/office' style='font-size: 100.19354838709677%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19354838709677%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.16129032258064%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19354838709677%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.38709677419355%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.0%'>Postfix(31)</a> <a href='/blog/tags/proxy' style='font-size: 100.38709677419355%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38709677419355%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.16129032258064%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.74193548387096%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.3225806451613%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.61290322580645%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38709677419355%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19354838709677%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19354838709677%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.16129032258064%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(310)</a> <a href='/blog/tags/samba' style='font-size: 101.74193548387096%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.58064516129032%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.54838709677419%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19354838709677%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38709677419355%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19354838709677%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38709677419355%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19354838709677%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.16129032258064%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.93548387096774%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7741935483871%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19354838709677%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.96774193548387%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19354838709677%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7741935483871%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.61290322580645%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38709677419355%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.96774193548387%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.54838709677419%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19354838709677%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.74193548387096%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.96774193548387%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.35483870967742%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.58064516129032%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7741935483871%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19354838709677%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.35483870967742%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.12903225806451%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19354838709677%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.93548387096774%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.7741935483871%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.74193548387098%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.58064516129032%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.74193548387098%'>XML(40)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38709677419355%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19354838709677%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.16129032258064%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.51612903225806%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19354838709677%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.16129032258064%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19354838709677%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.6774193548387%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.16129032258064%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38709677419355%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19354838709677%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.96774193548387%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.16129032258064%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.58064516129032%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19354838709677%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.74193548387096%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.6774193548387%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.09677419354838%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38709677419355%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19354838709677%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.54838709677419%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19354838709677%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19354838709677%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.16129032258064%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.96774193548387%'>端末(5)</a> 
+</section>
+<section class="well">
+  <ul id="month-list" class="nav nav-list">
+    <li class="nav-header">Monthly Archives</li>
+  </ul>
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/08/'>2015-08 (7)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1397 posts
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/komasaru">@komasaru</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'komasaru',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="well">
+  <ul id="twitter-timeline" class="nav">
+    <li class="nav-header">Latest Tweets</li>
+  </ul>
+  <a class="twitter-timeline"  href="https://twitter.com/ko_masaru"  data-widget-id="293992385095016448">@ko_masaru からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+
+
+<section class="well">
+  <ul id="sponsord-link" class="nav">
+    <li class="nav-header">Sponsored Link</li>
+  </ul>
+  <span id="sponsored-link">
+    <object data="http://komasaru.github.io/obj_sponsored_link.html" type="text/html" width="254" height="200"></object>
+  </span>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p id="page-top">
+  <a href="#wrapper">
+    <img src="/images/pagetop.png" alt="PAGE TOP" />
+  </a>
+</p>
+<p>
+  Copyright &copy; 2015 - mk-mode.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mkmodeblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://komasaru.github.io/blog/2011/10/16/16002036/';
+        var disqus_url = 'http://komasaru.github.io/blog/2011/10/16/16002036/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

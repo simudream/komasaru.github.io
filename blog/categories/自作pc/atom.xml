@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 自作pc | mk-mode BLOG]]></title>
+  <link href="http://komasaru.github.io/blog/categories/自作pc/atom.xml" rel="self"/>
+  <link href="http://komasaru.github.io/"/>
+  <updated>2015-08-21T23:26:19+09:00</updated>
+  <id>http://komasaru.github.io/</id>
+  <author>
+    <name><![CDATA[mk-mode.com]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[* 現在のＰＣ環境について！]]></title>
+    <link href="http://komasaru.github.io/blog/2011/01/15/15002000/"/>
+    <updated>2011-01-15T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2011/01/15/15002000</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>このブログを公開し始めた当初に当方のＰＣ環境について触れましたが、あれから約２年が経過し若干変化があったのであらためた整理してみました。（但し、当方はマシンをあれこれと弄るのがすきなので、また変更になると思います）</p>
+
+<!--more-->
+
+
+<h3>パソコン接続図</h3>
+
+<p>主な機器の接続図です。</p>
+
+<p><a href="http://komasaru.github.io/images/2011/01/PC_ENV_2011-01.jpg"><img src="http://komasaru.github.io/images/2011/01/PC_ENV_2011-01-150x105.jpg" alt="PC_ENV_2011-01" title="PC_ENV_2011-01" width="150" height="105" class="alignnone size-thumbnail wp-image-4407" /></a></p>
+
+<h3>マシン・その他</h3>
+
+<p>ここでは主なものだけをご紹介。</p>
+
+<h4>サーバ</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ケース       ： Antec NOAH800-B
+</span><span class='line'>マザーボード ： Intel D945GCLF
+</span><span class='line'>ＣＰＵ        ： Intel&reg; Atom&trade; CPU 230 1.60GHz (オンボード)
+</span><span class='line'>チップセット ： Intel 945GC
+</span><span class='line'>メモリ       ： DDR2-667 (PC2-5300) 1GB
+</span><span class='line'>ＨＤＤ       ： 日立GST HTS723232L9A360 (2.5inch STATII300, 320GB, 7200rpm)
+</span><span class='line'>ビデオカード ： Intel GMA950 (オンボード)
+</span><span class='line'>光学ドライブ ： 無し
+</span><span class='line'>ネットワーク ： Realtek RTL8101E/RTL8102E PCI Express Fast Ethernet (オンボード)
+</span><span class='line'>                Buffalo LGY-PCI-GT (Realtek RTL-8169 Gigabit Ethernet) (増設)
+</span><span class='line'>ＯＳ         ： CentＯＳ 5.5
+</span><span class='line'>用途         ： Webサーバ、メールサーバ、ＤＢサーバ等各種サーバを構築し、２４時間運用。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>メインＰＣ</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ケース       ： Antec P183
+</span><span class='line'>マザーボード ： ASUSTek P5Q Deluxe
+</span><span class='line'>ＣＰＵ       ： Intel&reg; Core&trade;2 Duo E8500 3.16GHz
+</span><span class='line'>チップセット ： Intel P45
+</span><span class='line'>メモリ       ： PULSAR DCDDR2-4GB-800 (DDR2 PC2-6400) 2GB×2
+</span><span class='line'>ＨＤＤ       ： 日立GST HDP725050GLA360 (SATA300, 500GB, 7200rpm)
+</span><span class='line'>             ： 日立GST HDT721010SLA360 (SATA300, １TB, 7200rpm)
+</span><span class='line'>ビデオカード ： ASUSTeK EN9600GT/HTDI/512M/R3 (NVIDIA GeForce 9600 GT)
+</span><span class='line'>光学ドライブ ： I-O DATA DVR-AN18GLB (SonyNECOptiarc AD-7173A)
+</span><span class='line'>ネットワーク ： Marvell 88E8056/88E8001 Gigabit LAN (オンボード)
+</span><span class='line'>ＯＳ         ： WindowsXP Professional SP3 , Ubuntu10.10LTS Desktop
+</span><span class='line'>                以上の２つをUbuntuのGrubでデュアルブード。
+</span><span class='line'>用途         ： WindowsXPをメインで使用。
+</span><span class='line'>                気分次第でUbuntuを使用。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>サブＰＣ①</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ケース       ： Shuttle SD11G5 (ベアボーン)
+</span><span class='line'>マザーボード ： (ベアボーン)
+</span><span class='line'>ＣＰＵ       ： Intel&reg; Pentium&reg; M 740 Processor 1.73GHz
+</span><span class='line'>チップセット ： Intel 915GM
+</span><span class='line'>メモリ       ： SAMSUNG PC3200 DDR400 512MB×2
+</span><span class='line'>ＨＤＤ       ： WDC WD2500JD-22HBC0 (SATA150, 250GB, 7200rpm)
+</span><span class='line'>ビデオカード ： Intel GMA 900 (オンボード)
+</span><span class='line'>光学ドライブ ： CD-ROM 52X/AKH
+</span><span class='line'>ネットワーク ： Broadcom 5789 Gigabit Ethernet (オンボード)
+</span><span class='line'>ＯＳ         ： FreeBSD8.1 (デスクトップ環境はGNOME)
+</span><span class='line'>用途         ： メインＰＣを使用できない場合などに使用。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>サブＰＣ②</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ケース       ： Shuttle ST62K (ベアボーン)
+</span><span class='line'>マザーボード ： (ベアボーン)
+</span><span class='line'>ＣＰＵ       ： Intel&reg;Pentium&reg; 4 Processor 3.00GHz
+</span><span class='line'>チップセット ： Radeon Ati RS300/IPX500
+</span><span class='line'>メモリ       ： 512MB×2
+</span><span class='line'>ＨＤＤ       ： Maxtor DiamondMax 6L200P0 (ATA(U133), 200GB, 7200rpm)
+</span><span class='line'>ビデオカード ： Radeon ATI 9100IGP (オンボード)
+</span><span class='line'>光学ドライブ ： PIONEER DVR-113NP
+</span><span class='line'>ネットワーク ： Realtek RTL-8139/8139C/8139C+ 10/100Mbp LAN (オンボード)
+</span><span class='line'>                玄人志向 GbE-PCI2 (VIA VT6120/VT6121/VT6122 Gigabit Ethernet) (増設)
+</span><span class='line'>ＯＳ         ： PC-BSD8.1, FreeBSD8.1, OpenSUSE11.3, Ubuntu10.10,
+</span><span class='line'>                CentＯＳ5.5, Fedora14, VineLinux5.2, ScientificLinux5.5, Debian5.0.7
+</span><span class='line'>                以上の全てをＭＢＭでマルチブート。
+</span><span class='line'>用途         ： PC-BSDのデスクトップ環境はKDE, FreeBSDはサーバテスト用,
+</span><span class='line'>                あとはGNOMEでデスクトップ用途。（各種検証用）&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>予備ＰＣ</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ケース       ： Ｆｒｏｎｔｉｅｒ 神代 (ＢＴＯ)
+</span><span class='line'>マザーボード ： (不明)
+</span><span class='line'>ＣＰＵ       ： Intel&reg; Pentium&reg; 4 Processor 1.6GHz
+</span><span class='line'>チップセット ： (不明)
+</span><span class='line'>メモリ       ： 512MB
+</span><span class='line'>ＨＤＤ       ： Maxtor DiamondMax 6L040L2 (ATA(U133), 40GB, 7200rpm)
+</span><span class='line'>ビデオカード ： (不明)
+</span><span class='line'>光学ドライブ ： −−−−
+</span><span class='line'>ネットワーク ： 100BASE (増設)
+</span><span class='line'>ＯＳ         ： −−−−
+</span><span class='line'>用途         ： 古いマシンなので、使用していない。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>ＮＡＳ</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ケース       ： 玄人志向 KURO-BOX/HG (ベアボーン)
+</span><span class='line'>マザーボード ： (ベアボーン)
+</span><span class='line'>ＣＰＵ       ： PowerPC 266MHz (オンボード)
+</span><span class='line'>チップセット ： (不明)
+</span><span class='line'>メモリ       ： 128MB (オンボード)
+</span><span class='line'>ＨＤＤ       ： WDC WD3200JB-22KFA0 (ATA100, 320GB, 7200rpm)
+</span><span class='line'>ビデオカード ： −−−−
+</span><span class='line'>光学ドライブ ： −−−−
+</span><span class='line'>ネットワーク ： Gigabit LAN
+</span><span class='line'>ＯＳ         ： Debian5.0.0
+</span><span class='line'>用途         ： Sambaでファイルサーバを構築し、各種バックアップを保存。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></p>
+
+<h4>その他</h4>
+
+<p><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>●ディスプレイ
+</span><span class='line'>    MITSUBISHI Diamondcrysta RDT1710S
+</span><span class='line'>    ・デジタル端子をメインＰＣに、アナログ端子をＣＰＵ切替機に接続し、
+</span><span class='line'>      ３台のマシンで使用。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>●ＣＰＵ切替器
+</span><span class='line'>    corega PC Changer PC2KVMV2
+</span><span class='line'>    ・サブＰＣ①、サブＰＣ②で１つのディスプレイ・ＰＳ／２キーボード・マウスを共有。&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h2></span></code></pre></td></tr></table></div></figure></h2>
+
+<p>以上です。</p>
+
+<p>そして今思っていること。
+１７インチディスプレイが１つだけというのがなんかさびしい。。。
+メインＰＣ以外は若干非力になってきた。。。
+今のＣＰＵ切替器では２台しか切替できない。。。
+スピーカはメインＰＣにしか接続できていないので、他のマシンでは無音。。。</p>
+
+<p>等々。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* ハードディスク交換！]]></title>
+    <link href="http://komasaru.github.io/blog/2010/01/30/30002059/"/>
+    <updated>2010-01-30T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2010/01/30/30002059</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>今日は、うちの現在稼働中の自作ＣｅｎｔＯＳサーバのハードディスクを交換しました。</p>
+
+<p>このマシンはＩｎｔｅｌＡｔｏｍ２３０搭載のｍｉｎｉ−ＩＴＸ 「Ｄ９４５ＧＣＬＦ 」をｍｉｎｉ−ＩＴＸ用ケースのＤｉｒａｃ「 Ｎｏａｈ−８００ 」 に組み込んで使用していました。</p>
+
+<!--more-->
+
+
+<p>そいつのハードディスクは３．５インチ（ＳＡＴＡ）のものでした。</p>
+
+<p><a href="http://komasaru.github.io/images/2010/01/HDD_CHANGE_1.jpg"><img class="alignnone size-thumbnail wp-image-2841" title="HDD_CHANGE_1" src="http://komasaru.github.io/images/2010/01/HDD_CHANGE_1-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p>で、別にそのハードディスの調子が悪いわけでもないんですが、もっと静音化＆省電力化したいな、と思い２．５インチのハードディスクを購入しました。</p>
+
+<p><a href="http://komasaru.github.io/images/2010/01/HDD_CHANGE_2.jpg"><img class="alignnone size-thumbnail wp-image-2842" title="HDD_CHANGE_2" src="http://komasaru.github.io/images/2010/01/HDD_CHANGE_2-112x150.jpg" alt="" width="112" height="150" /></a></p>
+
+<p>一応、最初から２．５インチHDD用のネジ穴があったので、交換作業自体は即完了しました。</p>
+
+<p><a href="http://komasaru.github.io/images/2010/01/HDD_CHANGE_3.jpg"><img class="alignnone size-thumbnail wp-image-2843" title="HDD_CHANGE_3" src="http://komasaru.github.io/images/2010/01/HDD_CHANGE_3-150x112.jpg" alt="" width="150" height="112" /></a></p>
+
+<p>全然大きさが小さいので、ずいぶんスッキリした感じになりました。</p>
+
+<p>ディスクアクセス時の「カリカリッ」という音もかなり小さくなりました。</p>
+
+<p>大満足！です。。。</p>
+
+<p>（ワットチェッカーを持っていないので、消費電力はよくわかりませんが、３．５インチよりは省電力化できているでしょう！？）</p>
+
+<p>で、あとはこのハードディスクにサーバ構築作業をしなければなりません。</p>
+
+<p>元のハードディスクを Ｋｎｏｐｐｉｘ の「 partimage 」でバックアップとっていたので、同じく「 partimage 」で（ＭＢＲも含めて）リストアしてみましたが、なぜかカーネルパニック！</p>
+
+<p>ＣｅｎｔＯＳのインストールディスクからレスキューモードで起動してＭＢＲだけを「 grub-install 」コマンドでインストールしようとしてもエラーが発生。</p>
+
+<p>そのエラーもどうしても解決できないので、結局また最初からサーバ構築しなおします。</p>
+
+<p>というわけで、当分の間は予備のＦｅｄｏｒａマシンでサーバ運用しておきます。</p>
+
+<p>では</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* Ｐ５Ｑ Ｄｅｌｕｘｅ － ＣＰＵクーラー回転数制御！]]></title>
+    <link href="http://komasaru.github.io/blog/2009/12/30/30000437/"/>
+    <updated>2009-12-30T00:04:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2009/12/30/30000437</id>
+    <content type="html"><![CDATA[<p>こんばんは</p>
+
+<p>今日はうちの自作マシンのＣＰＵクーラーの回転数をチューニングしてみました。</p>
+
+<p>（ケースファンを超静音のものに交換したのにあわせ、ＣＰＵ回転数も調査・調整しました）</p>
+
+<p>マザーボード　・・・　ＡＳＵＳ 「 Ｐ５Ｑ Ｄｅｌｕｘｅ 」
+ＣＰＵクーラー　・・・　ＳＣＹＴＨＥ 「 ＳＣ−ＳＣＫＢＴ１０００ 」（ＰＷＭ対応）
+です。</p>
+
+<!--more-->
+
+
+<p>ＢＩＯＳでＣＰＵクーラーの回転を制御できるようです。</p>
+
+<p>そこで、以下のように設定しました。</p>
+
+<p><strong>１．</strong>マシン起動時ＢＩＯＳ画面を表示させる。（起動時、ＤＥＬキー押下）</p>
+
+<p><strong>２．</strong>「 電源 」 − 「 ハードウェア・モニター 」 の画面を表示させる。</p>
+
+<p><strong>３．</strong>「 ＣＰＵ Ｑ−Ｆａｎ Ｃｏｎｔｒｏｌ 」 を 「 有効 」にし、「 ＣＰＵ Ｆａｎ Ｐｒｏｆｉｌｅ 」 を 「 標準 」 に設定する。</p>
+
+<p>通常はこれでよいです。</p>
+
+<p>しかし、</p>
+
+<p>今回のうちの環境（ハード構成）の場合、
+マシン起動時にＣＰＵクーラーの回転数が低すぎるため、
+「 ＣＰＵファンエラー！ 」 が発生してしまいます。
+Ｆ１キーを押下すればその後は通常に起動しますが、
+これでは非常に不便です。</p>
+
+<p>そこでＢＩＯＳ設定で次のようにします。</p>
+
+<p><strong>● </strong>「 電源 」 − 「 ハードウェア・モニター 」 の 「 ＣＰＵ Ｆａｎ Ｓｐｅｅｄ 」 でエンターキーを押下し、「 無視 」 を選択する。</p>
+
+<p>ただし、回転数がモニターできなくなります。
+でも、自動で制御してくれているのでまあ 「 良し 」 としましょう！</p>
+
+<p>ではまた。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* Ｐ１８３ － ケースファン交換！]]></title>
+    <link href="http://komasaru.github.io/blog/2009/12/29/29102841/"/>
+    <updated>2009-12-29T10:28:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2009/12/29/29102841</id>
+    <content type="html"><![CDATA[<p>おはようございます。</p>
+
+<p>今日はうちの今メインで使用している自作マシンのケースファンを交換しました。</p>
+
+<p>ケースというのはＡｎｔｅｃのＰ１８３です。
+このケースには標準で１２センチのファンがケースの背面上部と天板後部に設置されているもので、
+背面上部のスイッチにより３段階の回転数設定ができます。</p>
+
+<!--more-->
+
+
+<p><a href="http://komasaru.github.io/images/2009/12/P183_CASEFAN_01.JPG"><img src="http://komasaru.github.io/images/2009/12/P183_CASEFAN_01-112x150.jpg" alt="P183_CASEFAN_01" title="P183_CASEFAN_01" width="112" height="150" class="alignnone size-thumbnail wp-image-2575" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2009/12/P183_CASEFAN_02.JPG"><img src="http://komasaru.github.io/images/2009/12/P183_CASEFAN_02-112x150.jpg" alt="P183_CASEFAN_02" title="P183_CASEFAN_02" width="112" height="150" class="alignnone size-thumbnail wp-image-2577" /></a></p>
+
+<p>３段階というのは、
+回転数　・・・　１２００／１６００／２０００ｒｐｍ
+風圧　・・・　３９／５６／７９ＣＦＭ
+ノイズレベル　・・・　２５／２８／３０ｄＢ
+のようです。</p>
+
+<p>最近寒いので、ケース内もそれほど熱くはならなので、
+一番回転数を下げて使用していましたが、
+それでも、風の音が気になる程度のノイズです。（２５ｄＢですから・・・）</p>
+
+<p>そこで、ケースファン２つとも交換することにしました。
+交換したのは、
+ＥＮＥＲＭＡＸのＥＶＥＲＥＳＴ「 <strong>ＵＣＥＶ１２ </strong>」です。
+温度センサーによって、自動で回転数を制御する超静音タイプです。
+おまけに青色ＬＥＤで光ります。（ＯＮ・ＯＦＦスイッチあり）</p>
+
+<p><a href="http://komasaru.github.io/images/2009/12/P183_CASEFAN_03.JPG"><img src="http://komasaru.github.io/images/2009/12/P183_CASEFAN_03-112x150.jpg" alt="P183_CASEFAN_03" title="P183_CASEFAN_03" width="112" height="150" class="alignnone size-thumbnail wp-image-2578" /></a></p>
+
+<p>回転数　・・・　５００　～　１０００　ｒｐｍ　（２５℃～４５℃）　・自動制御
+ノイズレベル　・・・　８　～　１２　ｄＢ
+です。</p>
+
+<p>取り付けはビスの代わりにアイソレータというゴム製の部品でも可能です。
+うちのＰ１８３の場合、
+背面のファンはアイソレータで取り付け、
+天板のファンは天板が厚いためビスで取り付けました。
+また、温度センサーも適当な場所に取り付けました。
+※ただ、元々ついていた回転数制御用のスイッチ部分が穴が開いた感じになります。</p>
+
+<p>ＬＥＤをＯＮにした状態のショットです。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/12/P183_CASEFAN_04.JPG"><img src="http://komasaru.github.io/images/2009/12/P183_CASEFAN_04-112x150.jpg" alt="P183_CASEFAN_04" title="P183_CASEFAN_04" width="112" height="150" class="alignnone size-thumbnail wp-image-2579" /></a></p>
+
+<p>でも、実際はＬＥＤはＯＦＦにして使いますが。。。</p>
+
+<p>ケースファン自体は多少静かになったように思います。
+というのも、ＣＰＵファンがうるさいみたい。。。
+要チューニングです。。。</p>
+
+<p>それと、近いうちにケースの前面にも吸気用ファンをつけたりしたいと思案中。
+（ファンコンも欲しいな・・・）</p>
+
+<p>ではまた。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[* 自作マシンＢＩＯＳアップデート！]]></title>
+    <link href="http://komasaru.github.io/blog/2009/07/30/30002052/"/>
+    <updated>2009-07-30T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2009/07/30/30002052</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>今日は、この間組み立てたメインマシンのＢＩＯＳをアップデートしてみました。</p>
+
+<p>ちなみにマザーボードはＡＳＵＳ「 Ｐ５ＱＤｅｌｕｘｅ 」です。</p>
+
+<h3>作業手順</h3>
+
+<h4>１．まず、ＢＩＯＳファイルをダウンロードしておきます。</h4>
+
+<p><a href="http://www.asus.co.jp/" title="ASUSTeK">ASUSTeK</a> のダウンロードページから自分のマザーボード用のＢＩＯＳファイルを見つけ出し、ダウンロードします。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_01.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_01-150x116.jpg" alt="P5Q_BIOS_UPD_01" title="P5Q_BIOS_UPD_01" width="150" height="116" class="alignnone size-thumbnail wp-image-2394" /></a></p>
+
+<h4>２．ＢＩＯＳアップデートツールをダウンロードします。</h4>
+
+<p>今回はＷｉｎｄｏｗｓ上からＢＩＯＳをアップデートするので、<a href="http://www.asus.co.jp/" title="ASUSTeK">ASUSTeK</a> のダウンロードページからＢＩＯＳアップデートツールをダウンロードします。
+「 製品 」・「 シリーズ 」・「 モデル 」で検索し、</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_02.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_02-150x120.jpg" alt="P5Q_BIOS_UPD_02" title="P5Q_BIOS_UPD_02" width="150" height="120" class="alignnone size-thumbnail wp-image-2395" /></a></p>
+
+<p>ＯＳを選択します。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_03.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_03-150x116.jpg" alt="P5Q_BIOS_UPD_03" title="P5Q_BIOS_UPD_03" width="150" height="116" class="alignnone size-thumbnail wp-image-2396" /></a></p>
+
+<p>検索結果の中の「 ユーティリティ 」の中から「 ASUS Update ・・・ 」というファイルを探し出します。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_04.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_04-150x120.jpg" alt="P5Q_BIOS_UPD_04" title="P5Q_BIOS_UPD_04" width="150" height="120" class="alignnone size-thumbnail wp-image-2397" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_05.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_05-150x116.jpg" alt="P5Q_BIOS_UPD_05" title="P5Q_BIOS_UPD_05" width="150" height="116" class="alignnone size-thumbnail wp-image-2398" /></a></p>
+
+<p>そして「 グローバル 」というボタンをクリックすると、保存確認のダイアログが表示されるのでファイルを保存します。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_06.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_06-150x96.jpg" alt="P5Q_BIOS_UPD_06" title="P5Q_BIOS_UPD_06" width="150" height="96" class="alignnone size-thumbnail wp-image-2399" /></a></p>
+
+<h4>３．ダウンロードしたファイルを展開します。</h4>
+
+<p>ダウンロードしたファイルはＺＩＰファイルなので展開します。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_07.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_07-150x112.jpg" alt="P5Q_BIOS_UPD_07" title="P5Q_BIOS_UPD_07" width="150" height="112" class="alignnone size-thumbnail wp-image-2400" /></a></p>
+
+<h4>４．ＢＩＯＳアップデートツール「 ASUS Ｕｐｄａｔｅ 」をインストールします。</h4>
+
+<p>展開してできた「 Setup.exe 」を実行させます。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_08.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_08-150x112.jpg" alt="P5Q_BIOS_UPD_08" title="P5Q_BIOS_UPD_08" width="150" height="112" class="alignnone size-thumbnail wp-image-2401" /></a></p>
+
+<p>普通にインストールを進めます。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_09.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_09-150x89.jpg" alt="P5Q_BIOS_UPD_09" title="P5Q_BIOS_UPD_09" width="150" height="89" class="alignnone size-thumbnail wp-image-2402" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_10.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_10-150x89.jpg" alt="P5Q_BIOS_UPD_10" title="P5Q_BIOS_UPD_10" width="150" height="89" class="alignnone size-thumbnail wp-image-2403" /></a></p>
+
+<p>これでインストールは完了です。</p>
+
+<h4>５．「 ASUS Ｕｐｄａｔｅ 」を起動させます。</h4>
+
+<p>Ｗｉｎｄｏｗｓのスタートボタンから、「 プログラム 」−「 ＡｓｕｓＵｐｄａｔｅ 」−「 ＡＳＵＳＵｐｄａｔｅ 」とたどって、実行させます。
+こちらが起動直後の画面です。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_11.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_11-150x142.jpg" alt="P5Q_BIOS_UPD_11" title="P5Q_BIOS_UPD_11" width="150" height="142" class="alignnone size-thumbnail wp-image-2404" /></a></p>
+
+<h4>６．現在のＢＩＯＳの情報を確認します。</h4>
+
+<p>プルダウンメニューから「 ＢＩＯＳ情報を確認 」を選択し、「 進む 」をクリックすると現在のＢＩＯＳの情報が表示されるので、確認する。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_12.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_12-150x147.jpg" alt="P5Q_BIOS_UPD_12" title="P5Q_BIOS_UPD_12" width="150" height="147" class="alignnone size-thumbnail wp-image-2405" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_13.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_13-150x142.jpg" alt="P5Q_BIOS_UPD_13" title="P5Q_BIOS_UPD_13" width="150" height="142" class="alignnone size-thumbnail wp-image-2406" /></a></p>
+
+<h4>７．ＢＩＯＳをアップデートします。</h4>
+
+<p>プルダウンメニューの画面まで戻り、「 ファイルからＢＩＯＳをアップデート 」を選択し、「 進む 」をクリックすると、ファイル選択ダイアログが表示されます。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_14.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_14-150x147.jpg" alt="P5Q_BIOS_UPD_14" title="P5Q_BIOS_UPD_14" width="150" height="147" class="alignnone size-thumbnail wp-image-2407" /></a></p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_15.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_15-150x72.jpg" alt="P5Q_BIOS_UPD_15" title="P5Q_BIOS_UPD_15" width="150" height="72" class="alignnone size-thumbnail wp-image-2408" /></a></p>
+
+<p>前もってダウンロードしておいたＢＩＯＳファイルを選択して、「 更新 」をクリックします。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_16.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_16-140x150.jpg" alt="P5Q_BIOS_UPD_16" title="P5Q_BIOS_UPD_16" width="140" height="150" class="alignnone size-thumbnail wp-image-2409" /></a></p>
+
+<p>ＢＩＯＳのアップデートが始まります。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_17.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_17-140x150.jpg" alt="P5Q_BIOS_UPD_17" title="P5Q_BIOS_UPD_17" width="140" height="150" class="alignnone size-thumbnail wp-image-2410" /></a></p>
+
+<h4>８．ＰＣを再起動します。</h4>
+
+<p>ＢＩＯＳのアップデートが完了したら、ＰＣを再起動させます。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_18.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_18-150x35.jpg" alt="P5Q_BIOS_UPD_18" title="P5Q_BIOS_UPD_18" width="150" height="35" class="alignnone size-thumbnail wp-image-2411" /></a></p>
+
+<h4>９．ＢＩＯＳがアップデートされたか確認します。</h4>
+
+<p>上記６．の手順でＢＩＯＳの情報を確認します。</p>
+
+<p><a href="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_19.jpg"><img src="http://komasaru.github.io/images/2009/07/P5Q_BIOS_UPD_19-150x142.jpg" alt="P5Q_BIOS_UPD_19" title="P5Q_BIOS_UPD_19" width="150" height="142" class="alignnone size-thumbnail wp-image-2412" /></a></p>
+
+<p>アップデートされていました。
+※今回の場合、ＢＩＯＳのバージョンが「 １４０６ 」から「 ２２０１ 」にアップデートされました。</p>
+
+<hr />
+
+<p>ＢＩＯＳのアップデートする方法は今回のようにＷｉｎｄｏｗｓ上からユーティリティツールを使用してアップデートする方法の他に、
+ＵＳＢメモリなどにＢＩＯＳファイルを入れておいてＢＩＯＳの画面からアップデートさせる方法もあります。
+いつか、そっちの方法も試してみたいとは思っています。</p>
+
+<p>じゃ、今日はこの辺で。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+]]></content>
+  </entry>
+  
+</feed>

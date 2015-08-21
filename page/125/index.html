@@ -1,0 +1,1187 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>mk-mode BLOG</title>
+  <meta name="author" content="mk-mode.com">
+
+  
+  <meta name="description" content="松江をこよなく愛する mk-mode の BLOGページです。主にIT系(Tips、サーバ構築)等について記録しています。">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://komasaru.github.io/page/125">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="mk-mode BLOG" type="application/atom+xml">
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Gorditas' rel='stylesheet' type='text/css'>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="/javascripts/my_custom.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18154748-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="/">mk-mode BLOG</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://www.mk-mode.com/rails/" title="My homepage made by Ruby on Rails" target="_blank">Site</a></li>
+  <li><a href="http://www.mk-mode.com/rails/calendar/calendar/" title="The Calendar page on my homepage" target="_blank">Calendar</a></li>
+  <li><a href="http://twitter.com/ko_masaru" title="Go to my Twitter page" target="_blank">Twitter</a></li>
+  <li><a href="http://www.facebook.com/masaru.koizumi.5" title="Go to my Facebook page" target="_blank">Facebook</a></li>
+  <li><a href="https://github.com/komasaru" title="Go to my GitHub page." target="_blank">GitHub</a></li>
+  <li><a href="http://www.youtube.com/user/komasaru888" title="Go to my YouTube page" target="_blank">YouTube</a></li>
+  <li><a href="http://www.mk-mode.com/rails/jmaxml" title="The JMA XML page on my homepage" target="_blank">JMA XML</a></li>
+</ul>
+
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+        <form class="pull-right navbar-search" action="http://www.google.co.jp/cse" id="cse-search-box">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-7320193476057758:6328726109" />
+            <input type="hidden" name="ie" value="UTF-8" />
+            <input class="search" type="text" name="q" placeholder="Google Custom Search" />
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span9">
+  
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/26/26005326/">* ﾀｯｸｲﾝﾃﾞｯｸｽの作り方！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-26T00:53:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:53</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+今日は会社で ＯｕｔｌｏｏｋＥｘｐｒｅｓｓ のデータを Ｂｅｃｋｙ に移行することを試してみたかったんだけど、異常に急がしくて会社ではそれはできませんでした。</p>
+
+<p>僕は、経理の仕事がメインなので、今の時期は年度末で普段の仕事以外の仕事もあるんですが、その１つに１年分の各種帳票を出力しておかなくてはならなくて、Ａ４の両面印刷でも５００枚以上あるようなものを印刷しています。
+経理をしておられる方ならわかると思いますが、１年分の金銭的な取引の履歴となるものです。
+印刷自体は会計ソフトで簡単に出力できるんですが、そいつを参照するときに見やすいようにインデックスをつけないといけないんです。</p>
+
+<p>今までは、市販のタックインデックスに、横長のゴム印をタックインデックスに左半分は上段・右半分は下段に押してを作成していました。それも、表だけでなく裏になる部分もです。
+インデックスの数も半端じゃないんで、非常に面倒くさい！！！</p>
+
+<p>とういことで、今回は市販のタックインデックス用の印字ツールがそのメーカーから公開されているので、そいつを使ってみることにしました。</p>
+
+<p>印字するデータ自体は会計ソフトからエクポートしているんで、、、どうか楽でありますように・・・</p>
+
+<p>この日・月に自宅でやってみます。
+うちのインクジェットプリンタ、最近使ってないけど動くのかな～？！</p>
+
+<p>来週、会社であまりに綺麗にできていて上司がビックリするのを期待して。。。</p>
+
+<p>　　
+でも、まず日曜は散髪だ。
+なかなか、散髪にいけなかったんで。</p>
+
+<p>　
+じゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/25/25010720/">* OEからBecky2へのﾃﾞｰﾀ移行！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-25T01:07:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>01:07</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+最近、会社のネットワークが一部を除いて親会社のイントラから別れて、うちの会社独自のネットワークへ切り替わったので、結構融通が利くようになりました。</p>
+
+<p>そこで、今まで「 ＯｕｔｌｏｏｋＥｘｐｒｅｓｓ 」しか使えなかったのが他のメーラも使えるようになりました。
+※勝手に自分でそう理解しているだけ？</p>
+
+<p>で、このたび「 Ｂｅｃｋｙ 」か「 Ｔｈｕｎｄｅｒｂｉｒｄ 」へでも変更しようかと考えているところです。</p>
+
+<p>ところが、「 ＯｕｔｌｏｏｋＥｘｐｒｅｓｓ 」から他のメーラへ移行するツールって意外と無いことにちょっとショック！</p>
+
+<p>とりあえず、「 Ｂｅｃｋｙ 」へ移行してみようかと思ってるけど、探してみたら
+「 OutlookExpress-To - OE5/6 Multi Converter 」とかいうのがありました。</p>
+
+<p>今日はもう疲れたんで、明日会社か、会社から帰ってから自宅で試してみます。</p>
+
+<p>「 ＯｕｔｌｏｏｋＥｘｐｒｅｓｓ 」って、意外とセキュリティホールの問題があるんで、あまり好きじゃなかったんで。
+ちゃんとした（セキュアな）環境（今までのイントラは非常にセキュアな環境でしたが）では、悪くはないと思いますが、僕にはちょっと使いずらいので、今回いっそのことメーラを変更してみることにしました。</p>
+
+<p>　　
+結果は、また。</p>
+
+<p>じゃ。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/24/24001024/">* LOTO6 No.442</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-24T00:10:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:10</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ロト６/'>ロト６</a>
+  
+</span>
+
+ ]
+        [ 
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>まいどです。</p>
+
+<p>昨日ののロト６（第４４２回）の結果です。</p>
+
+<p>私はいつになったら当たるんでしょう？！</p>
+
+<p>気長にコツコツとやるしかないんかな？</p>
+
+<p>ダウンロード用ＣＳＶファイルを最新に更新しました。
+こちら - - - > <strong><a href="http://www.mk-mode.com/rails/loto/loto6" title="mk-mode SITE">mk-mode SITE</a></strong></p>
+
+<p><a href="http://www.mk-mode.com/rails/loto/LOTO6_ALL.csv" title="こちら">こちら</a> でもＯＫ。
+（右クリックで対象ファイルを保存！）</p>
+
+<p>どうぞ、ご活用下さい。</p>
+
+<p><strong><font color="red">※当方のデータは保証できるものではありません。
+　あくまでも、個人で分析するために活用しているだけです。</font></strong></p>
+
+<p><strong><font color="red">※正式なデータは「みずほ」宝くじコーナーでご確認ください。</font></strong></p>
+
+<p><strong><font color="red">※データに不具合があれば教えてください。</font></strong></p>
+
+<p>　　
+ではまた。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/23/23002033/">* ウイルス対策ソフト！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-23T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>, <a class='tag' href='/blog/tags/ウイルス対策/'>ウイルス対策</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+先日、うちの会社のネットワークを親会社のイントラネットから当社独自のネットワークに切り替えたんですが、ウイルス対策のことを考えていなかった！！！</p>
+
+<p>以前の親会社のイントラネットではシマンテックのソフト（詳しいことは不明だけど、企業用のやつ）だったんだけど、ネットワークを切り替えたため、今はウイルス定義ファイルが更新されない状態です。</p>
+
+<p>さて、困った。</p>
+
+<p>この際、新たにうちの会社用に４０ライセンス近くのウイルス対策ソフトを購入するとなると、１０万円以上かかる。
+（いつもお世話になっているところで見積もりをとってみた結果がそうでした）</p>
+
+<p>この不景気の時期です。
+あまりお金はかけられません。</p>
+
+<p>結局、社内数名（社長（社長はあんまりわかってないけど・・・）含め）検討した結果、当面の間はフリーのソフトで対応して、ちょっとうちの会社も世間も落ち着いたら、ちゃんとしたライセンスを購入するということに。。。</p>
+
+<p>ついでにファイアウォールの機器も勧められているけど、こいつもまたの機会にということで。。。</p>
+
+<p>で、そのフリーのウイルス対策ソフトですが、世界的にも有名なフリーソフト「 ・・・ 」にしました。
+どうでしょう！？
+※まだ、そのソフトの詳細を把握していないので（問題があるといけないので）、敢えてソフト名は公表しませんが・・・</p>
+
+<p>いままでも、当社のある部署ではそのソフトを使用していて、特に問題が無かったようなので、、、</p>
+
+<p>取り急ぎ、インストールしておくつもりです。。。
+そのソフトがインストールされていないのが２０台近くあるんで、そんな作業を２０台近くしていかないといけないですが・・・</p>
+
+<p>ネットワークを切り替えた為に、あちこちでいろんな問題も発生しつつあるし・・・</p>
+
+<p>はぁ～っ、て感じ。</p>
+
+<p>でも、そんなことも言ってられないこのご時世！</p>
+
+<p>ま、やってみます。</p>
+
+<p>　　
+じゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/22/22002616/">* Administratorのパスワード解除！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-22T00:26:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2009</span></span> <span class='time'>00:26</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>, <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+うちの会社のＷｉｎｄｏｗｓマシンを昨日ドメイン管理からワークグループ管理へ変更した際にＡｄｍｉｎｉｓｔｒａｔｏｒでのログインでパスワードがわからず、困っていた今日、あれこれ試してみました。</p>
+
+<p><strong>まず最初は、</strong>
+グループ会社のシステムの人に聞いてみたが、Ｗｉｎｄｏｗｓの再インストールするくらいしかないとのこと。
+（ホントは難しいことをすればできるかもしれないが、うちらのことは素人程度に見ておられるので、、、）
+再インストールするにも、メーカー製のマシンの場合、リカバリディスクでは工場出荷時に戻るのでは？
+そうなると、既存のデータがなくなってしまうので、ハードディスクをケースから取り出して、別のＷｉｎｄｏｗｓマシンからデータを吸い上げておく必要がある。</p>
+
+<p><strong>そして次の案として、</strong>
+ＣＤブートのＬｉｎｕｘ「 Ｋｎｏｐｐｉｘ 」で「 C:\WINDOWS\system32\config 」フォルダにある「 ＳＡＭ 」というファイルを削除する、という方法。これでパスワードなしでログインできるみたい（ホントかどうかは不明）
+但し、「 Ｃａｐｔｉｖｅ 」っていうツールで、ＮＴＦＳ書き込みできる属性に変更してからでないとできない、らしい。
+今回の作業時点ではこの「 Ｃａｐｔｉｖｅ 」の使い方をイマイチ把握してなかったので、試せなかった。
+※あとでググってみたら、「 Ｃａｐｔｉｖｅ 」のことについて記載してあるサイトがあった。。。
+今度は試してみよう！</p>
+
+<p><strong>そしてまた次の方法としては、</strong>
+パスワード解析ツールを使用しての解析。
+一緒に作業している人が持っていたもので、名前は忘れたが、それが使えた！！！
+（でも、別の同じ現象のマシンでは使えなかった。ハード的に相性があるみたい）</p>
+
+<p>何はともあれ、なんとかＡｄｍｉｎｉｓｔｒａｔｏｒのパスワードがわかったんで、ログインができました。
+ちょー、安堵。。。</p>
+
+<p>　　
+ま、こんな作業自体が普段しない作業なんで、慣れている人もあまりいないと思うけど、自分的には結構いい経験になりました。</p>
+
+<p>　　
+じゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/21/21002058/">* ﾄﾞﾒｲﾝからﾜｰｸｸﾞﾙｰﾌﾟへの変更時の盲点！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-21T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>, <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+今日は、うちの会社は休みだったんだけど、親会社のイントラネットからうち独自のネットワークへの切り替えの作業のため出勤してました。</p>
+
+<p>うちの会社は工場なんで、生産管理をするためのイントラネット経由のＰＣがどうしても必要なので、必要な数台のみ以外はうち独自のネットワークへ切り替えました。</p>
+
+<p>しかし、意外な落とし穴がありました。</p>
+
+<p><strong>まず、１つ目は。。。</strong>
+今までは、親会社系列のイントラネットだったんで、ワークグループではなくドメインでのメンバ管理でした。
+それをワークグループでの管理に切り替えるために設定をドメインからワークグループにして、アドミニストレータでログインしようとしたときに、パスワードがわからなくなってしまい、まったくログインできなくなってしまいました。
+（そんな減少に陥ってしまったのは２台ですが、他のほとんどのＰＣでは、パスワードを確認してから作業したのでＯＫでしたが）
+ワークグループを設定する前にアドミニストレータのパスワードを確認するなり、削除するなりしておけばよかったんですが。。。</p>
+
+<p><strong>もうひとつ、ちょっとした落とし穴がありました。</strong>
+うちの会社の独自のネットワークではいままでＤＨＣＰでＩＰアドレスを管理していたんですが、ＤＨＣＰで管理できるのは１６台に設定していたようで、今回台数が急激に増えたため、ＩＰアドレスの競合問題が発生しました。
+最初はなかなか原因に気づきませんでしたが、ふと思い出して確認してみたら、案の定ＤＨＣＰの設定が１６台しかなかった！
+急遽、数を増やしました。
+成功！！！</p>
+
+<p>今回の移行は、うちの会社でもパソコン系にまあまあ強いものが２人がかりで作業しました。
+他の社員たちは意外とＰＣ系にうとい人たちばかりなので、うちらが会社の休みの間にしておいてあげる、というものです。</p>
+
+<p>以前、僕が働いていたソフト開発の現場ではみんな自分で自分のマシンの設定はしていましたが。
+やっぱり、普通の会社ではそうはいかないでしょう、って実感した次第です。</p>
+
+<p>ま、還暦まじかの人や還暦過ぎた人、また家ではパソコン使わない人、などが多いんで、それが普通かも知れませんねえ！</p>
+
+<p>さ、明日は、いろいろと問い合わせがあるぞ～！
+「あれが動かない！」とか、「あれはドコいった？」とか、、、</p>
+
+<p>あっ、アドミニストレータでログインできないのはどうしよう？！
+（グループ会社のシステムの人に相談だなっ！）
+パスワードリセットディスクとかも作ってないんで、最悪Ｗｉｎｄｏｗｓの再インストールも覚悟。
+データを無くさないよう、念のためうちから「 Ｋｎｏｐｐｉｘ 」のディスクも持っていっとこっと！</p>
+
+<p>　　
+じゃ、その後の結果はまた！</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/20/20002016/">* Thunderbird → Becky へ移行！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-20T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>今日は、今使っているメーラ ＭｏｚｉｌｌａＴｈｕｎｄｅｒｂｉｒｄ を昔よく使っていた Ｂｅｃｋｙ に戻してみようと思い、移行してみました。</p>
+
+<p>以下に手順を記録として残しておきます。</p>
+
+<h3>作業手順</h3>
+
+<h4>１．Ｔｈｕｎｄｅｒｂｉｒｄ の最適化</h4>
+
+<p>コピー元の Ｔｈｕｎｄｅｒｂｉｒｄ のデータを軽くしておくため、各フォルダを最適化しておく。
+※上位フォルダを最適化しても、下位のフォルダまでは最適化されないみたいなので、各フォルダでこの作業が必要となります。
+メールの数がさほど多くなければ、最適化自体も不要だとは思いますが。。。
+（フォルダ分けしていなければ、作業は楽です）</p>
+
+<p><a href="/images/2009/04/thunder_becky_1.jpg"><img src="/images/2009/04/thunder_becky_1-138x149.jpg" alt="thunder_becky_1" title="thunder_becky_1" width="138" height="149" class="alignnone size-thumbnail wp-image-1768" /></a></p>
+
+<h4>２．Ｂｅｃｋｙ にフォルダ作成</h4>
+
+<p>フォルダ分けしているので、コピー先となる Ｂｅｃｋｙ にもフォルダを作成しておく。
+でも、途中で気が付いたが、Ｂｅｃｋｙ 側にはフォルダを作成しておかなくてもよかったみたい。
+Ｔｈｕｄｅｒｂｉｒｄ とフォルダ名を変えなければ、フォルダは作成されるみたい！</p>
+
+<h4>３．Ｂｅｃｋｙ にインポート</h4>
+
+<p><strong>ａ．</strong>Ｂｅｃｋｙ 側のインポートしたいフォルダを選択してから、「 ファイル 」メニューの「 インポート 」を選ぶ。</p>
+
+<p><a href="/images/2009/04/thunder_becky_2.jpg"><img src="/images/2009/04/thunder_becky_2-116x150.jpg" alt="thunder_becky_2" title="thunder_becky_2" width="116" height="150" class="alignnone size-thumbnail wp-image-1769" /></a></p>
+
+<p><strong>ｂ．</strong>「 インポート・エクスポートフォーマット 」のダイアログが表示されるので、「 UNIX mbox形式 」をチェックして「 ＯＫ 」ボタンをクリック。</p>
+
+<p><a href="/images/2009/04/thunder_becky_3.jpg"><img src="/images/2009/04/thunder_becky_3-150x53.jpg" alt="thunder_becky_3" title="thunder_becky_3" width="150" height="53" class="alignnone size-thumbnail wp-image-1770" /></a></p>
+
+<p><strong>ｃ．</strong>今選択中のフォルダにインストールするかどうかの確認画面が表示されるので、「 いいえ 」を選択。
+フォルダを事前に作成していなければここで「 はい 」を選択すれば、フォルダを作成してインポートされるみたいです。</p>
+
+<p><a href="/images/2009/04/thunder_becky_4.jpg"><img src="/images/2009/04/thunder_becky_4-150x44.jpg" alt="thunder_becky_4" title="thunder_becky_4" width="150" height="44" class="alignnone size-thumbnail wp-image-1771" /></a></p>
+
+<p><strong>ｄ．</strong>インポートするファイルを選択する画面となるので、指定して、「 開く 」をクリック。</p>
+
+<p><a href="/images/2009/04/thunder_becky_5.jpg"><img src="/images/2009/04/thunder_becky_5-150x87.jpg" alt="thunder_becky_5" title="thunder_becky_5" width="150" height="87" class="alignnone size-thumbnail wp-image-1772" /></a></p>
+
+<p>これで、インポートが始まります。
+大量のメールがある場合、Ｂｅｃｋｙ 自体がフリーズした感じになるけど、ガマンしてればインポートが完了します。
+また、今回は送信済みフォルダ等も移行しています。</p>
+
+<h4>４．確認</h4>
+
+<p>以下のようにインポートされると思います。</p>
+
+<p><a href="/images/2009/04/thunder_becky_6.jpg"><img src="/images/2009/04/thunder_becky_6-150x69.jpg" alt="thunder_becky_6" title="thunder_becky_6" width="150" height="69" class="alignnone size-thumbnail wp-image-1773" /></a></p>
+
+<h4>５．その他</h4>
+
+<p>今回、アドレス帳も移行しました。
+Ｔｈｕｄｅｒｂｉｒｄ のアドレス帳の「 ツール 」メニューの「 エクスポート 」でＣＳＶ保存して、ＢｅｃｋｙでＣＳＶを取り込みました。</p>
+
+<hr />
+
+<p>設定については以上です。</p>
+
+<p>あとは、各種プラグイン類を導入したり、フィルタリング（フォルダ分け）の設定をしたりして、今まで以上に使いやすいメーラになるようカスタマイズして行こうと思います。
+※職場でも、（ＯｕｔｌｏｏｋＥｘｐｒｅｓｓから）Ｂｅｃｋｙに変えるつもりです。。。</p>
+
+<p>それでは、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/19/19115121/">* メールソフト！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-19T11:51:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>11:51</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>, <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんにちは。</p>
+
+<p>　　
+久々の昼間の投稿です。</p>
+
+<p>今日はメールソフトについてです。</p>
+
+<p>みなさんは、メールソフト（Ｗｉｎｄｏｗｓ版）に何を使われてますでしょうか？</p>
+
+<p>僕は（今は） ＭｏｚｉｌｌａＴｈｕｎｄｅｒｂｉｒｄ を使っています。</p>
+
+<p>（会社では、強固なセキュリティのかかったネットワーク上でＯｕｔｌｏｏｋＥｘｐｒｅｓｓを使わざるを得なかったので、仕方なく使ってました）</p>
+
+<p>なんか、ＯｕｔｌｏｏｋＥｘｐｒｅｓｓ は使いにくいっ！って思っているのは私だけ？</p>
+
+<p>Ｔｈｕｎｄｅｒｂｉｒｄを選んだ理由はＷｅｂブラウザにＭｏｚｉｌａＦｉｒｅｆｏｘを使っているのあるし、ＴｈｕｄｅｒｂｉｒｄはＬｉｎｕｘ版もあるので、仮にＬｉｎｕｘ側で使う状況が発生した場合にもすぐになじめる（？）から！
+別にうちのサーバは今ＧＵＩでは使用できませんが（というかＧＵＩで使用つもりも今のところありませんが）。。。</p>
+
+<p>Ｔｈｕｎｄｅｒｂｉｒｄを使ってて特に便利だと感じたのは、「 メールフィルタ（振り分け）機能 」が充実している。
+・振り分け後、どのように処理するのかも設定できる。
+・読まずに即既読にしたい場合なんか特に便利！</p>
+
+<p><a href="/images/2009/04/thunderbird_filter_1.jpg"><img class="alignnone size-thumbnail wp-image-1762" title="thunderbird_filter_1" src="/images/2009/04/thunderbird_filter_1-128x150.jpg" alt="thunderbird_filter_1" width="128" height="150" /></a></p>
+
+<p>不満はメールの自動送信（指定した時刻に送信する機能）が多分ない（プラグインとかあるのかもしれんけど）って事くらいかな！</p>
+
+<p>ただ、昔、仕事でもプライベートでも使用していた Ｂｅｃｋｙ が最近また気になりだしたんで、また使ってみようかとも思っているところ。
+（だいぶパージョンアップもされてきたみたいだし・・・）</p>
+
+<p>実は、会社のネットワークも親会社のイントラネットからはずして、うちの会社独自のネットワークに切り替わるんで、メールソフトもＯｕｔｏｌｏｏｋＥｘｐｒｅｓｓ以外が使えるようになります。</p>
+
+<p>いっそ、Ｔｈｕｎｄｅｒｂｉｒｄ か Ｂｅｃｋｙ に使用かと考えています。</p>
+
+<p>その前に、うちで、Ｔｈｕｎｄｅｒｂｉｒｄ か Ｂｅｃｋｙ の自分にとっての使いやすさを検証しておきます。</p>
+
+<p>　　
+じゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/18/18002031/">* 簿記３級試験申し込み！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-18T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>　　
+以前、僕は「 病院の事務職 」したり、本命の「 システムエンジニア 」の仕事をしたりとしていましたが、
+今は、親族内の都合で親戚の会社（今最悪の製造業）の「 経理 」をしています。</p>
+
+<p>そこで、
+最近不況のせいで現場も仕事がかなり少なく、それに比例してとまではいきませんが、１年前よりは事務部門もチョット余裕ができたんで、簿記の試験を受けてみようと思い、少しずつですが勉強しているところです。</p>
+
+<p>そして先日、地元の商工会議所でもWeb申し込みが開始されたんで、一昨日Web申し込みをしました。
+そしたら、昨日連絡先にしていた携帯に申し込み受付完了のメールが送れなかったんで、電話にて振込みの案内がありました。
+（留守電でしたけど、夜気が付きました。）</p>
+
+<p>あとで、家に帰ってから確認しましたけど、確かに自分のメールアドレスを申し込みのときに入力しています。
+何でだろう？？？</p>
+
+<p>Web申し込み開始日時も予定より１・２日送れてたらから、Webのシステムの問題では？
+と、勝手に思った次第ですが。</p>
+
+<p>ま、でも、とりあえず期日内に検定料を振り込んでくれということだったんで、さっき振り込みました。
+３級 は ２,５００円 でした。</p>
+
+<p>試験は ６月１４日（日） なんで、まだあと２ヶ月ほどあるんで、
+なんとか合格レベルまで到達できるようかんばりスマッシュ！です。</p>
+
+<p>でも、息抜きのために（？）
+自作ＰＣも完成させたいなあ～！
+自転車も乗りたいな～！
+ルービックキューブの練習もしたいな～！
+あれもしたいな～！
+これもしたいな～！</p>
+
+<p>仕事終わってから、
+家に帰って、晩飯食って、
+風呂に入って、
+その日１日のまとめの記録（手帳にとってるんです）とって、
+ちょっと、ブログの記事を書いてたら、
+もう午前様！！！
+次の日は朝６には起きないといけないし、
+不況、不況とは言ってもホントに時間がとれない！！！</p>
+
+<p>ま、踏ん張り時ということで、なんとかガマン、ガマン！</p>
+
+<p>　　
+じゃ、また。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/17/17001034/">* LOTO6 No.441</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-17T00:10:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:10</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ロト６/'>ロト６</a>
+  
+</span>
+
+ ]
+        [ 
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>まいどです。</p>
+
+<p>昨日ののロト６（第４４１回）の結果です。</p>
+
+<p>私の結果は、いつもどおりです！</p>
+
+<p>ダウンロード用ＣＳＶファイルを最新に更新しました。
+こちら - - - > <strong><a href="http://www.mk-mode.com/rails/loto/loto6" title="mk-mode SITE">mk-mode SITE</a></strong></p>
+
+<p><a href="http://www.mk-mode.com/rails/loto/LOTO6_ALL.csv" title="こちら">こちら</a> でもＯＫ。
+（右クリックで対象ファイルを保存！）</p>
+
+<p>どうぞ、ご活用下さい。</p>
+
+<p><strong><font color="red">※当方のデータは保証できるものではありません。
+　あくまでも、個人で分析するために活用しているだけです。</font></strong></p>
+
+<p><strong><font color="red">※正式なデータは「みずほ」宝くじコーナーでご確認ください。</font></strong></p>
+
+<p><strong><font color="red">※データに不具合があれば教えてください。</font></strong></p>
+
+<p>　　
+ではまた。</p>
+
+<p>　　</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <ul class="pager">
+    
+    <li class="previous"><a href="page/126">&larr; Older</a></li>
+    
+    <li><a href="/blog/archives">Blog Archives</a></li>
+    
+    <li class="next"><a href="page/124">Newer &rarr;</a></li>
+    
+  </ul>
+</div>
+<aside class="sidebar-nav span3">
+  
+    <section class="well">
+  <span class="nav-header">Access Counter</span>
+  <table class="access">
+    <tr>
+     <td>ブログ開設日</td><td class="access-val">2009-01-05</td>
+    </tr>
+    <tr>
+      <td>サーバ連続稼働時間</td><td class="access-val"><div id="uptime">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">Page View 合計</td>
+      <td class="access-val"><div id="pv-total">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">今日</td>
+      <td class="access-val"><div id="pv-today">Reading... </div></td>
+    </tr>
+    <tr>
+      <td class="access-label">昨日</td>
+      <td class="access-val"><div id="pv-yesterday">Reading... </div></td>
+    </tr>
+  </table>
+</section>
+<section class="well">
+  <ul class="nav nav-list">
+    <li class="nav-header">Information</li>
+  </ul>
+  <a href="http://www.pref.shimane.lg.jp/" target="_blank"><img class="information" src="/images/shimanekoL.jpg" alt="島根県" title="「島根県」へのリンクです。" /></a>
+  <a href="http://shimane-goen.jp/" target="_blank"><img class="information" src="/images/goen_2015_234_60.png" alt="ご縁の国しまね" title="「ご縁の国しまね」へのリンクです。" /></a>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- mk-mode BLOG Sidebar-2 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:200px;height:90px"
+       data-ad-client="ca-pub-7320193476057758"
+       data-ad-slot="9601859305"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</section>
+<section class="well">
+  <ul id="sponsord-link" class="nav nav-list">
+    <li class="nav-header">About Me</li>
+  </ul>
+  <p>趣味で自作の自宅Linuxサーバ運用。ブログではIT系(サーバ構築(Linux etc)、PG(Ruby etc)、PC Tips)についての話題を中心に公開。ルービックキューブも人生何回目かのマイブームで、今は非公式ながら Sub25！</p>
+  <a href="http://www.mk-mode.com/" target="_blank">Site</a>
+  <a href="http://twitter.com/ko_masaru/" target="_blank">Twitter</a>
+  <a href="http://www.facebook.com/masaru.koizumi.5" target="_blank">Facebook</a>
+  <a href="https://github.com/komasaru" target="_blank">GitHub</a>
+  <a href="http://www.youtube.com/user/komasaru888" target="_blank">YouTube</a>
+</section>
+<section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/21/mariadb-mroonga-installation/">MariaDB 10.0.x - Mroonga プラグインの有効化！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/17/ruby-rroonga-fulltext-searching/">Ruby - Rroonga で全文検索！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/">Ruby - gnuplot でグラフ描画！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/09/linux-mint-groonga-installation-by-src/">Linux Mint - Groonga インストール（by ソースビルド）！</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/06/tmux-automatic-session-preservation/">tmux - Window, Pane, Session 自動保存プラグイン！</a>
+      </li>
+    
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Categories</li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (251)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (524)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (199)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (334)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+  </ul>
+</section>
+<section class="well">
+  <ul id="category-list" class="nav nav-list">
+    <li class="nav-header">Tag Cloud</li>
+  </ul>
+  <a href='/blog/tags/ajax' style='font-size: 100.58064516129032%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.16129032258064%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.64516129032258%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.58064516129032%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.16129032258064%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19354838709677%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.48387096774194%'>bash(18)</a> <a href='/blog/tags/bash' style='font-size: 100.19354838709677%'>Bash(1)</a> <a href='/blog/tags/bitly' style='font-size: 100.38709677419355%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19354838709677%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38709677419355%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.67741935483872%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19354838709677%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19354838709677%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19354838709677%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.74193548387096%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 106.0%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.96774193548387%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.58064516129032%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.83870967741936%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38709677419355%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19354838709677%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.74193548387096%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.70967741935483%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19354838709677%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7741935483871%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.35483870967742%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.80645161290323%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.16129032258064%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.96774193548387%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.64516129032258%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19354838709677%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.12903225806451%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.58064516129032%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.2258064516129%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.12903225806451%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38709677419355%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.96774193548387%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19354838709677%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.93548387096774%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.58064516129032%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38709677419355%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.51612903225806%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7741935483871%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19354838709677%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.54838709677419%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.70967741935483%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.58064516129032%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.58064516129032%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38709677419355%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.58064516129032%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.06451612903226%'>Linux(300)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.2258064516129%'>LinuxMint(58)</a> <a href='/blog/tags/lokka' style='font-size: 100.38709677419355%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 105.03225806451613%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.38709677419355%'>MariaDB(33)</a> <a href='/blog/tags/markdown' style='font-size: 101.16129032258064%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.58064516129032%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19354838709677%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.90322580645162%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 130.96774193548387%'>MySQL(160)</a> <a href='/blog/tags/namazu' style='font-size: 100.19354838709677%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.48387096774194%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.16129032258064%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.58064516129032%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38709677419355%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.35483870967742%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7741935483871%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19354838709677%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.41935483870968%'>Octopress(59)</a> <a href='/blog/tags/office' style='font-size: 100.19354838709677%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19354838709677%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.16129032258064%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19354838709677%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.38709677419355%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.0%'>Postfix(31)</a> <a href='/blog/tags/proxy' style='font-size: 100.38709677419355%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38709677419355%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.16129032258064%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.74193548387096%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.3225806451613%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.61290322580645%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38709677419355%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19354838709677%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19354838709677%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.16129032258064%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(310)</a> <a href='/blog/tags/samba' style='font-size: 101.74193548387096%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.58064516129032%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.54838709677419%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19354838709677%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38709677419355%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19354838709677%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38709677419355%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19354838709677%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.16129032258064%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.93548387096774%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7741935483871%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19354838709677%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.96774193548387%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19354838709677%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7741935483871%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.61290322580645%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38709677419355%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.96774193548387%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.54838709677419%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19354838709677%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.74193548387096%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.96774193548387%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.35483870967742%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.58064516129032%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7741935483871%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19354838709677%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.35483870967742%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.12903225806451%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19354838709677%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.93548387096774%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.7741935483871%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.74193548387098%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.58064516129032%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.74193548387098%'>XML(40)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38709677419355%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19354838709677%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.16129032258064%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.51612903225806%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19354838709677%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.16129032258064%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19354838709677%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.6774193548387%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.16129032258064%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38709677419355%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19354838709677%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.96774193548387%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.16129032258064%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.58064516129032%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19354838709677%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.74193548387096%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.6774193548387%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.09677419354838%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38709677419355%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19354838709677%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.54838709677419%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19354838709677%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19354838709677%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.16129032258064%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.96774193548387%'>端末(5)</a> 
+</section>
+<section class="well">
+  <ul id="month-list" class="nav nav-list">
+    <li class="nav-header">Monthly Archives</li>
+  </ul>
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/08/'>2015-08 (7)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1397 posts
+</section>
+
+<section class="well">
+  <ul id="gh_repos" class="nav">
+    <li class="nav-header">GitHub Repos</li>
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/komasaru">@komasaru</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        github.showRepos({
+            user: 'komasaru',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/asides/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section class="well">
+  <ul id="twitter-timeline" class="nav">
+    <li class="nav-header">Latest Tweets</li>
+  </ul>
+  <a class="twitter-timeline"  href="https://twitter.com/ko_masaru"  data-widget-id="293992385095016448">@ko_masaru からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+
+
+<section class="well">
+  <ul id="sponsord-link" class="nav">
+    <li class="nav-header">Sponsored Link</li>
+  </ul>
+  <span id="sponsored-link">
+    <object data="http://komasaru.github.io/obj_sponsored_link.html" type="text/html" width="254" height="200"></object>
+  </span>
+</section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p id="page-top">
+  <a href="#wrapper">
+    <img src="/images/pagetop.png" alt="PAGE TOP" />
+  </a>
+</p>
+<p>
+  Copyright &copy; 2015 - mk-mode.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mkmodeblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
