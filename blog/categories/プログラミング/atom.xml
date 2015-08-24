@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-08-21T23:26:19+09:00</updated>
+  <updated>2015-08-25T00:05:49+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,126 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - dRuby で分散処理！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/25/ruby-distributed-processing-by-druby/"/>
+    <updated>2015-08-25T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/25/ruby-distributed-processing-by-druby</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>dRuby とは、 Ruby で分散オブジェクトプログラミングするためのライブラリです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>本来は複数のマシンで実行することが多いと思うが、今回は１つのマシンでテストする。</li>
+<li>特に別途インストールの必要なライブラリ等はない。</li>
+</ul>
+
+
+<h3>1. サーバ側スクリプトの作成例</h3>
+
+<p>日付・時刻の文字列を返すだけの簡単な例。</p>
+
+<pre><code class="ruby druby_server.rb">#!/usr/local/bin/ruby
+# coding: utf-8
+require 'drb/drb'
+
+# 通信を待ち受ける URI
+URI="druby://localhost:8787"
+
+class DrubyServer
+  def get_cur_time
+    cur_time = Time.now.strftime("%Y年%m月%d日 %H時%M分%S秒")
+    msg = "ただいま #{cur_time} です。"
+    puts msg
+    return msg
+  end
+end
+
+# リクエストを受け付けるオブジェクト
+obj = DrubyServer.new
+# サーバの起動
+DRb.start_service(URI, obj, safe_level: 1)
+# DRb スレッド終了の待ち受け
+DRb.thread.join
+</code></pre>
+
+<ul>
+<li><code>start_service</code> の <code>safe_level</code> を <code>1</code> に設定しているのは、 <code>instance_eval</code> による危険性を防ぐための処置。</li>
+</ul>
+
+
+<h3>2. クライアント側スクリプトの作成例</h3>
+
+<p>サーバのメソットを呼び出す簡単な例。</p>
+
+<pre><code class="ruby druby_client.rb">#!/usr/local/bin/ruby
+# coding: utf-8
+require 'drb/drb'
+
+# 接続先 URI
+URI="druby://localhost:8787"
+
+# リモートオブジェクトの取得
+obj = DRbObject.new_with_uri(URI)
+# リモートメソッドの呼び出し
+puts obj.get_cur_time
+</code></pre>
+
+<h3>3. 動作確認</h3>
+
+<p>まず、１つ目の端末を立ち上げて、サーバ側スクリプトを実行する。</p>
+
+<pre><code class="text">$ ./druby_server.rb
+</code></pre>
+
+<p>そして、もう１つ端末を立ち上げて、クライアント側スクリプトを実行する。</p>
+
+<pre><code class="text">$ ./druby_client.rb
+ただいま 2015年07月22日 24時31分16秒 です。
+$ ./druby_client.rb
+ただいま 2015年07月22日 24時32分30秒 です。
+</code></pre>
+
+<p>クライアント側スクリプトを実行する度にサーバ側で処理した結果が出力されるはずである。<br/>
+また、この時サーバ側の端末にも同じ出力がされるはずである。</p>
+
+<pre><code class="text">$ ./druby_server.rb
+ただいま 2015年07月22日 24時31分16秒 です。
+ただいま 2015年07月22日 24時32分30秒 です。
+</code></pre>
+
+<h3>4. 注意</h3>
+
+<ul>
+<li>dRuby で構築したサーバをインターネットで外部に公開すべきではない。</li>
+<li>ローカルで使用する際もセキュリティ面に注意する。</li>
+</ul>
+
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://docs.ruby-lang.org/ja/2.2.0/library/drb.html" title="library drb (Ruby 2.2.0)">library drb (Ruby 2.2.0)</a></li>
+</ul>
+
+
+<hr />
+
+<p>この dRuby による分散処理をいろいろ応用できそうです。</p>
+
+<p>実際、目論んでいることもありますし。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - Rroonga で全文検索！]]></title>
@@ -643,175 +763,6 @@ GetMail.new.execute
 <hr />
 
 <p>当方は、Linux サーバに Twitter ツイート専用のユーザを作成し、そのユーザ宛に配送されたメール本文をツイートするように応用しています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - 円周率計算（BBP の公式使用）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/05/19/ruby-pi-computation-by-bbp/"/>
-    <updated>2015-05-19T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/05/19/ruby-pi-computation-by-bbp</id>
-    <content type="html"><![CDATA[<p>こんにちは。</p>
-
-<p>前回、 BBP(Bailey, Borwein, Plouffe) の公式を使用して任意の桁の円周率を16進で計算するアルゴリズムを C++ で実装しました。</p>
-
-<ul>
-<li><a href="/2015/05/17/cpp-pi-computation-by-bbp/" title="C++ - 円周率計算（BBP の公式使用）！">C++ - 円周率計算（BBP の公式使用）！</a></li>
-</ul>
-
-
-<p>今回は、同じアルゴリズムを Ruby で実装してみました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.1(64bit) での作業を想定。</li>
-<li>ruby 2.2.2-p95 での作業を想定。</li>
-<li>計算に使用したマシンは CPU: Intel Core2Duo E8500 ( 3.16GHz ), MEM: 3.9GiB</li>
-</ul>
-
-
-<h3>1. BBP の公式を使用した円周率計算について</h3>
-
-<p>前回の記事を参照。</p>
-
-<ul>
-<li><a href="/2015/05/17/cpp-pi-computation-by-bbp/" title="C++ - 円周率計算（BBP の公式使用）！">C++ - 円周率計算（BBP の公式使用）！</a></li>
-</ul>
-
-
-<h3>2. Ruby スクリプトの作成</h3>
-
-<p>第1引数で計算を開始する桁を指定し、その桁から 10 桁を出力する仕様。（べき剰余の演算も自前で実装。「<a href="/2015/05/15/ruby-implementation-of-modular-exponentiation" title="Ruby - べき剰余アルゴリズムの実装！">Ruby - べき剰余アルゴリズムの実装！</a>」参照）</p>
-
-<pre><code class="ruby pi_bbp.rb">#!/usr/local/bin/ruby
-#=======================================
-# Computation of pi by BBP algorithm.
-#=======================================
-require 'benchmark'
-
-class PiBbp
-  EPS = 1.0e-17  # Loop-exit accuration of the right summation
-
-  def comp_pi(d)
-    d -= 1
-    pi = (4 * s(1, d) - 2 * s(4, d) - s(5, d) - s(6, d)) % 1.0
-    printf("FRACTION  : %.15f\n", pi)
-    printf("HEX DIGITS: %10x\n", (pi * 16 ** 10).truncate)
-  end
-
-  def s(j, d)
-    # Left sum
-    s = 0.0
-    k = 0
-    while k &lt;= d
-      r = 8 * k + j
-      t = mod_exp(16, d - k, r)
-      t /= r.to_f
-      s += t % 1.0
-      s %= 1.0
-      k += 1
-    end
-
-    # Right sum
-    loop do
-      r = 8 * k + j
-      t = 16.0 ** (d - k) / r
-      break if t &lt; EPS
-      s += t
-      s %= 1.0
-      k += 1
-    end
-
-    return s
-  end
-
-  def mod_exp(b, e, m)
-    return 1 if e == 0
-    ans = mod_exp(b, e / 2, m)
-    ans = (ans * ans) % m
-    ans = (ans * b) % m if e % 2 == 1
-    return ans
-  end
-end
-
-exit unless __FILE__ == $0
-exit unless ARGV[0]
-obj = PiBbp.new
-res = Benchmark.realtime do
-  obj.comp_pi(ARGV[0].to_i)
-end
-puts "( TIME: #{res} seconds )"
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/a091c46595cdbc8d276a" title="Gist - Ruby script code to compute pi with BBP formula.">Gist - Ruby script to compute pi with BBP formula.</a></li>
-</ul>
-
-
-<h3>3. 動作確認</h3>
-
-<p><code>HEX DIGITS</code> が求める円周率（16進）。（但し、計算公式の特性上、後半の桁の値は保証されない）</p>
-
-<pre><code class="text">$ ./pi_bbp.rb 1
-FRACTION  : 0.141592653589793
-HEX DIGITS: 243f6a8885
-TIME: 0.00012832199718104675 seconds )
-
-$ ./pi_bbp.rb 91
-FRACTION  : 0.910345837630448
-HEX DIGITS: e90c6cc0ac
-TIME: 0.0006358680002449546 seconds )
-
-$ ./pi_bbp.rb 991
-FRACTION  : 0.284592623548894
-HEX DIGITS: 48db0fead3
-TIME: 0.008182067002053373 seconds )
-
-$ ./pi_bbp.rb 9991
-FRACTION  : 0.151042259944499
-HEX DIGITS: 26aab49ec6
-( TIME: 0.10906490000343183 seconds )
-
-$ ./pi_bbp.rb 99991
-FRACTION  : 0.633399233605157
-HEX DIGITS: a22673c1a5
-( TIME: 1.3719816630000423 seconds )
-
-$ ./pi_bbp.rb 999991
-FRACTION  : 0.624957331312628
-HEX DIGITS: 9ffd342362
-( TIME: 14.838047453999025 seconds )
-
-$ ./pi_bbp.rb 9999991
-FRACTION  : 0.756411434763846
-HEX DIGITS: c1a42e06a1
-TIME: 177.62035008599923 seconds
-</code></pre>
-
-<p>（99,999,991桁目からの10桁（1億桁目まで）は計算していないが、当方の環境では30分少しかかりそう）</p>
-
-<h3>4. 計算結果の検証</h3>
-
-<p>&ldquo;<a href="http://bellard.org/pi/pi2700e9/pidigits.html" title="Pi Digits">Pi Digits</a>&rdquo; の計算結果と比較し、任意のあらゆる部分が一致することを確認した。</p>
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="http://xn--w6q13e505b.jp/" title="円周率.jp">円周率.jp</a></li>
-<li><a href="http://www.experimentalmath.info/bbp-codes/" title="BBP Code Directory">BBP Code Directory</a></li>
-<li><a href="http://bellard.org/pi/pi2700e9/announce.html" title="Pi Computation Record">Pi Computation Record</a></li>
-</ul>
-
-
-<hr />
-
-<p>当然ながら同じアルゴリズムを C++ に実装した場合と比べると随分と速度が遅いです。</p>
 
 <p>以上。</p>
 ]]></content>
