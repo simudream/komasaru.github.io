@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-08-25T00:05:49+09:00</updated>
+  <updated>2015-08-29T00:14:57+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,140 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - dRuby でジョブキューサーバ構築！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/29/ruby-job-queue-server-construction-by-druby/"/>
+    <updated>2015-08-29T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/29/ruby-job-queue-server-construction-by-druby</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>前回に引き続き、Ruby の分散オブジェクトプログラミングするためのライブラリ dRuby についての内容です。</p>
+
+<p>今回は、 dRuby を利用してジョブキューサーバ＆クライアントを構築してみました。</p>
+
+<p>要は、キューに順次プッシュした内容をクライアント側から順次ポップする仕組みのことです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>本来は複数のマシンで実行することが多いと思うが、今回は１つのマシンでテストする。</li>
+<li>dRuby の簡単な使用例は「<a href="/2015/08/25/ruby-distributed-processing-by-druby" title="Ruby - dRuby で分散処理！">Ruby - dRuby で分散処理！</a>」を参照。</li>
+</ul>
+
+
+<h3>1. サーバ側スクリプトの作成例</h3>
+
+<p>Queue オブジェクトを生成して待ち受けるのみの簡単なスクリプト。</p>
+
+<pre><code class="ruby queue_server.rb">#!/usr/local/bin/ruby
+# codeing: utf-8
+require 'drb/drb'
+
+q = Queue.new
+DRb.start_service("druby://localhost:8787", q, safe_level: 1)
+DRb.thread.join
+</code></pre>
+
+<ul>
+<li><code>start_service</code> の <code>safe_level</code> を <code>1</code> に設定しているのは、 <code>instance_eval</code> による危険性を防ぐための処置。</li>
+</ul>
+
+
+<h3>2. クライアント側 Pop スクリプトの作成例</h3>
+
+<p>キューサーバから順次ポップして5秒後にコンソール出力するのみの簡単なスクリプト。（キューに溜め込まれるデータは時刻文字列を想定している）</p>
+
+<pre><code class="ruby pop_client.rb">#!/usr/local/bin/ruby
+# coding: utf-8
+require 'drb/drb'
+
+obj = DRbObject.new_with_uri("druby://localhost:8787")
+loop do |a|
+  tm = obj.pop
+  sleep 5
+  puts "Received at #{tm}."
+end
+</code></pre>
+
+<h3>3. クライアント側 Push スクリプトの作成例</h3>
+
+<p>キューサーバへ現在時刻の文字列をプッシュするのみの簡単なスクリプト。</p>
+
+<pre><code class="ruby push_client.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+require 'drb/drb'
+
+obj = DRbObject.new_with_uri("druby://localhost:8787")
+tm = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+obj.push tm
+puts "Sended at #{tm}."
+</code></pre>
+
+<h3>4. 動作確認</h3>
+
+<p>まず、１つ目の端末を立ち上げて、サーバ側スクリプトを実行する。</p>
+
+<pre><code class="text">$ ./queue_server.rb
+</code></pre>
+
+<p>次に、２つ目の端末を立ち上げて、クライアント側 Pop スクリプトを実行する。</p>
+
+<pre><code class="text">$ ./pop_client.rb
+</code></pre>
+
+<p>最後に、３つ目の端末を立ち上げて、クライアント側 Push スクリプトを何度も連続して実行してみる。</p>
+
+<pre><code class="text">$ ./push_client.rb
+Sended at 2015-07-28 23:34:02.
+$ ./push_client.rb
+Sended at 2015-07-28 23:34:03.
+$ ./push_client.rb
+Sended at 2015-07-28 23:34:03.
+$ ./push_client.rb
+Sended at 2015-07-28 23:34:04.
+$ ./push_client.rb
+Sended at 2015-07-28 23:34:04.
+</code></pre>
+
+<p>すると、２つ目の Pop クライアントの端末に５秒間隔で出力がなされるはずである。</p>
+
+<pre><code class="text">$ ./pop_client.rb
+Received at 2015-07-28 23:34:02.
+Received at 2015-07-28 23:34:03.
+Received at 2015-07-28 23:34:03.
+Received at 2015-07-28 23:34:04.
+Received at 2015-07-28 23:34:04.
+</code></pre>
+
+<h3>5. 注意</h3>
+
+<ul>
+<li>dRuby で構築したサーバをインターネットで外部に公開すべきではない。</li>
+<li>ローカルで使用する際もセキュリティ面に注意する。</li>
+</ul>
+
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://docs.ruby-lang.org/ja/2.2.0/library/drb.html" title="library drb(Ruby2.2.0)">library drb(Ruby2.2.0)</a></li>
+</ul>
+
+
+<hr />
+
+<p>当方、一度に並列で処理をされては困るような場合に、この仕組みを応用して順次処理を行うようにしています。<br/>
+（インターネット上からデータが配信されたら処理を行うようなシステムの場合に、データが集中的に配信されてもマシンに負荷をかけないようにするため）</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - dRuby で分散処理！]]></title>
@@ -608,161 +742,6 @@ d = [9, 3, 2, 7, "abc", 6, 8, 5, 10, 4]
 <hr />
 
 <p>当方の場合、意外と利用頻度が高いので、単純な処理とは言えど結構重宝しています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux & Ruby - メール受信時の処理！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/21/linux-ruby-process-when-mail-received/"/>
-    <updated>2015-07-21T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/21/linux-ruby-process-when-mail-received</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Linux 上に構築したメールサーバで、メール受信をトリガにして処理を実行する手順等についての記録です。<br/>
-処理は Ruby で行うことを想定しています。（多くのサイト等では Perl や PHP での処理がよく紹介されてます）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8.1 での作業を想定。</li>
-<li>Ruby 2.2.2-95 での作業を想定。</li>
-<li>SMTP サーバ Postfix 構築済み。
-
-<ul>
-<li>参考「<a href="/2015/06/12/debian-8-postfix-installation/" title="Debian 8 (Jessie) - SMTP サーバ Postfix 構築！">Debian 8 (Jessie) - SMTP サーバ Postfix 構築！</a>」</li>
-</ul>
-</li>
-<li>POP/IMAP サーバ Dovecot 構築済み。
-
-<ul>
-<li>参考「<a href="/2015/06/13/debian-8-dovecot-installation/" title="Debian 8 (Jessie) - POP/IMAP サーバ Dovecot 構築！">Debian 8 (Jessie) - POP/IMAP サーバ Dovecot 構築！</a>」</li>
-</ul>
-</li>
-<li>Postfix の aliases （メール転送機能）と連携をとる方法を想定。</li>
-<li>処理対象のユーザ・グループは &ldquo;test&rdquo;, &ldquo;test&rdquo; を想定。</li>
-</ul>
-
-
-<h3>1. Ruby スクリプトの作成</h3>
-
-<p>以下のような Ruby スクリプトを作成する。<br/>
-（紹介用に受信したメールを解析してテキストファイルに保存するだけのプログラム）</p>
-
-<pre><code class="ruby get_mail.rb">#! /usr/local/bin/ruby
-# coding: utf-8
-#-------------------------------------------------
-# Ruby script to get a mail via alias of postfix.
-#-------------------------------------------------
-require 'mail'
-
-class GetMail
-  def initialize
-    dt = Time.now.strftime("%Y%m%d_%H%M%S%L")
-    @out_file = "/path/to/#{dt}.txt"
-  end
-
-  def execute
-    open(@out_file, "w") do |f|
-      mail = Mail.new($stdin.read)
-      f.puts "From:    #{mail.from.first}"
-      f.puts "To:      #{mail.to.first}"
-      f.puts "Date:    #{mail.date}"
-      f.puts "Subject: #{mail.subject}"
-      f.puts "Body:\n#{mail.body.decoded.encode("UTF-8", mail.charset)}"
-    end
-  rescue =&gt; e
-    $stderr.puts "[#{e.class}] #{e.message}"
-    e.backtrace.each{|trace| $stderr.puts "\t#{trace}"}
-    exit 1
-  end
-end
-
-exit unless $0 == __FILE__
-GetMail.new.execute
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/0cbfe02794efa4c1a09e" title="Gist - Ruby script to get a mail via alias of postfix.">Gist - Ruby script to get a mail via alias of postfix.</a></li>
-</ul>
-
-
-<h3>2. Ruby スクリプトの配置</h3>
-
-<p>作成した Ruby スクリプトをサーバ上の適当な位置に配置する。<br/>
-（今回、当方は処理を行いたいユーザの home ディレクトリ &ldquo;/home/test&rdquo; 直下に配置した（所有者 &ldquo;test&rdquo; で））</p>
-
-<p>配置後、実行権限を付与する。</p>
-
-<pre><code class="text"># chmod +x get_mail.rb
-</code></pre>
-
-<h3>3. メール保存用ディレクトリの作成</h3>
-
-<p>今回の処理で使用するディレクトリをサーバ上の適当な位置に作成する。<br/>
-（今回、当方は処理を行いたいユーザの home ディレクトリ &ldquo;/home/test&rdquo; 配下に &ldquo;get_mail&rdquo; ディレクトリを作成した（所有者 &ldquo;test&rdquo; で））</p>
-
-<h3>4. Postfix の aliases 設定</h3>
-
-<pre><code class="bash /etc/aliases">test:  :include:/home/test/alias_inc
-</code></pre>
-
-<p>ちなみに、処理を行う他に転送も行いたい場合は、以下のようにカンマで区切ればよい。</p>
-
-<pre><code class="bash /etc/aliases">test:  hoge, :include:/home/test/alias_inc
-</code></pre>
-
-<h3>5. include ファイル（実行コマンド）の作成</h3>
-
-<pre><code class="text /home/test/alias_inc">"| /home/test/get_mail.rb"
-</code></pre>
-
-<p>そして、このファイルの所有者が &ldquo;test&rdquo; でなければ &ldquo;test&rdquo; にする。</p>
-
-<pre><code class="text"># chown test. /home/test/alias_inc
-</code></pre>
-
-<h3>6. Postfix 設定ファイル main.cf の編集</h3>
-
-<p>&ldquo;/etc/aliases&rdquo; ファイル内で <code>:include:</code> を使用する際は、Postfix の設定ファイル &ldquo;main.cf&rdquo; に以下のように追記しなければならない。<br/>
-（Postfix は、デフォルトでは <code>:include:</code> での &ldquo;|command&rdquo; への配送を認めていないため）</p>
-
-<pre><code class="bash /etc/postfix/main.cf">allow_mail_to_commands = alias,forward,include
-</code></pre>
-
-<h3>7. Postfix 設定のリロード</h3>
-
-<pre><code class="text"># systemctl reload postfix
-</code></pre>
-
-<h3>8. aliases の設定反映</h3>
-
-<pre><code class="text"># newaliases
-</code></pre>
-
-<h3>9. 動作確認</h3>
-
-<p>実際に test ユーザ宛にメールを送信してみて、指定のディレクトリ配下に保存されること、内容が適切であることを確認する。</p>
-
-<h3>10. その他</h3>
-
-<p>上記の 4, 5, 6 でエイリアスを別ファイルに分けてインクルードしている。<br/>
-これは、"/etc/aliases" 内で直接コマンドを指定すると作成されるファイルの所有者・グループが &ldquo;nobody:nogroup&rdquo; になってしまうのを防ぐためである。</p>
-
-<h3>11. 参考サイト</h3>
-
-<ul>
-<li><a href="http://www.postfix-jp.info/trans-2.3/jhtml/aliases.5.html" title="Postfix manual - aliases(5)">Postfix manual - aliases(5)</a></li>
-</ul>
-
-
-<hr />
-
-<p>当方は、Linux サーバに Twitter ツイート専用のユーザを作成し、そのユーザ宛に配送されたメール本文をツイートするように応用しています。</p>
 
 <p>以上。</p>
 ]]></content>

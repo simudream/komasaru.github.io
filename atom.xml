@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-08-25T00:05:49+09:00</updated>
+  <updated>2015-08-29T00:14:57+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,190 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - dRuby でジョブキューサーバ構築！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/08/29/ruby-job-queue-server-construction-by-druby/"/>
+    <updated>2015-08-29T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/08/29/ruby-job-queue-server-construction-by-druby</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>前回に引き続き、Ruby の分散オブジェクトプログラミングするためのライブラリ dRuby についての内容です。</p>
+
+<p>今回は、 dRuby を利用してジョブキューサーバ＆クライアントを構築してみました。</p>
+
+<p>要は、キューに順次プッシュした内容をクライアント側から順次ポップする仕組みのことです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>本来は複数のマシンで実行することが多いと思うが、今回は１つのマシンでテストする。</li>
+<li>dRuby の簡単な使用例は「<a href="http://komasaru.github.io/2015/08/25/ruby-distributed-processing-by-druby" title="Ruby - dRuby で分散処理！">Ruby - dRuby で分散処理！</a>」を参照。</li>
+</ul>
+
+
+<h3>1. サーバ側スクリプトの作成例</h3>
+
+<p>Queue オブジェクトを生成して待ち受けるのみの簡単なスクリプト。</p>
+
+<figure class='code'><figcaption><span>queue_server.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/local/bin/ruby</span>
+</span><span class='line'><span class="c1"># codeing: utf-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;drb/drb&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">q</span> <span class="o">=</span> <span class="no">Queue</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="no">DRb</span><span class="o">.</span><span class="n">start_service</span><span class="p">(</span><span class="s2">&quot;druby://localhost:8787&quot;</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="ss">safe_level</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="no">DRb</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>start_service</code> の <code>safe_level</code> を <code>1</code> に設定しているのは、 <code>instance_eval</code> による危険性を防ぐための処置。</li>
+</ul>
+
+
+<h3>2. クライアント側 Pop スクリプトの作成例</h3>
+
+<p>キューサーバから順次ポップして5秒後にコンソール出力するのみの簡単なスクリプト。（キューに溜め込まれるデータは時刻文字列を想定している）</p>
+
+<figure class='code'><figcaption><span>pop_client.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/local/bin/ruby</span>
+</span><span class='line'><span class="c1"># coding: utf-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;drb/drb&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">DRbObject</span><span class="o">.</span><span class="n">new_with_uri</span><span class="p">(</span><span class="s2">&quot;druby://localhost:8787&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="kp">loop</span> <span class="k">do</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">tm</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pop</span>
+</span><span class='line'>  <span class="nb">sleep</span> <span class="mi">5</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Received at </span><span class="si">#{</span><span class="n">tm</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. クライアント側 Push スクリプトの作成例</h3>
+
+<p>キューサーバへ現在時刻の文字列をプッシュするのみの簡単なスクリプト。</p>
+
+<figure class='code'><figcaption><span>push_client.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
+</span><span class='line'><span class="c1"># coding: utf-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;drb/drb&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">DRbObject</span><span class="o">.</span><span class="n">new_with_uri</span><span class="p">(</span><span class="s2">&quot;druby://localhost:8787&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">tm</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-%d %H:%M:%S&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">push</span> <span class="n">tm</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Sended at </span><span class="si">#{</span><span class="n">tm</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. 動作確認</h3>
+
+<p>まず、１つ目の端末を立ち上げて、サーバ側スクリプトを実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./queue_server.rb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に、２つ目の端末を立ち上げて、クライアント側 Pop スクリプトを実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./pop_client.rb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最後に、３つ目の端末を立ち上げて、クライアント側 Push スクリプトを何度も連続して実行してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./push_client.rb
+</span><span class='line'>Sended at 2015-07-28 23:34:02.
+</span><span class='line'>$ ./push_client.rb
+</span><span class='line'>Sended at 2015-07-28 23:34:03.
+</span><span class='line'>$ ./push_client.rb
+</span><span class='line'>Sended at 2015-07-28 23:34:03.
+</span><span class='line'>$ ./push_client.rb
+</span><span class='line'>Sended at 2015-07-28 23:34:04.
+</span><span class='line'>$ ./push_client.rb
+</span><span class='line'>Sended at 2015-07-28 23:34:04.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>すると、２つ目の Pop クライアントの端末に５秒間隔で出力がなされるはずである。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./pop_client.rb
+</span><span class='line'>Received at 2015-07-28 23:34:02.
+</span><span class='line'>Received at 2015-07-28 23:34:03.
+</span><span class='line'>Received at 2015-07-28 23:34:03.
+</span><span class='line'>Received at 2015-07-28 23:34:04.
+</span><span class='line'>Received at 2015-07-28 23:34:04.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 注意</h3>
+
+<ul>
+<li>dRuby で構築したサーバをインターネットで外部に公開すべきではない。</li>
+<li>ローカルで使用する際もセキュリティ面に注意する。</li>
+</ul>
+
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://docs.ruby-lang.org/ja/2.2.0/library/drb.html" title="library drb(Ruby2.2.0)">library drb(Ruby2.2.0)</a></li>
+</ul>
+
+
+<hr />
+
+<p>当方、一度に並列で処理をされては困るような場合に、この仕組みを応用して順次処理を行うようにしています。<br/>
+（インターネット上からデータが配信されたら処理を行うようなシステムの場合に、データが集中的に配信されてもマシンに負荷をかけないようにするため）</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - dRuby で分散処理！]]></title>
@@ -4522,499 +4706,6 @@
 <h3>9. 動作確認</h3>
 
 <p>ブラウザで <code>http://＜Webサーバのホスト名 or IP アドレス＞/munin</code> にアクセスし、表示されることを確認する。</p>
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2015年06月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/01/blog-access/"/>
-    <updated>2015-07-01T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/01/blog-access</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>07月になりましたので、先月06月分の当ブログアクセス状況を公開します。</p>
-
-<!--more-->
-
-
-<h4>1. アクセスをOS別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td class="blog-access-pv">34,818</td>
-    <td class="blog-access-rate">56.8884</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td class="blog-access-pv">21,976</td>
-    <td class="blog-access-rate">35.9061</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td class="blog-access-pv">2,317</td>
-    <td class="blog-access-rate">3.7857</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td class="blog-access-pv">1,610</td>
-    <td class="blog-access-rate">2.6305</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td class="blog-access-pv">235</td>
-    <td class="blog-access-rate">0.3840</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td class="blog-access-pv">88</td>
-    <td class="blog-access-rate">0.1438</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td class="blog-access-pv">43</td>
-    <td class="blog-access-rate">0.0703</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td class="blog-access-pv">36</td>
-    <td class="blog-access-rate">0.0588</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td class="blog-access-pv">31</td>
-    <td class="blog-access-rate">0.0507</td>
-  </tr>
-  <tr>
-    <td>CentOS Linux</td>
-    <td class="blog-access-pv">17</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>OpenBSD</td>
-    <td class="blog-access-pv">16</td>
-    <td class="blog-access-rate">0.0261</td>
-  </tr>
-  <tr>
-    <td>iPhone OS</td>
-    <td class="blog-access-pv">9</td>
-    <td class="blog-access-rate">0.0147</td>
-  </tr>
-  <tr>
-    <td>Solaris</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0082</td>
-  </tr>
-  <tr>
-    <td>Debian GNU/Linux</td>
-    <td class="blog-access-pv">3</td>
-    <td class="blog-access-rate">0.0049</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">61,204</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td>X</td>
-    <td class="blog-access-pv">34,814</td>
-    <td class="blog-access-rate">56.8819</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>NT</td>
-    <td class="blog-access-pv">17,123</td>
-    <td class="blog-access-rate">27.9769</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">2,268</td>
-    <td class="blog-access-rate">3.7056</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7</td>
-    <td class="blog-access-pv">2,161</td>
-    <td class="blog-access-rate">3.5308</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">1,604</td>
-    <td class="blog-access-rate">2.6207</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7 64 bit</td>
-    <td class="blog-access-pv">1,277</td>
-    <td class="blog-access-rate">2.0865</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>XP</td>
-    <td class="blog-access-pv">904</td>
-    <td class="blog-access-rate">1.4770</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Vista</td>
-    <td class="blog-access-pv">419</td>
-    <td class="blog-access-rate">0.6846</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">234</td>
-    <td class="blog-access-rate">0.3823</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">84</td>
-    <td class="blog-access-rate">0.1372</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>8 64 bit</td>
-    <td class="blog-access-pv">47</td>
-    <td class="blog-access-rate">0.0768</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>64 bit</td>
-    <td class="blog-access-pv">31</td>
-    <td class="blog-access-rate">0.0507</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">30</td>
-    <td class="blog-access-rate">0.0490</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Server 2003</td>
-    <td class="blog-access-pv">24</td>
-    <td class="blog-access-rate">0.0392</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td></td>
-    <td class="blog-access-pv">18</td>
-    <td class="blog-access-rate">0.0294</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td>3.6-1.el5</td>
-    <td class="blog-access-pv">16</td>
-    <td class="blog-access-rate">0.0261</td>
-  </tr>
-  <tr>
-    <td>OpenBSD</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">16</td>
-    <td class="blog-access-rate">0.0261</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td>2.3.3</td>
-    <td class="blog-access-pv">12</td>
-    <td class="blog-access-rate">0.0196</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td>4.0.1</td>
-    <td class="blog-access-pv">11</td>
-    <td class="blog-access-rate">0.0180</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td>3.6.9-2.el6 64 bit</td>
-    <td class="blog-access-pv">9</td>
-    <td class="blog-access-rate">0.0147</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">61,204</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>3. アクセスをブラウザ別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td class="blog-access-pv">33,636</td>
-    <td class="blog-access-rate">54.9572</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td class="blog-access-pv">14,248</td>
-    <td class="blog-access-rate">23.2795</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td class="blog-access-pv">7,092</td>
-    <td class="blog-access-rate">11.5875</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td class="blog-access-pv">5,310</td>
-    <td class="blog-access-rate">8.6759</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td class="blog-access-pv">497</td>
-    <td class="blog-access-rate">0.8120</td>
-  </tr>
-  <tr>
-    <td>Opera Mini</td>
-    <td class="blog-access-pv">206</td>
-    <td class="blog-access-rate">0.3366</td>
-  </tr>
-  <tr>
-    <td>Netscape Navigator</td>
-    <td class="blog-access-pv">104</td>
-    <td class="blog-access-rate">0.1699</td>
-  </tr>
-  <tr>
-    <td>Chrome</td>
-    <td class="blog-access-pv">36</td>
-    <td class="blog-access-rate">0.0588</td>
-  </tr>
-  <tr>
-    <td>Mozilla SeaMonkey</td>
-    <td class="blog-access-pv">24</td>
-    <td class="blog-access-rate">0.0392</td>
-  </tr>
-  <tr>
-    <td>Epiphany</td>
-    <td class="blog-access-pv">13</td>
-    <td class="blog-access-rate">0.0212</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td class="blog-access-pv">11</td>
-    <td class="blog-access-rate">0.0180</td>
-  </tr>
-  <tr>
-    <td>Konqueror</td>
-    <td class="blog-access-pv">10</td>
-    <td class="blog-access-rate">0.0163</td>
-  </tr>
-  <tr>
-    <td>iPhone</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0114</td>
-  </tr>
-  <tr>
-    <td>PHP</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0065</td>
-  </tr>
-  <tr>
-    <td>Namoroka</td>
-    <td class="blog-access-pv">3</td>
-    <td class="blog-access-rate">0.0049</td>
-  </tr>
-  <tr>
-    <td>iPod</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0033</td>
-  </tr>
-  <tr>
-    <td>Sleipnir</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0016</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">61,204</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>537.36</td>
-    <td class="blog-access-pv">25,195</td>
-    <td class="blog-access-rate">41.1656</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>38.0</td>
-    <td class="blog-access-pv">11,638</td>
-    <td class="blog-access-rate">19.0151</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td>11.0</td>
-    <td class="blog-access-pv">7,090</td>
-    <td class="blog-access-rate">11.5842</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>9537.53</td>
-    <td class="blog-access-pv">3,579</td>
-    <td class="blog-access-rate">5.8477</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.1.4</td>
-    <td class="blog-access-pv">2,036</td>
-    <td class="blog-access-rate">3.3266</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>8.0</td>
-    <td class="blog-access-pv">1,847</td>
-    <td class="blog-access-rate">3.0178</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>9.0</td>
-    <td class="blog-access-pv">1,297</td>
-    <td class="blog-access-rate">2.1191</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.6.3</td>
-    <td class="blog-access-pv">1,175</td>
-    <td class="blog-access-rate">1.9198</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>10.0</td>
-    <td class="blog-access-pv">1,162</td>
-    <td class="blog-access-rate">1.8986</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>7.0</td>
-    <td class="blog-access-pv">988</td>
-    <td class="blog-access-rate">1.6143</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>31.0</td>
-    <td class="blog-access-pv">752</td>
-    <td class="blog-access-rate">1.2287</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>534.30</td>
-    <td class="blog-access-pv">502</td>
-    <td class="blog-access-rate">0.8202</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td>31.7.0</td>
-    <td class="blog-access-pv">386</td>
-    <td class="blog-access-rate">0.6307</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>37.0</td>
-    <td class="blog-access-pv">314</td>
-    <td class="blog-access-rate">0.5130</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>537.85.15</td>
-    <td class="blog-access-pv">283</td>
-    <td class="blog-access-rate">0.4624</td>
-  </tr>
-  <tr>
-    <td>Opera Mini</td>
-    <td>9.80</td>
-    <td class="blog-access-pv">194</td>
-    <td class="blog-access-rate">0.3170</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>24.0</td>
-    <td class="blog-access-pv">189</td>
-    <td class="blog-access-rate">0.3088</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>36.0</td>
-    <td class="blog-access-pv">180</td>
-    <td class="blog-access-rate">0.2941</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>40.0</td>
-    <td class="blog-access-pv">146</td>
-    <td class="blog-access-rate">0.2385</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>35.0</td>
-    <td class="blog-access-pv">124</td>
-    <td class="blog-access-rate">0.2026</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">61,204</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
 
 <hr />
 
