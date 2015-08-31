@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://komasaru.github.io/blog/2015/09/01/blog-access/</loc>
+    <lastmod>2015-09-01T00:20:00+09:00</lastmod>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/2015/08/29/ruby-job-queue-server-construction-by-druby/</loc>
     <lastmod>2015-08-29T00:20:00+09:00</lastmod>
   </url>
@@ -5829,6 +5833,9 @@
   </url>
   <url>
     <loc>http://komasaru.github.io/2015/08/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/2015/09/</loc>
   </url>
   <url>
     <loc>http://komasaru.github.io/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89/</loc>

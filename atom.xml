@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-08-29T00:14:57+09:00</updated>
+  <updated>2015-09-01T00:09:17+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,504 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2015年08月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
+    <link href="http://komasaru.github.io/blog/2015/09/01/blog-access/"/>
+    <updated>2015-09-01T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/09/01/blog-access</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>09月になりましたので、先月08月分の当ブログアクセス状況を公開します。</p>
+
+<!--more-->
+
+
+<h4>1. アクセスをOS別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td class="blog-access-pv">16,753</td>
+    <td class="blog-access-rate">58.5524</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td class="blog-access-pv">9,973</td>
+    <td class="blog-access-rate">34.8560</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td class="blog-access-pv">867</td>
+    <td class="blog-access-rate">3.0302</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td class="blog-access-pv">761</td>
+    <td class="blog-access-rate">2.6597</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">110</td>
+    <td class="blog-access-rate">0.3845</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td class="blog-access-pv">78</td>
+    <td class="blog-access-rate">0.2726</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td class="blog-access-pv">37</td>
+    <td class="blog-access-rate">0.1293</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0280</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0245</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0210</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td class="blog-access-pv">5</td>
+    <td class="blog-access-rate">0.0175</td>
+  </tr>
+  <tr>
+    <td>CentOS Linux</td>
+    <td class="blog-access-pv">3</td>
+    <td class="blog-access-rate">0.0105</td>
+  </tr>
+  <tr>
+    <td>Debian GNU/Linux</td>
+    <td class="blog-access-pv">3</td>
+    <td class="blog-access-rate">0.0105</td>
+  </tr>
+  <tr>
+    <td>NetBSD</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0035</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">28,612</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td>X</td>
+    <td class="blog-access-pv">16,751</td>
+    <td class="blog-access-rate">58.5454</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>NT</td>
+    <td class="blog-access-pv">8,184</td>
+    <td class="blog-access-rate">28.6034</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7</td>
+    <td class="blog-access-pv">883</td>
+    <td class="blog-access-rate">3.0861</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">851</td>
+    <td class="blog-access-rate">2.9743</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">758</td>
+    <td class="blog-access-rate">2.6492</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7 64 bit</td>
+    <td class="blog-access-pv">462</td>
+    <td class="blog-access-rate">1.6147</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>XP</td>
+    <td class="blog-access-pv">280</td>
+    <td class="blog-access-rate">0.9786</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista</td>
+    <td class="blog-access-pv">118</td>
+    <td class="blog-access-rate">0.4124</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">110</td>
+    <td class="blog-access-rate">0.3845</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">77</td>
+    <td class="blog-access-rate">0.2691</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">33</td>
+    <td class="blog-access-rate">0.1153</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>8 64 bit</td>
+    <td class="blog-access-pv">33</td>
+    <td class="blog-access-rate">0.1153</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td></td>
+    <td class="blog-access-pv">10</td>
+    <td class="blog-access-rate">0.0350</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>64 bit</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0210</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista 64 bit</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0210</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Server 2003</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0210</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0140</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td>3.6.24-3.el6 64 bit</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0140</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>64 bit</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0140</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td>4_3_5</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0140</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">28,612</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>3. アクセスをブラウザ別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td class="blog-access-pv">16,267</td>
+    <td class="blog-access-rate">56.8538</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td class="blog-access-pv">6,938</td>
+    <td class="blog-access-rate">24.2486</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td class="blog-access-pv">3,045</td>
+    <td class="blog-access-rate">10.6424</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td class="blog-access-pv">1,943</td>
+    <td class="blog-access-rate">6.7909</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td class="blog-access-pv">226</td>
+    <td class="blog-access-rate">0.7899</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td class="blog-access-pv">97</td>
+    <td class="blog-access-rate">0.3390</td>
+  </tr>
+  <tr>
+    <td>Netscape Navigator</td>
+    <td class="blog-access-pv">46</td>
+    <td class="blog-access-rate">0.1608</td>
+  </tr>
+  <tr>
+    <td>Chrome</td>
+    <td class="blog-access-pv">16</td>
+    <td class="blog-access-rate">0.0559</td>
+  </tr>
+  <tr>
+    <td>Mozilla SeaMonkey</td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0315</td>
+  </tr>
+  <tr>
+    <td>Epiphany</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0245</td>
+  </tr>
+  <tr>
+    <td>Unknown</td>
+    <td class="blog-access-pv">5</td>
+    <td class="blog-access-rate">0.0175</td>
+  </tr>
+  <tr>
+    <td>iPod</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0140</td>
+  </tr>
+  <tr>
+    <td>PHP</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0070</td>
+  </tr>
+  <tr>
+    <td>Konqueror</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0070</td>
+  </tr>
+  <tr>
+    <td>iPhone</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0070</td>
+  </tr>
+  <tr>
+    <td>Chromium</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0035</td>
+  </tr>
+  <tr>
+    <td>Sleipnir</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0035</td>
+  </tr>
+  <tr>
+    <td>SRWare Iron</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0035</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">28,612</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.36</td>
+    <td class="blog-access-pv">12,364</td>
+    <td class="blog-access-rate">43.2126</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>39.0</td>
+    <td class="blog-access-pv">4,251</td>
+    <td class="blog-access-rate">14.8574</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td>11.0</td>
+    <td class="blog-access-pv">3,043</td>
+    <td class="blog-access-rate">10.6354</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>9537.53</td>
+    <td class="blog-access-pv">1,927</td>
+    <td class="blog-access-rate">6.7349</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>40.0</td>
+    <td class="blog-access-pv">1,318</td>
+    <td class="blog-access-rate">4.6065</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.1.4</td>
+    <td class="blog-access-pv">804</td>
+    <td class="blog-access-rate">2.8100</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>8.0</td>
+    <td class="blog-access-pv">796</td>
+    <td class="blog-access-rate">2.7820</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.7.12</td>
+    <td class="blog-access-pv">587</td>
+    <td class="blog-access-rate">2.0516</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>38.0</td>
+    <td class="blog-access-pv">558</td>
+    <td class="blog-access-rate">1.9502</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>10.0</td>
+    <td class="blog-access-pv">447</td>
+    <td class="blog-access-rate">1.5623</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>9.0</td>
+    <td class="blog-access-pv">443</td>
+    <td class="blog-access-rate">1.5483</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>7.0</td>
+    <td class="blog-access-pv">256</td>
+    <td class="blog-access-rate">0.8947</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>31.0</td>
+    <td class="blog-access-pv">225</td>
+    <td class="blog-access-rate">0.7864</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>534.30</td>
+    <td class="blog-access-pv">176</td>
+    <td class="blog-access-rate">0.6151</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>41.0</td>
+    <td class="blog-access-pv">127</td>
+    <td class="blog-access-rate">0.4439</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td>31.8.0</td>
+    <td class="blog-access-pv">105</td>
+    <td class="blog-access-rate">0.3670</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td>9.80</td>
+    <td class="blog-access-pv">97</td>
+    <td class="blog-access-rate">0.3390</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>37.0</td>
+    <td class="blog-access-pv">71</td>
+    <td class="blog-access-rate">0.2481</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.85.16</td>
+    <td class="blog-access-pv">71</td>
+    <td class="blog-access-rate">0.2481</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.8.9</td>
+    <td class="blog-access-pv">58</td>
+    <td class="blog-access-rate">0.2027</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">28,612</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - dRuby でジョブキューサーバ構築！]]></title>
@@ -4510,200 +5008,6 @@
 
 
 <h3>6. 動作確認</h3>
-
-<p>ブラウザで <code>http://＜Webサーバのホスト名 or IP アドレス＞/munin</code> にアクセスし、表示されることを確認する。</p>
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Debian 8 (Jessie) - サーバ監視ツール munin 導入！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/03/debian-8-munin-installation/"/>
-    <updated>2015-07-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/03/debian-8-munin-installation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Debian GNU/Linux 8 (Jessie) にサーバ監視ツール munin をインストールする方法についての記録です。</p>
-
-<p>以前古いバージョンでの作業時に残していた記録を参考に作業を行い、今回更新した作業記録を貼付する形式の内容となっています。<br/>
-（当然ながら、興味がなければスルーしてください）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8 (Jessie) での作業を想定。</li>
-<li>Web サーバは Nginx を想定。</li>
-<li>munin 用ディレクトリは &ldquo;/var/www/munin&rdquo; とする。</li>
-</ul>
-
-
-<h3>1. munin のインストール</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># apt-get -y install munin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. 設定ファイルの編集</h3>
-
-<figure class='code'><figcaption><span>/etc/munin/munin.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>dbdir   /var/lib/munin    <span class="c"># &lt;= コメント解除</span>
-</span><span class='line'>htmldir /var/www/munin    <span class="c"># &lt;= コメント解除＆変更</span>
-</span><span class='line'>logdir /var/log/munin     <span class="c"># &lt;= コメント解除</span>
-</span><span class='line'>rundir  /var/run/munin    <span class="c"># &lt;= コメント解除</span>
-</span><span class='line'><span class="c">#[localhost.localdomain]  # &lt;= コメント化（変更したければ）</span>
-</span><span class='line'><span class="o">[</span>hoge.mk-mode.com<span class="o">]</span>        <span class="c"># &lt;= 追加      （変更したければ）</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. ディレクトリの作成</h3>
-
-<p>munin 用ディレクトリを所定の位置に作成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mkdir /var/www/munin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、所有者・所有グループを変更する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># chown -R munin:munin /var/www/munin/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. 監視項目の確認</h3>
-
-<p>以下のようにして、監視項目を確認できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># munin-node-configure
-</span><span class='line'>Plugin                     | Used | Extra information
-</span><span class='line'>------                     | ---- | -----------------
-</span><span class='line'>acpi                       | no   |
-</span><span class='line'>amavis                     | no   |
-</span><span class='line'>apache_accesses            | no   |
-</span><span class='line'>apache_processes           | no   |
-</span><span class='line'>apache_volume              | no   |
-</span><span class='line'>         :
-</span><span class='line'>===&lt; 途中省略 &gt;===
-</span><span class='line'>         :
-</span><span class='line'>vmstat                     | yes  |
-</span><span class='line'>vserver_cpu_               | no   |
-</span><span class='line'>vserver_loadavg            | no   |
-</span><span class='line'>vserver_resources          | no   |
-</span><span class='line'>yum                        | no   |
-</span><span class='line'>zimbra_                    | no   |
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. Web サーバの設定</h3>
-
-<p>Web サーバに Nginx を使用する場合は、設定ファイルに以下のような記述を追加する。（<code>server</code> ディレクティブ内に）</p>
-
-<figure class='code'><figcaption><span>/etc/nginx/conf.d/default.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    location /munin <span class="o">{</span>
-</span><span class='line'>        <span class="nb">alias</span> /var/www/munin<span class="p">;</span>
-</span><span class='line'>        index index.html index.htm index<span class="p">;</span>
-</span><span class='line'>        allow 127.0.0.1<span class="p">;</span>
-</span><span class='line'>        allow 192.168.11.0/24<span class="p">;</span>
-</span><span class='line'>        deny  all<span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、Web サーバに Apache を使用する場合は以下のような設定になる。</p>
-
-<figure class='code'><figcaption><span>/etc/httpd/conf.d/munin.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ScriptAlias /munin/cgi/ /var/www/munin/cgi/
-</span><span class='line'>Alias /munin/ /var/www/munin/
-</span><span class='line'>&lt;Directory /var/www/munin&gt;
-</span><span class='line'>        Options Indexes FollowSymLinks MultiViews
-</span><span class='line'>        AllowOverride All
-</span><span class='line'>        Order deny,allow
-</span><span class='line'>        Allow from all
-</span><span class='line'>&lt;/Directory&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. Web サーバの再起動</h3>
-
-<p>設定を有効化するために Web サーバを再起動する。（以下は Nginx の例）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart nginx
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. munin-node の再起動</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart munin-node
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>8. 自動実行の設定</h3>
-
-<p>デフォルトで自動起動するようになっているが、なっていなければ設定する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl enable munin-node
-</span><span class='line'># systemctl list-unit-files -t service | grep munin-node
-</span><span class='line'>munin-node.service                     enabled
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>9. 動作確認</h3>
 
 <p>ブラウザで <code>http://＜Webサーバのホスト名 or IP アドレス＞/munin</code> にアクセスし、表示されることを確認する。</p>
 
