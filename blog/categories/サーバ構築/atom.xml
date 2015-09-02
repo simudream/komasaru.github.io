@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-01T00:09:17+09:00</updated>
+  <updated>2015-09-03T00:05:08+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,127 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[MariaDB(MySQL) - インデックス名一覧取得！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/09/03/mariadb-index-list/"/>
+    <updated>2015-09-03T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/09/03/mariadb-index-list</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MariaDB(MySQL) で作成済みのインデックスの名称を確認したい場合、 <code>SHOW INDEX FROM table_name</code> を使用することが多いと思います。</p>
+
+<p>しかし、一度に多数のテーブルについて確認したい場合に、テーブル単位で <code>SHOW INDEX FROM table_name</code> を実行するのは大変面倒です。</p>
+
+<p>以下で、指定データベース内の全テーブルに作成済みのインデックスを一覧表示する SQL 等を紹介します。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>MariaDB 10.0.21 での作業を想定。（MySQL でも同様のはず）</li>
+</ul>
+
+
+<h3>1. SQL 作成</h3>
+
+<pre><code class="sql">  SELECT DISTINCT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME
+    FROM information_schema.STATISTICS
+   WHERE TABLE_SCHEMA = 'scheme_name' -- &lt;= 対象のデータベース名
+     AND INDEX_NAME &lt;&gt; 'PRIMARY'
+ORDER BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME;
+</code></pre>
+
+<p>ちなみに、インデックスに設定されているカラム名やその順番も確認したければ、以下のような SQL となる。</p>
+
+<pre><code class="sql">  SELECT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, COLUMN_NAME, SEQ_IN_INDEX
+    FROM information_schema.STATISTICS
+   WHERE TABLE_SCHEMA = 'scheme_name' -- &lt;= 対象のデータベース名
+     AND INDEX_NAME &lt;&gt; 'PRIMARY'
+ORDER BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, SEQ_IN_INDEX;
+</code></pre>
+
+<h3>2. 応用</h3>
+
+<p>参考までに、前項で紹介した SQL を利用して、データベース内の全テーブルの全インデックス（プライマリキーを除く）を削除するストアドプロシージャを作成する。<br/>
+※当方が過去に必要に迫られて作成したストアドプロシージャで、実際はこのストアドプロシージャ実行後にインデックスを一括作成するストアドプロシージャも実行している。</p>
+
+<pre><code class="sql">CREATE DEFINER=`root`@`localhost` PROCEDURE `del_index_all`()
+BEGIN
+    -- 変数宣言
+    DECLARE v_tbl_name VARCHAR(50) DEFAULT '';
+    DECLARE v_idx_name VARCHAR(50) DEFAULT '';
+    DECLARE v_done INT DEFAULT 0;
+    -- カーソル宣言
+    DECLARE v_cur CURSOR FOR
+        SELECT
+            DISTINCT TABLE_NAME, INDEX_NAME
+        FROM
+            information_schema.STATISTICS
+        WHERE
+            TABLE_SCHEMA = 'jmx'
+        AND INDEX_NAME &lt;&gt; 'PRIMARY'
+        ORDER BY
+            TABLE_SCHEMA, TABLE_NAME, INDEX_NAME;
+    -- 終了ステータス宣言
+    DECLARE EXIT HANDLER FOR NOT FOUND SET v_done = 1;
+
+    -- カーソル OPEN
+    OPEN v_cur;
+
+    -- LOOP 処理
+    WHILE v_done != 1 DO
+        -- カーソル FETCH
+        FETCH v_cur INTO v_tbl_name, v_idx_name;
+
+        -- 動的 SQL 実行
+        SET @s = CONCAT('ALTER TABLE ', v_tbl_name, ' DROP INDEX ', v_idx_name);
+        PREPARE stmt FROM @s;
+        EXECUTE stmt;
+    END WHILE;
+
+    -- PREPARED STATEMENT 解放
+    DEALLOCATE PREPARE stmt;
+
+    -- カーソル CLOSE
+    CLOSE v_cur;
+END
+</code></pre>
+
+<p>本当は、動的に SQL を実行する(PREPARED STATEMENT)部分を以下のようにしたかったが、 <code>?</code> は MariaDB のストアドではサポートされてない模様。（<a href="https://mariadb.com/kb/en/mariadb/prepare-statement/" title="PREPARE Statement - MariaDB Knowledge Base">参考</a>）</p>
+
+<pre><code class="sql">    --  :
+    -- 省略
+    --  :
+
+    SET @s = 'ALTER TABLE ? DROP INDEX ?';
+    PREPARE stmt FROM @s;
+
+    OPEN v_cur;
+
+    WHILE v_done != 1 DO
+        FETCH v_cur INTO v_tbl_name, v_idx_name;
+
+        SET @tbl_name = v_tbl_name;
+        SET @idx_name = v_idx_name;
+
+        EXECUTE stmt USING @tbl_name, @idx_name;
+    END WHILE;
+
+    DEALLOCATE PREPARE stmt;
+
+    CLOSE v_cur;
+</code></pre>
+
+<hr />
+
+<p>普段はあまり使用する機会はありませんが、大量のテーブルを再設計する際には有益でしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MariaDB 10.0.x - Mroonga プラグインの有効化！]]></title>
@@ -559,175 +680,6 @@ Query OK, 0 rows affected (0.18 sec)
 
 <p>GTID を使用したレプリケーションにはメリット・デメリットがあります。<br/>
 よく理解した上で運用すると、サーバ運用が効率化されるのではないでしょうか。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - 既存 InnoDB ファイルフォーマットを Antelope から Barracuda に変換！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/15/mariadb-innodb-file-format-changing-to-barracuda/"/>
-    <updated>2015-07-15T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/15/mariadb-innodb-file-format-changing-to-barracuda</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) の既存 InnoDB ファイルフォーマットを Antelope から Barracuda に変換する方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>当方は MariaDB 10.0.20 で動作確認を行なったが、別のバージョンや MySQL でも同様。</li>
-<li>InnoDB ストレージエンジンを使用する設定にしている。（<strong>必須</strong>）</li>
-<li>InnoDB データファイルをテーブルごとに作成するシステム変数 <code>innodb_file_per_table</code> を <code>1</code>（有効） にしている。（<strong>必須</strong>）</li>
-<li>不測の事態に備えてデータのバックアップ（ダンプ）をとって作業を行うこと。（<strong>重要</strong>）</li>
-</ul>
-
-
-<h3>1. InnoDB ファイルフォーマットについて</h3>
-
-<p>InnoDB ファイルフォーマットの設定は MariaDB(MySQL) システム変数 <code>innodb_file_format</code> で行うが、設定していなければ <code>Antelope</code> がデフォルトで設定される。</p>
-
-<ul>
-<li><strong>Antelope フォーマット</strong><br/>
-可変長カラム(VARBINARY, VARCHAR, BLOB, TEXT)の先頭768バイトを B-tree ノードのインデックスレコードに格納し、残りをオーバーフローページに格納する。
-
-<ul>
-<li>REDUNDANT &hellip; かつてからの冗長な行フォーマット。</li>
-<li>COMPACT &hellip; MySQL 5.0 で追加された行フォーマットで、UTF-8 文字列の最適化などにより REDUNDANT よりもデータサイズが小さくなる。</li>
-</ul>
-</li>
-<li><strong>Barracuda フォーマット</strong><br/>
-可変長カラム(VARBINARY, VARCHAR, BLOB, TEXT)の全てを外部のオーバーフローページに格納し、クラスタインデックスレコードにそのページへのポインタ(20B)のみを格納する。
-
-<ul>
-<li>COMPRESSED &hellip; データ圧縮（データサイズ縮小、 I/O 減少）を行う行フォーマット。</li>
-<li>DYNAMIC &hellip; データ圧縮は行わない行フォーマット。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>2. 現状の確認</h3>
-
-<p>まず、現状の InnoDB ファイルフォーマットを確認。</p>
-
-<pre><code class="text">&gt; SHOW GLOBAL VARIABLES LIKE 'innodb_file_format';
-+--------------------+----------+
-| Variable_name      | Value    |
-+--------------------+----------+
-| innodb_file_format | Antelope |
-+--------------------+----------+
-</code></pre>
-
-<p>テーブルの行フォーマットも確認。（以下の <code>Row_format</code>, <code>Create_options</code> の設定値）</p>
-
-<pre><code class="text">&gt; SHOW TABLE STATUS LIKE 'table_name'\G
-*************************** 1. row ***************************
-           Name: table_name
-         Engine: InnoDB
-        Version: 10
-     Row_format: Compact
-           Rows: 37070
- Avg_row_length: 240
-    Data_length: 8929280
-Max_data_length: 0
-   Index_length: 0
-      Data_free: 4194304
- Auto_increment: 18703
-    Create_time: 2015-05-12 12:10:32
-    Update_time: NULL
-     Check_time: NULL
-      Collation: utf8mb4_general_ci
-       Checksum: NULL
- Create_options:
-        Comment:
-</code></pre>
-
-<h3>3. 設定の変更</h3>
-
-<p>設定ファイルの <code>mysqld</code> 部を以下のように編集後、 MariaDB(MySQL) サーバを再起動する。（設定ファイルのパスや名称は環境により異なる）<br/>
-（<code>innodb_file_format</code> を設定していない場合は、デフォルトの <code>Antelope</code> が適用される）</p>
-
-<pre><code class="text /etc/mysql/conf.d/mariadb.cnf">[mysqld]
-innodb_file_per_table = 1
-innodb_file_format = Barracuda
-</code></pre>
-
-<p>もしくは、MariaDB(MySQL) サーバに root でログイン後以下のように実行してもよい。（ただし、サーバを再起動すると設定が元に戻るので、この場合も設定ファイルを編集しておく必要はある）</p>
-
-<pre><code class="text">&gt; SET GLOBAL innodb_file_format = Barracuda;
-</code></pre>
-
-<h3>4. 行フォーマットの変更</h3>
-
-<p>既存のテーブルの行フォーマット <code>ROW_FORMAT</code> を変更する。（以下は、 <code>DYNAMIC</code> を指定する例）<br/>
-（データ圧縮を行いたければ、 <code>COMPRESSED</code> を指定する）</p>
-
-<pre><code class="text">&gt; ALTER TABLE table_name ROW_FORMAT = DYNAMIC;
-</code></pre>
-
-<p><code>DYNAMIC</code> でなく <code>COMPRESSED</code> に設定する場合は、 <code>KEY_BLOCK_SIZE</code> で圧縮後の InnoDB ページサイズを指定することも可能。（指定可能な値は <code>1</code>, <code>2</code>, <code>4</code>, <code>8</code>, <code>16</code>（デフォルト））</p>
-
-<p>また、当然ながらテーブル新規作成時も同様に指定できる。</p>
-
-<h3>5. 変更後の確認</h3>
-
-<pre><code class="text">&gt; SHOW GLOBAL VARIABLES LIKE 'innodb_file_format';
-+--------------------+-----------+
-| Variable_name      | Value     |
-+--------------------+-----------+
-| innodb_file_format | Barracuda |
-+--------------------+-----------+
-</code></pre>
-
-<pre><code class="text">&gt; SHOW TABLE STATUS LIKE 'table_name'\G
-*************************** 1. row ***************************
-           Name: table_name
-         Engine: InnoDB
-        Version: 10
-     Row_format: Dynamic
-           Rows: 35152
- Avg_row_length: 254
-    Data_length: 8929280
-Max_data_length: 0
-   Index_length: 0
-      Data_free: 0
- Auto_increment: 18703
-    Create_time: 2015-06-04 13:40:09
-    Update_time: NULL
-     Check_time: NULL
-      Collation: utf8mb4_general_ci
-       Checksum: NULL
- Create_options: row_format=DYNAMIC
-        Comment:
-</code></pre>
-
-<h3>6. その他</h3>
-
-<p>上記 4 方法では、大きなテーブルの場合にメモリをふんだんに使用するせいでマシンが重くなるかもしれない。<br/>
-その場合は、以下のような手順で行フォーマットを変更することも可能。</p>
-
-<ol>
-<li>対象テーブルのダンプ（データのみ）を取得。（<code>mysqldump</code> コマンド実行時に <code>-t</code> オプションを付加）</li>
-<li>対象テーブルを truncate.</li>
-<li>上記 4 の方法で行フォーマットを変更。</li>
-<li>取得していたダンプ（データのみ）をリストア。</li>
-</ol>
-
-
-<h3>7. 参考サイト</h3>
-
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/en/innodb-row-format.html" title="MySQL :: MySQL 5.6 Reference Manual :: 14.8 InnoDB Row Storage and Row Formats">MySQL :: MySQL 5.6 Reference Manual :: 14.8 InnoDB Row Storage and Row Formats</a></li>
-</ul>
-
-
-<hr />
-
-<p>ファイルフォーマット、行フォーマットが変更されたことで、パフォーマンスも良くなることでしょう。（当方、検証は行なっていないが、体感的に若干パフォーマンスが良くなったような気がする）</p>
 
 <p>以上。</p>
 ]]></content>

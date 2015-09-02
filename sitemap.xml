@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://komasaru.github.io/blog/2015/09/03/mariadb-index-list/</loc>
+    <lastmod>2015-09-03T00:20:00+09:00</lastmod>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/2015/09/01/blog-access/</loc>
     <lastmod>2015-09-01T00:20:00+09:00</lastmod>
   </url>
@@ -6730,6 +6734,9 @@
   </url>
   <url>
     <loc>http://komasaru.github.io/page/140/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/page/141/</loc>
   </url>
   <url>
     <loc>http://komasaru.github.io/obj_sponsored_link.html</loc>
