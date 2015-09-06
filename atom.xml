@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-03T00:05:08+09:00</updated>
+  <updated>2015-09-07T00:12:02+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,239 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - XML に XSLT を適用して HTML 生成！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc/"/>
+    <updated>2015-09-07T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>以前、 Ruby で XML ファイルに XSL テンプレートを適用して HTML を生成する方法を紹介しました。</p>
+
+<ul>
+<li><a href="http://komasaru.github.io/2013/12/04/ruby-apply-xslt-to-xml/" title="Ruby - XML に XSLT を適用して HTML 生成！">Ruby - XML に XSLT を適用して HTML 生成！</a></li>
+</ul>
+
+
+<p>ただ、 Linux ディストリビューションによってはデフォルトで XML に XSL テンプレートを適用するコマンドがインストールされています。<br/>
+わざわざ Ruby を使用しなくてもよいということです。</p>
+
+<p>以下、その使用方法についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>XML に XSL テンプレート適用して HTML ファイルを生成するのに <code>xsltproc</code> コマンドを使用する。</li>
+</ul>
+
+
+<h3>1. xsltproc コマンドのインストール</h3>
+
+<p><code>xsltproc</code> コマンドが未インストールならインストールしておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install xsltproc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. XML ファイルの準備</h3>
+
+<p>試験的に使用する XML ファイルを以下のように作成する。（あくまで一例）</p>
+
+<figure class='code'><figcaption><span>test.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="cp">&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;test.xsl&quot; ?&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Office&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;People&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Person&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;No&gt;</span>1234<span class="nt">&lt;/No&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Name&gt;</span>Ruby 太郎<span class="nt">&lt;/Name&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Birthday&gt;</span>1980-01-01<span class="nt">&lt;/Birthday&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Age&gt;</span>33<span class="nt">&lt;/Age&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Person&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Person&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;No&gt;</span>2345<span class="nt">&lt;/No&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Name&gt;</span>XML 二郎<span class="nt">&lt;/Name&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Birthday&gt;</span>1985-04-15<span class="nt">&lt;/Birthday&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Age&gt;</span>28<span class="nt">&lt;/Age&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Person&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Person&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;No&gt;</span>3456<span class="nt">&lt;/No&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Name&gt;</span>XSL 花子<span class="nt">&lt;/Name&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Birthday&gt;</span>1990-09-30<span class="nt">&lt;/Birthday&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Age&gt;</span>23<span class="nt">&lt;/Age&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Person&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/People&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Office&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. XSL テンプレートファイルの準備</h3>
+
+<p>試験的に使用する XSL テンプレートファイルを以下のように作成する。（あくまで一例）</p>
+
+<figure class='code'><figcaption><span>test.xsl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;xsl:stylesheet</span> <span class="na">xmlns:xsl=</span><span class="s">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;xsl:output</span> <span class="na">method=</span><span class="s">&quot;html&quot;</span> <span class="na">encoding=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;Office&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;ja&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/html&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;People&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;table&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/table&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;Person&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;No&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;Name&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;Birthday&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
+</span><span class='line'><span class="nt">&lt;/xsl:stylesheet&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. HTML ファイルの生成</h3>
+
+<p>準備しておいた XML ファイルに XSL テンプレートを適用して HTML ファイルを生成する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ xsltproc --output test.html test.xsl test.xml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>※オプションは他にも多数あるので、 <code>xsltproc --help</code> や <code>man xsltproc</code> で確認する。</p>
+
+<h3>5. HTML ファイルの確認</h3>
+
+<p>&ldquo;test.html&rdquo; というファイルが作成されているはずなので、確認してみる。</p>
+
+<figure class='code'><figcaption><span>test.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;ja&quot;</span><span class="nt">&gt;&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;table&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>1234<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>Ruby 太郎<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>1980-01-01<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>2345<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>XML 二郎<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>1985-04-15<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>3456<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>XSL 花子<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>1990-09-30<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/table&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>さらに、この HTML ファイルをブラウザで開いて確認してみる。</p>
+
+<p><img src="http://komasaru.github.io/images/2015/09/07/XSLTPROC.png" title="XSLTPROC" alt="XSLTPROC" /></p>
+
+<hr />
+
+<p>単に XML ファイルに XSL テンプレートを適用して HTML ファイルを作成するだけなら、今回の方法が楽でいいかもしれませんね。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MariaDB(MySQL) - インデックス名一覧取得！]]></title>
@@ -4457,493 +4690,6 @@
 <hr />
 
 <p>これで、時間がかかる処理も終了時間の見当が付くようになります。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Debian 8 (Jessie) - Web メールシステム Roundcube Webmail インストール（ソースビルド）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/06/debian-8-roundcube-mail-installation/"/>
-    <updated>2015-07-06T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/06/debian-8-roundcube-mail-installation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Debian GNU/Linux 8 (Jessie) に Web メールソフト RoundcubeMail をソースをビルドしてインストールする方法についての記録です。</p>
-
-<p>以前古いバージョンでの作業時に残していた記録を参考に作業を行い、今回更新した作業記録を貼付する形式の内容となっています。<br/>
-（当然ながら、興味がなければスルーしてください）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8 (Jessie) での作業を想定。</li>
-<li>送信メールサーバ Postfix, 受信メールサーバ Dovecot インストール済み。</li>
-<li>DB サーバ MariaDB(MySQL) インストール済み。（<a href="http://komasaru.github.io/2015/06/18/debian-8-mariadb-installation/" title="Debian 8 (Jessie) - DB サーバ MariaDB 構築！">Debian 8 (Jessie) - DB サーバ MariaDB 構築！</a>）</li>
-<li>Web サーバは Apache ではなく Nginx を想定。（<a href="http://komasaru.github.io/2015/06/19/debian-8-nginx-installation-by-official-apt/" title="Debian 8 (Jessie) - Web サーバ Nginx 構築（Nginx 公式リポジトリ使用）！">Debian 8 (Jessie) - Web サーバ Nginx 構築（Nginx 公式リポジトリ使用）！</a>）</li>
-<li>PHP インスール済みであること。（<a href="http://komasaru.github.io/2015/06/29/debian-8-php-installation-by-src/" title="Debian 8 (Jessie) - PHP インストール（ソースビルド）！">Debian 8 (Jessie) - PHP インストール（ソースビルド）！</a>）</li>
-<li>PHP と Nginx の連携が設定済みであること。（<a href="http://komasaru.github.io/2015/06/30/debian-8-php-cooperation-with-nginx/" title="Debian 8 (Jessie) - PHP と Nginx の連携！">Debian 8 (Jessie) - PHP と Nginx の連携！</a>）</li>
-<li>RoundCube Webmail は当記事執筆時点で最新の 1.1.1 をインストールする。（「<a href="http://sourceforge.net/projects/roundcubemail/files/roundcubemail/" title="Roundcube Webmail - Browse /roundcubemail at SourceForge.net">Roundcube Webmail - Browse /roundcubemail at SourceForge.net</a>」で最新版を確認）</li>
-<li>http アクセスを https にリダイレクトしない（https アクセスのみを許可する）方法を採用する。</li>
-</ul>
-
-
-<h3>1. Roundcube Webmail のインストール</h3>
-
-<p>アーカイブをダウンロードしてインストールを行う。<br/>
-（Roundcube Webmail は apt でもインストール可能だが、依存性の関係で Apache もインストールされてしまうことに留意）。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># wget http://downloads.sourceforge.net/project/roundcubemail/roundcubemail/1.1.1/roundcubemail-1.1.1.tar.gz
-</span><span class='line'>                                           # &lt;= アーカイブダウンロード
-</span><span class='line'># tar zxvf roundcubemail-1.1.1.tar.gz      # &lt;= アーカイブ展開
-</span><span class='line'># mv roundcubemail-*/ /var/www/roundcube   # &lt;= 所定の位置へ移動
-</span><span class='line'># chown nginx:nginx -R /var/www/roundcube  # &lt;= 所有者変更
-</span><span class='line'># chmod o+w -R /var/www/roundcube/temp/    # &lt;= 書き込み権限付与
-</span><span class='line'># chmod o+w -R /var/www/roundcube/logs/    # &lt;= 書き込み権限付与
-</span><span class='line'># rm -f roundcubemail-1.1.1.tar.gz         # &lt;= 後始末
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. 文字化けの対応</h3>
-
-<p>機種依存文字が文字化けしないよう文字コード設定ファイル &ldquo;rcube_charset.php&rdquo; を以下のように編集する。</p>
-
-<figure class='code'><figcaption><span>/var/www/roundcube/program/lib/Roundcube/rcube_charset.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>    // convert charset using mbstring module
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="nv">$mbstring_list</span> !<span class="o">==</span> <span class="nb">false</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;WINDOWS-1257&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;ISO-8859-13&#39;</span><span class="p">;</span>
-</span><span class='line'>        // <span class="o">====[</span> 追加 <span class="o">]===</span>&gt;
-</span><span class='line'>        <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;JIS&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;ISO-2022-JP-MS&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;ISO-2022-JP&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;ISO-2022-JP-MS&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;EUC-JP&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;EUCJP-WIN&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;SJIS&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;SJIS-WIN&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;SHIFT_JIS&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;SJIS-WIN&#39;</span><span class="p">;</span>
-</span><span class='line'>        // &lt;<span class="o">===[</span> 追加 <span class="o">]====</span>
-</span><span class='line'>        // it happens that mbstring supports ASCII but not US-ASCII
-</span><span class='line'>        <span class="k">if</span> <span class="o">((</span><span class="nv">$from</span> <span class="o">==</span> <span class="s1">&#39;US-ASCII&#39;</span> <span class="o">||</span> <span class="nv">$to</span> <span class="o">==</span> <span class="s1">&#39;US-ASCII&#39;</span><span class="o">)</span> <span class="o">&amp;&amp;</span> !in_array<span class="o">(</span><span class="s1">&#39;US-ASCII&#39;</span>, <span class="nv">$mbstring_list</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="nv">$aliases</span><span class="o">[</span><span class="s1">&#39;US-ASCII&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;ASCII&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>次に、 &ldquo;mime.types&rdquo; を取得する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># wget http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
-</span><span class='line'>                                            # &lt;= ダウンロード
-</span><span class='line'># mv mime.types /var/www/roundcube/config/  # &lt;= 所定の位置へ移動
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、デフォルト設定ファイル &ldquo;defaults.inc.php&rdquo; を以下のように編集する。</p>
-
-<figure class='code'><figcaption><span>/var/www/roundcube/config/defaults.inc.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>// Absolute path to a <span class="nb">local </span>mime.types mapping table file.
-</span><span class='line'>// This is used to derive mime-types from the filename extension or vice versa.
-</span><span class='line'>// Such a file is usually part of the apache webserver. If you don<span class="s1">&#39;t find a file named mime.types on your system,</span>
-</span><span class='line'><span class="s1">// download it from http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types</span>
-</span><span class='line'><span class="s1">$config[&#39;</span>mime_types<span class="s1">&#39;] = &#39;</span>/var/www/roundcube/config/mime.types<span class="err">&#39;</span><span class="p">;</span>  // &lt;<span class="o">=</span> 変更（mime.types の位置を指定）
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. パッケージのインストール</h3>
-
-<p>必要なパッケージをインストールする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># apt-get -y install php-pear php5-mysql php5-mcrypt php5-intl
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>必要な Pear モジュールもインストールする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># pear install Auth_SASL
-</span><span class='line'># pear install Net_SMTP
-</span><span class='line'># pear install Net_IDNA2
-</span><span class='line'># pear install Mail_mime
-</span><span class='line'># pear install Mail_mimeDecode
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>（安定版が存在せずエラーになる場合は <code>-beta</code> や <code>-alpha</code> を付与するようメッセージが出力されるはずなので、それに従う）</p>
-
-<h3>4. データベースの設定</h3>
-
-<p>MariaDB サーバに root でログインして以下のようにデータベース・ユーザの作成を行う。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u root -p
-</span><span class='line'>Enter password:                                   # &lt;= root パスワード
-</span><span class='line'>Welcome to the MariaDB monitor.  Commands end with ; or \g.
-</span><span class='line'>Your MariaDB connection id is 34
-</span><span class='line'>Server version: 10.0.16-MariaDB-1-log (Debian)
-</span><span class='line'>
-</span><span class='line'>Copyright (c) 2000, 2014, Oracle, MariaDB Corporation Ab and others.
-</span><span class='line'>
-</span><span class='line'>Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
-</span><span class='line'>
-</span><span class='line'>MariaDB [(none)]&gt; CREATE DATABASE roundcubemail;  # &lt;= roundcubemail データベース作成
-</span><span class='line'>Query OK, 1 row affected (0.00 sec)
-</span><span class='line'>
-</span><span class='line'>MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON roundcubemail.* TO roundcube@localhost IDENTIFIED BY &#39;任意のパスワード&#39;;
-</span><span class='line'>                                                  # &lt;= ユーザ roundcube 作成
-</span><span class='line'>Query OK, 0 rows affected (0.00 sec)
-</span><span class='line'>
-</span><span class='line'>MariaDB [(none)]&gt; FLUSH PRIVILEGES;               # &lt;= 即時反映
-</span><span class='line'>Query OK, 0 rows affected (0.00 sec)
-</span><span class='line'>
-</span><span class='line'>MariaDB [(none)]&gt; exit                            # &lt;= ログアウト
-</span><span class='line'>Bye
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. データベースの初期化</h3>
-
-<p>用意されている SQL ファイルを使用してデータベース roundcubemail を初期化する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u roundcube -p roundcubemail &lt; /var/www/roundcube/SQL/mysql.initial.sql
-</span><span class='line'>Enter password:  # &lt;= roundcube ユーザのパスワード
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. PHP 設定ファイルの編集</h3>
-
-<p>PHP 設定ファイルでタイムゾーンが未設定なら設定する。（日本時間）</p>
-
-<figure class='code'><figcaption><span>/etc/php.ini</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="p">[</span><span class="nx">Date</span><span class="p">]</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">Defines</span> <span class="nx">the</span> <span class="k">default</span> <span class="nx">timezone</span> <span class="nx">used</span> <span class="nx">by</span> <span class="nx">the</span> <span class="nb">date</span> <span class="nx">functions</span>
-</span><span class='line'><span class="p">;</span> <span class="nx">http</span><span class="o">://</span><span class="nx">php</span><span class="o">.</span><span class="nx">net</span><span class="o">/</span><span class="nb">date</span><span class="o">.</span><span class="nx">timezone</span>
-</span><span class='line'><span class="p">;</span><span class="nb">date</span><span class="o">.</span><span class="nx">timezone</span> <span class="o">=</span>
-</span><span class='line'><span class="nb">date</span><span class="o">.</span><span class="nx">timezone</span> <span class="o">=</span> <span class="nx">Asia</span><span class="o">/</span><span class="nx">Tokyo</span>  <span class="c1">// &lt;= 追加</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. RoundCube Webmail デフォルト設定ファイルの編集</h3>
-
-<figure class='code'><figcaption><span>/var/www/roundcube/config/defaults.inc.php</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="c1">// This domain will be used to form e-mail addresses of new users</span>
-</span><span class='line'><span class="c1">// Specify an array with &#39;host&#39; =&gt; &#39;domain&#39; values to support multiple hosts</span>
-</span><span class='line'><span class="c1">// Supported replacement variables:</span>
-</span><span class='line'><span class="c1">// %h - user&#39;s IMAP hostname</span>
-</span><span class='line'><span class="c1">// %n - http hostname ($_SERVER[&#39;SERVER_NAME&#39;])</span>
-</span><span class='line'><span class="c1">// %d - domain (http hostname without the first part)</span>
-</span><span class='line'><span class="c1">// %z - IMAP domain (IMAP hostname without the first part)</span>
-</span><span class='line'><span class="c1">// For example %n = mail.domain.tld, %t = domain.tld</span>
-</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;mail_domain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mk-mode.com&#39;</span><span class="p">;</span>     <span class="c1"># &lt;= 変更 （送信元メールアドレスのドメインを指定）</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Use this charset as fallback for message decoding$</span>
-</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;default_charset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ISO-2022-1&#39;</span><span class="p">;</span>  <span class="c1"># &lt;= 変更（日本語対応）</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// enforce connections over https</span>
-</span><span class='line'><span class="c1">// with this option enabled, all non-secure connections will be redirected.</span>
-</span><span class='line'><span class="c1">// set the port for the ssl connection as value of this option if it differs from the default 443</span>
-</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;force_https&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>              <span class="c1"># &lt;= 変更（https アクセス(SSL)の強制）</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// the way how contact names are displayed in the list</span>
-</span><span class='line'><span class="c1">// 0: display name</span>
-</span><span class='line'><span class="c1">// 1: (prefix) firstname middlename surname (suffix)</span>
-</span><span class='line'><span class="c1">// 2: (prefix) surname firstname middlename (suffix)</span>
-</span><span class='line'><span class="c1">// 3: (prefix) surname, firstname middlename (suffix)</span>
-</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;addressbook_name_listing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>    <span class="c1"># &lt;= 変更（アドレス帳での表示を姓名形式に）</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Set true if deleted messages should not be displayed$</span>
-</span><span class='line'><span class="c1">// This will make the application run slower$</span>
-</span><span class='line'><span class="nv">$config</span><span class="p">[</span><span class="s1">&#39;skip_deleted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>             <span class="c1"># &lt;= 変更（削除済みメッセージを非表示）</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>8. Nginx 設定ファイルの編集</h3>
-
-<p><code>https://サーバー名/roundcube/</code> で Web メールへアクセスできるようにするために、Nginx 設定ファイル server ディレクティブ（SSL 設定側）内に以下のように追記する。</p>
-
-<figure class='code'><figcaption><span>/etc/nginx/conf.d/ssl.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server <span class="o">{</span>
-</span><span class='line'>    listen       <span class="m">443</span> ssl<span class="p">;</span>
-</span><span class='line'>    server_name  localhost<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c">#ssl_certificate      /etc/nginx/cert.pem;</span>
-</span><span class='line'>    ssl_certificate      /etc/ssl/private/server.crt<span class="p">;</span>
-</span><span class='line'>    <span class="c">#ssl_certificate_key  /etc/nginx/cert.key;</span>
-</span><span class='line'>    ssl_certificate_key  /etc/ssl/private/server.key<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    ssl_session_cache shared:SSL:1m<span class="p">;</span>
-</span><span class='line'>    ssl_session_timeout  5m<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    ssl_ciphers  HIGH:!aNULL:!MD5<span class="p">;</span>
-</span><span class='line'>    ssl_prefer_server_ciphers   on<span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    location / <span class="o">{</span>
-</span><span class='line'>        <span class="c">#root   /usr/share/nginx/html;</span>
-</span><span class='line'>        root   /var/www/html<span class="p">;</span>
-</span><span class='line'>        index  index.html index.htm<span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># ====[ 追加 ]===&gt;</span>
-</span><span class='line'>    <span class="c"># RoundCube Webmail</span>
-</span><span class='line'>    location /roundcube <span class="o">{</span>
-</span><span class='line'>        <span class="nb">alias</span> /var/www/roundcube<span class="p">;</span>
-</span><span class='line'>        allow 127.0.0.1<span class="p">;</span>        <span class="c"># &lt;= 内部からのみアクセス可にする場合</span>
-</span><span class='line'>        allow 192.168.11.0/24<span class="p">;</span>  <span class="c"># &lt;= 内部からのみアクセス可にする場合</span>
-</span><span class='line'>        deny all<span class="p">;</span>               <span class="c"># &lt;= 内部からのみアクセス可にする場合</span>
-</span><span class='line'>        <span class="c"># allow all;            # &lt;= 外部からもアクセス可にする場合</span>
-</span><span class='line'>        index  index.php<span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    location /roundcube/config <span class="o">{</span>
-</span><span class='line'>        deny all<span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    location /roundcube/temp <span class="o">{</span>
-</span><span class='line'>        deny all<span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    location /roundcube/logs <span class="o">{</span>
-</span><span class='line'>        deny all<span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    location ~ /roundcube/.*<span class="se">\.</span>php<span class="nv">$ </span><span class="o">{</span>
-</span><span class='line'>        fastcgi_pass    127.0.0.1:9000<span class="p">;</span>
-</span><span class='line'>        fastcgi_index   index.php<span class="p">;</span>
-</span><span class='line'>        fastcgi_param   SCRIPT_FILENAME  /var/www/<span class="nv">$uri</span><span class="p">;</span>
-</span><span class='line'>        include         fastcgi_params<span class="p">;</span>
-</span><span class='line'>        fastcgi_pass_header <span class="s2">&quot;X-Accel-Redirect&quot;</span><span class="p">;</span>
-</span><span class='line'>        fastcgi_pass_header <span class="s2">&quot;X-Accel-Buffering&quot;</span><span class="p">;</span>
-</span><span class='line'>        fastcgi_pass_header <span class="s2">&quot;X-Accel-Charset&quot;</span><span class="p">;</span>
-</span><span class='line'>        fastcgi_pass_header <span class="s2">&quot;X-Accel-Expires&quot;</span><span class="p">;</span>
-</span><span class='line'>        fastcgi_pass_header <span class="s2">&quot;X-Accel-Limit-Rate&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="c"># &lt;===[ 追加 ]====</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、Web サーバが Nginx ではなく Apache の場合は &ldquo;/etc/httpd/conf.d/roundcubemail.conf&rdquo; を以下の内容で作成すればよい。（詳細なアクセス許可・拒否設定は不明）</p>
-
-<figure class='code'><figcaption><span>/etc/httpd/conf.d/roundcubemail.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo </span>Alias /roundcube /var/www/roundcube
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>9. Nginx, PHP-FPM の再起動</h3>
-
-<p>設定反映のため Nginx（Apache なら httpd）, PHP-FPM を再起動する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart nginx
-</span><span class='line'>
-</span><span class='line'># systemctl resatrt php-fpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>10. RoundCube Webmail の設定</h3>
-
-<p>Web ブラウザで <code>https://＜サーバ名 or IP アドレス＞/roundcube/installer/</code> へアクセスする。<br/>
-そして、画面上で以下のように設定する。</p>
-
-<ol>
-<li>[NEXT] ボタンを押下する。<br/>
-（但し、赤字で &ldquo;NOT OK&rdquo; がある場合は [NEXT] が非活性で押下できない。未導入のモジュールを導入するなどし、 &ldquo;NOT OK&rdquo; を無くす）</li>
-<li>Logging &amp; Debugging
-
-<ul>
-<li>&ldquo;log_driver&rdquo; で &ldquo;syslog” を選択する。（ログを &rdquo;/var/log/messages" に出力）</li>
-</ul>
-</li>
-<li>Database setup
-
-<ul>
-<li>&ldquo;Database name&rdquo;, &ldquo;Database user name&rdquo; が正しいか確認する。</li>
-<li>&ldquo;Database password&rdquo; に roundcubemail データベースのパスワードを入力する。</li>
-</ul>
-</li>
-<li>IMAP Settings
-
-<ul>
-<li>&ldquo;default_host&rdquo; にメールサーバー名（当方の例： &ldquo;mail.mk-mode.com"）を入力する。</li>
-<li>&ldquo;junk_mbox&rdquo; に &ldquo;Spam&rdquo; と入力する。</li>
-</ul>
-</li>
-<li>SMTP Settings
-
-<ul>
-<li>&ldquo;smtp_server&rdquo; にメールサーバー名（当方の例： &ldquo;mail.mk-mode.com"）を入力する。</li>
-<li>&ldquo;Use the current IMAP username and password for SMTP authentication&rdquo; をチェックする。<br/>
-（SMTP 認証に IMAP サーバーのユーザー名／パスワードを使用する）</li>
-</ul>
-</li>
-<li>Display settings &amp; user prefs
-
-<ul>
-<li>&ldquo;language&rdquo; に &ldquo;ja_JP&rdquo; と入力する。</li>
-<li>&ldquo;If preview pane is enabled&rdquo; をチェックする。（メール一覧下部にプレビューを表示）</li>
-</ul>
-</li>
-<li>[CREATE CONFIG] ボタンを押下する。</li>
-<li>[CONTINUE] ボタンを押下する。</li>
-<li>必要なら、"Test SMTP config", &ldquo;Test IMAP config&rdquo; でメール送信テストをしてみる。</li>
-<li>最後に警告メッセージに従い &ldquo;installer&rdquo; ディレクトリを削除する。<br/>
-<code>rm -rf /var/www/roundcube/installer</code></li>
-</ol>
-
-
-<h3>11. 動作確認</h3>
-
-<p>Web ブラウザで <code>https://＜サーバ名 or IP アドレス＞/roundcube/</code> へアクセスし、メールのユーザ名・パスワードでログインできること、各種操作が可能なことを確認する。<br/>
-また、ログイン後に各種設定も可能である。</p>
-
-<h3>12. 参考サイト</h3>
-
-<ul>
-<li><a href="http://roundcube.net/" title="Roundcube - Free and Open Source Webmail Software">Roundcube - Free and Open Source Webmail Software</a></li>
-<li><a href="http://centossrv.com/roundcubemail.shtml" title="Webmailシステム構築(RoundCube Webmail) - CentOSで自宅サーバー構築">Webmailシステム構築(RoundCube Webmail) - CentOSで自宅サーバー構築</a></li>
-</ul>
-
-
-<hr />
 
 <p>以上。</p>
 ]]></content>

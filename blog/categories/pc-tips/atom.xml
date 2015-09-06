@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-03T00:05:08+09:00</updated>
+  <updated>2015-09-07T00:12:02+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,157 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - XML に XSLT を適用して HTML 生成！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc/"/>
+    <updated>2015-09-07T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>以前、 Ruby で XML ファイルに XSL テンプレートを適用して HTML を生成する方法を紹介しました。</p>
+
+<ul>
+<li><a href="/2013/12/04/ruby-apply-xslt-to-xml/" title="Ruby - XML に XSLT を適用して HTML 生成！">Ruby - XML に XSLT を適用して HTML 生成！</a></li>
+</ul>
+
+
+<p>ただ、 Linux ディストリビューションによってはデフォルトで XML に XSL テンプレートを適用するコマンドがインストールされています。<br/>
+わざわざ Ruby を使用しなくてもよいということです。</p>
+
+<p>以下、その使用方法についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>XML に XSL テンプレート適用して HTML ファイルを生成するのに <code>xsltproc</code> コマンドを使用する。</li>
+</ul>
+
+
+<h3>1. xsltproc コマンドのインストール</h3>
+
+<p><code>xsltproc</code> コマンドが未インストールならインストールしておく。</p>
+
+<pre><code class="text">$ sudo apt-get install xsltproc
+</code></pre>
+
+<h3>2. XML ファイルの準備</h3>
+
+<p>試験的に使用する XML ファイルを以下のように作成する。（あくまで一例）</p>
+
+<pre><code class="xml test.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;?xml-stylesheet type="text/xsl" href="test.xsl" ?&gt;
+
+&lt;Office&gt;
+  &lt;People&gt;
+    &lt;Person&gt;
+      &lt;No&gt;1234&lt;/No&gt;
+      &lt;Name&gt;Ruby 太郎&lt;/Name&gt;
+      &lt;Birthday&gt;1980-01-01&lt;/Birthday&gt;
+      &lt;Age&gt;33&lt;/Age&gt;
+    &lt;/Person&gt;
+    &lt;Person&gt;
+      &lt;No&gt;2345&lt;/No&gt;
+      &lt;Name&gt;XML 二郎&lt;/Name&gt;
+      &lt;Birthday&gt;1985-04-15&lt;/Birthday&gt;
+      &lt;Age&gt;28&lt;/Age&gt;
+    &lt;/Person&gt;
+    &lt;Person&gt;
+      &lt;No&gt;3456&lt;/No&gt;
+      &lt;Name&gt;XSL 花子&lt;/Name&gt;
+      &lt;Birthday&gt;1990-09-30&lt;/Birthday&gt;
+      &lt;Age&gt;23&lt;/Age&gt;
+    &lt;/Person&gt;
+  &lt;/People&gt;
+&lt;/Office&gt;
+</code></pre>
+
+<h3>3. XSL テンプレートファイルの準備</h3>
+
+<p>試験的に使用する XSL テンプレートファイルを以下のように作成する。（あくまで一例）</p>
+
+<pre><code class="xml test.xsl">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+
+&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"&gt;
+   &lt;xsl:output method="html" encoding="UTF-8"/&gt;
+
+  &lt;xsl:template match="/"&gt;
+    &lt;xsl:apply-templates/&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="Office"&gt;
+    &lt;html lang="ja"&gt;
+    &lt;body&gt;
+    &lt;xsl:apply-templates/&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="People"&gt;
+    &lt;table&gt;
+    &lt;xsl:apply-templates/&gt;
+    &lt;/table&gt;
+  &lt;/xsl:template&gt;
+
+  &lt;xsl:template match="Person"&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;xsl:value-of select="No"/&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;xsl:value-of select="Name"/&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;xsl:value-of select="Birthday"/&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+
+<h3>4. HTML ファイルの生成</h3>
+
+<p>準備しておいた XML ファイルに XSL テンプレートを適用して HTML ファイルを生成する。</p>
+
+<pre><code class="text">$ xsltproc --output test.html test.xsl test.xml
+</code></pre>
+
+<p>※オプションは他にも多数あるので、 <code>xsltproc --help</code> や <code>man xsltproc</code> で確認する。</p>
+
+<h3>5. HTML ファイルの確認</h3>
+
+<p>&ldquo;test.html&rdquo; というファイルが作成されているはずなので、確認してみる。</p>
+
+<pre><code class="html test.html">&lt;html lang="ja"&gt;&lt;body&gt;
+  &lt;table&gt;
+    &lt;tr&gt;
+&lt;td&gt;1234&lt;/td&gt;
+&lt;td&gt;Ruby 太郎&lt;/td&gt;
+&lt;td&gt;1980-01-01&lt;/td&gt;
+&lt;/tr&gt;
+    &lt;tr&gt;
+&lt;td&gt;2345&lt;/td&gt;
+&lt;td&gt;XML 二郎&lt;/td&gt;
+&lt;td&gt;1985-04-15&lt;/td&gt;
+&lt;/tr&gt;
+    &lt;tr&gt;
+&lt;td&gt;3456&lt;/td&gt;
+&lt;td&gt;XSL 花子&lt;/td&gt;
+&lt;td&gt;1990-09-30&lt;/td&gt;
+&lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;
+</code></pre>
+
+<p>さらに、この HTML ファイルをブラウザで開いて確認してみる。</p>
+
+<p><img src="/images/2015/09/07/XSLTPROC.png" title="XSLTPROC" alt="XSLTPROC" /></p>
+
+<hr />
+
+<p>単に XML ファイルに XSL テンプレートを適用して HTML ファイルを作成するだけなら、今回の方法が楽でいいかもしれませんね。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - Groonga インストール（by ソースビルド）！]]></title>
@@ -707,109 +858,6 @@ $ ./gnuplot_sample.sh
 <p>今回紹介した使用例はごく一部の機能に限定していましたが、使いこなすうちになれるでしょう。</p>
 
 <p>また、統計解析用プログラミン言語 R でグラフを描画する場合と使い勝手等を比較してみたいとも思っています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - ionice でディスクI/Oによる負荷を調整！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/12/linux-adjust-disk-io-stress-by-ionice/"/>
-    <updated>2015-07-12T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/12/linux-adjust-disk-io-stress-by-ionice</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>ご存知のとおり、プロセス実行優先度の管理は <code>nice</code> コマンドで行います。</p>
-
-<p>今回は、ディスク I/O 優先度の管理を行う <code>ionice</code> についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8 Jessie での作業を想定。</li>
-</ul>
-
-
-<h3>1. 使用方法</h3>
-
-<pre><code class="text">$ ionice --help
-
-ionice - sets or gets process io scheduling class and priority.
-
-Usage:
-  ionice [OPTION] -p PID [PID...]
-  ionice [OPTION] COMMAND
-
-Options:
-  -c, --class &lt;class&gt;   scheduling class name or number
-                           0: none, 1: realtime, 2: best-effort, 3: idle
-  -n, --classdata &lt;num&gt; scheduling class data
-                           0-7 for realtime and best-effort classes
-  -p, --pid=PID         view or modify already running process
-  -t, --ignore          ignore failures
-  -V, --version         output version information and exit
-  -h, --help            display this help and exit
-</code></pre>
-
-<ul>
-<li>スケジューリングクラス(<code>-c</code>)について
-
-<ul>
-<li><code>1</code>(RealTime) &hellip; 最も優先度が高い。</li>
-<li><code>2</code>(Best-Effort) &hellip; <code>1</code>(RealTime) と <code>3</code>(Idle) の間。</li>
-<li><code>3</code>(Idle)  &hellip; 最も優先度が低い。</li>
-</ul>
-</li>
-<li>プライオリティ(<code>-n</code>)について
-
-<ul>
-<li>スケジューリングクラス <code>1</code>(RealTime) と <code>2</code>(Best-Effort) にのみ使用可能。</li>
-<li><code>0</code> 〜 <code>7</code> &hellip; 値が小さいほど優先度が高い。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>2. 使用例</h3>
-
-<p>以下は、コマンド <code>cmd</code> をディスク I/O 優先度を最高にして実行する例。</p>
-
-<pre><code class="text">$ ionice -c 1 cmd
-</code></pre>
-
-<p>以下は、コマンド <code>cmd</code> をディスク I/O 優先度を最低にして実行する例。</p>
-
-<pre><code class="text">$ ionice -c 3 cmd
-</code></pre>
-
-<p>以下は、コマンド <code>cmd</code> をディスク I/O 優先度をベストエフォート（優先度最低）にして実行する例。</p>
-
-<pre><code class="text">$ ionice -c 2 -n 7 cmd
-</code></pre>
-
-<p>以下は、プロセス番号 <code>1234</code> で実行中のプロセスのディスク I/O 優先度を確認する例。</p>
-
-<pre><code class="text">$ ionice -p 1234
-</code></pre>
-
-<p>以下は、プロセス番号 <code>1234</code> で実行中のプロセスのディスク I/O 優先度を最低に変更する例。</p>
-
-<pre><code class="text">$ ionice -c 3 -p 1234
-</code></pre>
-
-<p>以下は、コマンド <code>cmd</code> をプロセス優先度を最低、ディスク I/O 優先度も最低にして実行する例。（マシンに最も負荷をかけない方法）</p>
-
-<pre><code class="text">$ nice -n 19 ionice -c 3 cmd
-</code></pre>
-
-<hr />
-
-<p>非力なマシンで作業を行うことの多い当方にとっては、非常によく使用するコマンドです。</p>
-
-<p>当然ながら、ディスク I/O の負荷が低く抑えられる代わりに処理に時間がかかります。</p>
 
 <p>以上。</p>
 ]]></content>
