@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-17T00:06:37+09:00</updated>
+  <updated>2015-09-22T00:37:03+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,256 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Nokogiri による XML 解析の速度検証！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/09/22/ruby-verify-xml-parsing-by-nokogiri/"/>
+    <updated>2015-09-22T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/09/22/ruby-verify-xml-parsing-by-nokogiri</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Ruby で HTML/XML パーサの Nokogiri を使用して XML を解析する際、名前空間(Namespace)が宣言されている場合は厳密に指定する必要があるものだと考えております。</p>
+
+<p>しかし、実際は名前空間を指定せずに解析することも可能です。<br/>
+（実際、 XML 内の名前空間を削除するメソッドも用意されています。しかし、そのメソッドは名前空間について理解していない人のためのものであり、一般的には使用すべきではありません）</p>
+
+<p>今回は、各種方法で解析し、どの方法が高速であるかを検証してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>以下で紹介する検証結果は、使用する XML の構造等により若干異なることもあるかもしれない、ということに留意。</li>
+</ul>
+
+
+<h3>1. 検証に使用する XML ファイル</h3>
+
+<p>以下のような XML を使用する。（実際の「気象庁防災情報 XML」通知用 Atom フィードを流用。情報の内容は24時間以内に <code>link</code> タグ内の URL にアクセスして得ることになっている）</p>
+
+<pre><code class="xml test_nokogiri.xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ja"&gt;
+&lt;title&gt;JMAXML publishing feed&lt;/title&gt;
+&lt;subtitle&gt;this feed is published by JMA&lt;/subtitle&gt;
+&lt;updated&gt;2015-08-27T17:28:02+09:00&lt;/updated&gt;
+&lt;id&gt;urn:uuid:d38e0e80-12ba-3236-b10f-256b78a08995&lt;/id&gt;
+&lt;link href="http://www.jma.go.jp/" rel="related"/&gt;
+&lt;link href="http://xml.kishou.go.jp/feed/other.xml" rel="self"/&gt;
+&lt;rights&gt;Published by Japan Meteorological Agency&lt;/rights&gt;
+
+&lt;entry&gt;
+&lt;title&gt;地方海上警報&lt;/title&gt;
+&lt;id&gt;urn:uuid:ac97395c-e388-33a9-922f-ab2a32e61bb1&lt;/id&gt;
+&lt;updated&gt;2015-08-27T08:27:18Z&lt;/updated&gt;
+&lt;author&gt;&lt;name&gt;新潟地方気象台&lt;/name&gt;&lt;/author&gt;
+&lt;link href="http://xml.kishou.go.jp/data/ac97395c-e388-33a9-922f-ab2a32e61bb1.xml" type="application/xml"/&gt;
+&lt;content type="text"&gt;【新潟海上気象】&lt;/content&gt;
+&lt;/entry&gt;
+&lt;entry&gt;
+&lt;title&gt;地方海上警報&lt;/title&gt;
+&lt;id&gt;urn:uuid:b42a06f2-a6f0-351a-a8c4-3619a847f66d&lt;/id&gt;
+&lt;updated&gt;2015-08-27T08:27:02Z&lt;/updated&gt;
+&lt;author&gt;&lt;name&gt;仙台管区気象台&lt;/name&gt;&lt;/author&gt;
+&lt;link href="http://xml.kishou.go.jp/data/b42a06f2-a6f0-351a-a8c4-3619a847f66d.xml" type="application/xml"/&gt;
+&lt;content type="text"&gt;【仙台海上気象】&lt;/content&gt;
+&lt;/entry&gt;
+&lt;entry&gt;
+&lt;title&gt;紫外線観測データ&lt;/title&gt;
+&lt;id&gt;urn:uuid:f27e93c8-ff97-376d-b3b0-5307d07e4a24&lt;/id&gt;
+&lt;updated&gt;2015-08-27T08:27:10Z&lt;/updated&gt;
+&lt;author&gt;&lt;name&gt;気象庁地球環境・海洋部&lt;/name&gt;&lt;/author&gt;
+&lt;link href="http://xml.kishou.go.jp/data/f27e93c8-ff97-376d-b3b0-5307d07e4a24.xml" type="application/xml"/&gt;
+&lt;content type="text"&gt;【紫外線観測データ】&lt;/content&gt;
+&lt;/entry&gt;
+&lt;/feed&gt;
+</code></pre>
+
+<h3>2. 検証用 Ruby スクリプトの作成</h3>
+
+<ul>
+<li>以下のスクリプト内で指定する名前空間は、 &ldquo;text_nokogiri.xml&rdquo; 内で宣言されているものと同じ。</li>
+<li><code>entry</code> ノードをループし、各 <code>title</code> ノードのテキストを取得するだけの簡単な処理を 10,000 回繰り返す。</li>
+<li>今回は７種類（スクリプト内コメント参照）の解析方法で検証する。</li>
+<li>以下のスクリプト内の XPath での「Namespace 指定なし」とは、 Nokogiri での厳密な指定をしないという意味。</li>
+</ul>
+
+
+<pre><code class="ruby test_nokogiri_xml.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+#
+# Ruby script to verify the speed of xml parsing by Nokogiri.
+#
+#++
+require 'benchmark'
+require 'nokogiri'
+
+class TestNokogiriXml
+  def initialize
+    @xml  = Nokogiri::XML(File.read("test_nokogiri.xml"))
+    @secs = 10000
+    @ns   = {"a" =&gt; "http://www.w3.org/2005/Atom"}
+  end
+
+  def exec
+    # 1. css メソッド(CSS セレクタ)による解析
+    printf("CASE-1: %.4f secs.\n", case_1)
+
+    # 2. search メソッド(CSS セレクタ)による解析
+    printf("CASE-2: %.4f secs.\n", case_2)
+
+    # 3. search メソッド(XPath, Namespace 指定なし)による解析
+    printf("CASE-3: %.4f secs.\n", case_3)
+
+    # 4. / メソッド(CSS セレクタ)による解析
+    printf("CASE-4: %.4f secs.\n", case_4)
+
+    # 5. / メソッド(XPath, Namespace 指定なし)による解析
+    printf("CASE-5: %.4f secs.\n", case_5)
+
+    # 6. xpath メソッド(XPath, Namespace 指定なし)による解析
+    printf("CASE-6: %.4f secs.\n", case_6)
+
+    # 7. xpath メソッド(XPath, Namespace 指定あり)による解析
+    printf("CASE-7: %.4f secs.\n", case_7)
+  rescue =&gt; e
+    $stderr.puts "[#{self.class.name}.#{__method__}] #{e}"
+    e.backtrace.each{ |tr| $stderr.puts "\t#{tr}" }
+    exit 1
+  end
+
+  private
+
+  def case_1
+    return Benchmark.realtime do
+      @secs.times do |i|
+        @xml.css("entry").each do |e|
+          title = e.css("title").first.text
+        end
+        exit
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  def case_2
+    return Benchmark.realtime do
+      @secs.times do |i|
+        @xml.search("entry").each do |e|
+          title = e.search("title").first.text
+        end
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  def case_3
+    return Benchmark.realtime do
+      @secs.times do |i|
+        @xml.search("//xmlns:entry").each do |e|
+          title = e.search("./xmlns:title").first.text
+        end
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  def case_4
+    return Benchmark.realtime do
+      @secs.times do |i|
+        (@xml/"entry").each do |e|
+          title = (e/"title").first.text
+        end
+        # 以下でも同様。しかし、ごく少し遅い。
+        #(@xml/:entry).each do |e|
+        #  title = (e/:title).first.text
+        #end
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  def case_5
+    return Benchmark.realtime do
+      @secs.times do |i|
+        (@xml/"//xmlns:entry").each do |e|
+          title = (e/"./xmlns:title").first.text
+        end
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  def case_6
+    return Benchmark.realtime do
+      @secs.times do |i|
+        @xml.xpath("//xmlns:entry").each do |e|
+          title = e.xpath("xmlns:title").first.text
+        end
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  def case_7
+    return Benchmark.realtime do
+      @secs.times do |i|
+        @xml.xpath("//a:entry", @ns).each do |e|
+          title = e.xpath("a:title", @ns).first.text
+        end
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+end
+
+TestNokogiriXml.new.exec
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/1f737b67baba38213570" title="Gist - Ruby script to verify the speed of xml parsing by Nokogiri. ">Gist - Ruby script to verify the speed of xml parsing by Nokogiri. </a></li>
+</ul>
+
+
+<h3>3. Ruby スクリプトの実行</h3>
+
+<pre><code class="text">$ ./test.rb
+CASE-1: 2.3432 secs.
+CASE-2: 2.4821 secs.
+CASE-3: 2.0588 secs.
+CASE-4: 2.4949 secs.
+CASE-5: 2.0672 secs.
+CASE-6: 1.7549 secs.
+CASE-7: 1.5359 secs.
+</code></pre>
+
+<h3>4. 検証結果について</h3>
+
+<ul>
+<li>何回か実行してみたが、全て同じような結果となった。</li>
+<li><code>xpath</code> メソッドは <code>css</code>, <code>search</code>, <code>/</code> メソッドより高速に解析することができる。</li>
+<li><code>xpath</code> メソッドで厳密に名前空間を指定した方が、指定せずに解析するより高速である。</li>
+<li>要は、XML を解析する際は <code>xpath</code> メソッドで名前空間を指定しましょう、ということ。</li>
+<li>今回の検証結果が全てという訳ではない（場合によっては「一概には言えない」ということがあるかもしれない）</li>
+</ul>
+
+
+<hr />
+
+<p>当方、以前は CSS セレクタを使用して XML 解析を行なっていた時期もありましたが、現在は XPath で厳密に名前空間を指定して解析を行うようにしています。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - dRuby でジョブキューサーバ構築！]]></title>
@@ -647,101 +897,6 @@ $ ./gnuplot_3.rb
 <hr />
 
 <p>Ruby で処理した得た数値をグラフ化することが多い場合は重宝するでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - Array クラス拡張で配列要素にランク付け（同順位考慮）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/24/ruby-ranking-simultaneous-arrival-by-array-class/"/>
-    <updated>2015-07-24T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/24/ruby-ranking-simultaneous-arrival-by-array-class</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Ruby で配列内の数値をランク付け（同順位を考慮）する方法を、 Array クラスを拡張して実装してみました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Ruby 2.2.2-p95 での作業を想定。</li>
-<li>配列内の数値が大きい順に順位を付ける。</li>
-<li>同順位を考慮する。（例：要素が 3, 1, 3, 2 で、大きい順に順位付ける場合の順位を 1, 4, 1, 3 とする）</li>
-</ul>
-
-
-<h3>1. Ruby スクリプトの作成</h3>
-
-<p>実質、配列の順位付を行なっているのは１行のみで、数値が自分より大きい要素の個数 +1 を順位とするアルゴリズム。</p>
-
-<pre><code class="ruby array_rank.rb">#! /usr/local/bin/ruby
-# coding: utf-8
-#**********************************************************
-# Ruby script to rank array items, considering same ranks.
-#**********************************************************
-#
-class Array
-  def rank
-    # 以下の場合は例外スロー
-    # - 自身配列が空
-    # - 自身配列に数値以外の値を含む
-    raise "Self array is nil!" if self.size == 0
-    self.each do |v|
-      raise "Items except numerical values exist!" unless v.to_s =~ /[\d\.]+/
-    end
-
-    # ランク付け
-    self.map { |v| self.count { |a| a &gt; v } + 1 }
-  end
-end
-
-a = [9, 3, 2, 7, 1, 6, 8, 5, 10, 4]
-b = [6, 8, 5, 8, 4, 9, 3, 3, 7, 1]
-c = [6, 8.5, 5, 3.2, 7, 1, 8.1, 3.2, 9, 3]
-d = [9, 3, 2, 7, "abc", 6, 8, 5, 10, 4]
-puts "a = #{a}"
-puts "--&gt; #{a.rank}"
-puts
-puts "b = #{b}"
-puts "--&gt; #{b.rank}"
-puts
-puts "c = #{c}"
-puts "--&gt; #{c.rank}"
-puts
-puts "d = #{d}"
-puts "--&gt; #{d.rank}"
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/0a58f9027edbc148399e" title="Gist - Ruby script to rank array items, considering same ranks.">Gist - Ruby script to rank array items, considering same ranks.</a></li>
-</ul>
-
-
-<h3>2. Ruby スクリプトの実行</h3>
-
-<pre><code class="text">$ ./array_rank.rb
-a = [9, 3, 2, 7, 1, 6, 8, 5, 10, 4]
---&gt; [2, 8, 9, 4, 10, 5, 3, 6, 1, 7]
-
-b = [6, 8, 5, 8, 4, 9, 3, 3, 7, 1]
---&gt; [5, 2, 6, 2, 7, 1, 8, 8, 4, 10]
-
-c = [6, 8.5, 5, 3.2, 7, 1, 8.1, 3.2, 9, 3]
---&gt; [5, 2, 6, 7, 4, 10, 3, 7, 1, 9]
-
-d = [9, 3, 2, 7, "abc", 6, 8, 5, 10, 4]
-./array_rank.rb:14:in `block in rank': Exist items except numerical values! (RuntimeError)
-        from ./array_rank.rb:13:in `each'
-        from ./array_rank.rb:13:in `rank'
-        from ./array_rank.rb:33:in `&lt;main&gt;'
-</code></pre>
-
-<hr />
-
-<p>当方の場合、意外と利用頻度が高いので、単純な処理とは言えど結構重宝しています。</p>
 
 <p>以上。</p>
 ]]></content>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://komasaru.github.io/blog/2015/09/22/ruby-verify-xml-parsing-by-nokogiri/</loc>
+    <lastmod>2015-09-22T00:20:00+09:00</lastmod>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/2015/09/17/postfix-management-of-mail-queue/</loc>
     <lastmod>2015-09-17T00:20:00+09:00</lastmod>
   </url>
@@ -6305,9 +6309,6 @@
   </url>
   <url>
     <loc>http://komasaru.github.io/blog/tags/heroku/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/tags/bash/</loc>
   </url>
   <url>
     <loc>http://komasaru.github.io/blog/tags/gmt/</loc>

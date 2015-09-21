@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-17T00:06:37+09:00</updated>
+  <updated>2015-09-22T00:37:03+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,438 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Nokogiri による XML 解析の速度検証！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/09/22/ruby-verify-xml-parsing-by-nokogiri/"/>
+    <updated>2015-09-22T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/09/22/ruby-verify-xml-parsing-by-nokogiri</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Ruby で HTML/XML パーサの Nokogiri を使用して XML を解析する際、名前空間(Namespace)が宣言されている場合は厳密に指定する必要があるものだと考えております。</p>
+
+<p>しかし、実際は名前空間を指定せずに解析することも可能です。<br/>
+（実際、 XML 内の名前空間を削除するメソッドも用意されています。しかし、そのメソッドは名前空間について理解していない人のためのものであり、一般的には使用すべきではありません）</p>
+
+<p>今回は、各種方法で解析し、どの方法が高速であるかを検証してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>以下で紹介する検証結果は、使用する XML の構造等により若干異なることもあるかもしれない、ということに留意。</li>
+</ul>
+
+
+<h3>1. 検証に使用する XML ファイル</h3>
+
+<p>以下のような XML を使用する。（実際の「気象庁防災情報 XML」通知用 Atom フィードを流用。情報の内容は24時間以内に <code>link</code> タグ内の URL にアクセスして得ることになっている）</p>
+
+<figure class='code'><figcaption><span>test_nokogiri.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;feed</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/2005/Atom&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;ja&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>JMAXML publishing feed<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;subtitle&gt;</span>this feed is published by JMA<span class="nt">&lt;/subtitle&gt;</span>
+</span><span class='line'><span class="nt">&lt;updated&gt;</span>2015-08-27T17:28:02+09:00<span class="nt">&lt;/updated&gt;</span>
+</span><span class='line'><span class="nt">&lt;id&gt;</span>urn:uuid:d38e0e80-12ba-3236-b10f-256b78a08995<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;http://www.jma.go.jp/&quot;</span> <span class="na">rel=</span><span class="s">&quot;related&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;http://xml.kishou.go.jp/feed/other.xml&quot;</span> <span class="na">rel=</span><span class="s">&quot;self&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;rights&gt;</span>Published by Japan Meteorological Agency<span class="nt">&lt;/rights&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;entry&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>地方海上警報<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;id&gt;</span>urn:uuid:ac97395c-e388-33a9-922f-ab2a32e61bb1<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'><span class="nt">&lt;updated&gt;</span>2015-08-27T08:27:18Z<span class="nt">&lt;/updated&gt;</span>
+</span><span class='line'><span class="nt">&lt;author&gt;&lt;name&gt;</span>新潟地方気象台<span class="nt">&lt;/name&gt;&lt;/author&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;http://xml.kishou.go.jp/data/ac97395c-e388-33a9-922f-ab2a32e61bb1.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;content</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span><span class="nt">&gt;</span>【新潟海上気象】<span class="nt">&lt;/content&gt;</span>
+</span><span class='line'><span class="nt">&lt;/entry&gt;</span>
+</span><span class='line'><span class="nt">&lt;entry&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>地方海上警報<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;id&gt;</span>urn:uuid:b42a06f2-a6f0-351a-a8c4-3619a847f66d<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'><span class="nt">&lt;updated&gt;</span>2015-08-27T08:27:02Z<span class="nt">&lt;/updated&gt;</span>
+</span><span class='line'><span class="nt">&lt;author&gt;&lt;name&gt;</span>仙台管区気象台<span class="nt">&lt;/name&gt;&lt;/author&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;http://xml.kishou.go.jp/data/b42a06f2-a6f0-351a-a8c4-3619a847f66d.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;content</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span><span class="nt">&gt;</span>【仙台海上気象】<span class="nt">&lt;/content&gt;</span>
+</span><span class='line'><span class="nt">&lt;/entry&gt;</span>
+</span><span class='line'><span class="nt">&lt;entry&gt;</span>
+</span><span class='line'><span class="nt">&lt;title&gt;</span>紫外線観測データ<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;id&gt;</span>urn:uuid:f27e93c8-ff97-376d-b3b0-5307d07e4a24<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'><span class="nt">&lt;updated&gt;</span>2015-08-27T08:27:10Z<span class="nt">&lt;/updated&gt;</span>
+</span><span class='line'><span class="nt">&lt;author&gt;&lt;name&gt;</span>気象庁地球環境・海洋部<span class="nt">&lt;/name&gt;&lt;/author&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;http://xml.kishou.go.jp/data/f27e93c8-ff97-376d-b3b0-5307d07e4a24.xml&quot;</span> <span class="na">type=</span><span class="s">&quot;application/xml&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;content</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span><span class="nt">&gt;</span>【紫外線観測データ】<span class="nt">&lt;/content&gt;</span>
+</span><span class='line'><span class="nt">&lt;/entry&gt;</span>
+</span><span class='line'><span class="nt">&lt;/feed&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. 検証用 Ruby スクリプトの作成</h3>
+
+<ul>
+<li>以下のスクリプト内で指定する名前空間は、 &ldquo;text_nokogiri.xml&rdquo; 内で宣言されているものと同じ。</li>
+<li><code>entry</code> ノードをループし、各 <code>title</code> ノードのテキストを取得するだけの簡単な処理を 10,000 回繰り返す。</li>
+<li>今回は７種類（スクリプト内コメント参照）の解析方法で検証する。</li>
+<li>以下のスクリプト内の XPath での「Namespace 指定なし」とは、 Nokogiri での厳密な指定をしないという意味。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>test_nokogiri_xml.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
+</span><span class='line'><span class="c1"># coding: utf-8</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># Ruby script to verify the speed of xml parsing by Nokogiri.</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1">#++</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;benchmark&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;nokogiri&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">TestNokogiriXml</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>    <span class="vi">@xml</span>  <span class="o">=</span> <span class="no">Nokogiri</span><span class="o">::</span><span class="no">XML</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;test_nokogiri.xml&quot;</span><span class="p">))</span>
+</span><span class='line'>    <span class="vi">@secs</span> <span class="o">=</span> <span class="mi">10000</span>
+</span><span class='line'>    <span class="vi">@ns</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.w3.org/2005/Atom&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">exec</span>
+</span><span class='line'>    <span class="c1"># 1. css メソッド(CSS セレクタ)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-1: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 2. search メソッド(CSS セレクタ)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-2: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_2</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 3. search メソッド(XPath, Namespace 指定なし)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-3: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_3</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 4. / メソッド(CSS セレクタ)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-4: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_4</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 5. / メソッド(XPath, Namespace 指定なし)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-5: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_5</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 6. xpath メソッド(XPath, Namespace 指定なし)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-6: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_6</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 7. xpath メソッド(XPath, Namespace 指定あり)による解析</span>
+</span><span class='line'>    <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;CASE-7: %.4f secs.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">case_7</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">__method__</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">each</span><span class="p">{</span> <span class="o">|</span><span class="n">tr</span><span class="o">|</span> <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="si">#{</span><span class="n">tr</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@xml</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="nb">exit</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_2</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@xml</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_3</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@xml</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;//xmlns:entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;./xmlns:title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_4</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="p">(</span><span class="vi">@xml</span><span class="o">/</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span><span class="o">/</span><span class="s2">&quot;title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="c1"># 以下でも同様。しかし、ごく少し遅い。</span>
+</span><span class='line'>        <span class="c1">#(@xml/:entry).each do |e|</span>
+</span><span class='line'>        <span class="c1">#  title = (e/:title).first.text</span>
+</span><span class='line'>        <span class="c1">#end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_5</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="p">(</span><span class="vi">@xml</span><span class="o">/</span><span class="s2">&quot;//xmlns:entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span><span class="o">/</span><span class="s2">&quot;./xmlns:title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_6</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@xml</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&quot;//xmlns:entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&quot;xmlns:title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">case_7</span>
+</span><span class='line'>    <span class="k">return</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">realtime</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@secs</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="vi">@xml</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&quot;//a:entry&quot;</span><span class="p">,</span> <span class="vi">@ns</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s2">&quot;a:title&quot;</span><span class="p">,</span> <span class="vi">@ns</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">TestNokogiriXml</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">exec</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/1f737b67baba38213570" title="Gist - Ruby script to verify the speed of xml parsing by Nokogiri. ">Gist - Ruby script to verify the speed of xml parsing by Nokogiri. </a></li>
+</ul>
+
+
+<h3>3. Ruby スクリプトの実行</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./test.rb
+</span><span class='line'>CASE-1: 2.3432 secs.
+</span><span class='line'>CASE-2: 2.4821 secs.
+</span><span class='line'>CASE-3: 2.0588 secs.
+</span><span class='line'>CASE-4: 2.4949 secs.
+</span><span class='line'>CASE-5: 2.0672 secs.
+</span><span class='line'>CASE-6: 1.7549 secs.
+</span><span class='line'>CASE-7: 1.5359 secs.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. 検証結果について</h3>
+
+<ul>
+<li>何回か実行してみたが、全て同じような結果となった。</li>
+<li><code>xpath</code> メソッドは <code>css</code>, <code>search</code>, <code>/</code> メソッドより高速に解析することができる。</li>
+<li><code>xpath</code> メソッドで厳密に名前空間を指定した方が、指定せずに解析するより高速である。</li>
+<li>要は、XML を解析する際は <code>xpath</code> メソッドで名前空間を指定しましょう、ということ。</li>
+<li>今回の検証結果が全てという訳ではない（場合によっては「一概には言えない」ということがあるかもしれない）</li>
+</ul>
+
+
+<hr />
+
+<p>当方、以前は CSS セレクタを使用して XML 解析を行なっていた時期もありましたが、現在は XPath で厳密に名前空間を指定して解析を行うようにしています。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Postfix - メールキューの管理！]]></title>
@@ -5310,241 +5742,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 
 <p>GTID を使用したレプリケーションにはメリット・デメリットがあります。<br/>
 よく理解した上で運用すると、サーバ運用が効率化されるのではないでしょうか。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - 既存 InnoDB ファイルフォーマットを Antelope から Barracuda に変換！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/15/mariadb-innodb-file-format-changing-to-barracuda/"/>
-    <updated>2015-07-15T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/15/mariadb-innodb-file-format-changing-to-barracuda</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) の既存 InnoDB ファイルフォーマットを Antelope から Barracuda に変換する方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>当方は MariaDB 10.0.20 で動作確認を行なったが、別のバージョンや MySQL でも同様。</li>
-<li>InnoDB ストレージエンジンを使用する設定にしている。（<strong>必須</strong>）</li>
-<li>InnoDB データファイルをテーブルごとに作成するシステム変数 <code>innodb_file_per_table</code> を <code>1</code>（有効） にしている。（<strong>必須</strong>）</li>
-<li>不測の事態に備えてデータのバックアップ（ダンプ）をとって作業を行うこと。（<strong>重要</strong>）</li>
-</ul>
-
-
-<h3>1. InnoDB ファイルフォーマットについて</h3>
-
-<p>InnoDB ファイルフォーマットの設定は MariaDB(MySQL) システム変数 <code>innodb_file_format</code> で行うが、設定していなければ <code>Antelope</code> がデフォルトで設定される。</p>
-
-<ul>
-<li><strong>Antelope フォーマット</strong><br/>
-可変長カラム(VARBINARY, VARCHAR, BLOB, TEXT)の先頭768バイトを B-tree ノードのインデックスレコードに格納し、残りをオーバーフローページに格納する。
-
-<ul>
-<li>REDUNDANT &hellip; かつてからの冗長な行フォーマット。</li>
-<li>COMPACT &hellip; MySQL 5.0 で追加された行フォーマットで、UTF-8 文字列の最適化などにより REDUNDANT よりもデータサイズが小さくなる。</li>
-</ul>
-</li>
-<li><strong>Barracuda フォーマット</strong><br/>
-可変長カラム(VARBINARY, VARCHAR, BLOB, TEXT)の全てを外部のオーバーフローページに格納し、クラスタインデックスレコードにそのページへのポインタ(20B)のみを格納する。
-
-<ul>
-<li>COMPRESSED &hellip; データ圧縮（データサイズ縮小、 I/O 減少）を行う行フォーマット。</li>
-<li>DYNAMIC &hellip; データ圧縮は行わない行フォーマット。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>2. 現状の確認</h3>
-
-<p>まず、現状の InnoDB ファイルフォーマットを確認。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SHOW GLOBAL VARIABLES LIKE &#39;innodb_file_format&#39;;
-</span><span class='line'>+--------------------+----------+
-</span><span class='line'>| Variable_name      | Value    |
-</span><span class='line'>+--------------------+----------+
-</span><span class='line'>| innodb_file_format | Antelope |
-</span><span class='line'>+--------------------+----------+
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>テーブルの行フォーマットも確認。（以下の <code>Row_format</code>, <code>Create_options</code> の設定値）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SHOW TABLE STATUS LIKE &#39;table_name&#39;\G
-</span><span class='line'>*************************** 1. row ***************************
-</span><span class='line'>           Name: table_name
-</span><span class='line'>         Engine: InnoDB
-</span><span class='line'>        Version: 10
-</span><span class='line'>     Row_format: Compact
-</span><span class='line'>           Rows: 37070
-</span><span class='line'> Avg_row_length: 240
-</span><span class='line'>    Data_length: 8929280
-</span><span class='line'>Max_data_length: 0
-</span><span class='line'>   Index_length: 0
-</span><span class='line'>      Data_free: 4194304
-</span><span class='line'> Auto_increment: 18703
-</span><span class='line'>    Create_time: 2015-05-12 12:10:32
-</span><span class='line'>    Update_time: NULL
-</span><span class='line'>     Check_time: NULL
-</span><span class='line'>      Collation: utf8mb4_general_ci
-</span><span class='line'>       Checksum: NULL
-</span><span class='line'> Create_options:
-</span><span class='line'>        Comment:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. 設定の変更</h3>
-
-<p>設定ファイルの <code>mysqld</code> 部を以下のように編集後、 MariaDB(MySQL) サーバを再起動する。（設定ファイルのパスや名称は環境により異なる）<br/>
-（<code>innodb_file_format</code> を設定していない場合は、デフォルトの <code>Antelope</code> が適用される）</p>
-
-<figure class='code'><figcaption><span>/etc/mysql/conf.d/mariadb.cnf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>[mysqld]
-</span><span class='line'>innodb_file_per_table = 1
-</span><span class='line'>innodb_file_format = Barracuda
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>もしくは、MariaDB(MySQL) サーバに root でログイン後以下のように実行してもよい。（ただし、サーバを再起動すると設定が元に戻るので、この場合も設定ファイルを編集しておく必要はある）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SET GLOBAL innodb_file_format = Barracuda;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. 行フォーマットの変更</h3>
-
-<p>既存のテーブルの行フォーマット <code>ROW_FORMAT</code> を変更する。（以下は、 <code>DYNAMIC</code> を指定する例）<br/>
-（データ圧縮を行いたければ、 <code>COMPRESSED</code> を指定する）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; ALTER TABLE table_name ROW_FORMAT = DYNAMIC;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>DYNAMIC</code> でなく <code>COMPRESSED</code> に設定する場合は、 <code>KEY_BLOCK_SIZE</code> で圧縮後の InnoDB ページサイズを指定することも可能。（指定可能な値は <code>1</code>, <code>2</code>, <code>4</code>, <code>8</code>, <code>16</code>（デフォルト））</p>
-
-<p>また、当然ながらテーブル新規作成時も同様に指定できる。</p>
-
-<h3>5. 変更後の確認</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SHOW GLOBAL VARIABLES LIKE &#39;innodb_file_format&#39;;
-</span><span class='line'>+--------------------+-----------+
-</span><span class='line'>| Variable_name      | Value     |
-</span><span class='line'>+--------------------+-----------+
-</span><span class='line'>| innodb_file_format | Barracuda |
-</span><span class='line'>+--------------------+-----------+
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SHOW TABLE STATUS LIKE &#39;table_name&#39;\G
-</span><span class='line'>*************************** 1. row ***************************
-</span><span class='line'>           Name: table_name
-</span><span class='line'>         Engine: InnoDB
-</span><span class='line'>        Version: 10
-</span><span class='line'>     Row_format: Dynamic
-</span><span class='line'>           Rows: 35152
-</span><span class='line'> Avg_row_length: 254
-</span><span class='line'>    Data_length: 8929280
-</span><span class='line'>Max_data_length: 0
-</span><span class='line'>   Index_length: 0
-</span><span class='line'>      Data_free: 0
-</span><span class='line'> Auto_increment: 18703
-</span><span class='line'>    Create_time: 2015-06-04 13:40:09
-</span><span class='line'>    Update_time: NULL
-</span><span class='line'>     Check_time: NULL
-</span><span class='line'>      Collation: utf8mb4_general_ci
-</span><span class='line'>       Checksum: NULL
-</span><span class='line'> Create_options: row_format=DYNAMIC
-</span><span class='line'>        Comment:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. その他</h3>
-
-<p>上記 4 方法では、大きなテーブルの場合にメモリをふんだんに使用するせいでマシンが重くなるかもしれない。<br/>
-その場合は、以下のような手順で行フォーマットを変更することも可能。</p>
-
-<ol>
-<li>対象テーブルのダンプ（データのみ）を取得。（<code>mysqldump</code> コマンド実行時に <code>-t</code> オプションを付加）</li>
-<li>対象テーブルを truncate.</li>
-<li>上記 4 の方法で行フォーマットを変更。</li>
-<li>取得していたダンプ（データのみ）をリストア。</li>
-</ol>
-
-
-<h3>7. 参考サイト</h3>
-
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/en/innodb-row-format.html" title="MySQL :: MySQL 5.6 Reference Manual :: 14.8 InnoDB Row Storage and Row Formats">MySQL :: MySQL 5.6 Reference Manual :: 14.8 InnoDB Row Storage and Row Formats</a></li>
-</ul>
-
-
-<hr />
-
-<p>ファイルフォーマット、行フォーマットが変更されたことで、パフォーマンスも良くなることでしょう。（当方、検証は行なっていないが、体感的に若干パフォーマンスが良くなったような気がする）</p>
 
 <p>以上。</p>
 ]]></content>
