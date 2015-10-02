@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-22T00:37:03+09:00</updated>
+  <updated>2015-10-03T00:36:23+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -140,7 +140,6 @@ class TestNokogiriXml
         @xml.css("entry").each do |e|
           title = e.css("title").first.text
         end
-        exit
       end
     end
   rescue =&gt; e

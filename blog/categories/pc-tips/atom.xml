@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-22T00:37:03+09:00</updated>
+  <updated>2015-10-03T00:36:23+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,134 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - マルチコア CPU で高速圧縮！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/03/linux-archive-speed-up-on-multi-core-cpu/"/>
+    <updated>2015-10-03T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/03/linux-archive-speed-up-on-multi-core-cpu</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>通常、 Linux の <code>tar</code> コマンドでファイル等の圧縮を行う場合、 CPU コアを１つしか使用しません。</p>
+
+<p>２つ以上 CPU コアを搭載していることの多い昨今、 CPU コアを全て使用して圧縮を行うと時間の節約になります。</p>
+
+<p>今回、圧縮・解凍をマルチコアで並列に処理してくれる <code>pigz</code> を使用してみました。</p>
+
+<!--more-->
+
+
+<h3>0.前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Intel Core2Duo CPU E8500 (3.16GHz x 2) での作業を想定。</li>
+</ul>
+
+
+<h3>1. pigz のインストール</h3>
+
+<p>Apt パッケージを使用する（但し、最新版ではない可能性が高い）</p>
+
+<pre><code class="text">$ sudo apt-get install pigz
+</code></pre>
+
+<p>もしくは、最新版アーカイブを取得＆展開後、 <code>make</code> して適当な位置に配置してもよい。（但し、当方の環境ではビルドエラーになった）</p>
+
+<pre><code class="text">$ wget http://zlib.net/pigz/pigz-2.3.3.tar.gz
+$ tar zxvf pigz-2.3.3.tar.gz
+$ cd pigz-2.3.3
+$ make
+$ sudo mv ./pigz /usr/local/bin/pigz
+$ sudo mv ./unpigz /usr/local/bin/unpigz
+</code></pre>
+
+<h3>2. pigz インストールの確認</h3>
+
+<pre><code class="text">$ pigz --version
+pigz 2.3
+</code></pre>
+
+<h3>3. 圧縮</h3>
+
+<p>比較のため、まず <code>tar</code> コマンドで圧縮してみる。<br/>
+（圧縮対象は、サブディレクトリ：2層、ファイル数：121,653個、容量：約100MB の &ldquo;test&rdquo; という名称のディレクトリ）</p>
+
+<pre><code class="text">$ time tar zcf test.tar.gz test
+
+real    0m4.711s
+user    0m4.402s
+sys     0m0.938s
+</code></pre>
+
+<p>次に、 pigz 圧縮してみる。<br/>
+ディレクトリを再帰的に圧縮できる <code>-r</code> もあるが、これはファイルそれぞれが圧縮されてしまうので、 <code>tar</code> コマンドで一旦ファイルをまとめてから <code>pigz</code> コマンドで圧縮する。また、デフォルトでは全てのプロセッサを使用するが、同時実行スレッド数を指定する <code>-p</code> オプション等もある。</p>
+
+<pre><code class="text">$ time tar c test | pigz &gt; test.tar.gz
+
+real    0m2.987s
+user    0m4.624s
+sys     0m0.682s
+</code></pre>
+
+<p>ちなみに、単純に１つのファイルを圧縮するだけなら <code>pigz -k test.tar.gz</code> でよい（<code>-k</code> は元のファイルを残すオプション）。</p>
+
+<p>さらに、 <code>pigz</code> コマンドを <code>tar</code> コマンドのオプションで使用して圧縮してみる。</p>
+
+<pre><code class="text">$ time tar cf test.tar.gz test --use-compress-program=pigz
+
+real    0m2.970s
+user    0m4.542s
+sys     0m0.632s
+</code></pre>
+
+<h3>4. 解凍</h3>
+
+<p>まず、単純に <code>tar</code> コマンドで圧縮したファイルを解凍してみる。</p>
+
+<pre><code class="text">$ time tar zxf test.tar.gz
+
+real    0m18.441s
+user    0m1.813s
+sys     0m3.022s
+</code></pre>
+
+<p>次に、 <code>pigz</code> で圧縮したファイルを <code>tar</code> コマンドで解凍してみる。</p>
+
+<pre><code class="text">$ time tar xf test.tar.gz --use-compress-program=pigz
+
+real    0m17.526s
+user    0m1.193s
+sys     0m3.310s
+</code></pre>
+
+<h3>5. 所感</h3>
+
+<ul>
+<li>コア数 2 の非力な環境でも約 2/3 の速度で圧縮することができたのだが、場合によっては pigz を使用する方が遅くなることもある。</li>
+<li>今回、解凍についてはそれほど差が認められなかった。</li>
+<li>当然、環境によって結果は異なるだろう。</li>
+</ul>
+
+
+<p>従って、当方は明らかに圧縮の高速化が見込める場合のみ pigz を使用することとした。</p>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://zlib.net/pigz/" title="pigz - Parallel gzip">pigz - Parallel gzip</a></li>
+</ul>
+
+
+<hr />
+
+<p>非力な環境では、それほど積極的に使用したいと思うようなコマンドでもありませんでした。</p>
+
+<p>しかし、コアを複数使用して圧縮・解凍ができる、といういことを認識できたことに若干の喜びを感じた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - XML に XSLT を適用して HTML 生成！]]></title>
@@ -659,205 +787,6 @@ bind-key -n WheelUpPane if-shell -Ft= "#{?pane_in_mode,1,#{alternate_on}}" "send
 <hr />
 
 <p>これで、使用したかった tmux プラグインが使用できるでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux Mint - Gnuplot でグラフ描画！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/30/linux-mint-installation-gnuplot/"/>
-    <updated>2015-07-30T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/30/linux-mint-installation-gnuplot</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Linux Mint で、2次元や3次元のグラフを描画するためのコマンドラインツール Gnuplot を使用してみました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.1(64bit) での作業を想定。</li>
-<li>Apt パッケージを使用して 4.6.4 をインストールする。</li>
-</ul>
-
-
-<h3>1. Gnuplot のインストール</h3>
-
-<pre><code class="text">$ sudo apt-get install gnuplot-x11
-</code></pre>
-
-<p>注意するのは <code>gnuplot</code> でなく <code>gnuplot-x11</code> をインストールするということ。<br/>
-（こうしないと、 Gnuplot を起動してコマンドを入力してもグラフウィンドウが開かない）</p>
-
-<p>ちなみに、最新バージョンの Gnuplot をインストールしたければ、以下のようにしてインストールすればよい。（但し、環境によってはスムーズ（or 綺麗）にインストールできないかもしれない）</p>
-
-<pre><code class="text">$ wget http://sourceforge.net/projects/gnuplot/files/gnuplot/5.0.1/gnuplot-5.0.1.tar.gz
-$ tar zxvf gnuplot-5.0.1.tar.gz
-$ cd gnuplot-5.0.1
-$ ./configure
-$ make
-$ sudo make install
-</code></pre>
-
-<h3>2. インストールの確認</h3>
-
-<pre><code class="text">$ gnuplot --version
-gnuplot 4.6 patchlevel 4
-</code></pre>
-
-<p>もしくは、以下のように Gnuplot を起動してみる。</p>
-
-<pre><code class="text">$ gnuplot
-
-        G N U P L O T
-        Version 4.6 patchlevel 4    last modified 2013-10-02
-        Build System: Linux x86_64
-
-        Copyright (C) 1986-1993, 1998, 2004, 2007-2013
-        Thomas Williams, Colin Kelley and many others
-
-        gnuplot home:     http://www.gnuplot.info
-        faq, bugs, etc:   type "help FAQ"
-        immediate help:   type "help"  (plot window: hit 'h')
-
-Terminal type set to 'wxt'
-gnuplot&gt; 
-</code></pre>
-
-<p>使用するターミナルが <code>wxt</code> or <code>x11</code> であることを確認する。<code>unknown</code> だと、コマンドを入力してもグラフウィンドウが立ち上がらない。<br/>
-<code>unknown</code> なら <code>set terminal wxt</code> or <code>set terminal x11</code> で設定する。</p>
-
-<h3>3. 動作確認</h3>
-
-<h3>3-1. 動作確認・その１</h3>
-
-<p>Gnuplot を起動後、テストコマンドを入力してグラフを描画してみる。</p>
-
-<pre><code class="text">gnuplot&gt; test
-</code></pre>
-
-<p><img src="/images/2015/07/30/GNUPLOT_1.png" title="GNUPLOT_1" alt="GNUPLOT_1" /></p>
-
-<h3>3-2. 動作確認・その２</h3>
-
-<p>Gnuplot を起動後、コマンドを順次入力してグラフを描画してみる。</p>
-
-<pre><code class="text">gnuplot&gt; plot sin(x)
-gnuplot&gt; replot cos(x)
-</code></pre>
-
-<p><img src="/images/2015/07/30/GNUPLOT_2.png" title="GNUPLOT_2" alt="GNUPLOT_2" /></p>
-
-<pre><code class="text">gnuplot&gt; splot x**2 + y**2
-</code></pre>
-
-<p><img src="/images/2015/07/30/GNUPLOT_3.png" title="GNUPLOT_3" alt="GNUPLOT_3" /></p>
-
-<h4>3-3. 動作確認・その３</h4>
-
-<p>予め作成しておいたスクリプトを呼び出してグラフを描画してみる。</p>
-
-<p>まず、例として以下のようなスクリプトを作成する。</p>
-
-<pre><code class="text gnuplot_sample.plt">set dummy u,v
-set key bmargin center horizontal Right noreverse enhanced autotitles nobox
-set parametric
-set view 50, 30, 1, 1
-set isosamples 50, 20
-set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
-set ticslevel 0
-set title "Interlocking Tori" 
-set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
-set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
-splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, \
-    1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
-</code></pre>
-
-<p>そして、Gnuplot を起動後に呼び出してみる。</p>
-
-<pre><code class="text">gnuplot&gt; load "gnuplot_sample.plt"
-</code></pre>
-
-<p>もしくは、以下のように呼び出してみる。（<code>call</code> は <code>load</code> と異なり引数も渡せる）</p>
-
-<pre><code class="text">gnuplot&gt; call "gnuplot_sample.plt"
-</code></pre>
-
-<p><img src="/images/2015/07/30/GNUPLOT_4.png" title="GNUPLOT_4" alt="GNUPLOT_4" /></p>
-
-<p>ちなみに、３次元グラフの場合はマウスで視点を移動できる。</p>
-
-<h4>3-4. 動作確認・その４</h4>
-
-<p>前項の Gnuplot スクリプトをそのままシェルスクリプト(Bash)に記述し、それを実行してグラフを描画してみる。</p>
-
-<pre><code class="bash gnuplot_sample.sh">#!/bin/bash
-
-gnuplot -p &lt;&lt; EOS
-set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 500, 350
-set output 'gnuplot_sample.png'
-set dummy u,v
-set key bmargin center horizontal Right noreverse enhanced autotitles nobox
-set parametric
-set view 50, 30, 1, 1
-set isosamples 50, 20
-set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
-set ticslevel 0
-set title "Interlocking Tori"
-set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
-set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
-splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, \
-    1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
-EOS
-</code></pre>
-
-<p>この &ldquo;gnuplot_sample.sh&rdquo; は以下のようにしてもよい。</p>
-
-<pre><code class="bash">#!/usr/bin/gnuplot -p
-
-set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 500, 350
-set output 'gnuplot_sample.png'
-set dummy u,v
-set key bmargin center horizontal Right noreverse enhanced autotitles nobox
-set parametric
-set view 50, 30, 1, 1
-set isosamples 50, 20
-set hidden3d back offset 1 trianglepattern 3 undefined 1 altdiagonal bentover
-set ticslevel 0
-set title "Interlocking Tori"
-set urange [ -3.14159 : 3.14159 ] noreverse nowriteback
-set vrange [ -3.14159 : 3.14159 ] noreverse nowriteback
-splot cos(u)+.5*cos(u)*cos(v),sin(u)+.5*sin(u)*cos(v),.5*sin(v) with lines, \
-    1+cos(u)+.5*cos(u)*cos(v),.5*sin(v),sin(u)+.5*sin(u)*cos(v) with lines
-</code></pre>
-
-<p>実行権限を付与して、実行。</p>
-
-<pre><code class="text">$ chmod +x gnuplot_sample.sh
-$ ./gnuplot_sample.sh
-</code></pre>
-
-<p>以下のような PNG 画像が作成される。</p>
-
-<p><img src="/images/2015/07/30/GNUPLOT_SAMPLE.png" title="GNUPLOT_SAMPLE" alt="GNUPLOT_SAMPLE" /></p>
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://www.gnuplot.info/" title="gnuplot homepage">gnuplot homepage</a></li>
-</ul>
-
-
-<hr />
-
-<p>高機能な上に手軽に使用できるのが良いところでしょうか。</p>
-
-<p>今回紹介した使用例はごく一部の機能に限定していましたが、使いこなすうちになれるでしょう。</p>
-
-<p>また、統計解析用プログラミン言語 R でグラフを描画する場合と使い勝手等を比較してみたいとも思っています。</p>
 
 <p>以上。</p>
 ]]></content>

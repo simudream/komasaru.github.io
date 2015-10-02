@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-09-22T00:37:03+09:00</updated>
+  <updated>2015-10-03T00:36:23+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,664 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - マルチコア CPU で高速圧縮！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/03/linux-archive-speed-up-on-multi-core-cpu/"/>
+    <updated>2015-10-03T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/03/linux-archive-speed-up-on-multi-core-cpu</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>通常、 Linux の <code>tar</code> コマンドでファイル等の圧縮を行う場合、 CPU コアを１つしか使用しません。</p>
+
+<p>２つ以上 CPU コアを搭載していることの多い昨今、 CPU コアを全て使用して圧縮を行うと時間の節約になります。</p>
+
+<p>今回、圧縮・解凍をマルチコアで並列に処理してくれる <code>pigz</code> を使用してみました。</p>
+
+<!--more-->
+
+
+<h3>0.前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>Intel Core2Duo CPU E8500 (3.16GHz x 2) での作業を想定。</li>
+</ul>
+
+
+<h3>1. pigz のインストール</h3>
+
+<p>Apt パッケージを使用する（但し、最新版ではない可能性が高い）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install pigz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>もしくは、最新版アーカイブを取得＆展開後、 <code>make</code> して適当な位置に配置してもよい。（但し、当方の環境ではビルドエラーになった）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ wget http://zlib.net/pigz/pigz-2.3.3.tar.gz
+</span><span class='line'>$ tar zxvf pigz-2.3.3.tar.gz
+</span><span class='line'>$ cd pigz-2.3.3
+</span><span class='line'>$ make
+</span><span class='line'>$ sudo mv ./pigz /usr/local/bin/pigz
+</span><span class='line'>$ sudo mv ./unpigz /usr/local/bin/unpigz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. pigz インストールの確認</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ pigz --version
+</span><span class='line'>pigz 2.3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. 圧縮</h3>
+
+<p>比較のため、まず <code>tar</code> コマンドで圧縮してみる。<br/>
+（圧縮対象は、サブディレクトリ：2層、ファイル数：121,653個、容量：約100MB の &ldquo;test&rdquo; という名称のディレクトリ）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar zcf test.tar.gz test
+</span><span class='line'>
+</span><span class='line'>real    0m4.711s
+</span><span class='line'>user    0m4.402s
+</span><span class='line'>sys     0m0.938s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に、 pigz 圧縮してみる。<br/>
+ディレクトリを再帰的に圧縮できる <code>-r</code> もあるが、これはファイルそれぞれが圧縮されてしまうので、 <code>tar</code> コマンドで一旦ファイルをまとめてから <code>pigz</code> コマンドで圧縮する。また、デフォルトでは全てのプロセッサを使用するが、同時実行スレッド数を指定する <code>-p</code> オプション等もある。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar c test | pigz &gt; test.tar.gz
+</span><span class='line'>
+</span><span class='line'>real    0m2.987s
+</span><span class='line'>user    0m4.624s
+</span><span class='line'>sys     0m0.682s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに、単純に１つのファイルを圧縮するだけなら <code>pigz -k test.tar.gz</code> でよい（<code>-k</code> は元のファイルを残すオプション）。</p>
+
+<p>さらに、 <code>pigz</code> コマンドを <code>tar</code> コマンドのオプションで使用して圧縮してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar cf test.tar.gz test --use-compress-program=pigz
+</span><span class='line'>
+</span><span class='line'>real    0m2.970s
+</span><span class='line'>user    0m4.542s
+</span><span class='line'>sys     0m0.632s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. 解凍</h3>
+
+<p>まず、単純に <code>tar</code> コマンドで圧縮したファイルを解凍してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar zxf test.tar.gz
+</span><span class='line'>
+</span><span class='line'>real    0m18.441s
+</span><span class='line'>user    0m1.813s
+</span><span class='line'>sys     0m3.022s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に、 <code>pigz</code> で圧縮したファイルを <code>tar</code> コマンドで解凍してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar xf test.tar.gz --use-compress-program=pigz
+</span><span class='line'>
+</span><span class='line'>real    0m17.526s
+</span><span class='line'>user    0m1.193s
+</span><span class='line'>sys     0m3.310s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 所感</h3>
+
+<ul>
+<li>コア数 2 の非力な環境でも約 2/3 の速度で圧縮することができたのだが、場合によっては pigz を使用する方が遅くなることもある。</li>
+<li>今回、解凍についてはそれほど差が認められなかった。</li>
+<li>当然、環境によって結果は異なるだろう。</li>
+</ul>
+
+
+<p>従って、当方は明らかに圧縮の高速化が見込める場合のみ pigz を使用することとした。</p>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://zlib.net/pigz/" title="pigz - Parallel gzip">pigz - Parallel gzip</a></li>
+</ul>
+
+
+<hr />
+
+<p>非力な環境では、それほど積極的に使用したいと思うようなコマンドでもありませんでした。</p>
+
+<p>しかし、コアを複数使用して圧縮・解凍ができる、といういことを認識できたことに若干の喜びを感じた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2015年09月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/01/blog-access/"/>
+    <updated>2015-10-01T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/01/blog-access</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>10月になりましたので、先月09月分の当ブログアクセス状況を公開します。</p>
+
+<!--more-->
+
+
+<h4>1. アクセスをOS別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td class="blog-access-pv">20,655</td>
+    <td class="blog-access-rate">60.0838</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td class="blog-access-pv">11,463</td>
+    <td class="blog-access-rate">33.3450</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td class="blog-access-pv">1,063</td>
+    <td class="blog-access-rate">3.0922</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td class="blog-access-pv">887</td>
+    <td class="blog-access-rate">2.5802</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">198</td>
+    <td class="blog-access-rate">0.5760</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td class="blog-access-pv">43</td>
+    <td class="blog-access-rate">0.1251</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td class="blog-access-pv">26</td>
+    <td class="blog-access-rate">0.0756</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td class="blog-access-pv">17</td>
+    <td class="blog-access-rate">0.0495</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td class="blog-access-pv">12</td>
+    <td class="blog-access-rate">0.0349</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0233</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0058</td>
+  </tr>
+  <tr>
+    <td>Debian GNU/Linux</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0058</td>
+  </tr>
+  <tr>
+    <td>CentOS Linux</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0029</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">34,377</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td>X</td>
+    <td class="blog-access-pv">20,650</td>
+    <td class="blog-access-rate">60.0692</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>NT</td>
+    <td class="blog-access-pv">9,477</td>
+    <td class="blog-access-rate">27.5679</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,039</td>
+    <td class="blog-access-rate">3.0224</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7</td>
+    <td class="blog-access-pv">951</td>
+    <td class="blog-access-rate">2.7664</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">869</td>
+    <td class="blog-access-rate">2.5279</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7 64 bit</td>
+    <td class="blog-access-pv">598</td>
+    <td class="blog-access-rate">1.7395</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>XP</td>
+    <td class="blog-access-pv">255</td>
+    <td class="blog-access-rate">0.7418</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">197</td>
+    <td class="blog-access-rate">0.5731</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista</td>
+    <td class="blog-access-pv">138</td>
+    <td class="blog-access-rate">0.4014</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">41</td>
+    <td class="blog-access-rate">0.1193</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">17</td>
+    <td class="blog-access-rate">0.0495</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td></td>
+    <td class="blog-access-pv">14</td>
+    <td class="blog-access-rate">0.0407</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Server 2003</td>
+    <td class="blog-access-pv">14</td>
+    <td class="blog-access-rate">0.0407</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>64 bit</td>
+    <td class="blog-access-pv">13</td>
+    <td class="blog-access-rate">0.0378</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>2.3.4</td>
+    <td class="blog-access-pv">12</td>
+    <td class="blog-access-rate">0.0349</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td></td>
+    <td class="blog-access-pv">11</td>
+    <td class="blog-access-rate">0.0320</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>8 64 bit</td>
+    <td class="blog-access-pv">11</td>
+    <td class="blog-access-rate">0.0320</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>2000</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0233</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista 64 bit</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0233</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>4.0.1</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0175</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">34,377</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>3. アクセスをブラウザ別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td class="blog-access-pv">20,022</td>
+    <td class="blog-access-rate">58.2424</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td class="blog-access-pv">7,979</td>
+    <td class="blog-access-rate">23.2103</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td class="blog-access-pv">3,470</td>
+    <td class="blog-access-rate">10.0940</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td class="blog-access-pv">2,233</td>
+    <td class="blog-access-rate">6.4956</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td class="blog-access-pv">322</td>
+    <td class="blog-access-rate">0.9367</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td class="blog-access-pv">226</td>
+    <td class="blog-access-rate">0.6574</td>
+  </tr>
+  <tr>
+    <td>Netscape Navigator</td>
+    <td class="blog-access-pv">45</td>
+    <td class="blog-access-rate">0.1309</td>
+  </tr>
+  <tr>
+    <td>Chrome</td>
+    <td class="blog-access-pv">24</td>
+    <td class="blog-access-rate">0.0698</td>
+  </tr>
+  <tr>
+    <td>Konqueror</td>
+    <td class="blog-access-pv">21</td>
+    <td class="blog-access-rate">0.0611</td>
+  </tr>
+  <tr>
+    <td>iPhone</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0204</td>
+  </tr>
+  <tr>
+    <td>Epiphany</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0204</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0175</td>
+  </tr>
+  <tr>
+    <td>Mozilla SeaMonkey</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0175</td>
+  </tr>
+  <tr>
+    <td>PHP</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0116</td>
+  </tr>
+  <tr>
+    <td>Chromium</td>
+    <td class="blog-access-pv">3</td>
+    <td class="blog-access-rate">0.0087</td>
+  </tr>
+  <tr>
+    <td>iPod</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0029</td>
+  </tr>
+  <tr>
+    <td>SRWare Iron</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0029</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">34,377</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.36</td>
+    <td class="blog-access-pv">15,193</td>
+    <td class="blog-access-rate">44.1952</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>40.0</td>
+    <td class="blog-access-pv">5,757</td>
+    <td class="blog-access-rate">16.7467</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td>11.0</td>
+    <td class="blog-access-pv">3,465</td>
+    <td class="blog-access-rate">10.0794</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>9537.53</td>
+    <td class="blog-access-pv">2,367</td>
+    <td class="blog-access-rate">6.8854</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>8.0</td>
+    <td class="blog-access-pv">898</td>
+    <td class="blog-access-rate">2.6122</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.1.4</td>
+    <td class="blog-access-pv">860</td>
+    <td class="blog-access-rate">2.5017</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.8.9</td>
+    <td class="blog-access-pv">705</td>
+    <td class="blog-access-rate">2.0508</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>38.0</td>
+    <td class="blog-access-pv">686</td>
+    <td class="blog-access-rate">1.9955</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>41.0</td>
+    <td class="blog-access-pv">665</td>
+    <td class="blog-access-rate">1.9344</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>9.0</td>
+    <td class="blog-access-pv">585</td>
+    <td class="blog-access-rate">1.7017</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>10.0</td>
+    <td class="blog-access-pv">465</td>
+    <td class="blog-access-rate">1.3526</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>7.0</td>
+    <td class="blog-access-pv">282</td>
+    <td class="blog-access-rate">0.8203</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>39.0</td>
+    <td class="blog-access-pv">230</td>
+    <td class="blog-access-rate">0.6691</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td>9.80</td>
+    <td class="blog-access-pv">218</td>
+    <td class="blog-access-rate">0.6341</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>534.30</td>
+    <td class="blog-access-pv">188</td>
+    <td class="blog-access-rate">0.5469</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td>38.2.1</td>
+    <td class="blog-access-pv">182</td>
+    <td class="blog-access-rate">0.5294</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.1</td>
+    <td class="blog-access-pv">165</td>
+    <td class="blog-access-rate">0.4800</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.85.17</td>
+    <td class="blog-access-pv">111</td>
+    <td class="blog-access-rate">0.3229</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>42.0</td>
+    <td class="blog-access-pv">89</td>
+    <td class="blog-access-rate">0.2589</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.7.12</td>
+    <td class="blog-access-pv">88</td>
+    <td class="blog-access-rate">0.2560</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">34,377</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - Nokogiri による XML 解析の速度検証！]]></title>
@@ -260,7 +918,6 @@
 <span class='line-number'>133</span>
 <span class='line-number'>134</span>
 <span class='line-number'>135</span>
-<span class='line-number'>136</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
 </span><span class='line'><span class="c1"># coding: utf-8</span>
 </span><span class='line'><span class="c1">#</span>
@@ -312,7 +969,6 @@
 </span><span class='line'>        <span class="vi">@xml</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span>
 </span><span class='line'>          <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">text</span>
 </span><span class='line'>        <span class="k">end</span>
-</span><span class='line'>        <span class="nb">exit</span>
 </span><span class='line'>      <span class="k">end</span>
 </span><span class='line'>    <span class="k">end</span>
 </span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
@@ -5315,433 +5971,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>当方の場合、意外と利用頻度が高いので、単純な処理とは言えど結構重宝しています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux & Ruby - メール受信時の処理！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/21/linux-ruby-process-when-mail-received/"/>
-    <updated>2015-07-21T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/21/linux-ruby-process-when-mail-received</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Linux 上に構築したメールサーバで、メール受信をトリガにして処理を実行する手順等についての記録です。<br/>
-処理は Ruby で行うことを想定しています。（多くのサイト等では Perl や PHP での処理がよく紹介されてます）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8.1 での作業を想定。</li>
-<li>Ruby 2.2.2-95 での作業を想定。</li>
-<li>SMTP サーバ Postfix 構築済み。
-
-<ul>
-<li>参考「<a href="http://komasaru.github.io/2015/06/12/debian-8-postfix-installation/" title="Debian 8 (Jessie) - SMTP サーバ Postfix 構築！">Debian 8 (Jessie) - SMTP サーバ Postfix 構築！</a>」</li>
-</ul>
-</li>
-<li>POP/IMAP サーバ Dovecot 構築済み。
-
-<ul>
-<li>参考「<a href="http://komasaru.github.io/2015/06/13/debian-8-dovecot-installation/" title="Debian 8 (Jessie) - POP/IMAP サーバ Dovecot 構築！">Debian 8 (Jessie) - POP/IMAP サーバ Dovecot 構築！</a>」</li>
-</ul>
-</li>
-<li>Postfix の aliases （メール転送機能）と連携をとる方法を想定。</li>
-<li>処理対象のユーザ・グループは &ldquo;test&rdquo;, &ldquo;test&rdquo; を想定。</li>
-</ul>
-
-
-<h3>1. Ruby スクリプトの作成</h3>
-
-<p>以下のような Ruby スクリプトを作成する。<br/>
-（紹介用に受信したメールを解析してテキストファイルに保存するだけのプログラム）</p>
-
-<figure class='code'><figcaption><span>get_mail.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
-</span><span class='line'><span class="c1"># coding: utf-8</span>
-</span><span class='line'><span class="c1">#-------------------------------------------------</span>
-</span><span class='line'><span class="c1"># Ruby script to get a mail via alias of postfix.</span>
-</span><span class='line'><span class="c1">#-------------------------------------------------</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;mail&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">GetMail</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span>
-</span><span class='line'>    <span class="n">dt</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m%d_%H%M%S%L&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@out_file</span> <span class="o">=</span> <span class="s2">&quot;/path/to/</span><span class="si">#{</span><span class="n">dt</span><span class="si">}</span><span class="s2">.txt&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">execute</span>
-</span><span class='line'>    <span class="nb">open</span><span class="p">(</span><span class="vi">@out_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">mail</span> <span class="o">=</span> <span class="no">Mail</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vg">$stdin</span><span class="o">.</span><span class="n">read</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;From:    </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">from</span><span class="o">.</span><span class="n">first</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;To:      </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">first</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Date:    </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Subject: </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Body:</span><span class="se">\n</span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decoded</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">,</span> <span class="n">mail</span><span class="o">.</span><span class="n">charset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
-</span><span class='line'>    <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>    <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">trace</span><span class="o">|</span> <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="si">#{</span><span class="n">trace</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
-</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">exit</span> <span class="k">unless</span> <span class="vg">$0</span> <span class="o">==</span> <span class="bp">__FILE__</span>
-</span><span class='line'><span class="no">GetMail</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">execute</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/0cbfe02794efa4c1a09e" title="Gist - Ruby script to get a mail via alias of postfix.">Gist - Ruby script to get a mail via alias of postfix.</a></li>
-</ul>
-
-
-<h3>2. Ruby スクリプトの配置</h3>
-
-<p>作成した Ruby スクリプトをサーバ上の適当な位置に配置する。<br/>
-（今回、当方は処理を行いたいユーザの home ディレクトリ &ldquo;/home/test&rdquo; 直下に配置した（所有者 &ldquo;test&rdquo; で））</p>
-
-<p>配置後、実行権限を付与する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># chmod +x get_mail.rb
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. メール保存用ディレクトリの作成</h3>
-
-<p>今回の処理で使用するディレクトリをサーバ上の適当な位置に作成する。<br/>
-（今回、当方は処理を行いたいユーザの home ディレクトリ &ldquo;/home/test&rdquo; 配下に &ldquo;get_mail&rdquo; ディレクトリを作成した（所有者 &ldquo;test&rdquo; で））</p>
-
-<h3>4. Postfix の aliases 設定</h3>
-
-<figure class='code'><figcaption><span>/etc/aliases</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">test</span>:  :include:/home/test/alias_inc
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、処理を行う他に転送も行いたい場合は、以下のようにカンマで区切ればよい。</p>
-
-<figure class='code'><figcaption><span>/etc/aliases</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">test</span>:  hoge, :include:/home/test/alias_inc
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. include ファイル（実行コマンド）の作成</h3>
-
-<figure class='code'><figcaption><span>/home/test/alias_inc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&quot;| /home/test/get_mail.rb&quot;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、このファイルの所有者が &ldquo;test&rdquo; でなければ &ldquo;test&rdquo; にする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># chown test. /home/test/alias_inc
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. Postfix 設定ファイル main.cf の編集</h3>
-
-<p>&ldquo;/etc/aliases&rdquo; ファイル内で <code>:include:</code> を使用する際は、Postfix の設定ファイル &ldquo;main.cf&rdquo; に以下のように追記しなければならない。<br/>
-（Postfix は、デフォルトでは <code>:include:</code> での &ldquo;|command&rdquo; への配送を認めていないため）</p>
-
-<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">allow_mail_to_commands</span> <span class="o">=</span> <span class="nb">alias</span>,forward,include
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. Postfix 設定のリロード</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl reload postfix
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>8. aliases の設定反映</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># newaliases
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>9. 動作確認</h3>
-
-<p>実際に test ユーザ宛にメールを送信してみて、指定のディレクトリ配下に保存されること、内容が適切であることを確認する。</p>
-
-<h3>10. その他</h3>
-
-<p>上記の 4, 5, 6 でエイリアスを別ファイルに分けてインクルードしている。<br/>
-これは、"/etc/aliases" 内で直接コマンドを指定すると作成されるファイルの所有者・グループが &ldquo;nobody:nogroup&rdquo; になってしまうのを防ぐためである。</p>
-
-<h3>11. 参考サイト</h3>
-
-<ul>
-<li><a href="http://www.postfix-jp.info/trans-2.3/jhtml/aliases.5.html" title="Postfix manual - aliases(5)">Postfix manual - aliases(5)</a></li>
-</ul>
-
-
-<hr />
-
-<p>当方は、Linux サーバに Twitter ツイート専用のユーザを作成し、そのユーザ宛に配送されたメール本文をツイートするように応用しています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB - レプリケーション設定（GTID 使用）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/18/mariadb-replication-by-gtid/"/>
-    <updated>2015-07-18T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/18/mariadb-replication-by-gtid</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>従来からあるレプリケーションとは異なる GTID(Global Transaction ID) を使用したレプリケーション設定の記録です。</p>
-
-<p>MySQL とは実装自体が異なるため、MySQL と若干設定の異なる部分もあります。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Master 側、Slave 側ともに MariaDB 10.0.20 を想定。</li>
-<li>Master 側は既存のサーバ、Slave 側は今回新規に構築したばかりのサーバを想定。<br/>
-（Slave 側も既存のサーバの場合は、 &ldquo;ibdata1&rdquo;, &ldquo;ib_logfile0&rdquo;, &ldquo;ib_logfile1&rdquo; ファイルを削除(DISCARD)する作業が必要かも）</li>
-<li>レプリケーション用のユーザは &ldquo;repl&rdquo; を想定。</li>
-<li>ストレージエンジンは InnoDB を想定。</li>
-<li>GTID(Global Transaction ID) がどんなものであるかは、ここでは説明しない。</li>
-<li>以下の説明で出現する設定ファイルは、環境によりパスやファイル名が異なるかもしれないので、適宜置き換えること。</li>
-</ul>
-
-
-<h3>1. [Master] 設定ファイルの編集</h3>
-
-<p>MariaDB 設定ファイル &ldquo;/etc/mysql/conf.d/mariadb.cnf&rdquo; を編集する。</p>
-
-<figure class='code'><figcaption><span>/etc/mysql/conf.d/mariadb.cnf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>server-id <span class="o">=</span> <span class="m">1</span>           <span class="c"># &lt;= ネットワーク内で重複しないよに設定</span>
-</span><span class='line'>log-bin <span class="o">=</span> mariadb-bin   <span class="c"># &lt;= バイナリログを設定（名前は任意）</span>
-</span><span class='line'><span class="nb">bind</span>-address <span class="o">=</span> 0.0.0.0  <span class="c"># &lt;= 変更（Slave 側からもアクセスできるようにする）</span>
-</span><span class='line'>                        <span class="c">#    もしくは、`::`</span>
-</span><span class='line'>                        <span class="c">#    もしくは、コメントアウト</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. [Master] MariaDB サーバの再起動</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart mysql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. [Master] レプリケーション用ユーザの作成</h3>
-
-<p>MariaDB サーバに root でログインし、レプリケーション用（Slave 側から Master 側にログインするための）ユーザを作成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; GRANT REPLICATION SLAVE ON *.* TO repl@&#39;Slave 側のホスト名 or IP アドレス&#39; IDENTIFIED BY &#39;repl のパスワード&#39;;
-</span><span class='line'>&gt; FLUSH PRIVILEGES;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. [Master] DB ダンプファイルの出力</h3>
-
-<p>全データベースのダンプファイルを出力する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysqldump -u root -p --all-databases --single-transaction --master-data=2 &gt; master.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>--master-data=2</code> は、ダンプファイルに <code>-- CHANGE MASTER TO MASTER_LOG_FILE=...</code> を出力するオプション。</p>
-
-<h3>5. [Master] GTID の取得</h3>
-
-<p>前項で取得したダンプファイルの <code>-- CHANGE MASTER TO MASTER_LOG_FILE=...</code> を確認し、バイナリログファイル名とポジションを控える。（ダンプファイルのサイズが大きい場合は、テキストエディタで開くのに注意！）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># head -n 30 master.sql | grep MASTER_LOG_FILE
-</span><span class='line'>-- CHANGE MASTER TO MASTER_LOG_FILE=&#39;mariadb-bin.000009&#39;, MASTER_LOG_POS=330;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、MariaDB サーバに root でログイン後に以下を実行して GTID ポジションを取得し、控えておく。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>+--------------------------------------------+
-</span><span class='line'>| BINLOG_GTID_POS(&#39;mariadb-bin.000009&#39;, 330) |
-</span><span class='line'>+--------------------------------------------+
-</span><span class='line'>| 0-2-10521                                  |
-</span><span class='line'>+--------------------------------------------+
-</span><span class='line'>1 row in set (0.03 sec)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. [Slave] DB ダンプファイルのリストア</h3>
-
-<p>Master 側で出力した DB ダンプファイルを何かしらの方法で Slave 側へ移動し、リストアする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u root -p &lt; master.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. [Slave] 設定ファイルの編集</h3>
-
-<p>MariaDB 設定ファイル &ldquo;/etc/mysql/conf.d/mariadb.cnf&rdquo; を編集する。</p>
-
-<figure class='code'><figcaption><span>/etc/mysql/conf.d/mariadb.cnf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>server-id = 2          # &lt;= ネットワーク内で重複しないように設定
-</span><span class='line'>log-bin = mariadb-bin  # &lt;= バイナリログを設定（名前は任意）
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>8. [Slave] MariaDB サーバの再起動</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart mysql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>9. [Slave] レプリケーションの設定</h3>
-
-<p>MariaDB サーバに root でログインし、以下のように実行する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="o">&gt;</span> <span class="k">SET</span> <span class="k">GLOBAL</span> <span class="n">gtid_slave_pos</span> <span class="o">=</span> <span class="s1">&#39;0-2-10521&#39;</span><span class="p">;</span>  <span class="o">#</span> <span class="o">&lt;=</span> <span class="mi">3</span> <span class="err">で取得した</span> <span class="n">GTID</span> <span class="err">を指定</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">32</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">CHANGE</span> <span class="n">MASTER</span> <span class="k">TO</span>
-</span><span class='line'>    <span class="o">-&gt;</span> <span class="n">master_host</span> <span class="o">=</span> <span class="s1">&#39;Master 側のホスト名 or IPアドレス&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="o">-&gt;</span> <span class="n">master_user</span> <span class="o">=</span> <span class="s1">&#39;repl&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="o">-&gt;</span> <span class="n">master_password</span> <span class="o">=</span> <span class="s1">&#39;repl のパスワード&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="o">-&gt;</span> <span class="n">master_use_gtid</span> <span class="o">=</span> <span class="n">slave_pos</span><span class="p">;</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">23</span> <span class="n">sec</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>10. [Slave] レプリケーションの開始</h3>
-
-<p>続けて、以下のように実行する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; START SLAVE;
-</span><span class='line'>Query OK, 0 rows affected (0.18 sec)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、レプリケーションを停止するには、以下のように実行する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; STOP SLAVE;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ステータスは以下で確認できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SHOW SLAVE STATUS\G
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>11. 動作確認</h3>
-
-<p>Master 側への INSERT, UPDATE, DELETE 等が Slave 側にも反映されることを確認する。</p>
-
-<h3>12. レプリケーションの完全停止設定</h3>
-
-<p>レプリケーションの完全に停止（一時的な停止でなく、機能そのものを削除）するには、 Slave 側で以下を実行後に MariaDB サーバを再起動すればよい。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; STOP SLAVE;
-</span><span class='line'>&gt; RESET SLAVE ALL;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>（<code>RESET SLAVE</code> だと HOST, USER, PASSWORD はリセットされない）</p>
-
-<p>ちなみに、MySQL の古いバージョンだと、以下を実行後に MariaDB サーバを再起動すればよい。（当方、未確認）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; STOP SLAVE;
-</span><span class='line'>&gt; RESET SLAVE;
-</span><span class='line'>&gt; CHANGE MASTER TO MASTER_HOST=&#39;&#39;;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>また、このレプリケーション停止設定をしなければ、 <code>STOP SLAVE</code> をしても MariaDB サーバ再起動時に Slave が開始されてしまう。</p>
-
-<h3>13. 参考サイト</h3>
-
-<ul>
-<li><a href="https://mariadb.com/kb/en/mariadb/standard-replication/" title="Standard Replication - MariaDB Knowledge Base">Standard Replication - MariaDB Knowledge Base</a></li>
-</ul>
-
-
-<hr />
-
-<p>GTID を使用したレプリケーションにはメリット・デメリットがあります。<br/>
-よく理解した上で運用すると、サーバ運用が効率化されるのではないでしょうか。</p>
 
 <p>以上。</p>
 ]]></content>
