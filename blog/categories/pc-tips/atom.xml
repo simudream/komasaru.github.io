@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-10-03T00:36:23+09:00</updated>
+  <updated>2015-10-09T00:11:16+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,121 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - メモリキャッシュのクリア！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/09/linux-release-memory-caches/"/>
+    <updated>2015-10-09T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/09/linux-release-memory-caches</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux でメモリキャッシュをクリアすることについての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Kernel 2.6.16 以降であること。</li>
+<li>当方は Linux Mint 17.2(64bit), 搭載メモリ:4GB の環境で動作確認。</li>
+</ul>
+
+
+<h3>1. キャッシュの削除方法</h3>
+
+<p>以下のコマンドは、 root になって実行するか <code>sudo</code> を使用して実行する。</p>
+
+<h4>1-1. ページキャッシュの解放</h4>
+
+<pre><code class="text"># sysctl -w vm.drop_caches=1
+</code></pre>
+
+<p>もしくは、</p>
+
+<pre><code class="text"># echo 1 &gt; /proc/sys/vm/drop_caches
+</code></pre>
+
+<h4>1-2. Slab キャッシュの解放</h4>
+
+<p>（Slab キャッシュとは、ディレクトリやファイルのメタデータ情報を格納する dentry や inode のこと）</p>
+
+<pre><code class="text"># sysctl -w vm.drop_caches=2
+</code></pre>
+
+<p>もしくは、</p>
+
+<pre><code class="text"># echo 2 &gt; /proc/sys/vm/drop_caches
+</code></pre>
+
+<h4>1-3. ページキャッシュと Slab キャッシュの解放</h4>
+
+<pre><code class="text"># sysctl -w vm.drop_caches=3
+</code></pre>
+
+<p>もしくは、</p>
+
+<pre><code class="text"># echo 3 &gt; /proc/sys/vm/drop_caches
+</code></pre>
+
+<h4>1-4. 初期状態について</h4>
+
+<p>あらゆる Web サイト等で「初期状態に戻すには <code>0</code> を設定する」旨の紹介がされている。<br/>
+しかし、 RedHat 系では機能するが Debian 系では機能しない。（<code>sysctl</code> も <code>echo</code> も）</p>
+
+<p><code>vm.drop_caches</code> についての説明は <code>man proc</code> で確認できるが、 Debian 系も RedHat 系も <code>0</code> についての説明がされていない。</p>
+
+<p>従って、初期状態には戻す必要はないという結論に至った。（あくまで、個人の判断）<br/>
+（とは言え、 <code>cat /proc/sys/vm/drop_caches</code> の値が、マシンを再起動するまでずっと <code>0</code> 以外の状態でいることに疑問を感じる）</p>
+
+<h3>2. 作業の実際</h3>
+
+<p>実際の作業手順は以下のようになる。</p>
+
+<ol>
+<li>キャッシュクリア前のメモリ状態を確認。</li>
+<li>バッファの内容をディスクに書き込む。</li>
+<li>キャッシュをクリア。</li>
+<li>キャッシュクリア後のメモリ状態を確認。</li>
+</ol>
+
+
+<p>以下は、ページキャッシュと Slab キャッシュを解放する例。</p>
+
+<pre><code class="text"># free
+             total       used       free     shared    buffers     cached
+Mem:       4047488    3887116     160372     155764     247452    1104336
+-/+ buffers/cache:    2535328    1512160
+Swap:      8000508     557132    7443376
+
+# sync
+
+# sysctl -w vm.drop_caches=3
+vm.drop_caches = 3
+
+# free
+             total       used       free     shared    buffers     cached
+Mem:       4047488    2415508    1631980     155764       9856     324056
+-/+ buffers/cache:    2081596    1965892
+Swap:      8000508     557124    7443384
+</code></pre>
+
+<p>物理メモリの空き容量(Mem - free の値）が増えたことを確認する。</p>
+
+<h3>3. 参考サイト</h3>
+
+<ul>
+<li><a href="http://linuxjm.osdn.jp/html/LDP_man-pages/man5/proc.5.html" title="Man page of PROC">Man page of PROC</a></li>
+</ul>
+
+
+<hr />
+
+<p>物理メモリの空き容量の減りが気になったら試してみるといいでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - マルチコア CPU で高速圧縮！]]></title>
@@ -671,122 +786,6 @@ set-option -g @resurrect-strategy-vim &lsquo;session&rsquo;</p>
 <hr />
 
 <p>これで、マシンを起動する度に Window, Pane, Session 等を手動で復元する手間が省けます。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux Mint - tmux 2.1 のインストール（by ソースビルド）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/03/linux-mint-tmux-installation-by-src/"/>
-    <updated>2015-08-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/03/linux-mint-tmux-installation-by-src</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>ターミナルマルチプレクサ（仮想端末マネージャ）である tmux(Terminal MUltipleXer) の最新版を Linux Mint へインストールする方法についての記録です。</p>
-
-<p>これまで Apt パッケージでインストールした tmux 1.8 を使用していました。<br/>
-しかし、使用したいプラグインが tmux 1.9 未満ではインストールできないため、最新版の 2.1 をソースビルドでインストールすることとしました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>Git でソースを取得するため Git がインストール済みであること。</li>
-<li>当記事執筆時点で最新の tmux 2.1 をインストールする。</li>
-<li>Apt でインストールしていた tmux 1.8 はアンインストールしておく。</li>
-</ul>
-
-
-<h3>1. libevent-dev のインストール</h3>
-
-<p>libevent-dev 2.x のパッケージが必要なので未インストールならインストールする。<br/>
-（以前は Apt では 2.x はインストールできずソースをビルドしてインストールする必要があったが、今は Apt で 2.x がインストール可能）</p>
-
-<pre><code class="text">$ sudo apt-get install libevent-dev
-</code></pre>
-
-<h3>2. tmux のインストール</h3>
-
-<p>Git でソースを <code>clone</code> して、 <code>configure</code>, <code>make</code>, <code>make install</code> する。<br/>
-（但し、<code>configure</code> 実行前に <code>autogen.sh</code> の実行が必要）</p>
-
-<pre><code class="text">$ git clone https://github.com/tmux/tmux.git
-$ cd tmux
-$ autogen.sh
-$ ./configure
-$ make
-$ sudo make install
-</code></pre>
-
-<h3>3. tmux インストールの確認</h3>
-
-<p>端末から <code>tmux</code> と入力・実行して tmux が起動すればよい。<br/>
-また、tmux コンソールが起動後にバージョンも確認してみる。</p>
-
-<pre><code class="text">$ tmux -V
-tmux 2.1
-</code></pre>
-
-<p>もしも、 tmux 起動時に以下のようなメッセージが出力されて起動しない場合は、</p>
-
-<pre><code class="text">protocol version mismatch (client 8, server 7)
-</code></pre>
-
-<p>古いバージョンの tmux サーバのセッションが残っているため。<br/>
-その場合は、以下のように起動中の tmux プロセスを kill すればよい。（厳密に PID をチェックして <code>kill</code> してもよい）</p>
-
-<pre><code class="text">$ killall tmux
-</code></pre>
-
-<h3>4. その他</h3>
-
-<p>その他、各種設定を行う。</p>
-
-<p>当ブログ過去記事も参照。</p>
-
-<ul>
-<li><a href="http://www.mk-mode.com/octopress/tags/tmux/" title="Tag:tmux - mk-mode BLOG">Tag:tmux - mk-mode BLOG</a></li>
-</ul>
-
-
-<p>一つだけ注意するとするなら、マウスモードの指定方法。<br/>
-古いバージョンでは &ldquo;~/.tmux.conf&rdquo; で以下のように指定していたが、</p>
-
-<p><code>bash ~/.tmux.conf
-set-option -g mode-mouse on
-set-option -g mouse-select-pane on
-set-option -g mouse-select-window on
-set-option -g mouse-resize-pane on
-</code></p>
-
-<p>今のバージョンでは以下のように１行のみ指定すればよい。</p>
-
-<p><code>bash ~/.tmux.conf
-set-option -g mouse on
-</code></p>
-
-<p>但し、これだけではマウスでのスクロールができないので、以下のような記述も追加する。</p>
-
-<p><code>bash ~/.tmux.conf
-bind-key -n WheelUpPane if-shell -Ft= "#{?pane_in_mode,1,#{alternate_on}}" "send-keys -M" "copy-mode"
-</code></p>
-
-<p>（<code>set-option</code> = <code>set</code>, <code>bind-key</code> = <code>bind</code>, <code>send-keys</code> = <code>send</code> とエイリアスされているので、置き換えてもよい）</p>
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://tmux.github.io/" title="tmux">tmux</a></li>
-</ul>
-
-
-<hr />
-
-<p>これで、使用したかった tmux プラグインが使用できるでしょう。</p>
 
 <p>以上。</p>
 ]]></content>
