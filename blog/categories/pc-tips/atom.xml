@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-10-09T00:11:16+09:00</updated>
+  <updated>2015-10-14T00:31:52+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,70 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - apt-get update で GPG 公開鍵エラー！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error/"/>
+    <updated>2015-10-14T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux Mint で、いつしか Apt パッケージの一覧を更新しようとすると GPG 公開鍵エラーが発生するようになりました。</p>
+
+<p>以下、現象・原因・対策についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) を想定。</li>
+</ul>
+
+
+<h3>1. 現象</h3>
+
+<p>Apt パッケージ一覧をアップデートした際に以下のようなエラーが発生する。（<code>W</code> なので分類としては「警告」でしょうが）<br/>
+（以下は QGIS というパッケージの部分で発生した例で、実際のメッセージは１行）</p>
+
+<pre><code class="text">$ sudo apt-get update
+
+====&lt; 途中省略 &gt;====
+
+W: GPG エラー: http://qgis.org trusty InRelease: 
+公開鍵を利用できないため、以下の署名は検証できませんでした: NO_PUBKEY 3FF5FFCAD71472C4
+
+====&lt; 以下省略 &gt;====
+</code></pre>
+
+<p>当然ながら、アップデートマネージャでも同じエラーが発生する。</p>
+
+<h3>2. 原因</h3>
+
+<p>メッセージのとおり、GPG 署名の検証に必要な公開鍵が存在しないため。</p>
+
+<h3>3. 対策</h3>
+
+<p>キーサーバに問い合わせればよい。（<code>--recv-keys</code> の値は、エラーメッセージ中 <code>NO_PUBKEY</code> の後ろの値）</p>
+
+<pre><code class="text">$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FF5FFCAD71472C4
+Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.Wv6W1dQY2n --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv-keys 3FF5FFCAD71472C4
+gpg: 鍵D71472C4をhkpからサーバーkeyserver.ubuntu.comに要求
+gpg: 鍵D71472C4: 公開鍵“QGIS Archive Automatic Signing Key (2015) &lt;qgis-developer@lists.osgeo.org&gt;”を読み込みました
+gpg: 処理数の合計: 1
+gpg:               読込み: 1  (RSA: 1)
+</code></pre>
+
+<p>再度 <code>apt-get update</code> でエラーが発生しないことを確認する。</p>
+
+<hr />
+
+<p>稀に遭遇するエラーなので備忘録として残しておいた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - メモリキャッシュのクリア！]]></title>
@@ -709,83 +773,6 @@ $ groonga -n ~/groonga-db/test.db
 <p>慣れないうちは Groonga を単体で扱うのは若干面倒に感じます。</p>
 
 <p>当方は、Rroonga（Groonga の機能を Ruby から利用するためのライブラリ）や Mroonga（Groonga をベースとした MySQL のストレージエンジン）を使用することも考えています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[tmux - Window, Pane, Session 自動保存プラグイン！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/06/tmux-automatic-session-preservation/"/>
-    <updated>2015-08-06T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/06/tmux-automatic-session-preservation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>ターミナルマルチプレクサ（仮想端末マネージャ） tmux の Window, Pane, Session 等を保存（自動保存）するプラグインをインストールする方法についての記録です。</p>
-
-<p>Window, Pane, Session 等を保存するプラグインは tmux-resurrect で、それを自動化するプラグインは tmux-continuum です。<br/>
-また、プラグインの管理には tpm(Tmux Plugin Manager)を使用します。<br/>
-（以前は tmux-resurrect を自動化するプラグインは tmux-resurrect-auto でしたが、現在は tmux-continuum に改名されています。tmux-resurrect-auto も使用できますが）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>tmux 2.1 での作業を想定。</li>
-<li>Git がインストール済みであること。</li>
-<li>tpm(Tmux Plugin Manager) で tmux プラグインを管理することを想定。<br/>
-（tpm を使用せず手動でインストールすることも可能）</li>
-</ul>
-
-
-<h3>1. tpm のインストール</h3>
-
-<p>tmux プラグインの管理に tpm(Tmux Plugin Manager) を使用するのでインストールする。</p>
-
-<pre><code class="text">$ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-</code></pre>
-
-<h3>2. tmux.conf の編集</h3>
-
-<p>&ldquo;~/.tmux.conf&rdquo; に以下の記述を追記する。</p>
-
-<p>``` bash ~/.tmux.conf
-set-option -g @tpm_plugins &lsquo;  \
-  tmux-plugins/tpm            \
-  tmux-plugins/tmux-resurrect \
-  tmux-plugins/tmux-continuum \
-&rsquo;
-set-option -g @continuum-save-interval &lsquo;60&rsquo;
-set-option -g @resurrect-processes &lsquo;ssh -p 9999 hoge&rsquo;
-set-option -g @resurrect-strategy-vim &lsquo;session&rsquo;</p>
-
-<p>run-shell &lsquo;~/.tmux/plugins/tpm/tpm&rsquo;
-<code>``
-*</code>set-option<code>は</code>set<code>で代用可。
-*</code>set-option -g @continuum-save-interval<code>でセッションを自動保存する間隔を指定する。  
-   非指定時のデフォルトは</code>15<code>分。</code>0<code>で自動保存の無効化。
-*</code>set-option -g @resurrect-processes<code>で保存したいセッションを指定する。  
-  （上記の例は "hoge" ホストへポート 9999 で SSH 接続したセッションを保存する例）
-*</code>set-option -g @resurrect-strategy-vim &lsquo;session&rsquo;` で Vim のセッションを保存する。</p>
-
-<h3>3. プラグインのインストール</h3>
-
-<p>tmux 上で Prefix 押下後に <code>I</code> を押下する。（<code>i</code> ではなく <code>I</code>）</p>
-
-<h3>4. 動作確認</h3>
-
-<p>Prefix + CTRL-s で Window, Pane, Session 等の状態を保存、Prefix + CTLR-r でWindow, Pane, Session 等の状態を復元できるので、「保存→マシン再行動→復元」と試してみる。</p>
-
-<p>tmux-continuum はデフォルトでは 60 分間隔で状態を保存するようなので、その辺りの動作も確認しておく。</p>
-
-<p>ちなみに、状態は &ldquo;~/.tmux/resurrect&rdquo; ディレクトリ配下にテキストファイルで保存される。</p>
-
-<hr />
-
-<p>これで、マシンを起動する度に Window, Pane, Session 等を手動で復元する手間が省けます。</p>
 
 <p>以上。</p>
 ]]></content>

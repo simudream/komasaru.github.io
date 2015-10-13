@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-10-09T00:11:16+09:00</updated>
+  <updated>2015-10-14T00:31:52+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,86 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - apt-get update で GPG 公開鍵エラー！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error/"/>
+    <updated>2015-10-14T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux Mint で、いつしか Apt パッケージの一覧を更新しようとすると GPG 公開鍵エラーが発生するようになりました。</p>
+
+<p>以下、現象・原因・対策についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) を想定。</li>
+</ul>
+
+
+<h3>1. 現象</h3>
+
+<p>Apt パッケージ一覧をアップデートした際に以下のようなエラーが発生する。（<code>W</code> なので分類としては「警告」でしょうが）<br/>
+（以下は QGIS というパッケージの部分で発生した例で、実際のメッセージは１行）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get update
+</span><span class='line'>
+</span><span class='line'>====&lt; 途中省略 &gt;====
+</span><span class='line'>
+</span><span class='line'>W: GPG エラー: http://qgis.org trusty InRelease:
+</span><span class='line'>公開鍵を利用できないため、以下の署名は検証できませんでした: NO_PUBKEY 3FF5FFCAD71472C4
+</span><span class='line'>
+</span><span class='line'>====&lt; 以下省略 &gt;====
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然ながら、アップデートマネージャでも同じエラーが発生する。</p>
+
+<h3>2. 原因</h3>
+
+<p>メッセージのとおり、GPG 署名の検証に必要な公開鍵が存在しないため。</p>
+
+<h3>3. 対策</h3>
+
+<p>キーサーバに問い合わせればよい。（<code>--recv-keys</code> の値は、エラーメッセージ中 <code>NO_PUBKEY</code> の後ろの値）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FF5FFCAD71472C4
+</span><span class='line'>Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.Wv6W1dQY2n --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv-keys 3FF5FFCAD71472C4
+</span><span class='line'>gpg: 鍵D71472C4をhkpからサーバーkeyserver.ubuntu.comに要求
+</span><span class='line'>gpg: 鍵D71472C4: 公開鍵“QGIS Archive Automatic Signing Key (2015) &lt;qgis-developer@lists.osgeo.org&gt;”を読み込みました
+</span><span class='line'>gpg: 処理数の合計: 1
+</span><span class='line'>gpg:               読込み: 1  (RSA: 1)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再度 <code>apt-get update</code> でエラーが発生しないことを確認する。</p>
+
+<hr />
+
+<p>稀に遭遇するエラーなので備忘録として残しておいた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - メモリキャッシュのクリア！]]></title>
@@ -5853,120 +5933,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <p>今回紹介した使用例はごく一部の機能に限定していましたが、使いこなすうちになれるでしょう。</p>
 
 <p>また、統計解析用プログラミン言語 R でグラフを描画する場合と使い勝手等を比較してみたいとも思っています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[AMaViS - エラー(on Debian 8 Jessie)！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/27/debian-8-amavis-error/"/>
-    <updated>2015-07-27T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/27/debian-8-amavis-error</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Debian GNU/Linux 8 Jessie で Postfix と AMaViS を連携してメールのウイルスチェックを行うようにしているのですが、メールログにエラーメッセージが出力されていたので、調査して対策を施しました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8.1 Jessie での作業を想定。</li>
-<li>アンチウィルスソフト ClamAV を「<a href="http://komasaru.github.io/2015/05/29/debian-8-anti-virus-installation/" title="Debian 8 (Jessie) - アンチウィルスソフト導入！">Debian 8 (Jessie) - アンチウィルスソフト導入！</a>」の方法でインストールしていることを想定。</li>
-<li>SMTP サーバ Postfix を「<a href="http://komasaru.github.io/2015/06/12/debian-8-postfix-installation/" title="Debian 8 (Jessie) - SMTP サーバ Postfix 構築！">Debian 8 (Jessie) - SMTP サーバ Postfix 構築！</a>」の方法でインストールしていることを想定。</li>
-<li>Postfix と ClamAV の連携を「<a href="http://komasaru.github.io/2015/06/15/debian-8-postfix-cooperation-with-clamav/" title="Debian 8 (Jessie) - Postfix と ClamAV の連携！">Debian 8 (Jessie) - Postfix と ClamAV の連携！</a>」の方法で行なっていることを想定。</li>
-</ul>
-
-
-<h3>1. 現象</h3>
-
-<p>メールログに以下のようなエラーメッセージが出力される。</p>
-
-<figure class='code'><figcaption><span>/var/log/mail.log</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)run_av (ClamAV-clamd) FAILED - unexpected , output=&quot;/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR\n&quot;
-</span><span class='line'>Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)ClamAV-clamd av-scanner FAILED: CODE(0x29c09b0) unexpected , output=&quot;/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR\n&quot; at (eval 96) line 905.
-</span><span class='line'>Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)WARN: all primary virus scanners failed, considering backups
-</span><span class='line'>Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)run_av (ClamAV-clamscan) FAILED - unexpected exit 2, output=&quot;WARNING: Ignoring unsupported option --recursive (-r)\nWARNING: Ignoring unsupported option --tempdir\n/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR&quot;
-</span><span class='line'>Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)ClamAV-clamscan av-scanner FAILED: /usr/bin/clamdscan unexpected exit 2, output=&quot;WARNING: Ignoring unsupported option --recursive (-r)\nWARNING: Ignoring unsupported option --tempdir\n/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR&quot; at (eval 96) line 905.
-</span><span class='line'>Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!!)AV: ALL VIRUS SCANNERS FAILED
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. 原因</h3>
-
-<p>エラーメッセージに出ているとおり、権限がおかしい。</p>
-
-<h3>3. 対策</h3>
-
-<p>3-1 の方法はよくある方法だが、今回注目したかったのは 3-2 の方法。</p>
-
-<h4>3-1. ユーザ ID, グループ ID の確認</h4>
-
-<p><code>id</code> コマンドで clamav, amavis のユーザ ID, グループ ID を確認する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># id clamav
-</span><span class='line'>uid=108(clamav) gid=113(clamav) groups=113(clamav),123(amavis)
-</span><span class='line'>
-</span><span class='line'># id amavis
-</span><span class='line'>uid=115(amavis) gid=123(amavis) groups=123(amavis)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>clamav ユーザが amavis グループに属していれば、それでよい。</p>
-
-<p>clamav ユーザが amavis グループに属していなければ、以下のようにして amavis グループに追加する。（<code>-a</code> オプションは重要。このオプションを付け忘れると clamav ユーザが既に属していたグループから外れてしまう）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># usermod -a -G amavis clamav
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>clamav ユーザを amavis グループに追加した場合は、 clamav-daemon, amavis, postfix を再起動する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart clamav-daemon
-</span><span class='line'># systemctl restart amavis
-</span><span class='line'># systemctl restart postfix
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>3-2. clamd.conf の編集</h4>
-
-<p>前項 3-1 の方法でもエラーが解消しない場合は、 ClamAV Daemon 設定ファイル &ldquo;clamd.conf&rdquo; の <code>AllowSupplementaryGroups</code> を確認してみる。</p>
-
-<p><code>false</code> になっていた場合は <code>true</code>（グループ権限も移譲）に変更する。</p>
-
-<figure class='code'><figcaption><span>/etc/clamav/clamd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>AllowSupplementaryGroups <span class="nb">true</span>  <span class="c"># &lt;= false を true に変更</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、 clamav-daemon, amavis, postfix を再起動する。（起動順に注意すべき旨を紹介しているサイトもあるが、起動順が影響しているか否かは当方未確認）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl restart clamav-daemon
-</span><span class='line'># systemctl restart amavis
-</span><span class='line'># systemctl restart postfix
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
 
 <p>以上。</p>
 ]]></content>
