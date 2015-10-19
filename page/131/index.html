@@ -122,6 +122,176 @@
       
   <header class="page-header">
     
+      <h1 class="entry-title"><a href="/blog/2009/03/12/12002005/">* Windows – ﾃﾞｨｽｸｸﾘｰﾝｱｯﾌﾟ自動化！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-03-12T00:20:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pc-tips/'>pc_tips</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/windows/'>Windows</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>また、Ｗｉｎｄｏｗｓのバッチ処理についてです。</p>
+
+<p>バッチ処理って意外とコンピュータの基本だと思ってるのは、、、私だけ！？
+「人間が苦労してやる複雑な処理でも、自動で黙々と決められたとおりにこなす」んで。。。</p>
+
+<p>Ｗｉｎｄｏｗｓを使っていると、知らないうちにブラウザキャッシュや何かの一時ファイルなどがどんどん貯まってディスク領域を圧迫して、動作がなんとなく（？）重くなるような感じになることがあると思います。</p>
+
+<p>そんな時、たいていＷｉｎｄｏｗｓ標準のシステムツールの「 ディスククリーンアップ 」を使うと思います。</p>
+
+<p>でも、それは自分が思いついたときに手動で起動させないといけないので、よく忘れてしまいます。</p>
+
+<p>そこで、僕はそれを自動化させています。</p>
+
+<p>簡単に言うと、
+「 ディスククリーンアップ 」をコマンドラインで実行させるためのバッチファイルを作成して、それをタスクスケジューラで定期的に実行させるように設定する。
+です。</p>
+
+<h3>作業手順</h3>
+
+<p>※動作確認は「 WindowsXP Pro SP3 」でしてます。</p>
+
+<h4>１．「ディスククリーンアップ」の設定（１）</h4>
+
+<p>まず、コマンドプロンプトから以下のように入力。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:\>CLEANMGR /sageset:1　　← 0 ～65535 の任意の数字</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の例は、全てのドライブのディスククリーンアップの設定を「 1 」番に保存するという意味。
+もし、複数ドライブがあってＣドライブだけの設定をしたければ、以下のようにすればよい。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:\>CLEANMGR /d c: /sageset:1</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>２．「ディスククリーンアップ」の設定（２）</h4>
+
+<p>「 ディスククリーンアップの設定 」ダイアログが表示されるので、削除させたい項目にチェックをつけ、[ OK ]ボタン押下する。</p>
+
+<p><a href="/images/2009/03/win_cleanup_01.jpg"><img src="/images/2009/03/win_cleanup_01-150x140.jpg" alt="win_cleanup_01" title="win_cleanup_01" width="150" height="140" class="alignnone size-thumbnail wp-image-1414" /></a></p>
+
+<p>※当方は「 ゴミ箱 」は自分で内容を確認しながら整理したいので、「 ゴミ箱 」以外全てにチェックをいれています。</p>
+
+<h4>３．バッチファイルの作成</h4>
+
+<p>「 ディスククリーンアップ 」実行用のバッチファイルを作成する。
+以下は当方の例。
+[ CleanUp.bat ]</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@TITLE ■ CleanUp...
+</span><span class='line'>
+</span><span class='line'>@REM **** 環境変数設定
+</span><span class='line'>@SET LOGDATE=%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%
+</span><span class='line'>@SET LOGTIME=%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%
+</span><span class='line'>@SET LOGFILE=D:\03_Bat\Log\CleanUp.log
+</span><span class='line'>
+</span><span class='line'>@ECHO ■■■■ CleanUp START [ %LOGDATE% %LOGTIME% ] ■■■■ >> %LOGFILE%
+</span><span class='line'>
+</span><span class='line'>@CLEANMGR /sagerun:1　　← sageset で設定したクリーンアップの実行
+</span><span class='line'>
+</span><span class='line'>@SET LOGDATE=%DATE:~0,4%%DATE:~5,2%%DATE:~8,2%
+</span><span class='line'>@SET LOGTIME=%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%
+</span><span class='line'>@SET SAVEFILE=D:\03_Bat\Log\CleanUp.log
+</span><span class='line'>
+</span><span class='line'>@ECHO ■■■■ CleanUp E N D [ %LOGDATE% %LOGTIME% ] ■■■■ >> %LOGFILE%
+</span><span class='line'>
+</span><span class='line'>@exit</span></code></pre></td></tr></table></div></figure>
+
+
+<p>処理開始、処理終了の日時をログ出力するようにもしています。</p>
+
+<p>※コマンドプロンプトから直接以下のようにしても実行できます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>C:\>CLEANMGR /sagerun:1</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>４．タスクスケジューラ登録</h4>
+
+<p>システムツールの「 タスク 」で上記のバッチファイルをスケジュール登録する。
+※タスクスケジューラを使用しなくても、上記のバッチファイルを起動させればすぐに設定通りのディスククリーンアップが実行できるので、それだけでも便利かも。</p>
+
+<h4>５．動作確認</h4>
+
+<p>タスクスケジューラで設定した日時になると、ＤＯＳ窓とディスククリーンアップのダイアログが表示され処理が実行される。</p>
+
+<p><a href="/images/2009/03/win_cleanup_02.jpg"><img src="/images/2009/03/win_cleanup_02-150x49.jpg" alt="win_cleanup_02" title="win_cleanup_02" width="150" height="49" class="alignnone size-thumbnail wp-image-1415" /></a></p>
+
+<p>今回の場合、ログも出力させているので、ログも確認してみる。</p>
+
+<hr />
+
+<p>設定は以上です。</p>
+
+<p>ちなみに当方の場合、月に１回実行するようにしています。</p>
+
+<p>Ｗｉｎｄｏｗｓ標準の機能で意外と便利なことができるんで、まあまあ満足してるとこ！</p>
+
+<p>じゃ、また。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
       <h1 class="entry-title"><a href="/blog/2009/03/11/11002021/">* Windowsサービスをバッチファイルで！</a></h1>
     
     
@@ -1276,403 +1446,6 @@ ASUSTeKの
 
     </article>
   
-  
-    <article>
-      
-  <header class="page-header">
-    
-      <h1 class="entry-title"><a href="/blog/2009/03/05/05002048/">* Apacheのﾊﾟﾌｫｰﾏﾝｽﾍﾞﾝﾁﾏｰｸ！</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-03-05T00:20:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
-        [ 
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/ブログ/'>ブログ</a>
-  
-</span>
-
- ]
-        [ 
-
-<span class="tags">
-  
-    <a class='tag' href='/blog/tags/apache/'>Apache</a>
-  
-</span>
-
- ]
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>こんばんは。
-最近、ＷｏｒｄＰｒｅｓｓの動きが非常に重いので、チューニングしようと考えてます。
-（Ａｐａｃｈｅ、ＰＨＰ、ＭｙＳＱＬの最適化等が必要かと）</p>
-
-<p>でもその前に、現状を把握しないと話にならないので、Ａｐａｃｈｅのパフォーマンスを測定できるベンチマークテストツール「 ａｂ（Apache Bench） 」をＦｅｄｏｒａサーバで試してみました。（Ａｐａｃｈｅに標準で付属しているツールです）</p>
-
-<p>以下が記録です。</p>
-
-<p>本当はこの「 ａｂ 」を実行するマシンはＷｅｂサーバではなく別のマシンがよいらしい。
-（接続に要する時間の測定ができないから）</p>
-
-<p>なので、ローカルマシン（Ｗｉｎｄｏｗｓマシン）のＡｐａｃｈｅから実行してみました。</p>
-
-<p>※リクエストの数が多いと</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Benchmarking 192.168.11.3 (be patient)...apr_poll: The timeout specified has expired (70007)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>みたいなタイムアウトエラーがでてしまうんで、リクエストを少なめにしてテストしました。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>C:\Program Files\Apache Software Foundation\Apache2.2\bin&>ab -n 5 -c 2 http://192.168.11.3/wordpress/index.php
-</span><span class='line'>This is ApacheBench, Version 2.3 &lt;$Revision: 655654 $>
-</span><span class='line'>Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-</span><span class='line'>Licensed to The Apache Software Foundation, http://www.apache.org/
-</span><span class='line'>
-</span><span class='line'>Benchmarking 192.168.11.3 (be patient).....done
-</span><span class='line'>
-</span><span class='line'>Server Software:        Apache
-</span><span class='line'>Server Hostname:        192.168.11.3
-</span><span class='line'>Server Port:            80
-</span><span class='line'>
-</span><span class='line'>Document Path:          /wordpress/index.php
-</span><span class='line'>Document Length:        0 bytes
-</span><span class='line'>
-</span><span class='line'>Concurrency Level:      2
-</span><span class='line'>Time taken for tests:   38.047 seconds
-</span><span class='line'>Complete requests:      5
-</span><span class='line'>Failed requests:        0
-</span><span class='line'>Write errors:           0
-</span><span class='line'>Non-2xx responses:      5
-</span><span class='line'>Total transferred:      2590 bytes
-</span><span class='line'>HTML transferred:       0 bytes
-</span><span class='line'>Requests per second:    0.13 [#/sec] (mean)
-</span><span class='line'>Time per request:       15218.750 [ms] (mean)
-</span><span class='line'>Time per request:       7609.375 [ms] (mean, across all concurrent requests)
-</span><span class='line'>Transfer rate:          0.07 [Kbytes/sec] received
-</span><span class='line'>
-</span><span class='line'>Connection Times (ms)
-</span><span class='line'>min  mean[+/-sd] median   max
-</span><span class='line'>Connect:        0     0    0.0      0       0
-</span><span class='line'>Processing:  8547 13853 4524.6  14750   20047
-</span><span class='line'>Waiting:     8516 13828 4538.6  14703   20047
-</span><span class='line'>Total:       8547 13853 4524.6  14750   20047
-</span><span class='line'>
-</span><span class='line'>Percentage of the requests served within a certain time (ms)
-</span><span class='line'>50%  12938
-</span><span class='line'>66%  16563
-</span><span class='line'>75%  16563
-</span><span class='line'>80%  20047
-</span><span class='line'>90%  20047
-</span><span class='line'>95%  20047
-</span><span class='line'>98%  20047
-</span><span class='line'>99%  20047
-</span><span class='line'>100%  20047 (longest request)
-</span><span class='line'>
-</span><span class='line'>C:\Program Files\Apache Software Foundation\Apache2.2\bin></span></code></pre></td></tr></table></div></figure>
-
-
-<p>オプションの説明・テスト結果の見方については
-「 <a href="http://www.atmarkit.co.jp/flinux/rensai/apache15/apache15b.html" title="＠IT：Apacheパフォーマンス・チューニングのポイント（2/2）">＠IT：Apacheパフォーマンス・チューニングのポイント（2/2）</a> 」 をご参照下さい。</p>
-
-<p>チェックについては主に以下を確認すればＯＫみたいです。</p>
-
-<ul>
-<li>リクエストの成否（Complete requestsとFailed requests）</li>
-<li>1秒間に処理されたリクエスト数（Requests per second）</li>
-<li>接続時間・処理時間・待ち時間の内訳（Connect/Processing/Waiting）</li>
-</ul>
-
-
-<p>でも、しばらくサーバをかまって再び同じベンチマークテストをしたら、今度はとっても調子がいい。
-上と同じテスト↓↓</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>C:\Program Files\Apache Software Foundation\Apache2.2\bin>ab -n 5 -c 2 http://192.168.11.3/wordpress/index.php
-</span><span class='line'>This is ApacheBench, Version 2.3 &lt;$Revision: 655654 $>
-</span><span class='line'>Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-</span><span class='line'>Licensed to The Apache Software Foundation, http://www.apache.org/
-</span><span class='line'>
-</span><span class='line'>Benchmarking 192.168.11.3 (be patient).....done
-</span><span class='line'>
-</span><span class='line'>Server Software:        Apache
-</span><span class='line'>Server Hostname:        192.168.11.3
-</span><span class='line'>Server Port:            80
-</span><span class='line'>
-</span><span class='line'>Document Path:          /wordress/index.php
-</span><span class='line'>Document Length:        216 bytes
-</span><span class='line'>
-</span><span class='line'>Concurrency Level:      2
-</span><span class='line'>Time taken for tests:   0.031 seconds
-</span><span class='line'>Complete requests:      5
-</span><span class='line'>Failed requests:        0
-</span><span class='line'>Write errors:           0
-</span><span class='line'>Non-2xx responses:      5
-</span><span class='line'>Total transferred:      2015 bytes
-</span><span class='line'>HTML transferred:       1080 bytes
-</span><span class='line'>Requests per second:    160.00 [#/sec] (mean)
-</span><span class='line'>Time per request:       12.500 [ms] (mean)
-</span><span class='line'>Time per request:       6.250 [ms] (mean, across all concurrent requests)
-</span><span class='line'>Transfer rate:          62.97 [Kbytes/sec] received
-</span><span class='line'>
-</span><span class='line'>Connection Times (ms)
-</span><span class='line'>              min  mean[+/-sd] median   max
-</span><span class='line'>Connect:        0    0   0.0      0       0
-</span><span class='line'>Processing:     0   13   7.0     16      16
-</span><span class='line'>Waiting:        0   13   7.0     16      16
-</span><span class='line'>Total:          0   13   7.0     16      16
-</span><span class='line'>
-</span><span class='line'>Percentage of the requests served within a certain time (ms)
-</span><span class='line'>  50%     16
-</span><span class='line'>  66%     16
-</span><span class='line'>  75%     16
-</span><span class='line'>  80%     16
-</span><span class='line'>  90%     16
-</span><span class='line'>  95%     16
-</span><span class='line'>  98%     16
-</span><span class='line'>  99%     16
-</span><span class='line'> 100%     16 (longest request)
-</span><span class='line'>
-</span><span class='line'>C:\Program Files\Apache Software Foundation\Apache2.2\bin></span></code></pre></td></tr></table></div></figure>
-
-
-<p>ついでに、もっと負荷をかけてみた。
-結果↓↓</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>C:\Program Files\Apache Software Foundation\Apache2.2\bin>ab -n 1000 -c 100 http://192.168.11.3/wordpress/index.php
-</span><span class='line'>This is ApacheBench, Version 2.3 &lt;$Revision: 655654 $>
-</span><span class='line'>Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-</span><span class='line'>Licensed to The Apache Software Foundation, http://www.apache.org/
-</span><span class='line'>
-</span><span class='line'>Benchmarking 192.168.11.3 (be patient)
-</span><span class='line'>Completed 100 requests
-</span><span class='line'>Completed 200 requests
-</span><span class='line'>Completed 300 requests
-</span><span class='line'>Completed 400 requests
-</span><span class='line'>Completed 500 requests
-</span><span class='line'>Completed 600 requests
-</span><span class='line'>Completed 700 requests
-</span><span class='line'>Completed 800 requests
-</span><span class='line'>Completed 900 requests
-</span><span class='line'>Completed 1000 requests
-</span><span class='line'>Finished 1000 requests
-</span><span class='line'>
-</span><span class='line'>Server Software:        Apache
-</span><span class='line'>Server Hostname:        192.168.11.3
-</span><span class='line'>Server Port:            80
-</span><span class='line'>
-</span><span class='line'>Document Path:          /wordress/index.php
-</span><span class='line'>Document Length:        216 bytes
-</span><span class='line'>
-</span><span class='line'>Concurrency Level:      100
-</span><span class='line'>Time taken for tests:   6.938 seconds
-</span><span class='line'>Complete requests:      1000
-</span><span class='line'>Failed requests:        0
-</span><span class='line'>Write errors:           0
-</span><span class='line'>Non-2xx responses:      1000
-</span><span class='line'>Total transferred:      403000 bytes
-</span><span class='line'>HTML transferred:       216000 bytes
-</span><span class='line'>Requests per second:    144.14 [#/sec] (mean)
-</span><span class='line'>Time per request:       693.750 [ms] (mean)
-</span><span class='line'>Time per request:       6.938 [ms] (mean, across all concurrent requests)
-</span><span class='line'>Transfer rate:          56.73 [Kbytes/sec] received
-</span><span class='line'>Connection Times (ms)
-</span><span class='line'>              min  mean[+/-sd] median   max
-</span><span class='line'>Connect:        0    1   3.5      0      31
-</span><span class='line'>Processing:   219  660 117.3    672    1188
-</span><span class='line'>Waiting:      219  659 117.4    672    1188
-</span><span class='line'>Total:        219  660 116.9    672    1188
-</span><span class='line'>
-</span><span class='line'>Percentage of the requests served within a certain time (ms)
-</span><span class='line'>  50%    672
-</span><span class='line'>  66%    672
-</span><span class='line'>  75%    688
-</span><span class='line'>  80%    688
-</span><span class='line'>  90%    781
-</span><span class='line'>  95%    828
-</span><span class='line'>  98%    953
-</span><span class='line'>  99%   1063
-</span><span class='line'> 100%   1188 (longest request)
-</span><span class='line'>
-</span><span class='line'>C:\Program Files\Apache Software Foundation\Apache2.2\bin></span></code></pre></td></tr></table></div></figure>
-
-
-<p>非常にいい！？</p>
-
-<p>いろいろサービスを再起動させたりしてたからかも！</p>
-
-<p>とりあえず、パフォーマンスアップ作戦は保留しとこっと。
-では、では。</p>
-
-<hr />
-
-<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <ul class="pager">
     
     <li class="previous"><a href="page/132">&larr; Older</a></li>
@@ -1740,6 +1513,10 @@ ASUSTeKの
     <li class="nav-header">Recent Posts</li>
     
       <li class="post">
+        <a href="/blog/2015/10/20/linux-create-swap-area/">Linux - スワップ領域の作成！</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error/">Linux Mint - apt-get update で GPG 公開鍵エラー！</a>
       </li>
     
@@ -1755,29 +1532,25 @@ ASUSTeKの
         <a href="/blog/2015/10/01/blog-access/">2015年09月 - OS・ブラウザ別アクセス状況！【自動集計】</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/09/22/ruby-verify-xml-parsing-by-nokogiri/">Ruby - Nokogiri による XML 解析の速度検証！</a>
-      </li>
-    
   </ul>
 </section>
 <section class="well">
   <ul id="category-list" class="nav nav-list">
     <li class="nav-header">Categories</li>
-    <li><a href='/blog/categories/pc-tips'>pc_tips (255)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (527)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (201)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (337)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (255)</a></li><li><a href='/blog/categories/sns'>sns (22)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (528)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (201)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (337)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (107)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
   </ul>
 </section>
 <section class="well">
   <ul id="category-list" class="nav nav-list">
     <li class="nav-header">Tag Cloud</li>
   </ul>
-  <a href='/blog/tags/ajax' style='font-size: 100.57507987220447%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.15015974440895%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.60063897763578%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.57507987220447%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.15015974440895%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19169329073482%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.64217252396166%'>bash(19)</a> <a href='/blog/tags/bitly' style='font-size: 100.38338658146965%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19169329073482%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38338658146965%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.35463258785944%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19169329073482%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19169329073482%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19169329073482%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.72523961661342%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 105.94249201277955%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.84345047923323%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.57507987220447%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.67731629392972%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38338658146965%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19169329073482%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.72523961661342%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.68370607028754%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19169329073482%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7667731629393%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.34185303514377%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.69329073482427%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.09265175718849%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.95846645367412%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.60063897763578%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19169329073482%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.10862619808307%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.57507987220447%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.17571884984025%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.10862619808307%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38338658146965%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.95846645367412%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19169329073482%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.91693290734824%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.57507987220447%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38338658146965%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.49201277955271%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7667731629393%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19169329073482%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.53354632587859%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.68370607028754%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.57507987220447%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.57507987220447%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38338658146965%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.57507987220447%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.65814696485623%'>Linux(306)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.30990415335464%'>LinuxMint(59)</a> <a href='/blog/tags/lokka' style='font-size: 100.38338658146965%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 104.98402555910543%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.70926517571885%'>MariaDB(35)</a> <a href='/blog/tags/markdown' style='font-size: 101.15015974440895%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.57507987220447%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19169329073482%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.87539936102236%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 131.05431309904154%'>MySQL(162)</a> <a href='/blog/tags/namazu' style='font-size: 100.19169329073482%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.45047923322684%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.15015974440895%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.51757188498402%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38338658146965%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.34185303514377%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7667731629393%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19169329073482%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.69329073482427%'>Octopress(61)</a> <a href='/blog/tags/office' style='font-size: 100.19169329073482%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19169329073482%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.15015974440895%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19169329073482%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.3258785942492%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.13418530351437%'>Postfix(32)</a> <a href='/blog/tags/proxy' style='font-size: 100.38338658146965%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38338658146965%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.15015974440895%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.72523961661342%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.30031948881789%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.50159744408946%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38338658146965%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19169329073482%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19169329073482%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.15015974440895%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(313)</a> <a href='/blog/tags/samba' style='font-size: 101.72523961661342%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.57507987220447%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.47603833865814%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19169329073482%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38338658146965%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19169329073482%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38338658146965%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19169329073482%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.15015974440895%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.91693290734824%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7667731629393%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19169329073482%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.95846645367412%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19169329073482%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7667731629393%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.5591054313099%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38338658146965%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.95846645367412%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.53354632587859%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19169329073482%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.72523961661342%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.95846645367412%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.34185303514377%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.57507987220447%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7667731629393%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19169329073482%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.34185303514377%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.10862619808307%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19169329073482%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.91693290734824%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.59424920127796%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.55271565495208%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.57507987220447%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 108.24281150159744%'>XML(43)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38338658146965%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19169329073482%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.15015974440895%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.49201277955271%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19169329073482%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.15015974440895%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19169329073482%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.64217252396166%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.15015974440895%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38338658146965%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19169329073482%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.95846645367412%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.15015974440895%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.57507987220447%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19169329073482%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.72523961661342%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.64217252396166%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.06709265175719%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38338658146965%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19169329073482%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.53354632587859%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19169329073482%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19169329073482%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.15015974440895%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.95846645367412%'>端末(5)</a> 
+  <a href='/blog/tags/ajax' style='font-size: 100.57507987220447%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.15015974440895%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.60063897763578%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.57507987220447%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.15015974440895%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.19169329073482%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.64217252396166%'>bash(19)</a> <a href='/blog/tags/bitly' style='font-size: 100.38338658146965%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.19169329073482%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.38338658146965%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.35463258785944%'>CentOS(174)</a> <a href='/blog/tags/cobol' style='font-size: 100.19169329073482%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.19169329073482%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.19169329073482%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.72523961661342%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 105.94249201277955%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.84345047923323%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.57507987220447%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.67731629392972%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.38338658146965%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.19169329073482%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.72523961661342%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.68370607028754%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.19169329073482%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.7667731629393%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.34185303514377%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.69329073482427%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 107.09265175718849%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.95846645367412%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.60063897763578%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.19169329073482%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.10862619808307%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.57507987220447%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.17571884984025%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.10862619808307%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.38338658146965%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.95846645367412%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.19169329073482%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.91693290734824%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 100.57507987220447%'>Groonga(3)</a> <a href='/blog/tags/heroku' style='font-size: 100.38338658146965%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.49201277955271%'>HTML(13)</a> <a href='/blog/tags/intel' style='font-size: 100.7667731629393%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.19169329073482%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.53354632587859%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.68370607028754%'>JavaScript(14)</a> <a href='/blog/tags/jekyll' style='font-size: 100.57507987220447%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.57507987220447%'>jQuery(3)</a> <a href='/blog/tags/json' style='font-size: 100.38338658146965%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.57507987220447%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 158.84984025559106%'>Linux(307)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.30990415335464%'>LinuxMint(59)</a> <a href='/blog/tags/lokka' style='font-size: 100.38338658146965%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 104.98402555910543%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 106.70926517571885%'>MariaDB(35)</a> <a href='/blog/tags/markdown' style='font-size: 101.15015974440895%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.57507987220447%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.19169329073482%'>Mroonga(1)</a> <a href='/blog/tags/munin' style='font-size: 102.87539936102236%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 131.05431309904154%'>MySQL(162)</a> <a href='/blog/tags/namazu' style='font-size: 100.19169329073482%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.45047923322684%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.15015974440895%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.51757188498402%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.38338658146965%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.34185303514377%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.7667731629393%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.19169329073482%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 111.69329073482427%'>Octopress(61)</a> <a href='/blog/tags/office' style='font-size: 100.19169329073482%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.19169329073482%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.15015974440895%'>P183(6)</a> <a href='/blog/tags/perl' style='font-size: 100.19169329073482%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.3258785942492%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 106.13418530351437%'>Postfix(32)</a> <a href='/blog/tags/proxy' style='font-size: 100.38338658146965%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.38338658146965%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.15015974440895%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.72523961661342%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.30031948881789%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.50159744408946%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.38338658146965%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.19169329073482%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.19169329073482%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.15015974440895%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 160.0%'>Ruby(313)</a> <a href='/blog/tags/samba' style='font-size: 101.72523961661342%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.57507987220447%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.47603833865814%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.19169329073482%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.38338658146965%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.19169329073482%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.38338658146965%'>SMTP(2)</a> <a href='/blog/tags/sql' style='font-size: 100.19169329073482%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.15015974440895%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.91693290734824%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.7667731629393%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.19169329073482%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.95846645367412%'>TeX(5)</a> <a href='/blog/tags/thin' style='font-size: 100.19169329073482%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.7667731629393%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.5591054313099%'>Twitter(29)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.38338658146965%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.95846645367412%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.53354632587859%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.19169329073482%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.72523961661342%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.95846645367412%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.34185303514377%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.57507987220447%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.7667731629393%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.19169329073482%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.34185303514377%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.10862619808307%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.19169329073482%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.91693290734824%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.59424920127796%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.55271565495208%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.57507987220447%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 108.24281150159744%'>XML(43)</a> <a href='/blog/tags/yahoo' style='font-size: 100.38338658146965%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.19169329073482%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.15015974440895%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.49201277955271%'>ウイルス対策(13)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.19169329073482%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.15015974440895%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.19169329073482%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.64217252396166%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.15015974440895%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.38338658146965%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.19169329073482%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.95846645367412%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.15015974440895%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.57507987220447%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.19169329073482%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.72523961661342%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.64217252396166%'>円周率(19)</a> <a href='/blog/tags/地図' style='font-size: 103.06709265175719%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.38338658146965%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.19169329073482%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.53354632587859%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.19169329073482%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.19169329073482%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.15015974440895%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.95846645367412%'>端末(5)</a> 
 </section>
 <section class="well">
   <ul id="month-list" class="nav nav-list">
     <li class="nav-header">Monthly Archives</li>
   </ul>
-  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/10/'>2015-10 (4)</option><option value='/2015/09/'>2015-09 (6)</option><option value='/2015/08/'>2015-08 (9)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1409 posts
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2015/10/'>2015-10 (5)</option><option value='/2015/09/'>2015-09 (6)</option><option value='/2015/08/'>2015-08 (9)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1410 posts
 </section>
 
 <section class="well">

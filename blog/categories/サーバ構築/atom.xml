@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-10-14T00:31:52+09:00</updated>
+  <updated>2015-10-20T00:09:49+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,130 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - スワップ領域の作成！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/20/linux-create-swap-area/"/>
+    <updated>2015-10-20T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/20/linux-create-swap-area</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>スワップ領域の容量が不足した際に追加で作成する方法についてです。</p>
+
+<p>本来なら物理メモリを増設すべきでしょうが、それまでの緊急的な措置としてスワップファイルを作成してそれをスワップ領域に割り当てるのです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.6(32bit) での作業を想定。（他のディストリビューションでも同じ）</li>
+</ul>
+
+
+<h3>1. スワップファイルの作成</h3>
+
+<p>以下は、ブロックサイズ 1KB で 2GB(1024 x 1024 x 2ブロック) のスワップ領域用のファイルを作成する例。</p>
+
+<pre><code class="text"># dd if=/dev/zero of=/var/tmp/swap bs=1024 count=2097152
+2097152+0 records in
+2097152+0 records out
+2147483648 bytes (2.1 GB) copied, 74.8475 s, 28.7 MB/s
+</code></pre>
+
+<h3>2. スワップ領域の作成</h3>
+
+<p>先ほど作成したスワップファイルをスワップ領域に割り当てる。</p>
+
+<pre><code class="text"># mkswap /var/tmp/swap
+mkswap: /var/tmp/swap: warning: don't erase bootbits sectors
+        on whole disk. Use -f to force.
+スワップ空間バージョン1を設定します、サイズ = 2097148 KiB
+ラベルはありません, UUID=1a802279-4f23-4466-8579-fa38a2cc4d5a
+</code></pre>
+
+<ul>
+<li>スワップ領域を作成する前にデバイスの不良ブロックのチェックを行いたい場合は、 <code>-c</code> オプションを使用する。<br/>
+（不良ブロックを検出した場合は、その件数が出力される）</li>
+<li>スワップファイルにラベルを指定する（ラベル指定でスワップ領域の有効化したい）場合は、 <code>-L</code> オプションで指定する。</li>
+</ul>
+
+
+<h3>3. スワップ領域の有効化</h3>
+
+<p>先ほど作成したスワップ領域を有効化する。</p>
+
+<pre><code class="text"># swapon /var/tmp/swap
+</code></pre>
+
+<ul>
+<li>当然ながら、スワップファイルではなくパーティションを指定することも可能。</li>
+<li>スワップファイル名でなくラベルで指定することも可能。</li>
+<li>優先度を指定したければ、 <code>-p priority</code> で指定する。 <code>priority</code> は 0 〜 32767 の数値で、大きいほど優先度が高い。</li>
+<li>同じ優先度のスワップ領域が複数ある場合、ページがラウンド・ロビン方式で配分される。</li>
+</ul>
+
+
+<h3>4. スワップ領域の確認</h3>
+
+<p>スワップ領域の一覧を確認するには以下のようにする。（以下は一例）</p>
+
+<pre><code class="text"># swapon -s
+Filename                                Type            Size    Used    Priority
+/dev/sda2                               partition       2097148 766580  -1
+/var/tmp/swap                           file            2097148 0       -2
+</code></pre>
+
+<ul>
+<li>優先度を指定しない場合、自動で既存スワップ領域で最低の優先度に続く優先度になるのではなかろうか。</li>
+</ul>
+
+
+<h3>5. スワップ領域の削除</h3>
+
+<p>スワップが不要になった場合は以下のようにして削除する。</p>
+
+<pre><code class="text"># swapoff /var/tmp/swap
+</code></pre>
+
+<ul>
+<li>当然ながら、スワップファイルではなくパーティションを指定することも可能。</li>
+<li>スワップファイル名でなくラベルで指定することも可能。</li>
+</ul>
+
+
+<h3>6. スワップファイルの削除</h3>
+
+<p>完全にスワップ領域が不要なら、スワップファイルも削除する。（単純なファイル削除）</p>
+
+<pre><code class="text"># rm -f /var/tmp/swap
+</code></pre>
+
+<h3>7. 自動マウント</h3>
+
+<p>マシン起動時に自動でスワップ領域を有効化したい場合は、 &ldquo;/etc/fstab&rdquo; に以下のように追記する。</p>
+
+<pre><code class="text /etc/fstab">/var/tmp/swap         swap    swap    sw    0 0
+</code></pre>
+
+<ul>
+<li>1列目 &hellip; デバイス名・スワップファイル名</li>
+<li>2列目 &hellip; マウントポイント（スワップ領域にはマウントポイントがないので <code>none</code> でもよい）</li>
+<li>3列目 &hellip; ファイルシステム</li>
+<li>4列目 &hellip; マウント時のオプション（<code>defaults</code> でもよい。優先度を指定するなら <code>sw,pri=X</code>（<code>X</code> は <code>0</code> 〜 <code>32767</code> の数値））</li>
+<li>5列目 &hellip; ファイルシステムを dump する必要があるか否かの指定（<code>0</code> は dump の必要なし）</li>
+<li>6列目 &hellip; システム起動時に fsck チェックを行うか否かの指定（<code>0</code> は fsck チェックを行わない）</li>
+</ul>
+
+
+<hr />
+
+<p>これで取り急ぎのスワップ領域拡大ができますが、この間に物理メモリ増設について検討しましょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Postfix - メールキューの管理！]]></title>
@@ -811,95 +935,6 @@ END
 <p>検索の高速化を図るには必須の機能でしょう。</p>
 
 <p>当方も InnoDB で構築している既存の DB の高速化を図ってみたいところです。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[AMaViS - エラー(on Debian 8 Jessie)！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/07/27/debian-8-amavis-error/"/>
-    <updated>2015-07-27T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/07/27/debian-8-amavis-error</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Debian GNU/Linux 8 Jessie で Postfix と AMaViS を連携してメールのウイルスチェックを行うようにしているのですが、メールログにエラーメッセージが出力されていたので、調査して対策を施しました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8.1 Jessie での作業を想定。</li>
-<li>アンチウィルスソフト ClamAV を「<a href="/2015/05/29/debian-8-anti-virus-installation/" title="Debian 8 (Jessie) - アンチウィルスソフト導入！">Debian 8 (Jessie) - アンチウィルスソフト導入！</a>」の方法でインストールしていることを想定。</li>
-<li>SMTP サーバ Postfix を「<a href="/2015/06/12/debian-8-postfix-installation/" title="Debian 8 (Jessie) - SMTP サーバ Postfix 構築！">Debian 8 (Jessie) - SMTP サーバ Postfix 構築！</a>」の方法でインストールしていることを想定。</li>
-<li>Postfix と ClamAV の連携を「<a href="/2015/06/15/debian-8-postfix-cooperation-with-clamav/" title="Debian 8 (Jessie) - Postfix と ClamAV の連携！">Debian 8 (Jessie) - Postfix と ClamAV の連携！</a>」の方法で行なっていることを想定。</li>
-</ul>
-
-
-<h3>1. 現象</h3>
-
-<p>メールログに以下のようなエラーメッセージが出力される。</p>
-
-<pre><code class="text /var/log/mail.log">Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)run_av (ClamAV-clamd) FAILED - unexpected , output="/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR\n"
-Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)ClamAV-clamd av-scanner FAILED: CODE(0x29c09b0) unexpected , output="/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR\n" at (eval 96) line 905.
-Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)WARN: all primary virus scanners failed, considering backups
-Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)run_av (ClamAV-clamscan) FAILED - unexpected exit 2, output="WARNING: Ignoring unsupported option --recursive (-r)\nWARNING: Ignoring unsupported option --tempdir\n/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR"
-Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!)ClamAV-clamscan av-scanner FAILED: /usr/bin/clamdscan unexpected exit 2, output="WARNING: Ignoring unsupported option --recursive (-r)\nWARNING: Ignoring unsupported option --tempdir\n/var/lib/amavis/tmp/amavis-20150601T105343-28256-JUnFx0XC/parts: lstat() failed: Permission denied. ERROR" at (eval 96) line 905.
-Jun  1 10:57:36 noah amavis[28256]: (28256-04-7) (!!)AV: ALL VIRUS SCANNERS FAILED
-</code></pre>
-
-<h3>2. 原因</h3>
-
-<p>エラーメッセージに出ているとおり、権限がおかしい。</p>
-
-<h3>3. 対策</h3>
-
-<p>3-1 の方法はよくある方法だが、今回注目したかったのは 3-2 の方法。</p>
-
-<h4>3-1. ユーザ ID, グループ ID の確認</h4>
-
-<p><code>id</code> コマンドで clamav, amavis のユーザ ID, グループ ID を確認する。</p>
-
-<pre><code class="text"># id clamav
-uid=108(clamav) gid=113(clamav) groups=113(clamav),123(amavis)
-
-# id amavis
-uid=115(amavis) gid=123(amavis) groups=123(amavis)
-</code></pre>
-
-<p>clamav ユーザが amavis グループに属していれば、それでよい。</p>
-
-<p>clamav ユーザが amavis グループに属していなければ、以下のようにして amavis グループに追加する。（<code>-a</code> オプションは重要。このオプションを付け忘れると clamav ユーザが既に属していたグループから外れてしまう）</p>
-
-<pre><code class="text"># usermod -a -G amavis clamav
-</code></pre>
-
-<p>clamav ユーザを amavis グループに追加した場合は、 clamav-daemon, amavis, postfix を再起動する。</p>
-
-<pre><code class="text"># systemctl restart clamav-daemon
-# systemctl restart amavis
-# systemctl restart postfix
-</code></pre>
-
-<h4>3-2. clamd.conf の編集</h4>
-
-<p>前項 3-1 の方法でもエラーが解消しない場合は、 ClamAV Daemon 設定ファイル &ldquo;clamd.conf&rdquo; の <code>AllowSupplementaryGroups</code> を確認してみる。</p>
-
-<p><code>false</code> になっていた場合は <code>true</code>（グループ権限も移譲）に変更する。</p>
-
-<pre><code class="bash /etc/clamav/clamd.conf">AllowSupplementaryGroups true  # &lt;= false を true に変更
-</code></pre>
-
-<p>そして、 clamav-daemon, amavis, postfix を再起動する。（起動順に注意すべき旨を紹介しているサイトもあるが、起動順が影響しているか否かは当方未確認）</p>
-
-<pre><code class="text"># systemctl restart clamav-daemon
-# systemctl restart amavis
-# systemctl restart postfix
-</code></pre>
-
-<hr />
 
 <p>以上。</p>
 ]]></content>
