@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-10-20T00:09:49+09:00</updated>
+  <updated>2015-11-01T00:35:03+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,689 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2015年10月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/01/blog-access/"/>
+    <updated>2015-11-01T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/01/blog-access</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>11月になりましたので、先月10月分の当ブログアクセス状況を公開します。</p>
+
+<!--more-->
+
+
+<h4>1. アクセスをOS別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td class="blog-access-pv">30,161</td>
+    <td class="blog-access-rate">59.5021</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td class="blog-access-pv">16,941</td>
+    <td class="blog-access-rate">33.4215</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td class="blog-access-pv">1,758</td>
+    <td class="blog-access-rate">3.4682</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td class="blog-access-pv">1,289</td>
+    <td class="blog-access-rate">2.5430</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">342</td>
+    <td class="blog-access-rate">0.6747</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td class="blog-access-pv">81</td>
+    <td class="blog-access-rate">0.1598</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td class="blog-access-pv">50</td>
+    <td class="blog-access-rate">0.0986</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td class="blog-access-pv">42</td>
+    <td class="blog-access-rate">0.0829</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0138</td>
+  </tr>
+  <tr>
+    <td>CentOS Linux</td>
+    <td class="blog-access-pv">5</td>
+    <td class="blog-access-rate">0.0099</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td class="blog-access-pv">5</td>
+    <td class="blog-access-rate">0.0099</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0079</td>
+  </tr>
+  <tr>
+    <td>Debian GNU/Linux</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0039</td>
+  </tr>
+  <tr>
+    <td>OpenBSD</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0039</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">50,689</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td>X</td>
+    <td class="blog-access-pv">30,158</td>
+    <td class="blog-access-rate">59.4961</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>NT</td>
+    <td class="blog-access-pv">14,314</td>
+    <td class="blog-access-rate">28.2389</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,735</td>
+    <td class="blog-access-rate">3.4228</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,269</td>
+    <td class="blog-access-rate">2.5035</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7</td>
+    <td class="blog-access-pv">1,232</td>
+    <td class="blog-access-rate">2.4305</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7 64 bit</td>
+    <td class="blog-access-pv">788</td>
+    <td class="blog-access-rate">1.5546</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">342</td>
+    <td class="blog-access-rate">0.6747</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>XP</td>
+    <td class="blog-access-pv">324</td>
+    <td class="blog-access-rate">0.6392</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista</td>
+    <td class="blog-access-pv">194</td>
+    <td class="blog-access-rate">0.3827</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">77</td>
+    <td class="blog-access-rate">0.1519</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>8 64 bit</td>
+    <td class="blog-access-pv">55</td>
+    <td class="blog-access-rate">0.1085</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">42</td>
+    <td class="blog-access-rate">0.0829</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Server 2003</td>
+    <td class="blog-access-pv">18</td>
+    <td class="blog-access-rate">0.0355</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td></td>
+    <td class="blog-access-pv">13</td>
+    <td class="blog-access-rate">0.0256</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>4.0.4</td>
+    <td class="blog-access-pv">12</td>
+    <td class="blog-access-rate">0.0237</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td></td>
+    <td class="blog-access-pv">12</td>
+    <td class="blog-access-rate">0.0237</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>64 bit</td>
+    <td class="blog-access-pv">10</td>
+    <td class="blog-access-rate">0.0197</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>4.0.1</td>
+    <td class="blog-access-pv">10</td>
+    <td class="blog-access-rate">0.0197</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>2000</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0158</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>2.3.4</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0138</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">50,689</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>3. アクセスをブラウザ別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td class="blog-access-pv">29,168</td>
+    <td class="blog-access-rate">57.5431</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td class="blog-access-pv">12,131</td>
+    <td class="blog-access-rate">23.9322</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td class="blog-access-pv">5,428</td>
+    <td class="blog-access-rate">10.7084</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td class="blog-access-pv">2,945</td>
+    <td class="blog-access-rate">5.8099</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td class="blog-access-pv">446</td>
+    <td class="blog-access-rate">0.8799</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td class="blog-access-pv">404</td>
+    <td class="blog-access-rate">0.7970</td>
+  </tr>
+  <tr>
+    <td>Netscape Navigator</td>
+    <td class="blog-access-pv">74</td>
+    <td class="blog-access-rate">0.1460</td>
+  </tr>
+  <tr>
+    <td>Chrome</td>
+    <td class="blog-access-pv">51</td>
+    <td class="blog-access-rate">0.1006</td>
+  </tr>
+  <tr>
+    <td>Epiphany</td>
+    <td class="blog-access-pv">13</td>
+    <td class="blog-access-rate">0.0256</td>
+  </tr>
+  <tr>
+    <td>Mozilla SeaMonkey</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0158</td>
+  </tr>
+  <tr>
+    <td>Konqueror</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0138</td>
+  </tr>
+  <tr>
+    <td>iPhone</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0138</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">3</td>
+    <td class="blog-access-rate">0.0059</td>
+  </tr>
+  <tr>
+    <td>PHP</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0039</td>
+  </tr>
+  <tr>
+    <td>Namoroka</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0020</td>
+  </tr>
+  <tr>
+    <td>SRWare Iron</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0020</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">50,689</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.36</td>
+    <td class="blog-access-pv">21,898</td>
+    <td class="blog-access-rate">43.2007</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>41.0</td>
+    <td class="blog-access-pv">8,646</td>
+    <td class="blog-access-rate">17.0570</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td>11.0</td>
+    <td class="blog-access-pv">5,428</td>
+    <td class="blog-access-rate">10.7084</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>9537.53</td>
+    <td class="blog-access-pv">3,172</td>
+    <td class="blog-access-rate">6.2578</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>38.0</td>
+    <td class="blog-access-pv">1,166</td>
+    <td class="blog-access-rate">2.3003</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>8.0</td>
+    <td class="blog-access-pv">1,047</td>
+    <td class="blog-access-rate">2.0655</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>40.0</td>
+    <td class="blog-access-pv">976</td>
+    <td class="blog-access-rate">1.9255</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.1.4</td>
+    <td class="blog-access-pv">931</td>
+    <td class="blog-access-rate">1.8367</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.1</td>
+    <td class="blog-access-pv">919</td>
+    <td class="blog-access-rate">1.8130</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.1.56</td>
+    <td class="blog-access-pv">779</td>
+    <td class="blog-access-rate">1.5368</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>10.0</td>
+    <td class="blog-access-pv">718</td>
+    <td class="blog-access-rate">1.4165</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>9.0</td>
+    <td class="blog-access-pv">656</td>
+    <td class="blog-access-rate">1.2942</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>7.0</td>
+    <td class="blog-access-pv">497</td>
+    <td class="blog-access-rate">0.9805</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td>9.80</td>
+    <td class="blog-access-pv">398</td>
+    <td class="blog-access-rate">0.7852</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>534.30</td>
+    <td class="blog-access-pv">321</td>
+    <td class="blog-access-rate">0.6333</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.2.7</td>
+    <td class="blog-access-pv">285</td>
+    <td class="blog-access-rate">0.5623</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td>38.3.0</td>
+    <td class="blog-access-pv">284</td>
+    <td class="blog-access-rate">0.5603</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.8.9</td>
+    <td class="blog-access-pv">215</td>
+    <td class="blog-access-rate">0.4242</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>31.0</td>
+    <td class="blog-access-pv">196</td>
+    <td class="blog-access-rate">0.3867</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>39.0</td>
+    <td class="blog-access-pv">148</td>
+    <td class="blog-access-rate">0.2920</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">50,689</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[MariaDB(MySQL) - データのみを指定件数ずつ分割ダンプ出力！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split/"/>
+    <updated>2015-10-26T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MariaDB(MySQL) の指定したデータベースを、テーブル別にデータのみを指定件数ずつ分割してダンプ出力する方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>MariaDB 10.0.21 サーバでの作業を想定。（MySQL や他のバージョンでも同様（のはず））</li>
+<li>Bash スクリプトを作成して実現させる。</li>
+<li>出力されたダンプファイルはまとめて圧縮保存する。</li>
+<li>必要であれば、「<a href="http://komasaru.github.io/2014/06/15/mysql-dump-only-schema-data-stored/" title="MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！">MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！</a>」も参考にしてください。</li>
+<li>以下で紹介する Bash スクリプトでは、トランザクションの単位がテーブル・ループ単位となるため、<strong>データの整合性に注意</strong>。<br/>
+（<strong>ダンプ出力時やリストア時に DB への挿入・更新・削除がないことが前提</strong>）</li>
+</ul>
+
+
+<h3>1. Bash スクリプトの作成</h3>
+
+<p>以下は、当方がデータのみを分割ダンプ出力する際に使用している Bash スクリプトである。（解説はスクリプト内のコメントにて。 <code>(*)</code> はさらなる説明を後述）</p>
+
+<figure class='code'><figcaption><span>db_dump_only_data_by_split.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 定数定義</span>
+</span><span class='line'><span class="nv">DB</span><span class="o">=</span>db_name                      <span class="c"># データベース・スキーマ名</span>
+</span><span class='line'><span class="nv">USER</span><span class="o">=</span>user_name                  <span class="c"># ダンプ出力するユーザ名</span>
+</span><span class='line'><span class="nv">PW</span><span class="o">=</span>user_password                <span class="c">#       〃      ユーザ名のパスワード</span>
+</span><span class='line'><span class="nv">CMD</span><span class="o">=</span>/usr/bin/mysqldump          <span class="c"># mysqldump コマンドのフルパス</span>
+</span><span class='line'><span class="nv">WK_DIR</span><span class="o">=</span>/path/to/backup_mysql    <span class="c"># 作業ディレクトリ</span>
+</span><span class='line'><span class="nv">DMP_DIR</span><span class="o">=</span><span class="nv">$WK_DIR</span>/tabledatas_<span class="nv">$DB</span>  <span class="c"># ダンプファイル格納ディレクトリ</span>
+</span><span class='line'><span class="nv">OPTS</span><span class="o">=</span><span class="s2">&quot;-t -Q -F --skip-lock-tables --skip-triggers --skip-dump-date --single-transaction&quot;</span>
+</span><span class='line'>                                <span class="c"># mysqldump オプション(*)</span>
+</span><span class='line'><span class="nv">DCNT</span><span class="o">=</span><span class="m">100000</span>                     <span class="c"># 分割するレコード件数</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ダンプファイルクリア</span>
+</span><span class='line'>rm -f <span class="nv">$DMP_DIR</span>/*
+</span><span class='line'>
+</span><span class='line'><span class="c"># DB 内に存在するテーブル毎にループ処理</span>
+</span><span class='line'><span class="k">for</span> tbl in <span class="sb">`</span>mysql -u <span class="nv">$USER</span> -p<span class="nv">$PW</span> -N -s -e <span class="s2">&quot;show tables in $DB;&quot;</span><span class="sb">`</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c"># テーブル内に存在するレコード件数(*)</span>
+</span><span class='line'>  <span class="nv">rows</span><span class="o">=</span><span class="sb">`</span>mysql -u <span class="nv">$USER</span> -p<span class="nv">$PW</span> <span class="nv">$DB</span> -N -B -e <span class="s2">&quot;SELECT COUNT(*) FROM $tbl;&quot;</span><span class="sb">`</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="s2">&quot;* $tbl [$rows records]&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c"># レコード件数から分割数を算出してループ処理</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">((</span><span class="nv">i</span> <span class="o">=</span> 0<span class="p">;</span> i &lt;<span class="o">=</span> <span class="k">$((</span><span class="nv">$rows</span> <span class="o">/</span> <span class="nv">$DCNT</span><span class="k">))</span><span class="p">;</span> i++<span class="o">))</span>
+</span><span class='line'>  <span class="k">do</span>
+</span><span class='line'>    <span class="c"># 出力ダンプファイル名</span>
+</span><span class='line'>    <span class="nv">fname</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf</span> <span class="k">${</span><span class="nv">tbl</span><span class="k">}</span>_%02d <span class="nv">$i</span><span class="k">)</span>
+</span><span class='line'>    <span class="c"># オフセット算出</span>
+</span><span class='line'>    <span class="nv">offset</span><span class="o">=</span><span class="k">$((</span>i <span class="o">*</span> <span class="nv">$DCNT</span><span class="k">))</span>
+</span><span class='line'>    <span class="nb">echo</span> <span class="s2">&quot;  $fname [OFFSET: $offset]&quot;</span>
+</span><span class='line'>    <span class="c"># ダンプ出力(*)</span>
+</span><span class='line'>    <span class="nv">$CMD</span> -u <span class="nv">$USER</span> -p<span class="nv">$PW</span> <span class="nv">$DB</span> <span class="nv">$tbl</span> <span class="nv">$OPTS</span> -w <span class="s2">&quot;true LIMIT $offset, $DCNT&quot;</span>&gt; <span class="nv">$DMP_DIR</span>/<span class="nv">$fname</span>.sql
+</span><span class='line'>  <span class="k">done</span><span class="p">;</span>
+</span><span class='line'><span class="k">done</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># タイムスタンプ付ファイル名で圧縮保存</span>
+</span><span class='line'><span class="nb">cd</span> <span class="nv">$WK_DIR</span>
+</span><span class='line'><span class="nv">dt</span><span class="o">=</span><span class="sb">`</span>date <span class="s1">&#39;+%Y%m%d_%H%M%S&#39;</span><span class="sb">`</span>
+</span><span class='line'>tar zcvf <span class="k">${</span><span class="nv">DB</span><span class="k">}</span>_tabledata_<span class="nv">$dt</span>.tar.gz tabledatas_<span class="nv">$DB</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/d9cae95bf4d30da5545b" title="Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.">Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.</a></li>
+</ul>
+
+
+<p>mysqldump オプション（上記の<code>OPTS</code>）について。（mysqldump のデフォルトで有効のオプション <code>--opt</code> とは別のもの）</p>
+
+<ul>
+<li><code>-t</code>(or <code>--no-create-info</code>) &hellip; テーブル作成（CREATE TABLE）文を出力しないオプション。</li>
+<li><code>-Q</code>(or <code>--quote-names</code>) &hellip; データベース名、テーブル名、カラム名を <code>`</code> で囲むオプション（デフォルトで有効）。</li>
+<li><code>-F</code>(or <code>--flush-logs</code>) &hellip; ダンプ開始前にログファイルをフラッシュするオプション。</li>
+<li><code>--skip-lock-tables</code> &hellip; デフォルトで有効になる全テーブルをロックするオプション <code>--lock-tables</code> を無効にするオプション。</li>
+<li><code>--skip-triggers</code> &hellip; trigger のダンプ出力を無効にするオプション。</li>
+<li><code>--skip-dump-date</code> &hellip; ダンプ日時の出力を無効にするオプション。</li>
+<li><code>--single-transaction</code> &hellip; データの整合性を保つためにダンプ処理をトランザクションで囲むオプション。</li>
+<li>ちなみに、主キーでソートせずに LIMIT(OFFSET) 句を使用するとフルスキャンになってしまうからと、 <code>--order-by-primary</code> という主キーでソートするオプションを使用すると、 Syntax error が発生しまう。従って、今回は使用していない。<br/>
+主キーでソートしたければ、 <code>-w</code> オプションの <code>LIMIT</code> 句の前に <code>ORDER BY primary_key_col</code> のように追加する。（但し、今回紹介のケースでは DB 内全テーブルの主キーが同じカラムである必要がある）</li>
+</ul>
+
+
+<p>レコード件数取得について。</p>
+
+<ul>
+<li>上記では <code>SELECT COUNT(*) ...</code> としているが、データベース内の全テーブルに同じカラム名で主キーが設定してあるのなら <code>SELECT COUNT(col_name) ...</code> とした方がよい。</li>
+</ul>
+
+
+<p><code>OPTS</code> 以外に追加している <code>-w</code>(or <code>--where</code>) オプションについて。（<strong>今回のポイント</strong>）</p>
+
+<ul>
+<li>本来 <code>-w</code> は抽出条件を指定するオプションだが、 WHERE 条件は <code>true</code>（もしくは <code>1</code>） でスルーして <code>LIMIT</code> 句を指定している。<br/>
+（mysqldump に LIMIT(OFFSET) 句を指定するオプションが存在しないため）</li>
+<li><code>-w "true LIMIT $offset, $DCNT"</code> は <code>-w "true LIMIT $DCNT OFFSET $offset"</code> としてもよい。</li>
+<li>主キーやユニークインデックスが歯抜けでなく件数が正確に取得できるのであれば、 <code>-w</code> オプションで LIMIT 句や OFFSET 句を指定せずに普通に条件指定するようにしてもよいだろう。</li>
+</ul>
+
+
+<h3>2. Bash スクリプトの実行</h3>
+
+<p>作業用ディレクトリやダンプファイル格納用サブディレクトリが存在することを確認し、実行権限を付与後に実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ chmod +x db_dump_only_data_by_split.sh
+</span><span class='line'>$ ./db_dump_only_data_by_split.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>作業ディレクトリ内のダンプファイル格納用サブディレクトリにダンプファイルが出力され、作業ディレクトリ内にタイムスタンプ付圧縮ファイルが作成されるのを確認する。</p>
+
+<p>また、 LIMIT 句を使用しているのでダンプ出力完了まで時間がかかることを覚悟すること。</p>
+
+<h3>3. その他</h3>
+
+<ul>
+<li>データ量が多すぎるとダンプ出力に時間がかかる、ということに留意する。<br/>
+<code>-w</code> オプションで LIMIT 句を使用するからと、フルスキャンを避けるために <code>--order-by-primary</code> オプションを使用したり、もしくは <code>-w</code> オプションで <code>ORDER BY</code> 句を指定しても、ダンプ出力が徐々に遅くなる。<br/>
+<code>mysqldump</code> の <code>-w</code>(or <code>--where</code>) での LIMIT(OFFSET) 句指定はフルスキャンになってしまうのだろうか？（<code>mysqldump</code> を EXPLAIN で確認できればいいのですが。。。）</li>
+<li>データ量が多すぎるとダンプ出力に時間がかかるため、結局当方は、データ量が多すぎる場合は、エクスポートは <code>SELECT INTO ... OUTFILE</code> で CSV 出力、インポートは <code>LOAD DATA INFILE</code> で CSV 取り込み、とすることにした。以下の過去記事を参照。
+
+<ul>
+<li><a href="http://komasaru.github.io/2011/08/31/31002049/" title="MySQL - SELECT結果をCSV出力！">MySQL - SELECT結果をCSV出力！</a></li>
+<li><a href="http://komasaru.github.io/2013/06/08/mysql-import-from-csv/" title="MySQL - CSV データインポート！">MySQL - CSV データインポート！</a></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>4. 参考サイト</h3>
+
+<p>mysqldump の各種オプションや LIMIT 句の指定方法については以下のサイトを参照。</p>
+
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.6/en/mysqldump.html" title="MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program">MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program</a></li>
+</ul>
+
+
+<hr />
+
+<p>結局、当方は今回紹介した方法を積極的には使用していませんが、こういうやり方もあるということを覚えておくと何かの際に役立つかもしれません。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - スワップ領域の作成！]]></title>
@@ -5185,612 +5868,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>これで、マシンを起動する度に Window, Pane, Session 等を手動で復元する手間が省けます。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux Mint - tmux 2.1 のインストール（by ソースビルド）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/03/linux-mint-tmux-installation-by-src/"/>
-    <updated>2015-08-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/03/linux-mint-tmux-installation-by-src</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>ターミナルマルチプレクサ（仮想端末マネージャ）である tmux(Terminal MUltipleXer) の最新版を Linux Mint へインストールする方法についての記録です。</p>
-
-<p>これまで Apt パッケージでインストールした tmux 1.8 を使用していました。<br/>
-しかし、使用したいプラグインが tmux 1.9 未満ではインストールできないため、最新版の 2.1 をソースビルドでインストールすることとしました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>Git でソースを取得するため Git がインストール済みであること。</li>
-<li>当記事執筆時点で最新の tmux 2.1 をインストールする。</li>
-<li>Apt でインストールしていた tmux 1.8 はアンインストールしておく。</li>
-</ul>
-
-
-<h3>1. libevent-dev のインストール</h3>
-
-<p>libevent-dev 2.x のパッケージが必要なので未インストールならインストールする。<br/>
-（以前は Apt では 2.x はインストールできずソースをビルドしてインストールする必要があったが、今は Apt で 2.x がインストール可能）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install libevent-dev
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. tmux のインストール</h3>
-
-<p>Git でソースを <code>clone</code> して、 <code>configure</code>, <code>make</code>, <code>make install</code> する。<br/>
-（但し、<code>configure</code> 実行前に <code>autogen.sh</code> の実行が必要）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ git clone https://github.com/tmux/tmux.git
-</span><span class='line'>$ cd tmux
-</span><span class='line'>$ autogen.sh
-</span><span class='line'>$ ./configure
-</span><span class='line'>$ make
-</span><span class='line'>$ sudo make install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. tmux インストールの確認</h3>
-
-<p>端末から <code>tmux</code> と入力・実行して tmux が起動すればよい。<br/>
-また、tmux コンソールが起動後にバージョンも確認してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ tmux -V
-</span><span class='line'>tmux 2.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>もしも、 tmux 起動時に以下のようなメッセージが出力されて起動しない場合は、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>protocol version mismatch (client 8, server 7)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>古いバージョンの tmux サーバのセッションが残っているため。<br/>
-その場合は、以下のように起動中の tmux プロセスを kill すればよい。（厳密に PID をチェックして <code>kill</code> してもよい）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ killall tmux
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. その他</h3>
-
-<p>その他、各種設定を行う。</p>
-
-<p>当ブログ過去記事も参照。</p>
-
-<ul>
-<li><a href="http://www.mk-mode.com/octopress/tags/tmux/" title="Tag:tmux - mk-mode BLOG">Tag:tmux - mk-mode BLOG</a></li>
-</ul>
-
-
-<p>一つだけ注意するとするなら、マウスモードの指定方法。<br/>
-古いバージョンでは &ldquo;~/.tmux.conf&rdquo; で以下のように指定していたが、</p>
-
-<figure class='code'><figcaption><span>~/.tmux.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set</span>-option -g mode-mouse on
-</span><span class='line'><span class="nb">set</span>-option -g mouse-select-pane on
-</span><span class='line'><span class="nb">set</span>-option -g mouse-select-window on
-</span><span class='line'><span class="nb">set</span>-option -g mouse-resize-pane on
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>今のバージョンでは以下のように１行のみ指定すればよい。</p>
-
-<figure class='code'><figcaption><span>~/.tmux.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set</span>-option -g mouse on
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但し、これだけではマウスでのスクロールができないので、以下のような記述も追加する。</p>
-
-<figure class='code'><figcaption><span>~/.tmux.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">bind</span>-key -n WheelUpPane <span class="k">if</span>-shell -Ft<span class="o">=</span> <span class="s2">&quot;#{?pane_in_mode,1,#{alternate_on}}&quot;</span> <span class="s2">&quot;send-keys -M&quot;</span> <span class="s2">&quot;copy-mode&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>（<code>set-option</code> = <code>set</code>, <code>bind-key</code> = <code>bind</code>, <code>send-keys</code> = <code>send</code> とエイリアスされているので、置き換えてもよい）</p>
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://tmux.github.io/" title="tmux">tmux</a></li>
-</ul>
-
-
-<hr />
-
-<p>これで、使用したかった tmux プラグインが使用できるでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2015年07月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/01/blog-access/"/>
-    <updated>2015-08-01T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/01/blog-access</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>08月になりましたので、先月07月分の当ブログアクセス状況を公開します。</p>
-
-<!--more-->
-
-
-<h4>1. アクセスをOS別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td class="blog-access-pv">12,261</td>
-    <td class="blog-access-rate">56.9035</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td class="blog-access-pv">7,658</td>
-    <td class="blog-access-rate">35.5409</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td class="blog-access-pv">906</td>
-    <td class="blog-access-rate">4.2048</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td class="blog-access-pv">554</td>
-    <td class="blog-access-rate">2.5711</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td class="blog-access-pv">60</td>
-    <td class="blog-access-rate">0.2785</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td class="blog-access-pv">51</td>
-    <td class="blog-access-rate">0.2367</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td class="blog-access-pv">23</td>
-    <td class="blog-access-rate">0.1067</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td class="blog-access-pv">11</td>
-    <td class="blog-access-rate">0.0511</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0325</td>
-  </tr>
-  <tr>
-    <td>Solaris</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>CentOS Linux</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0232</td>
-  </tr>
-  <tr>
-    <td>Debian GNU/Linux</td>
-    <td class="blog-access-pv">3</td>
-    <td class="blog-access-rate">0.0139</td>
-  </tr>
-  <tr>
-    <td>NetBSD</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0093</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">21,547</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td>X</td>
-    <td class="blog-access-pv">12,259</td>
-    <td class="blog-access-rate">56.8942</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>NT</td>
-    <td class="blog-access-pv">6,149</td>
-    <td class="blog-access-rate">28.5376</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">898</td>
-    <td class="blog-access-rate">4.1676</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7</td>
-    <td class="blog-access-pv">708</td>
-    <td class="blog-access-rate">3.2858</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">547</td>
-    <td class="blog-access-rate">2.5386</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7 64 bit</td>
-    <td class="blog-access-pv">408</td>
-    <td class="blog-access-rate">1.8935</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>XP</td>
-    <td class="blog-access-pv">266</td>
-    <td class="blog-access-rate">1.2345</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Vista</td>
-    <td class="blog-access-pv">76</td>
-    <td class="blog-access-rate">0.3527</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">60</td>
-    <td class="blog-access-rate">0.2785</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">50</td>
-    <td class="blog-access-rate">0.2321</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>8 64 bit</td>
-    <td class="blog-access-pv">23</td>
-    <td class="blog-access-rate">0.1067</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">23</td>
-    <td class="blog-access-rate">0.1067</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Server 2003</td>
-    <td class="blog-access-pv">14</td>
-    <td class="blog-access-rate">0.0650</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>64 bit</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>Solaris</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Vista 64 bit</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>2000</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0232</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td>3.6.9-2.el6 64 bit</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0232</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td>10.04</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0186</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td>4.0.1</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0186</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">21,547</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>3. アクセスをブラウザ別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td class="blog-access-pv">11,842</td>
-    <td class="blog-access-rate">54.9589</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td class="blog-access-pv">5,146</td>
-    <td class="blog-access-rate">23.8827</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td class="blog-access-pv">2,544</td>
-    <td class="blog-access-rate">11.8067</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td class="blog-access-pv">1,654</td>
-    <td class="blog-access-rate">7.6762</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td class="blog-access-pv">203</td>
-    <td class="blog-access-rate">0.9421</td>
-  </tr>
-  <tr>
-    <td>Opera</td>
-    <td class="blog-access-pv">65</td>
-    <td class="blog-access-rate">0.3017</td>
-  </tr>
-  <tr>
-    <td>Netscape Navigator</td>
-    <td class="blog-access-pv">60</td>
-    <td class="blog-access-rate">0.2785</td>
-  </tr>
-  <tr>
-    <td>Epiphany</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0325</td>
-  </tr>
-  <tr>
-    <td>Konqueror</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0325</td>
-  </tr>
-  <tr>
-    <td>Unknown</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>Chrome</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0278</td>
-  </tr>
-  <tr>
-    <td>Mozilla SeaMonkey</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0232</td>
-  </tr>
-  <tr>
-    <td>Sleipnir</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0093</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">21,547</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>537.36</td>
-    <td class="blog-access-pv">9,053</td>
-    <td class="blog-access-rate">42.0151</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>38.0</td>
-    <td class="blog-access-pv">2,725</td>
-    <td class="blog-access-rate">12.6468</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td>11.0</td>
-    <td class="blog-access-pv">2,543</td>
-    <td class="blog-access-rate">11.8021</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>39.0</td>
-    <td class="blog-access-pv">1,590</td>
-    <td class="blog-access-rate">7.3792</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>9537.53</td>
-    <td class="blog-access-pv">957</td>
-    <td class="blog-access-rate">4.4415</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.1.4</td>
-    <td class="blog-access-pv">796</td>
-    <td class="blog-access-rate">3.6942</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>8.0</td>
-    <td class="blog-access-pv">580</td>
-    <td class="blog-access-rate">2.6918</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>9.0</td>
-    <td class="blog-access-pv">391</td>
-    <td class="blog-access-rate">1.8146</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>10.0</td>
-    <td class="blog-access-pv">370</td>
-    <td class="blog-access-rate">1.7172</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>7.0</td>
-    <td class="blog-access-pv">312</td>
-    <td class="blog-access-rate">1.4480</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.7.12</td>
-    <td class="blog-access-pv">307</td>
-    <td class="blog-access-rate">1.4248</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>31.0</td>
-    <td class="blog-access-pv">278</td>
-    <td class="blog-access-rate">1.2902</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.6.3</td>
-    <td class="blog-access-pv">209</td>
-    <td class="blog-access-rate">0.9700</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>534.30</td>
-    <td class="blog-access-pv">161</td>
-    <td class="blog-access-rate">0.7472</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td>31.8.0</td>
-    <td class="blog-access-pv">97</td>
-    <td class="blog-access-rate">0.4502</td>
-  </tr>
-  <tr>
-    <td>Opera</td>
-    <td>9.80</td>
-    <td class="blog-access-pv">62</td>
-    <td class="blog-access-rate">0.2877</td>
-  </tr>
-  <tr>
-    <td>Netscape Navigator</td>
-    <td>5.0</td>
-    <td class="blog-access-pv">60</td>
-    <td class="blog-access-rate">0.2785</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>37.0</td>
-    <td class="blog-access-pv">60</td>
-    <td class="blog-access-rate">0.2785</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td>31.7.0</td>
-    <td class="blog-access-pv">57</td>
-    <td class="blog-access-rate">0.2645</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>24.0</td>
-    <td class="blog-access-pv">52</td>
-    <td class="blog-access-rate">0.2413</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">21,547</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<hr />
 
 <p>以上。</p>
 ]]></content>

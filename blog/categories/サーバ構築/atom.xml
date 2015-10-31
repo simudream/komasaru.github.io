@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-10-20T00:09:49+09:00</updated>
+  <updated>2015-11-01T00:35:03+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,158 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[MariaDB(MySQL) - データのみを指定件数ずつ分割ダンプ出力！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split/"/>
+    <updated>2015-10-26T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MariaDB(MySQL) の指定したデータベースを、テーブル別にデータのみを指定件数ずつ分割してダンプ出力する方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>MariaDB 10.0.21 サーバでの作業を想定。（MySQL や他のバージョンでも同様（のはず））</li>
+<li>Bash スクリプトを作成して実現させる。</li>
+<li>出力されたダンプファイルはまとめて圧縮保存する。</li>
+<li>必要であれば、「<a href="/2014/06/15/mysql-dump-only-schema-data-stored/" title="MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！">MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！</a>」も参考にしてください。</li>
+<li>以下で紹介する Bash スクリプトでは、トランザクションの単位がテーブル・ループ単位となるため、<strong>データの整合性に注意</strong>。<br/>
+（<strong>ダンプ出力時やリストア時に DB への挿入・更新・削除がないことが前提</strong>）</li>
+</ul>
+
+
+<h3>1. Bash スクリプトの作成</h3>
+
+<p>以下は、当方がデータのみを分割ダンプ出力する際に使用している Bash スクリプトである。（解説はスクリプト内のコメントにて。 <code>(*)</code> はさらなる説明を後述）</p>
+
+<pre><code class="bash db_dump_only_data_by_split.sh">#!/bin/bash
+
+# 定数定義
+DB=db_name                      # データベース・スキーマ名
+USER=user_name                  # ダンプ出力するユーザ名
+PW=user_password                #       〃      ユーザ名のパスワード
+CMD=/usr/bin/mysqldump          # mysqldump コマンドのフルパス
+WK_DIR=/path/to/backup_mysql    # 作業ディレクトリ
+DMP_DIR=$WK_DIR/tabledatas_$DB  # ダンプファイル格納ディレクトリ
+OPTS="-t -Q -F --skip-lock-tables --skip-triggers --skip-dump-date --single-transaction"
+                                # mysqldump オプション(*)
+DCNT=100000                     # 分割するレコード件数
+
+# ダンプファイルクリア
+rm -f $DMP_DIR/*
+
+# DB 内に存在するテーブル毎にループ処理
+for tbl in `mysql -u $USER -p$PW -N -s -e "show tables in $DB;"`; do
+  # テーブル内に存在するレコード件数(*)
+  rows=`mysql -u $USER -p$PW $DB -N -B -e "SELECT COUNT(*) FROM $tbl;"`
+  echo "* $tbl [$rows records]"
+
+  # レコード件数から分割数を算出してループ処理
+  for ((i = 0; i &lt;= $(($rows / $DCNT)); i++))
+  do
+    # 出力ダンプファイル名
+    fname=$(printf ${tbl}_%02d $i)
+    # オフセット算出
+    offset=$((i * $DCNT))
+    echo "  $fname [OFFSET: $offset]"
+    # ダンプ出力(*)
+    $CMD -u $USER -p$PW $DB $tbl $OPTS -w "true LIMIT $offset, $DCNT"&gt; $DMP_DIR/$fname.sql
+  done;
+done;
+
+# タイムスタンプ付ファイル名で圧縮保存
+cd $WK_DIR
+dt=`date '+%Y%m%d_%H%M%S'`
+tar zcvf ${DB}_tabledata_$dt.tar.gz tabledatas_$DB
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/d9cae95bf4d30da5545b" title="Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.">Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.</a></li>
+</ul>
+
+
+<p>mysqldump オプション（上記の<code>OPTS</code>）について。（mysqldump のデフォルトで有効のオプション <code>--opt</code> とは別のもの）</p>
+
+<ul>
+<li><code>-t</code>(or <code>--no-create-info</code>) &hellip; テーブル作成（CREATE TABLE）文を出力しないオプション。</li>
+<li><code>-Q</code>(or <code>--quote-names</code>) &hellip; データベース名、テーブル名、カラム名を <code>`</code> で囲むオプション（デフォルトで有効）。</li>
+<li><code>-F</code>(or <code>--flush-logs</code>) &hellip; ダンプ開始前にログファイルをフラッシュするオプション。</li>
+<li><code>--skip-lock-tables</code> &hellip; デフォルトで有効になる全テーブルをロックするオプション <code>--lock-tables</code> を無効にするオプション。</li>
+<li><code>--skip-triggers</code> &hellip; trigger のダンプ出力を無効にするオプション。</li>
+<li><code>--skip-dump-date</code> &hellip; ダンプ日時の出力を無効にするオプション。</li>
+<li><code>--single-transaction</code> &hellip; データの整合性を保つためにダンプ処理をトランザクションで囲むオプション。</li>
+<li>ちなみに、主キーでソートせずに LIMIT(OFFSET) 句を使用するとフルスキャンになってしまうからと、 <code>--order-by-primary</code> という主キーでソートするオプションを使用すると、 Syntax error が発生しまう。従って、今回は使用していない。<br/>
+主キーでソートしたければ、 <code>-w</code> オプションの <code>LIMIT</code> 句の前に <code>ORDER BY primary_key_col</code> のように追加する。（但し、今回紹介のケースでは DB 内全テーブルの主キーが同じカラムである必要がある）</li>
+</ul>
+
+
+<p>レコード件数取得について。</p>
+
+<ul>
+<li>上記では <code>SELECT COUNT(*) ...</code> としているが、データベース内の全テーブルに同じカラム名で主キーが設定してあるのなら <code>SELECT COUNT(col_name) ...</code> とした方がよい。</li>
+</ul>
+
+
+<p><code>OPTS</code> 以外に追加している <code>-w</code>(or <code>--where</code>) オプションについて。（<strong>今回のポイント</strong>）</p>
+
+<ul>
+<li>本来 <code>-w</code> は抽出条件を指定するオプションだが、 WHERE 条件は <code>true</code>（もしくは <code>1</code>） でスルーして <code>LIMIT</code> 句を指定している。<br/>
+（mysqldump に LIMIT(OFFSET) 句を指定するオプションが存在しないため）</li>
+<li><code>-w "true LIMIT $offset, $DCNT"</code> は <code>-w "true LIMIT $DCNT OFFSET $offset"</code> としてもよい。</li>
+<li>主キーやユニークインデックスが歯抜けでなく件数が正確に取得できるのであれば、 <code>-w</code> オプションで LIMIT 句や OFFSET 句を指定せずに普通に条件指定するようにしてもよいだろう。</li>
+</ul>
+
+
+<h3>2. Bash スクリプトの実行</h3>
+
+<p>作業用ディレクトリやダンプファイル格納用サブディレクトリが存在することを確認し、実行権限を付与後に実行する。</p>
+
+<pre><code class="text">$ chmod +x db_dump_only_data_by_split.sh
+$ ./db_dump_only_data_by_split.sh
+</code></pre>
+
+<p>作業ディレクトリ内のダンプファイル格納用サブディレクトリにダンプファイルが出力され、作業ディレクトリ内にタイムスタンプ付圧縮ファイルが作成されるのを確認する。</p>
+
+<p>また、 LIMIT 句を使用しているのでダンプ出力完了まで時間がかかることを覚悟すること。</p>
+
+<h3>3. その他</h3>
+
+<ul>
+<li>データ量が多すぎるとダンプ出力に時間がかかる、ということに留意する。<br/>
+<code>-w</code> オプションで LIMIT 句を使用するからと、フルスキャンを避けるために <code>--order-by-primary</code> オプションを使用したり、もしくは <code>-w</code> オプションで <code>ORDER BY</code> 句を指定しても、ダンプ出力が徐々に遅くなる。<br/>
+<code>mysqldump</code> の <code>-w</code>(or <code>--where</code>) での LIMIT(OFFSET) 句指定はフルスキャンになってしまうのだろうか？（<code>mysqldump</code> を EXPLAIN で確認できればいいのですが。。。）</li>
+<li>データ量が多すぎるとダンプ出力に時間がかかるため、結局当方は、データ量が多すぎる場合は、エクスポートは <code>SELECT INTO ... OUTFILE</code> で CSV 出力、インポートは <code>LOAD DATA INFILE</code> で CSV 取り込み、とすることにした。以下の過去記事を参照。
+
+<ul>
+<li><a href="/2011/08/31/31002049/" title="MySQL - SELECT結果をCSV出力！">MySQL - SELECT結果をCSV出力！</a></li>
+<li><a href="/2013/06/08/mysql-import-from-csv/" title="MySQL - CSV データインポート！">MySQL - CSV データインポート！</a></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>4. 参考サイト</h3>
+
+<p>mysqldump の各種オプションや LIMIT 句の指定方法については以下のサイトを参照。</p>
+
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.6/en/mysqldump.html" title="MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program">MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program</a></li>
+</ul>
+
+
+<hr />
+
+<p>結局、当方は今回紹介した方法を積極的には使用していませんが、こういうやり方もあるということを覚えておくと何かの際に役立つかもしれません。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - スワップ領域の作成！]]></title>
@@ -798,143 +950,6 @@ END
 <hr />
 
 <p>普段はあまり使用する機会はありませんが、大量のテーブルを再設計する際には有益でしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB 10.0.x - Mroonga プラグインの有効化！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/21/mariadb-mroonga-installation/"/>
-    <updated>2015-08-21T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/21/mariadb-mroonga-installation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>全文検索エンジン Groonga をベースとした MySQL のストレージエンジン Mroonga を MariaDB で使用する方法についての簡単な記録です。</p>
-
-<p>MariaDB 10.0.x では Mroonga のプラグインがバンドルされているので、 Mroonga を別途インストールする必要はありません。<br/>
-プラグインを有効にすればすぐに使用できるようになります。（但し、バンドルされている Mroonga はバージョンが少し古いようなので、最新バージョンを使用したければ別途インストールする必要があります）</p>
-
-<p>（Groonga, Mroonga については不勉強で疎いため、乱文ご容赦ください）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MariaDB 10.0.21 (on Linux Mint 17.2) での作業を想定。</li>
-</ul>
-
-
-<h3>1. プラグインの有効化</h3>
-
-<p>以下の SQL を実行して、プラグインを有効にする。</p>
-
-<pre><code class="text">&gt; INSTALL PLUGIN Mroonga SONAME 'ha_mroonga.so';
-&gt; CREATE FUNCTION last_insert_grn_id RETURNS INTEGER SONAME 'ha_mroonga.so';
-&gt; CREATE FUNCTION mroonga_snippet RETURNS STRING SONAME 'ha_mroonga.so';
-&gt; CREATE FUNCTION mroonga_command RETURNS STRING SONAME 'ha_mroonga.so';
-&gt; CREATE FUNCTION mroonga_escape RETURNS STRING SONAME 'ha_mroonga.so';
-</code></pre>
-
-<h3>2. プラグイン有効化の確認</h3>
-
-<pre><code class="text">&gt; SHOW ENGINES;
-+--------------------+---------+----------------------------------------------------------------------------+--------------+------+------------+
-| Engine             | Support | Comment                                                                    | Transactions | XA   | Savepoints |
-+--------------------+---------+----------------------------------------------------------------------------+--------------+------+------------+
-| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables                  | NO           | NO   | NO         |
-| CSV                | YES     | CSV storage engine                                                         | NO           | NO   | NO         |
-| PERFORMANCE_SCHEMA | YES     | Performance Schema                                                         | NO           | NO   | NO         |
-| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears)             | NO           | NO   | NO         |
-| MyISAM             | YES     | MyISAM storage engine                                                      | NO           | NO   | NO         |
-| MRG_MyISAM         | YES     | Collection of identical MyISAM tables                                      | NO           | NO   | NO         |
-| Mroonga            | YES     | CJK-ready fulltext search, column store                                    | NO           | NO   | NO         |
-| FEDERATED          | YES     | FederatedX pluggable storage engine                                        | YES          | NO   | YES        |
-| InnoDB             | DEFAULT | Percona-XtraDB, Supports transactions, row-level locking, and foreign keys | YES          | YES  | YES        |
-| Aria               | YES     | Crash-safe tables with MyISAM heritage                                     | NO           | NO   | NO         |
-| ARCHIVE            | YES     | Archive storage engine                                                     | NO           | NO   | NO         |
-+--------------------+---------+----------------------------------------------------------------------------+--------------+------+------------+
-11 rows in set (0.00 sec)
-</code></pre>
-
-<h3>3. テーブルの作成方法</h3>
-
-<p>以下は、ストレージモードでテーブルを作成する場合で、 <code>col_name_2</code> に全文検索インデックスを張る例（トークナイザはデフォルトの &ldquo;TokenBigram"）。</p>
-
-<pre><code class="text">&gt; CREATE TABLE table_name(
-&gt;   id INT PRIMARY KEY AUTO_INCREMENT,
-&gt;   col_name_1 VARCHAR(255),
-&gt;   col_name_2 VARCHAR(255),
-&gt;   FULLTEXT INDEX (col_name_2)
-&gt; ) ENGINE = Mroonga DEFAULT CHARSET utf8;
-</code></pre>
-
-<p>以下は、ラッパーモード（元のストレージエンジンは InnoDB）でテーブルを作成する場合で、 <code>col_name_2</code> に全文検索インデックスを張る例（トークナイザはデフォルトの &ldquo;TokenBigram"）。</p>
-
-<pre><code class="text">&gt; CREATE TABLE table_name (
-&gt;   id INT PRIMARY KEY AUTO_INCREMENT,
-&gt;   col_name_1 VARCHAR(255),
-&gt;   col_name_2 VARCHAR(255),
-&gt;   FULLTEXT INDEX (col_name_2)
-&gt; ) ENGINE = Mroonga COMMENT = 'engine "InnoDB"' DEFAULT CHARSET utf8;
-</code></pre>
-
-<p>※但し、 MariaDB では <code>FULLTEXT INDEX</code> で設定しても <code>FULLTEXT KEY</code> で登録される。</p>
-
-<p>ちなみに、テーブルデフォルトのトークナイザを MeCab に変更したい場合は以下のようにする。（設定ファイルで指定することも可能）</p>
-
-<pre><code class="text">&gt; ) ENGINE = Mroonga COMMENT='default_tokenizer "TokenMecab"' DEFAULT CHARSET utf8;
-</code></pre>
-
-<p>FULLTEXT INDEX のパーサのみ変更したい場合は以下のようにする。</p>
-
-<pre><code class="text">&gt;   FULLTEXT INDEX (col_name_2) COMMENT='parser "TokenMecab"'
-</code></pre>
-
-<h3>4. 検索例</h3>
-
-<p>以下は、テーブル table_name の col_name_2 に「松江」を含み「出雲」を含まないレコードを検索する例。</p>
-
-<pre><code class="sql">&gt; SELECT *, MATCH (col_name_2) AGAINST("+松江 -出雲" IN BOOLEAN MODE)
-&gt;   FROM table_name
-&gt;  WHERE MATCH (col_name_2) AGAINST("+松江 -出雲" IN BOOLEAN MODE);
-</code></pre>
-
-<ul>
-<li><code>SELECT</code> 句内の <code>MATCH ... AGAINST ...</code> は、検索スコア。</li>
-<li><code>IN BOOLEAN MODE</code> は、マッチ率の概念を省いて、単純にかつ機械的に検索するモード。</li>
-</ul>
-
-
-<p>ちなみに、当方で 30 万件ほどレコードのあるテーブルで同様に検索してみた結果、 <code>WHERE</code> 句を</p>
-
-<pre><code class="sql">WHERE col_name_2 LIKE '%松江%' AND col_name_2 NOT LIKE '%出雲%'
-</code></pre>
-
-<p>にして検索するより約 100 倍高速に検索できました。さらに、レコード約 1,300 万件では 約 500 倍高速に検索できました。<br/>
-（テーブルレイアウト、レコード数等にもよるでしょうが）</p>
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="http://mroonga.org/ja/" title="Mroonga - MySQLで高速全文検索">Mroonga - MySQLで高速全文検索</a></li>
-</ul>
-
-
-<p>中でも、Mroonga プラグインの有効については以下を参照。</p>
-
-<ul>
-<li><a href="http://mroonga.org/ja/blog/2015/04/29/release.html" title="Mroonga - Mroonga 5.02リリース！">Mroonga - Mroonga 5.02リリース！</a></li>
-</ul>
-
-
-<hr />
-
-<p>検索の高速化を図るには必須の機能でしょう。</p>
-
-<p>当方も InnoDB で構築している既存の DB の高速化を図ってみたいところです。</p>
 
 <p>以上。</p>
 ]]></content>

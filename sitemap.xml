@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://komasaru.github.io/blog/2015/11/01/blog-access/</loc>
+    <lastmod>2015-11-01T00:20:00+09:00</lastmod>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split/</loc>
+    <lastmod>2015-10-26T00:20:00+09:00</lastmod>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/2015/10/20/linux-create-swap-area/</loc>
     <lastmod>2015-10-20T00:20:00+09:00</lastmod>
   </url>
@@ -5881,6 +5889,9 @@
     <loc>http://komasaru.github.io/2015/10/</loc>
   </url>
   <url>
+    <loc>http://komasaru.github.io/2015/11/</loc>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/tags/fedora/</loc>
   </url>
   <url>
@@ -6773,6 +6784,9 @@
   </url>
   <url>
     <loc>http://komasaru.github.io/page/141/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/page/142/</loc>
   </url>
   <url>
     <loc>http://komasaru.github.io/obj_sponsored_link.html</loc>
