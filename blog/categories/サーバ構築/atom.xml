@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-01T00:35:03+09:00</updated>
+  <updated>2015-11-05T00:30:03+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,123 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS 6.7 - Postfix ウィルス対策(ClamAV + ClamSMTP)！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation/"/>
+    <updated>2015-11-05T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>送信メールサーバ Postfix と Clam AntiVirus を ClamSMTP で連携してメールのウィルスチェックを行う方法についての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7(32bit) での作業を想定。</li>
+<li>EPEL リポジトリ導入済み。（参考「<a href="/2013/12/13/centos-6-5-first-setting/" title="CentOS 6.5 - 初期設定！">CentOS 6.5 - 初期設定！</a>」）</li>
+<li>SMTP サーバ Postfix 構築済み。</li>
+<li>アンチウィルスソフト ClamAV(<code>clamd</code>) 導入済み。</li>
+</ul>
+
+
+<h3>1. ClamSMTP のインストール</h3>
+
+<pre><code class="text"># yum --enablerepo=epel -y install clamsmtp
+</code></pre>
+
+<h3>2. ClamSMTP 設定ファイルの編集</h3>
+
+<pre><code class="bash /etc/clamsmtpd.conf">Listen: 0.0.0.0:10025                           # &lt;= コメント解除
+
+Header: X-Virus-Scanned: ClamAV using ClamSMTP  # &lt;= コメント解除
+
+Action: drop                                    # &lt;= コメント解除
+</code></pre>
+
+<h3>3. ClamSMTP の起動</h3>
+
+<pre><code class="text"># /etc/rc.d/init.d/clamsmtpd start
+Starting ClamSmtpd:                                        [  OK  ]
+
+# /etc/rc.d/init.d/clamsmtp-clamd start
+</code></pre>
+
+<h3>4. ClamSMTP 自動起動の設定</h3>
+
+<pre><code class="text"># chkconfig clamsmtpd on
+# chkconfig clamsmtp-clamd on
+# chkconfig --list clamsmtpd
+clamsmtpd       0:off   1:off   2:on    3:on    4:on    5:on    6:off
+# chkconfig --list clamsmtp-clamd
+clamsmtp-clamd  0:off   1:Off   2:on    3:on    4:on    5:on    6:off
+</code></pre>
+
+<h3>5. Postfix 設定ファイルの編集</h3>
+
+<pre><code class="bash /etc/postfix/main.cf"># 以下を最終行へ追記
+content_filter = scan:127.0.0.1:10025
+</code></pre>
+
+<pre><code class="bash /etc/postfix/master.cf"># 以下を最終行へ追記
+scan unix -       -       n       -       16       smtp
+   -o smtp_data_done_timeout=1200
+   -o smtp_send_xforward_command=yes
+   -o disable_dns_lookups=yes
+127.0.0.1:10026 inet n       -       n       -       16       smtpd
+   -o content_filter=
+   -o local_recipient_maps=
+   -o relay_recipient_maps=
+   -o smtpd_restriction_classes=
+   -o smtpd_client_restrictions=
+   -o smtpd_helo_restrictions=
+   -o smtpd_sender_restrictions=
+   -o smtpd_recipient_restrictions=permit_mynetworks,reject
+   -o mynetworks_style=host
+   -o smtpd_authorized_xforward_hosts=127.0.0.0/8
+</code></pre>
+
+<ul>
+<li>上記の <code>10026</code> は &ldquo;/etc/clamsmtpd.conf&rdquo; の <code>OutAddress</code> の値に合わせる。</li>
+</ul>
+
+
+<h3>6. Postfix の再起動</h3>
+
+<pre><code class="text"># /etc/rc.d/init.d/postfix restart
+Shutting down postfix:                  [  OK  ]
+Starting postfix:                       [  OK  ]
+</code></pre>
+
+<h3>7. 動作確認</h3>
+
+<p>メールを自分宛に送信してみて受信したメールのヘッダに以下のような記述があるか確認する。</p>
+
+<pre><code class="text">X-Virus-Scanned: ClamAV using ClamSMTP
+</code></pre>
+
+<p>また、ウィルスメールを送信してみて受信しないことも確認する。（例えば、本文に以下（テストウィルス）を記載したメールを送信）</p>
+
+<pre><code class="text">X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+</code></pre>
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://www.server-world.info/query?os=CentOS_6&amp;p=mail&amp;f=6" title="CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World">CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World</a></li>
+</ul>
+
+
+<hr />
+
+<p>送信メールサーバ Postfix と Clam AntiVirus を AMaVisd-new で連携する場合と比べてどうなのか？ということを体感してみたかった故の今回の試行でした。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MariaDB(MySQL) - データのみを指定件数ずつ分割ダンプ出力！]]></title>
@@ -829,127 +946,6 @@ AF70A2C009D*    1504 Sat Aug 22 23:57:39 hoge@xxxxxxxxxx.com
 <hr />
 
 <p>大量にテーブル定義書を生成したければシェル化するのもよいでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - インデックス名一覧取得！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/03/mariadb-index-list/"/>
-    <updated>2015-09-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/03/mariadb-index-list</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) で作成済みのインデックスの名称を確認したい場合、 <code>SHOW INDEX FROM table_name</code> を使用することが多いと思います。</p>
-
-<p>しかし、一度に多数のテーブルについて確認したい場合に、テーブル単位で <code>SHOW INDEX FROM table_name</code> を実行するのは大変面倒です。</p>
-
-<p>以下で、指定データベース内の全テーブルに作成済みのインデックスを一覧表示する SQL 等を紹介します。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MariaDB 10.0.21 での作業を想定。（MySQL でも同様のはず）</li>
-</ul>
-
-
-<h3>1. SQL 作成</h3>
-
-<pre><code class="sql">  SELECT DISTINCT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME
-    FROM information_schema.STATISTICS
-   WHERE TABLE_SCHEMA = 'scheme_name' -- &lt;= 対象のデータベース名
-     AND INDEX_NAME &lt;&gt; 'PRIMARY'
-ORDER BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME;
-</code></pre>
-
-<p>ちなみに、インデックスに設定されているカラム名やその順番も確認したければ、以下のような SQL となる。</p>
-
-<pre><code class="sql">  SELECT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, COLUMN_NAME, SEQ_IN_INDEX
-    FROM information_schema.STATISTICS
-   WHERE TABLE_SCHEMA = 'scheme_name' -- &lt;= 対象のデータベース名
-     AND INDEX_NAME &lt;&gt; 'PRIMARY'
-ORDER BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, SEQ_IN_INDEX;
-</code></pre>
-
-<h3>2. 応用</h3>
-
-<p>参考までに、前項で紹介した SQL を利用して、データベース内の全テーブルの全インデックス（プライマリキーを除く）を削除するストアドプロシージャを作成する。<br/>
-※当方が過去に必要に迫られて作成したストアドプロシージャで、実際はこのストアドプロシージャ実行後にインデックスを一括作成するストアドプロシージャも実行している。</p>
-
-<pre><code class="sql">CREATE DEFINER=`root`@`localhost` PROCEDURE `del_index_all`()
-BEGIN
-    -- 変数宣言
-    DECLARE v_tbl_name VARCHAR(50) DEFAULT '';
-    DECLARE v_idx_name VARCHAR(50) DEFAULT '';
-    DECLARE v_done INT DEFAULT 0;
-    -- カーソル宣言
-    DECLARE v_cur CURSOR FOR
-        SELECT
-            DISTINCT TABLE_NAME, INDEX_NAME
-        FROM
-            information_schema.STATISTICS
-        WHERE
-            TABLE_SCHEMA = 'jmx'
-        AND INDEX_NAME &lt;&gt; 'PRIMARY'
-        ORDER BY
-            TABLE_SCHEMA, TABLE_NAME, INDEX_NAME;
-    -- 終了ステータス宣言
-    DECLARE EXIT HANDLER FOR NOT FOUND SET v_done = 1;
-
-    -- カーソル OPEN
-    OPEN v_cur;
-
-    -- LOOP 処理
-    WHILE v_done != 1 DO
-        -- カーソル FETCH
-        FETCH v_cur INTO v_tbl_name, v_idx_name;
-
-        -- 動的 SQL 実行
-        SET @s = CONCAT('ALTER TABLE ', v_tbl_name, ' DROP INDEX ', v_idx_name);
-        PREPARE stmt FROM @s;
-        EXECUTE stmt;
-    END WHILE;
-
-    -- PREPARED STATEMENT 解放
-    DEALLOCATE PREPARE stmt;
-
-    -- カーソル CLOSE
-    CLOSE v_cur;
-END
-</code></pre>
-
-<p>本当は、動的に SQL を実行する(PREPARED STATEMENT)部分を以下のようにしたかったが、 <code>?</code> は MariaDB のストアドではサポートされてない模様。（<a href="https://mariadb.com/kb/en/mariadb/prepare-statement/" title="PREPARE Statement - MariaDB Knowledge Base">参考</a>）</p>
-
-<pre><code class="sql">    --  :
-    -- 省略
-    --  :
-
-    SET @s = 'ALTER TABLE ? DROP INDEX ?';
-    PREPARE stmt FROM @s;
-
-    OPEN v_cur;
-
-    WHILE v_done != 1 DO
-        FETCH v_cur INTO v_tbl_name, v_idx_name;
-
-        SET @tbl_name = v_tbl_name;
-        SET @idx_name = v_idx_name;
-
-        EXECUTE stmt USING @tbl_name, @idx_name;
-    END WHILE;
-
-    DEALLOCATE PREPARE stmt;
-
-    CLOSE v_cur;
-</code></pre>
-
-<hr />
-
-<p>普段はあまり使用する機会はありませんが、大量のテーブルを再設計する際には有益でしょう。</p>
 
 <p>以上。</p>
 ]]></content>

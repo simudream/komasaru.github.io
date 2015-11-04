@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-01T00:35:03+09:00</updated>
+  <updated>2015-11-05T00:30:03+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,173 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS 6.7 - Postfix ウィルス対策(ClamAV + ClamSMTP)！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation/"/>
+    <updated>2015-11-05T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>送信メールサーバ Postfix と Clam AntiVirus を ClamSMTP で連携してメールのウィルスチェックを行う方法についての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7(32bit) での作業を想定。</li>
+<li>EPEL リポジトリ導入済み。（参考「<a href="http://komasaru.github.io/2013/12/13/centos-6-5-first-setting/" title="CentOS 6.5 - 初期設定！">CentOS 6.5 - 初期設定！</a>」）</li>
+<li>SMTP サーバ Postfix 構築済み。</li>
+<li>アンチウィルスソフト ClamAV(<code>clamd</code>) 導入済み。</li>
+</ul>
+
+
+<h3>1. ClamSMTP のインストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum --enablerepo=epel -y install clamsmtp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. ClamSMTP 設定ファイルの編集</h3>
+
+<figure class='code'><figcaption><span>/etc/clamsmtpd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Listen: 0.0.0.0:10025                           <span class="c"># &lt;= コメント解除</span>
+</span><span class='line'>
+</span><span class='line'>Header: X-Virus-Scanned: ClamAV using ClamSMTP  <span class="c"># &lt;= コメント解除</span>
+</span><span class='line'>
+</span><span class='line'>Action: drop                                    <span class="c"># &lt;= コメント解除</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. ClamSMTP の起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># /etc/rc.d/init.d/clamsmtpd start
+</span><span class='line'>Starting ClamSmtpd:                                        [  OK  ]
+</span><span class='line'>
+</span><span class='line'># /etc/rc.d/init.d/clamsmtp-clamd start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. ClamSMTP 自動起動の設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># chkconfig clamsmtpd on
+</span><span class='line'># chkconfig clamsmtp-clamd on
+</span><span class='line'># chkconfig --list clamsmtpd
+</span><span class='line'>clamsmtpd       0:off   1:off   2:on    3:on    4:on    5:on    6:off
+</span><span class='line'># chkconfig --list clamsmtp-clamd
+</span><span class='line'>clamsmtp-clamd  0:off   1:Off   2:on    3:on    4:on    5:on    6:off
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. Postfix 設定ファイルの編集</h3>
+
+<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 以下を最終行へ追記</span>
+</span><span class='line'><span class="nv">content_filter</span> <span class="o">=</span> scan:127.0.0.1:10025
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>/etc/postfix/master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 以下を最終行へ追記</span>
+</span><span class='line'>scan unix -       -       n       -       <span class="m">16</span>       smtp
+</span><span class='line'>   -o <span class="nv">smtp_data_done_timeout</span><span class="o">=</span>1200
+</span><span class='line'>   -o <span class="nv">smtp_send_xforward_command</span><span class="o">=</span>yes
+</span><span class='line'>   -o <span class="nv">disable_dns_lookups</span><span class="o">=</span>yes
+</span><span class='line'>127.0.0.1:10026 inet n       -       n       -       <span class="m">16</span>       smtpd
+</span><span class='line'>   -o <span class="nv">content_filter</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">local_recipient_maps</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">relay_recipient_maps</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">smtpd_restriction_classes</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">smtpd_helo_restrictions</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">smtpd_sender_restrictions</span><span class="o">=</span>
+</span><span class='line'>   -o <span class="nv">smtpd_recipient_restrictions</span><span class="o">=</span>permit_mynetworks,reject
+</span><span class='line'>   -o <span class="nv">mynetworks_style</span><span class="o">=</span>host
+</span><span class='line'>   -o <span class="nv">smtpd_authorized_xforward_hosts</span><span class="o">=</span>127.0.0.0/8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>上記の <code>10026</code> は &ldquo;/etc/clamsmtpd.conf&rdquo; の <code>OutAddress</code> の値に合わせる。</li>
+</ul>
+
+
+<h3>6. Postfix の再起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># /etc/rc.d/init.d/postfix restart
+</span><span class='line'>Shutting down postfix:                  [  OK  ]
+</span><span class='line'>Starting postfix:                       [  OK  ]
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. 動作確認</h3>
+
+<p>メールを自分宛に送信してみて受信したメールのヘッダに以下のような記述があるか確認する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>X-Virus-Scanned: ClamAV using ClamSMTP
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>また、ウィルスメールを送信してみて受信しないことも確認する。（例えば、本文に以下（テストウィルス）を記載したメールを送信）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://www.server-world.info/query?os=CentOS_6&amp;p=mail&amp;f=6" title="CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World">CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World</a></li>
+</ul>
+
+
+<hr />
+
+<p>送信メールサーバ Postfix と Clam AntiVirus を AMaVisd-new で連携する場合と比べてどうなのか？ということを体感してみたかった故の今回の試行でした。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[2015年10月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
@@ -5775,99 +5942,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <p>慣れないうちは Groonga を単体で扱うのは若干面倒に感じます。</p>
 
 <p>当方は、Rroonga（Groonga の機能を Ruby から利用するためのライブラリ）や Mroonga（Groonga をベースとした MySQL のストレージエンジン）を使用することも考えています。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[tmux - Window, Pane, Session 自動保存プラグイン！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/06/tmux-automatic-session-preservation/"/>
-    <updated>2015-08-06T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/06/tmux-automatic-session-preservation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>ターミナルマルチプレクサ（仮想端末マネージャ） tmux の Window, Pane, Session 等を保存（自動保存）するプラグインをインストールする方法についての記録です。</p>
-
-<p>Window, Pane, Session 等を保存するプラグインは tmux-resurrect で、それを自動化するプラグインは tmux-continuum です。<br/>
-また、プラグインの管理には tpm(Tmux Plugin Manager)を使用します。<br/>
-（以前は tmux-resurrect を自動化するプラグインは tmux-resurrect-auto でしたが、現在は tmux-continuum に改名されています。tmux-resurrect-auto も使用できますが）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>tmux 2.1 での作業を想定。</li>
-<li>Git がインストール済みであること。</li>
-<li>tpm(Tmux Plugin Manager) で tmux プラグインを管理することを想定。<br/>
-（tpm を使用せず手動でインストールすることも可能）</li>
-</ul>
-
-
-<h3>1. tpm のインストール</h3>
-
-<p>tmux プラグインの管理に tpm(Tmux Plugin Manager) を使用するのでインストールする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. tmux.conf の編集</h3>
-
-<p>&ldquo;~/.tmux.conf&rdquo; に以下の記述を追記する。</p>
-
-<figure class='code'><figcaption><span>~/.tmux.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set</span>-option -g @tpm_plugins <span class="s1">&#39;  \</span>
-</span><span class='line'><span class="s1">  tmux-plugins/tpm            \</span>
-</span><span class='line'><span class="s1">  tmux-plugins/tmux-resurrect \</span>
-</span><span class='line'><span class="s1">  tmux-plugins/tmux-continuum \</span>
-</span><span class='line'><span class="s1">&#39;</span>
-</span><span class='line'><span class="nb">set</span>-option -g @continuum-save-interval <span class="s1">&#39;60&#39;</span>
-</span><span class='line'><span class="nb">set</span>-option -g @resurrect-processes <span class="s1">&#39;ssh -p 9999 hoge&#39;</span>
-</span><span class='line'><span class="nb">set</span>-option -g @resurrect-strategy-vim <span class="s1">&#39;session&#39;</span>
-</span><span class='line'>
-</span><span class='line'>run-shell <span class="s1">&#39;~/.tmux/plugins/tpm/tpm&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>set-option</code> は <code>set</code> で代用可。</li>
-<li><code>set-option -g @continuum-save-interval</code> でセッションを自動保存する間隔を指定する。<br/>
- 非指定時のデフォルトは <code>15</code> 分。 <code>0</code> で自動保存の無効化。</li>
-<li><code>set-option -g @resurrect-processes</code> で保存したいセッションを指定する。<br/>
-（上記の例は &ldquo;hoge&rdquo; ホストへポート 9999 で SSH 接続したセッションを保存する例）</li>
-<li><code>set-option -g @resurrect-strategy-vim 'session'</code> で Vim のセッションを保存する。</li>
-</ul>
-
-
-<h3>3. プラグインのインストール</h3>
-
-<p>tmux 上で Prefix 押下後に <code>I</code> を押下する。（<code>i</code> ではなく <code>I</code>）</p>
-
-<h3>4. 動作確認</h3>
-
-<p>Prefix + CTRL-s で Window, Pane, Session 等の状態を保存、Prefix + CTLR-r でWindow, Pane, Session 等の状態を復元できるので、「保存→マシン再行動→復元」と試してみる。</p>
-
-<p>tmux-continuum はデフォルトでは 60 分間隔で状態を保存するようなので、その辺りの動作も確認しておく。</p>
-
-<p>ちなみに、状態は &ldquo;~/.tmux/resurrect&rdquo; ディレクトリ配下にテキストファイルで保存される。</p>
-
-<hr />
-
-<p>これで、マシンを起動する度に Window, Pane, Session 等を手動で復元する手間が省けます。</p>
 
 <p>以上。</p>
 ]]></content>

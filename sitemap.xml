@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation/</loc>
+    <lastmod>2015-11-05T00:20:00+09:00</lastmod>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/2015/11/01/blog-access/</loc>
     <lastmod>2015-11-01T00:20:00+09:00</lastmod>
   </url>
@@ -5892,6 +5896,45 @@
     <loc>http://komasaru.github.io/2015/11/</loc>
   </url>
   <url>
+    <loc>http://komasaru.github.io/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E8%87%AA%E4%BD%9Cpc/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/pc-tips/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E7%8E%84%E7%AE%B1/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E6%A0%AA%E5%BC%8F/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/</loc>
+  </url>
+  <url>
+    <loc>http://komasaru.github.io/blog/categories/sns/</loc>
+  </url>
+  <url>
     <loc>http://komasaru.github.io/blog/tags/fedora/</loc>
   </url>
   <url>
@@ -6327,43 +6370,7 @@
     <loc>http://komasaru.github.io/blog/tags/mroonga/</loc>
   </url>
   <url>
-    <loc>http://komasaru.github.io/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E8%87%AA%E4%BD%9Cpc/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E6%95%B0%E5%AD%A6/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/pc-tips/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E7%8E%84%E7%AE%B1/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E6%A0%AA%E5%BC%8F/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/</loc>
-  </url>
-  <url>
-    <loc>http://komasaru.github.io/blog/categories/sns/</loc>
+    <loc>http://komasaru.github.io/blog/tags/%E3%82%A6%E3%82%A3%E3%83%AB%E3%82%B9%E5%AF%BE%E7%AD%96/</loc>
   </url>
   <url>
     <loc>http://komasaru.github.io/page/2/</loc>
