@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-05T00:30:03+09:00</updated>
+  <updated>2015-11-10T00:22:16+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,86 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[MariaDB(MySQL) - シャットダウン時間の短縮！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/10/mariadb-speedup-shutdown/"/>
+    <updated>2015-11-10T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/10/mariadb-speedup-shutdown</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MariaDB や MySQL をシャットダウン（or 再起動）する際に時間がかかりすぎることがあります。</p>
+
+<p>バッファの内容をディスクに書き込むのに時間がかかっているからです。</p>
+
+<p>今回は、そのイライラを軽減するための対処についての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>MariaDB 10.0.21 での作業を想定（MySQL でも同様）</li>
+<li>ハード環境により成果は異なる、ということに留意。</li>
+</ul>
+
+
+<h3>1. シャットダウン時に行われる時間のかかる処理</h3>
+
+<ul>
+<li>InnoDB Buffer Pool 全領域のチェックポイント。</li>
+<li>チェックポイントとは、ダーティページ（変更されたが、まだデータベースファイルに書き込まれていないページ）をテーブルスペースへ書き込むこと。</li>
+</ul>
+
+
+<h3>2. innodb_max_dirty_pages_pct について</h3>
+
+<ul>
+<li>InnoDB は、ダーティページの割合（単位：%）が <code>innodb_max_dirty_pages_pct</code> の値を超えないように、バッファープールからデータをフラッシュしようとする。</li>
+<li><code>innodb_max_dirty_pages_pct</code> のデフォルト値は <code>75</code></li>
+<li><code>innodb_max_dirty_pages_pct</code> の設定可能値は <code>0</code> 〜 <code>99.999</code> (MariaDB 10.0.15 以上), <code>0</code> 〜 <code>99</code> (MariaDB 10.0.15 未満).</li>
+<li>書き込み回数を減らす（書き込みを遅らせる）ためにはこの値を大きくする。</li>
+<li>この値を小さくし過ぎると書き込みが頻発し、<code>innodb_buffer_pool_size</code> を大きく設定していても効果が小さくなる。</li>
+</ul>
+
+
+<h3>3. シャットダウン時間の短縮方法</h3>
+
+<ol>
+<li>MariaDB(MySQL) サーバにログインし以下の SQLを実行する。<br/>
+<code>SET GLOBAL innodb_max_dirty_pages_pct = 0;</code><br/>
+（但し、環境によっては <code>0</code> を指定できないかもしれない。その場合は <code>1</code> や <code>0.001</code> 等でもよい）</li>
+<li><code>Value</code> 値が十分小さくなる（<code>0</code> に近付く）まで以下の SQL を断続的に実行して待つ。<br/>
+<code>SHOW GLOBAL STATUS like 'innodb_buffer_pool_pages_dirty';</code></li>
+<li>サーバのシャットダウン（or 再起動）
+
+<ul>
+<li>シャットダウン（or 再起動）すると、 <code>innodb_max_dirty_pages_pct</code> の値が設定値に戻る。</li>
+<li>シャットダウン（or 再起動）し忘れると <code>innodb_max_dirty_pages_pct</code> の値が <code>0</code> のままで、頻繁にダーティページのテーブルスペースへの書き込みが発生してレスポンスが悪くなるので注意。</li>
+</ul>
+</li>
+</ol>
+
+
+<h3>4. 所感</h3>
+
+<p>シャットダウンに時間がかかりすぎて不安に感じる際には、シャットダウン前にチェックポイントを実行してダーティページの書込状況を確認できるのでよいかもしれません。</p>
+
+<h3>5. 参考サイト</h3>
+
+<p>シャットダウンプロセスについては以下のサイトを参照。（但し、チェックポイントやダーティページについての記載はない）</p>
+
+<ul>
+<li><a href="http://dev.mysql.com/doc/refman/5.6/ja/server-shutdown.html" title="MySQL :: MySQL 5.6 リファレンスマニュアル :: 5.1.12 シャットダウンプロセス">MySQL :: MySQL 5.6 リファレンスマニュアル :: 5.1.12 シャットダウンプロセス</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS 6.7 - Postfix ウィルス対策(ClamAV + ClamSMTP)！]]></title>
@@ -5435,513 +5515,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>Ruby で処理した得た数値をグラフ化することが多い場合は重宝するでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux Mint - Groonga インストール（by ソースビルド）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/09/linux-mint-groonga-installation-by-src/"/>
-    <updated>2015-08-09T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/09/linux-mint-groonga-installation-by-src</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>オープンソースのカラムストア機能付き全文検索エンジン <a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga</a> を、ソースをビルドしてインストールする方法についての記録です。（最後に簡単な使用例も紹介）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>当記事執筆時点で最新の Groonga 5.0.5 をインストールする。</li>
-<li>トークナイザは、デフォルトの N-gram 方式ではなく形態素解析器 MeCab を使用することを想定。</li>
-<li>ここでは、全文検索がどういうものかという説明はしない。</li>
-<li>以下の説明内で出力するデータは、可読性を考慮して整形している。</li>
-</ul>
-
-
-<h3>1. 依存パッケージのインストール</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get -y install wget tar build-essential \
-</span><span class='line'>&gt; zlib1g-dev liblzo2-dev libmsgpack-dev \
-</span><span class='line'>&gt; libzmq-dev libevent-dev libmecab-dev
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. アーカーブソースの取得</h3>
-
-<p>アーカイブファイルをダウンロード後、展開する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ wget http://packages.groonga.org/source/groonga/groonga-5.0.5.tar.gz
-</span><span class='line'>$ tar zxvf groonga-5.0.5.tar.gz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. ビルド＆インストール</h3>
-
-<p><code>configure</code>, <code>make</code>, <code>make install</code> する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd groonga-5.0.5
-</span><span class='line'>$ ./configure
-</span><span class='line'>$ make -j$(grep &#39;^processor&#39; /proc/cpuinfo | wc -l)
-</span><span class='line'>$ sudo make install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>make</code> の <code>-j$(grep '^processor' /proc/cpuinfo | wc -l)</code> の部分はプロセッサ数が明確なら <code>-j4</code> のように指定してもよいし、速度を気にしないのなら単に <code>make</code> のみでもよい。</li>
-<li><code>configure</code> オプションについては <a href="http://groonga.org/ja/docs/install/others.html#source-configure">configure</a> を参照。</li>
-</ul>
-
-
-<p>そして、インストールされたかバージョンを表示して確認してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ groonga --version
-</span><span class='line'>groonga 5.0.5 [linux-gnu,x86_64,utf8,match-escalation-threshold=0,nfkc,mecab,msgpack,onigmo,zlib,epoll]
-</span><span class='line'>
-</span><span class='line'>configure options: &lt;&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. 動作確認</h3>
-
-<p>簡単に動作確認してみる。（パスは適宜変更）<br/>
-以下は、都道府県名のローマ字表記を <code>_key</code>、都道府県名の漢字表記を <code>name</code> として登録する例。（簡易都道府県名データベース）</p>
-
-<h4>4-1. データベースの作成</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ mkdir ~/groonga-db
-</span><span class='line'>$ groonga -n ~/groonga-db/test.db
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>データベース作成後は自動で対話モードに入るが、手動で対話モードへ入るには以下のようにする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ groonga ~/groonga-db/test.db
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-2. テーブルの作成</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; table_create --name Prefs --flags TABLE_HASH_KEY --key_type ShortText
-</span><span class='line'>[
-</span><span class='line'>  [0,1436411689.75983,0.0292973518371582],
-</span><span class='line'>  true
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-3. テーブルの表示</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; select --table Prefs
-</span><span class='line'>[
-</span><span class='line'>  [0,1436411701.50367,0.000922203063964844],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [0],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;]
-</span><span class='line'>      ]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-4. カラムの作成</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; column_create --table Prefs --name name --type ShortText
-</span><span class='line'>[
-</span><span class='line'>  [0,1436411764.36768,0.0517301559448242],
-</span><span class='line'>  true
-</span><span class='line'>]
-</span><span class='line'>
-</span><span class='line'>&gt; select --table Prefs
-</span><span class='line'>[
-</span><span class='line'>  [0,1436411783.16738,0.000133037567138672],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [0],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;],
-</span><span class='line'>        [&quot;name&quot;,&quot;ShortText&quot;]
-</span><span class='line'>      ]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-5. データのロード</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; load --table Prefs
-</span><span class='line'>[
-</span><span class='line'>  {&quot;_key&quot;:&quot;Hokkaido&quot;,&quot;name&quot;:&quot;北海道&quot;},
-</span><span class='line'>  {&quot;_key&quot;:&quot;Aomoriken&quot;,&quot;name&quot;:&quot;青森県&quot;},
-</span><span class='line'>           :
-</span><span class='line'>  ====&lt; 途中省略 &gt;====
-</span><span class='line'>           :
-</span><span class='line'>  {&quot;_key&quot;:&quot;Kagoshimaken&quot;,&quot;name&quot;:&quot;鹿児島県&quot;},
-</span><span class='line'>  {&quot;_key&quot;:&quot;Okinawaken&quot;,&quot;name&quot;:&quot;沖縄県&quot;},
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>もしくは、以下のようにコマンドラインから JSON 形式で作成したファイルを取り込んでもよい。</p>
-
-<figure class='code'><figcaption><span>load.grn</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>load --table Prefs
-</span><span class='line'>[
-</span><span class='line'>  {&quot;_key&quot;:&quot;Hokkaido&quot;,&quot;name&quot;:&quot;北海道&quot;},
-</span><span class='line'>  {&quot;_key&quot;:&quot;Aomoriken&quot;,&quot;name&quot;:&quot;青森県&quot;},
-</span><span class='line'>           :
-</span><span class='line'>  ====&lt; 途中省略 &gt;====
-</span><span class='line'>           :
-</span><span class='line'>  {&quot;_key&quot;:&quot;Kagoshimaken&quot;,&quot;name&quot;:&quot;鹿児島県&quot;},
-</span><span class='line'>  {&quot;_key&quot;:&quot;Okinawaken&quot;,&quot;name&quot;:&quot;沖縄県&quot;},
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ groonga ~/groonga-db/test.db &lt; load.grn
-</span><span class='line'>[[0,1436415458.66362,0.00340938568115234],47]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-6. レコードの取得</h4>
-
-<figure class='code'><figcaption><span>"全レコードを取得（但し、先頭10件）"</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>select --table Prefs
-</span><span class='line'>[
-</span><span class='line'>  [0,1436415521.50463,0.00343823432922363],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [47],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;],
-</span><span class='line'>        [&quot;name&quot;,&quot;ShortText&quot;]
-</span><span class='line'>      ],
-</span><span class='line'>      [1,&quot;Hokkaido&quot;,&quot;北海道&quot;],
-</span><span class='line'>      [2,&quot;Aomoriken&quot;,&quot;青森県&quot;],
-</span><span class='line'>      [3,&quot;Iwateken&quot;,&quot;岩手県&quot;],
-</span><span class='line'>      [4,&quot;Miyagiken&quot;,&quot;宮城県&quot;],
-</span><span class='line'>      [5,&quot;Akitaken&quot;,&quot;秋田県&quot;],
-</span><span class='line'>      [6,&quot;Yamagataken&quot;,&quot;山形県&quot;],
-</span><span class='line'>      [7,&quot;Fukushimaken&quot;,&quot;福島県&quot;],
-</span><span class='line'>      [8,&quot;Ibarakiken&quot;,&quot;茨城県&quot;],
-</span><span class='line'>      [9,&quot;Tochigiken&quot;,&quot;栃木県&quot;],
-</span><span class='line'>      [10,&quot;Gunmaken&quot;,&quot;群馬県&quot;]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>"ID が 32 のレコードを取得"</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; select --table Prefs --query _id:32
-</span><span class='line'>[
-</span><span class='line'>  [0,1436415572.03281,0.0471560955047607],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [1],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;],
-</span><span class='line'>        [&quot;name&quot;,&quot;ShortText&quot;]
-</span><span class='line'>      ],
-</span><span class='line'>      [32,&quot;Shimaneken&quot;,&quot;島根県&quot;]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>"KEY が shimaneken のレコードを取得"</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; select --table Prefs --query &#39;_key:&quot;Shimaneken&quot;&#39;
-</span><span class='line'>[
-</span><span class='line'>  [0,1436415572.03281,0.0471560955047607],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [1],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;],
-</span><span class='line'>        [&quot;name&quot;,&quot;ShortText&quot;]
-</span><span class='line'>      ],
-</span><span class='line'>      [32,&quot;Shimaneken&quot;,&quot;島根県&quot;]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-7. 全文検索用の語彙表の作成</h4>
-
-<p>高速な全文検索を実現するためには転置インデックスが必要であるので、転置インデックスとして使用するテーブルを作成する。（トークナイザとして MeCab を使用する）</p>
-
-<p>辞書テーブルの作成は以下のようにする。</p>
-
-<figure class='code'><figcaption><span>辞書テーブルの作成</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; table_create --name Terms --flags TABLE_PAT_KEY|KEY_NORMALIZE --key_type ShortText --default_tokenizer TokenMecab
-</span><span class='line'>[[0,1436416480.43314,0.0687055587768555],true]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>辞書テーブルへのカラムの作成は以下のようにする。</p>
-
-<figure class='code'><figcaption><span>辞書テーブルへのカラムの作成</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; column_create --table Terms --name pref_name --flags COLUMN_INDEX|WITH_POSITION --type Prefs --source name
-</span><span class='line'>[[0,1436416570.78517,0.964933156967163],true]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>辞書テーブルの確認は以下のようにする。</p>
-
-<figure class='code'><figcaption><span>辞書テーブルの確認</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; select --table Terms
-</span><span class='line'>[
-</span><span class='line'>  [0,1436416592.4811,0.000155210494995117],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [50],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;],
-</span><span class='line'>        [&quot;pref_name&quot;,&quot;UInt32&quot;]
-</span><span class='line'>      ],
-</span><span class='line'>      [1,&quot;三重&quot;,1],
-</span><span class='line'>      [2,&quot;京都&quot;,1],
-</span><span class='line'>      [3,&quot;佐賀&quot;,1],
-</span><span class='line'>      [4,&quot;兵庫&quot;,1],
-</span><span class='line'>      [5,&quot;北海道&quot;,1],
-</span><span class='line'>      [6,&quot;千葉&quot;,1],
-</span><span class='line'>      [7,&quot;和歌山&quot;,1],
-</span><span class='line'>      [8,&quot;埼玉&quot;,1],
-</span><span class='line'>      [9,&quot;大分&quot;,1],
-</span><span class='line'>      [10,&quot;大阪&quot;,1]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>テーブルの検索は以下のようにする。</p>
-
-<figure class='code'><figcaption><span>テーブルの検索</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; select --table Prefs --query name:@府
-</span><span class='line'>[
-</span><span class='line'>  [0,1436416671.28152,0.000936269760131836],
-</span><span class='line'>  [
-</span><span class='line'>    [
-</span><span class='line'>      [2],
-</span><span class='line'>      [
-</span><span class='line'>        [&quot;_id&quot;,&quot;UInt32&quot;],
-</span><span class='line'>        [&quot;_key&quot;,&quot;ShortText&quot;],
-</span><span class='line'>        [&quot;name&quot;,&quot;ShortText&quot;]
-</span><span class='line'>      ],
-</span><span class='line'>      [26,&quot;Kyotofu&quot;,&quot;京都府&quot;],
-</span><span class='line'>      [27,&quot;Osakafu&quot;,&quot;大阪府&quot;]
-</span><span class='line'>    ]
-</span><span class='line'>  ]
-</span><span class='line'>]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4-8. 対話モードの終了</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; quit
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga - カラムストア機能付き全文検索エンジン</a></li>
-</ul>
-
-
-<hr />
-
-<p>慣れないうちは Groonga を単体で扱うのは若干面倒に感じます。</p>
-
-<p>当方は、Rroonga（Groonga の機能を Ruby から利用するためのライブラリ）や Mroonga（Groonga をベースとした MySQL のストレージエンジン）を使用することも考えています。</p>
 
 <p>以上。</p>
 ]]></content>
