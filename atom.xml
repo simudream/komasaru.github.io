@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-10T00:22:16+09:00</updated>
+  <updated>2015-11-15T12:44:14+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,154 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - Disk の IOPS の確認！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/15/linux-check-disk-iops/"/>
+    <updated>2015-11-15T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/15/linux-check-disk-iops</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>今回は、Linux OS でハードディスクが単位時間当たりどれくらい入出力要求をこなしているのか？を確認する方法についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CPU と入出力装置の負荷を確認するための <code>iostat</code> コマンドを使用する。</li>
+<li>Linux Mint や Debian 等はデフォルトではインストールされていないかもしれない。<br/>
+その場合は、 <code>apt-get install sysstat</code> 等でインストールする。</li>
+</ul>
+
+
+<h3>1. IOPS について</h3>
+
+<p>まず &ldquo;IOPS&rdquo; とは、記憶装置がある条件下で1秒間で読み込み・書き込みができる回数のことで、 &ldquo;Input/Output Per Second&rdquo; の略である。</p>
+
+<h3>2. コマンドの実行</h3>
+
+<p>以下のようにコマンドを実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># iosat -dx
+</span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
+</span><span class='line'>
+</span><span class='line'>Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
+</span><span class='line'>sda              51.59    64.81   72.45   15.82    17.47    44.00     0.70     0.31    3.47   0.89   7.82
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>-d</code> はデバイスの利用統計のみを表示するオプション。</li>
+<li><code>-x</code> は指定したデバイスの統計を追加表示するオプション。<br/>
+（デバイス名を指定しなかった場合は、 &ldquo;/proc/partitions&rdquo; に登録されている全てのデバイスについて表示される）</li>
+<li><code>iostat -dx 3 10</code> のように実行すると、3秒間隔で10回表示する。</li>
+<li>出力項目について
+
+<ul>
+<li><code>rrqm/s</code> &hellip; 結合したデバイスの入力要求の数</li>
+<li><code>wrqm/s</code> &hellip; 結合したデバイスの出力要求の数</li>
+<li><code>r/s</code> &hellip; 1秒間にデバイスに出力された入力要求の数</li>
+<li><code>w/s</code> &hellip; 1秒間にデバイスに出力された出力要求の数</li>
+<li><code>rsec/s</code> &hellip; 1秒間にデバイスから読み込んだセクタ数</li>
+<li><code>wsec/s</code> &hellip; 1秒間にデバイスへ書き込んだセクタ数</li>
+<li><code>avgrq-sz</code> &hellip; デバイスに出された入出力要求の平均サイズ</li>
+<li><code>avgqu-sz</code> &hellip; デバイスに出された入出力要求のキューの長さの平均</li>
+<li><code>await</code> &hellip; デバイスに出された入出力要求が受け取られるまでの平均時間</li>
+<li><code>svctm</code> &hellip; デバイスに出された入出力要求の平均処理時間</li>
+<li><code>%util</code> &hellip; デバイスの入出力要求を出す間に使用したCPUの平均時間</li>
+</ul>
+</li>
+</ul>
+
+
+<p>ちなみに、 <code>-x</code> オプションを使用しない場合は以下のように出力される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># iostat -d
+</span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
+</span><span class='line'>
+</span><span class='line'>Device:            tps   Blk_read/s   Blk_wrtn/s   Blk_read   Blk_wrtn
+</span><span class='line'>sda              88.28        17.98        44.05  249632216  611679582
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>出力項目について
+
+<ul>
+<li><code>tps</code> &hellip; デバイスへの入出力要求の数</li>
+<li><code>Blk_read/s</code> &hellip; デバイスから読み込んだブロック数の平均</li>
+<li><code>Blk_wrtn/s</code> &hellip; デバイスへ書き込んだブロック数の平均</li>
+<li><code>Blk_read</code> &hellip; 読み込んだブロック数</li>
+<li><code>Blk_wrtn</code> &hellip; 書き込んだブロック数</li>
+</ul>
+</li>
+</ul>
+
+
+<p>更には、 <code>-c</code> オプションで CPU の利用統計が確認できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># iostat -c
+</span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
+</span><span class='line'>
+</span><span class='line'>avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+</span><span class='line'>          11.57    2.39    2.35   31.88    0.00   51.81
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>出力項目について
+
+<ul>
+<li><code>%user</code> &hellip; ユーザレベルでのCPU使用率(%)</li>
+<li><code>%nice</code> &hellip; ユーザレベルで、優先的にCPUを使用したときのCPU使用率(%)</li>
+<li><code>%system</code> &hellip; システムレベルでのCPU使用率(%)</li>
+<li><code>%iowait</code> &hellip; CPU総時間当たりのI/O待ち時間率(%)</li>
+<li><code>%steal</code> &hellip; ゲストOSがリソース要求を行ったにもかかわらずCPUリソースを割り当ててもらえなかった時間の割合(%)</li>
+<li><code>%idle</code> &hellip; CPUのアイドル率(%)</li>
+</ul>
+</li>
+</ul>
+
+
+<p>そして、<code>iostat</code> をオプションを全く指定しないで実行するのは <code>-cd</code> オプションを指定して実行するのと同じ。（おそらく）</p>
+
+<h3>3. IOPS の確認</h3>
+
+<p>前項のようにコマンドを実行した後に表示された値のうち、 <code>r/s</code> と <code>w/s</code> の値を加算したものが IOPS の値となる。</p>
+
+<p>前項の場合、 <code>72.45</code> と <code>15.82</code> を加算した <code>88.27</code> が IOPS 値となる。</p>
+
+<h3>4. 注意</h3>
+
+<ul>
+<li>実際には、マシン稼働中は時々刻々と値は変化しているので、何回も実行して平均を取るのがよいだろう。</li>
+</ul>
+
+
+<hr />
+
+<p>当方の場合、 HDD の IOPS を確認することは、データベースの入出力に関する設定値を決定するのに必要でした。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MariaDB(MySQL) - シャットダウン時間の短縮！]]></title>
@@ -5223,298 +5371,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>その他の詳細な使用方法は実際に Ruby コーディングしながら覚えることになるでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - gnuplot でグラフ描画！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/"/>
-    <updated>2015-08-13T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/13/ruby-graph-drawing-by-gnuplot</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Ruby で容易にグラフを描画できる RubyGems ライブラリ gnuplot を使用してみました。</p>
-
-<p>RubyGems ライブラリ gnuplot は、2次元や3次元のグラフを描画するためのコマンドラインツール Gnuplot を Ruby で使用できるようにラップしたものです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.1(64bit) 一般ユーザでの作業を想定。</li>
-<li>Ruby 2.2.2-p95 での作業を想定。</li>
-<li>Gnuplot インストール済みであること。（<a href="http://komasaru.github.io/2015/07/30/linux-mint-installation-gnuplot/" title="Linux Mint - Gnuplot でグラフ描画！">Linux Mint - Gnuplot でグラフ描画！</a>）</li>
-</ul>
-
-
-<h3>1. RubyGems パッケージのインストール</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo gem install gnuplot
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. 動作確認</h3>
-
-<h4>2-1. 作成例・１</h4>
-
-<p>単純な<script type="math/tex">sin</script>曲線・<script type="math/tex">cos</script>曲線を描画する例。</p>
-
-<figure class='code'><figcaption><span>gnuplot_1.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
-</span><span class='line'><span class="c1">#-----------------------------------------------</span>
-</span><span class='line'><span class="c1"># Ruby script to draw a graph by gnuplot.(Ex.1)</span>
-</span><span class='line'><span class="c1">#-----------------------------------------------</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;gnuplot&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Gnuplot</span><span class="o">.</span><span class="n">open</span> <span class="k">do</span> <span class="o">|</span><span class="n">gp</span><span class="o">|</span>
-</span><span class='line'>  <span class="no">Gnuplot</span><span class="o">::</span><span class="no">Plot</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">plot</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">xrange</span> <span class="s2">&quot;[-10:10]&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">title</span>  <span class="s2">&quot;作成例１&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span> <span class="s2">&quot;x&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span> <span class="s2">&quot;y&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">grid</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="no">Gnuplot</span><span class="o">::</span><span class="no">DataSet</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;sin(x)&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">with</span>      <span class="o">=</span> <span class="s2">&quot;lines&quot;</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="no">Gnuplot</span><span class="o">::</span><span class="no">DataSet</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;cos(x)&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">with</span>      <span class="o">=</span> <span class="s2">&quot;lines&quot;</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/18575f0245952cae7d02" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.1)">Gist - Ruby script to draw a graph by gnuplot.(Ex.1)</a></li>
-</ul>
-
-
-<p>そして、実行権限を付与して実行。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo chmod +x gnuplot_1.rb
-</span><span class='line'>
-</span><span class='line'>$ ./gnuplot_1.rb
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Gnuplot ウィンドウが開き、グラフが描画される。</p>
-
-<p><img src="http://komasaru.github.io/images/2015/08/13/GNUPLOT_1.png" title="GNUPLOT_1" alt="GNUPLOT_1" /></p>
-
-<p>但し、環境によってはこのウィンドウを閉じようとしてもうまく閉じれないかもしれない。（termnal が &ldquo;wxt&rdquo; の場合。 terminal が &ldquo;x11&rdquo; 等なら閉じれるが、日本語は使用できない）<br/>
-ちなみに、本家の gnuplot では、この問題は &ldquo;Close&rdquo; を &ldquo;exit&rdquo; でなく &ldquo;exit gnuplot&rdquo; にバインドすれば解決するようだが、今回の RubyGems ライブラリでは通用しない模様。（試行してみた結果）</p>
-
-<h4>2-2. 作成例・２</h4>
-
-<script type="math/tex">y=x^3 - 2x + 2 \ (x={-2.0,-1.9,\cdots,1.9,2.0})</script>
-
-
-<p>のグラフを PNG ファイルに描画・出力する例。</p>
-
-<figure class='code'><figcaption><span>gnuplot_2.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
-</span><span class='line'><span class="c1">#-----------------------------------------------</span>
-</span><span class='line'><span class="c1"># Ruby script to draw a graph by gnuplot.(Ex.2)</span>
-</span><span class='line'><span class="c1">#-----------------------------------------------</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;gnuplot&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Gnuplot</span><span class="o">.</span><span class="n">open</span> <span class="k">do</span> <span class="o">|</span><span class="n">gp</span><span class="o">|</span>
-</span><span class='line'>  <span class="no">Gnuplot</span><span class="o">::</span><span class="no">Plot</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">plot</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">terminal</span> <span class="s2">&quot;png enhanced font &#39;IPA P ゴシック&#39; fontscale 1.2&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">output</span>   <span class="s2">&quot;gnuplot_2.png&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">title</span>    <span class="s2">&quot;作成例２&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span>   <span class="s2">&quot;x&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span>   <span class="s2">&quot;y=x^3-2x+2&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">grid</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="o">.</span><span class="n">.</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span> <span class="p">{</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="mi">10</span><span class="o">.</span><span class="mi">0</span> <span class="p">}</span>
-</span><span class='line'>    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">collect</span> <span class="p">{</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v</span> <span class="o">+</span> <span class="mi">2</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="no">Gnuplot</span><span class="o">::</span><span class="no">DataSet</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">with</span>      <span class="o">=</span> <span class="s2">&quot;linespoints&quot;</span>  <span class="c1"># 点のみなら &quot;points&quot;</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">linecolor</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">notitle</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/27e65a70d4681dd73370" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.2)">Gist - Ruby script to draw a graph by gnuplot.(Ex.2)</a></li>
-</ul>
-
-
-<p>そして、実行権限を付与して実行。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo chmod +x gnuplot_2.rb
-</span><span class='line'>
-</span><span class='line'>$ ./gnuplot_2.rb
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&ldquo;gnuplot_2.png&rdquo; というファイルが出力される。</p>
-
-<p><img src="http://komasaru.github.io/images/2015/08/13/GNUPLOT_2.png" title="GNUPLOT_2" alt="GNUPLOT_2" /></p>
-
-<h4>2-3. 作成例・３</h4>
-
-<script type="math/tex">z=sin(x)cos(x)</script>
-
-
-<p>の三次元グラフを PNG ファイルに描画・出力する例。</p>
-
-<figure class='code'><figcaption><span>gnuplot_3.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
-</span><span class='line'><span class="c1">#-----------------------------------------------</span>
-</span><span class='line'><span class="c1"># Ruby script to draw a graph by gnuplot.(Ex.3)</span>
-</span><span class='line'><span class="c1">#-----------------------------------------------</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;gnuplot&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Gnuplot</span><span class="o">.</span><span class="n">open</span> <span class="k">do</span> <span class="o">|</span><span class="n">gp</span><span class="o">|</span>
-</span><span class='line'>  <span class="no">Gnuplot</span><span class="o">::</span><span class="no">SPlot</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">plot</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">terminal</span> <span class="s2">&quot;png enhanced font &#39;IPA P ゴシック&#39; fontscale 1.2&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">output</span>   <span class="s2">&quot;gnuplot_3.png&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">set</span>      <span class="s2">&quot;object 1 rect from screen 0,0 to screen 1,1 fc rgb &#39;#D0D0E0&#39; fillstyle solid 1.0 behind&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">title</span>    <span class="s2">&quot;作成例３&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">xrange</span>   <span class="s2">&quot;[-10:10]&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">yrange</span>   <span class="s2">&quot;[-10:10]&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span>   <span class="s2">&quot;x&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span>   <span class="s2">&quot;y&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">zlabel</span>   <span class="s2">&quot;z&quot;</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">pm3d</span>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">grid</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">plot</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="no">Gnuplot</span><span class="o">::</span><span class="no">DataSet</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;sin(x)*cos(y)&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">with</span>      <span class="o">=</span> <span class="s2">&quot;lines&quot;</span>
-</span><span class='line'>      <span class="n">ds</span><span class="o">.</span><span class="n">linecolor</span> <span class="o">=</span> <span class="mi">6</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/1395add506fd9a1a4bd6" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.3)">Gist - Ruby script to draw a graph by gnuplot.(Ex.3)</a></li>
-</ul>
-
-
-<p>そして、実行権限を付与して実行。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo chmod +x gnuplot_3.rb
-</span><span class='line'>
-</span><span class='line'>$ ./gnuplot_3.rb
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://komasaru.github.io/images/2015/08/13/GNUPLOT_3.png" title="GNUPLOT_3" alt="GNUPLOT_3" /></p>
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://www.gnuplot.info/" title="gnuplot">gnuplot</a></li>
-<li><a href="https://rubygems.org/gems/gnuplot" title="gnuplot - RubyGems.org - your community gem host">gnuplot - RubyGems.org - your community gem host</a></li>
-</ul>
-
-
-<hr />
-
-<p>Ruby で処理した得た数値をグラフ化することが多い場合は重宝するでしょう。</p>
 
 <p>以上。</p>
 ]]></content>

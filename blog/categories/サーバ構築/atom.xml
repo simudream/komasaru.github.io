@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-10T00:22:16+09:00</updated>
+  <updated>2015-11-15T12:44:14+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - Disk の IOPS の確認！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/15/linux-check-disk-iops/"/>
+    <updated>2015-11-15T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/15/linux-check-disk-iops</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>今回は、Linux OS でハードディスクが単位時間当たりどれくらい入出力要求をこなしているのか？を確認する方法についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CPU と入出力装置の負荷を確認するための <code>iostat</code> コマンドを使用する。</li>
+<li>Linux Mint や Debian 等はデフォルトではインストールされていないかもしれない。<br/>
+その場合は、 <code>apt-get install sysstat</code> 等でインストールする。</li>
+</ul>
+
+
+<h3>1. IOPS について</h3>
+
+<p>まず &ldquo;IOPS&rdquo; とは、記憶装置がある条件下で1秒間で読み込み・書き込みができる回数のことで、 &ldquo;Input/Output Per Second&rdquo; の略である。</p>
+
+<h3>2. コマンドの実行</h3>
+
+<p>以下のようにコマンドを実行する。</p>
+
+<pre><code class="text"># iosat -dx
+Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
+
+Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
+sda              51.59    64.81   72.45   15.82    17.47    44.00     0.70     0.31    3.47   0.89   7.82
+</code></pre>
+
+<ul>
+<li><code>-d</code> はデバイスの利用統計のみを表示するオプション。</li>
+<li><code>-x</code> は指定したデバイスの統計を追加表示するオプション。<br/>
+（デバイス名を指定しなかった場合は、 &ldquo;/proc/partitions&rdquo; に登録されている全てのデバイスについて表示される）</li>
+<li><code>iostat -dx 3 10</code> のように実行すると、3秒間隔で10回表示する。</li>
+<li>出力項目について
+
+<ul>
+<li><code>rrqm/s</code> &hellip; 結合したデバイスの入力要求の数</li>
+<li><code>wrqm/s</code> &hellip; 結合したデバイスの出力要求の数</li>
+<li><code>r/s</code> &hellip; 1秒間にデバイスに出力された入力要求の数</li>
+<li><code>w/s</code> &hellip; 1秒間にデバイスに出力された出力要求の数</li>
+<li><code>rsec/s</code> &hellip; 1秒間にデバイスから読み込んだセクタ数</li>
+<li><code>wsec/s</code> &hellip; 1秒間にデバイスへ書き込んだセクタ数</li>
+<li><code>avgrq-sz</code> &hellip; デバイスに出された入出力要求の平均サイズ</li>
+<li><code>avgqu-sz</code> &hellip; デバイスに出された入出力要求のキューの長さの平均</li>
+<li><code>await</code> &hellip; デバイスに出された入出力要求が受け取られるまでの平均時間</li>
+<li><code>svctm</code> &hellip; デバイスに出された入出力要求の平均処理時間</li>
+<li><code>%util</code> &hellip; デバイスの入出力要求を出す間に使用したCPUの平均時間</li>
+</ul>
+</li>
+</ul>
+
+
+<p>ちなみに、 <code>-x</code> オプションを使用しない場合は以下のように出力される。</p>
+
+<pre><code class="text"># iostat -d
+Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
+
+Device:            tps   Blk_read/s   Blk_wrtn/s   Blk_read   Blk_wrtn
+sda              88.28        17.98        44.05  249632216  611679582
+</code></pre>
+
+<ul>
+<li>出力項目について
+
+<ul>
+<li><code>tps</code> &hellip; デバイスへの入出力要求の数</li>
+<li><code>Blk_read/s</code> &hellip; デバイスから読み込んだブロック数の平均</li>
+<li><code>Blk_wrtn/s</code> &hellip; デバイスへ書き込んだブロック数の平均</li>
+<li><code>Blk_read</code> &hellip; 読み込んだブロック数</li>
+<li><code>Blk_wrtn</code> &hellip; 書き込んだブロック数</li>
+</ul>
+</li>
+</ul>
+
+
+<p>更には、 <code>-c</code> オプションで CPU の利用統計が確認できる。</p>
+
+<pre><code class="text"># iostat -c
+Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+          11.57    2.39    2.35   31.88    0.00   51.81
+</code></pre>
+
+<ul>
+<li>出力項目について
+
+<ul>
+<li><code>%user</code> &hellip; ユーザレベルでのCPU使用率(%)</li>
+<li><code>%nice</code> &hellip; ユーザレベルで、優先的にCPUを使用したときのCPU使用率(%)</li>
+<li><code>%system</code> &hellip; システムレベルでのCPU使用率(%)</li>
+<li><code>%iowait</code> &hellip; CPU総時間当たりのI/O待ち時間率(%)</li>
+<li><code>%steal</code> &hellip; ゲストOSがリソース要求を行ったにもかかわらずCPUリソースを割り当ててもらえなかった時間の割合(%)</li>
+<li><code>%idle</code> &hellip; CPUのアイドル率(%)</li>
+</ul>
+</li>
+</ul>
+
+
+<p>そして、<code>iostat</code> をオプションを全く指定しないで実行するのは <code>-cd</code> オプションを指定して実行するのと同じ。（おそらく）</p>
+
+<h3>3. IOPS の確認</h3>
+
+<p>前項のようにコマンドを実行した後に表示された値のうち、 <code>r/s</code> と <code>w/s</code> の値を加算したものが IOPS の値となる。</p>
+
+<p>前項の場合、 <code>72.45</code> と <code>15.82</code> を加算した <code>88.27</code> が IOPS 値となる。</p>
+
+<h3>4. 注意</h3>
+
+<ul>
+<li>実際には、マシン稼働中は時々刻々と値は変化しているので、何回も実行して平均を取るのがよいだろう。</li>
+</ul>
+
+
+<hr />
+
+<p>当方の場合、 HDD の IOPS を確認することは、データベースの入出力に関する設定値を決定するのに必要でした。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MariaDB(MySQL) - シャットダウン時間の短縮！]]></title>
@@ -481,95 +611,6 @@ Filename                                Type            Size    Used    Priority
 <hr />
 
 <p>これで取り急ぎのスワップ領域拡大ができますが、この間に物理メモリ増設について検討しましょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Postfix - メールキューの管理！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/17/postfix-management-of-mail-queue/"/>
-    <updated>2015-09-17T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/17/postfix-management-of-mail-queue</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>SMTP サーバ Postfix でのメールキュー管理についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Debian GNU/Linux 8.0(64bit) 上の Postfix 2.11.3-1,<br/>
-CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
-での作業を想定。</li>
-</ul>
-
-
-<h3>1. 各種コマンド</h3>
-
-<h4>1-1. メールキューの確認</h4>
-
-<p>配送されずに溜まっているメールキューは &ldquo;/var/spool/postfix/deferred&rdquo; ディレクトリ内にある。<br/>
-それらを確認するには以下のようにする。</p>
-
-<pre><code class="text">$ postqueue -p
--Queue ID- --Size-- ----Arrival Time---- -Sender/Recipient-------
-AF70A2C009D*    1504 Sat Aug 22 23:57:39 hoge@xxxxxxxxxx.com
-                                         fuga@yyyyyyyyyy.com
-
--- 2 Kbytes in 1 Request.
-</code></pre>
-
-<p>もしくは、</p>
-
-<pre><code class="text">$ mailq
-</code></pre>
-
-<h4>1-2. メール内容の確認</h4>
-
-<pre><code class="text">$ postcat -q &lt;QueueID&gt;
-</code></pre>
-
-<h4>1-3. メールキュー配送の停止</h4>
-
-<pre><code class="text">$ postsuper -h &lt;QueueID&gt;|ALL
-</code></pre>
-
-<h4>1-4. メールキューの削除</h4>
-
-<pre><code class="text">$ postsuper -d &lt;QueueID&gt;|ALL
-</code></pre>
-
-<p>配送が遅れいているキュー全てを削除する場合は、</p>
-
-<pre><code class="text">$ postsuper -d ALL deferred
-</code></pre>
-
-<h4>1-5. メールキューの再送</h4>
-
-<pre><code class="text">$ postsuper -r &lt;QueueID&gt;|ALL
-</code></pre>
-
-<p>もしくは、</p>
-
-<pre><code class="text">$ postfix flush
-</code></pre>
-
-<p>もしくは、</p>
-
-<pre><code class="text">postqueue -f
-</code></pre>
-
-<p>もしくは、</p>
-
-<pre><code class="text">sendmail -q
-</code></pre>
-
-<hr />
-
-<p>時々使用するコマンドなので、忘れたときのために記録しておいた次第です。</p>
 
 <p>以上。</p>
 ]]></content>
