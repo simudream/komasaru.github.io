@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-15T12:44:14+09:00</updated>
+  <updated>2015-11-21T00:17:30+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - Apt パッケージリストアップデートで GPG 公開鍵の期限切れエラー！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/21/linux-mint-apt-gpg-pubkey-expired-error/"/>
+    <updated>2015-11-21T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/21/linux-mint-apt-gpg-pubkey-expired-error</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux Mint で <code>apt-get update</code> すると公開鍵期限切れのエラーが発生するようになりました。</p>
+
+<p>（以前「<a href="http://komasaru.github.io/2015/10/14/linux-mint-apt-gpg-pubkey-error/" title="Linux Mint - apt-get update で GPG 公開鍵エラー！">Linux Mint - apt-get update で GPG 公開鍵エラー！</a>」という記事も公開しています。参考までに）</p>
+
+<p>以下、現象・原因・対策についての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+</ul>
+
+
+<h3>1. 現象</h3>
+
+<p><code>sudo apt-get update</code> を実行すると以下のようなエラーが発生する。（アップデートマネージャでも同様）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>W: GPG エラー: http://cran.ism.ac.jp trusty/ Release: 以下の署名が無効です: KEYEXPIRED 1445181253 KEYEXPIRED 1445181253 KEYEXPIRED 1445181253,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（ちなみに、今回の現象は統計解析用プログラミング言語 R のパッケージにに関するもの）</p>
+
+<h3>2. 原因</h3>
+
+<p>エラーメッセージに記載されているとおり、 <code>1445181253</code> というキーが <code>KEYEXPIRED</code>（期限切れ）になっているため。</p>
+
+<h3>3. 対策</h3>
+
+<p>まず、キーの状態を確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ apt-key list
+</span><span class='line'>
+</span><span class='line'>pub   2048R/E084DAB9 2010-10-19 [満了: 2015-10-18]
+</span><span class='line'>uid                  Michael Rutter &lt;marutter@gmail.com&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>確かに期限が切れている。</p>
+
+<p>従って、キーサーバに問い合わせて、公開鍵を再取得すればよい。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+</span><span class='line'>Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.UCCHrlWZQw --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+</span><span class='line'>gpg: 鍵E084DAB9をhkpからサーバーkeyserver.ubuntu.comに要求
+</span><span class='line'>gpg: 鍵E084DAB9:“Michael Rutter &lt;marutter@gmail.com&gt;”新しい署名を2個
+</span><span class='line'>gpg: 処理数の合計: 1
+</span><span class='line'>gpg:         新しい署名: 2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再度、キーの状態を確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ apt-key list
+</span><span class='line'>
+</span><span class='line'>pub   2048R/E084DAB9 2010-10-19 [満了: 2020-10-16]
+</span><span class='line'>uid                  Michael Rutter &lt;marutter@gmail.com&gt;
+</span><span class='line'>sub   2048R/1CFF3E8F 2010-10-19 [満了: 2020-10-16]
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>満了日が延長された。</p>
+
+<p>これで、正常に <code>sudo apt-get update</code> が実行できるはず。</p>
+
+<hr />
+
+<p>めったに遭遇しない事象なので、後学のために記録として残しておいた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - Disk の IOPS の確認！]]></title>
@@ -5077,300 +5176,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <p>検索の高速化を図るには必須の機能でしょう。</p>
 
 <p>当方も InnoDB で構築している既存の DB の高速化を図ってみたいところです。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - Rroonga で全文検索！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/17/ruby-rroonga-fulltext-searching/"/>
-    <updated>2015-08-17T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/17/ruby-rroonga-fulltext-searching</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Ruby でカラムストア機能付き全文検索エンジン Groonga の機能を容易に使用できる Rroonga を使用してみました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>Ruby 2.2.2-p95 での作業を想定。</li>
-<li>カラムストア機能付き全文検索エンジン Groonga がインストール済みであること。</li>
-</ul>
-
-
-<h3>1. Rroonga のインストール</h3>
-
-<p>以下のようにしてインストールする。<br/>
-（ちなみ、 Groonga 未インストールなら、ここでインストールされるはず。（当方 Groonga インストール済みなので、未確認））</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo gem install rroonga
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. データベースの作成</h3>
-
-<p>簡単な都道府県名データベースを作成してみる。</p>
-
-<p>取り急ぎ対話形式で作業を行いたいので、 pry(or irb) に入る。（プロンプトを簡易表示。 <code>groonga</code> を <code>require</code> して）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ pry --simple-prompt -r groonga
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>まず、エンコーディングの設定を行う。（今回は Linux なので UTF-8 に設定）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; Groonga::Context.default_options = {:encoding =&gt; :utf8}
-</span><span class='line'>=&gt; {:encoding=&gt;:utf8}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、データベースを作成する。（データベースファイル名を指定）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; Groonga::Database.create(:path =&gt; &quot;/path/to/prefs.db&quot;)
-</span><span class='line'>=&gt; #&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. テーブルの作成</h3>
-
-<p>都道府県名テーブルを作成してみる。（テーブル名、テーブルタイプを指定）<br/>
-（テーブルタイプには <code>hash</code>, <code>patricia_trie</code>, <code>double_array_trie</code>, <code>array</code> が指定可能）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; Groonga::Schema.create_table(&quot;Prefs&quot;, :type =&gt; :hash) do |tbl|
-</span><span class='line'> |   tbl.text(&quot;pref_name&quot;)
-</span><span class='line'> | end
-</span><span class='line'>=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe62cef60
-</span><span class='line'>  @definitions=
-</span><span class='line'>   [#&lt;Groonga::Schema::ColumnDefinition:0x007f9fe62ce1f0
-</span><span class='line'>     @name=&quot;pref_name&quot;,
-</span><span class='line'>     @options={:persistent=&gt;true, :named_path=&gt;nil},
-</span><span class='line'>     @type=&quot;Text&quot;&gt;],
-</span><span class='line'>  @name=&quot;Prefs&quot;,
-</span><span class='line'>  @options=
-</span><span class='line'>   {:context=&gt;
-</span><span class='line'>     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
-</span><span class='line'>    :type=&gt;:hash},
-</span><span class='line'>  @table_type=Groonga::Hash&gt;]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>テーブルが作成されたか確認してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; prefs = Groonga[&quot;Prefs&quot;]
-</span><span class='line'>=&gt; #&lt;Groonga::Hash id: &lt;256&gt;, name: &lt;Prefs&gt;, path: &lt;/path/to/prefs.db.0000100&gt;, domain: &lt;ShortText&gt;, range: (nil), flags: &lt;&gt;, size: &lt;0&gt;, encoding: &lt;:utf8&gt;, default_tokenizer: (nil), token_filters: [], normalizer: (nil)&gt;
-</span><span class='line'>&gt;&gt; prefs.size
-</span><span class='line'>=&gt; 0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. レコードの追加</h3>
-
-<p>以下のようにして、テーブルにレコードを追加していく。（47都道府県分。別途作成しておいた配列をループさせて登録するのがよいだろう）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; prefs.add(&quot;Hokkaido&quot;, :pref_name =&gt; &quot;北海道&quot;)
-</span><span class='line'>=&gt; #&lt;Groonga::Record:0x007f9fe69e4480 ..., attributes: {&quot;_id&quot;=&gt;1, &quot;_key&quot;=&gt;&quot;Hokkaido&quot;, &quot;pref_name&quot;=&gt;&quot;北海道&quot;}&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以下のような方法で追加することも可能。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; prefs.add(&quot;Aomoriken&quot;)
-</span><span class='line'>=&gt; #&lt;Groonga::Record:0x007f9fe6755020 ..., attributes: {&quot;_id&quot;=&gt;3, &quot;_key&quot;=&gt;&quot;Aomoriken&quot;, &quot;pref_name&quot;=&gt;nil}&gt;
-</span><span class='line'>&gt;&gt; prefs[&quot;Aomoriken&quot;].pref_name = &quot;青森県&quot;
-</span><span class='line'>=&gt; &quot;青森県&quot;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、削除するには以下のようにする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; prefs.delete(&quot;Aomoriken&quot;)
-</span><span class='line'>=&gt; nil
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. レコードの参照</h3>
-
-<p>登録したレコードを参照してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; prefs[&quot;Shimaneken&quot;]
-</span><span class='line'>=&gt; #&lt;Groonga::Record:0x007f9fe671a1f0 ..., attributes: {&quot;_id&quot;=&gt;32, &quot;_key&quot;=&gt;&quot;Shimaneken&quot;, &quot;pref_name&quot;=&gt;&quot;島根県&quot;}&gt;
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs[&quot;Shimaneken&quot;].id
-</span><span class='line'>=&gt; 32
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs[&quot;Shimaneken&quot;].key
-</span><span class='line'>=&gt; &quot;Shimaneken&quot;
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs[&quot;Shimaneken&quot;].pref_name
-</span><span class='line'>=&gt; &quot;島根県&quot;
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs.size
-</span><span class='line'>=&gt; 47
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. 全文検索用語彙テーブルの作成</h3>
-
-<p>全文検索用語彙テーブルを作成する。（以下は、テーブルタイプを PatriciaTrie に、ノーマライザを大文字小文字の区別をしない NormalizerAuto に、デフォルトトークナイザを N-gram の一種バイグラムに設定する例）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; Groonga::Schema.create_table(&quot;Terms&quot;,
-</span><span class='line'> |   :type =&gt; :patricia_trie,
-</span><span class='line'> |   :normalizer =&gt; :NormalizerAuto,
-</span><span class='line'> | :default_tokenizer =&gt; &quot;TokenBigram&quot;)
-</span><span class='line'>=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe6bb9cb0
-</span><span class='line'>  @definitions=[],
-</span><span class='line'>  @name=&quot;Terms&quot;,
-</span><span class='line'>  @options=
-</span><span class='line'>   {:context=&gt;
-</span><span class='line'>     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
-</span><span class='line'>    :type=&gt;:patricia_trie,
-</span><span class='line'>    :normalizer=&gt;:NormalizerAuto,
-</span><span class='line'>    :default_tokenizer=&gt;&quot;TokenBigram&quot;},
-</span><span class='line'>  @table_type=Groonga::PatriciaTrie&gt;]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. 全文検索用語彙テーブルのインデックス定義</h3>
-
-<p>今回は都道府県名ローマ字で検索してみることにする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; Groonga::Schema.change_table(&quot;Terms&quot;) do |tbl|
-</span><span class='line'> |   tbl.index(&quot;Prefs.pref_name&quot;)
-</span><span class='line'> | end
-</span><span class='line'>=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe6a823d8
-</span><span class='line'>  @definitions=
-</span><span class='line'>   [#&lt;Groonga::Schema::IndexColumnDefinition:0x007f9fe6a81d48
-</span><span class='line'>     @name=nil,
-</span><span class='line'>     @options={:persistent=&gt;true, :named_path=&gt;nil},
-</span><span class='line'>     @target_columns=[&quot;pref_name&quot;],
-</span><span class='line'>     @target_table=&quot;Prefs&quot;&gt;],
-</span><span class='line'>  @name=&quot;Terms&quot;,
-</span><span class='line'>  @options=
-</span><span class='line'>   {:context=&gt;
-</span><span class='line'>     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
-</span><span class='line'>    :change=&gt;true},
-</span><span class='line'>  @table_type=Groonga::Array&gt;]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>8. 検索の確認</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;&gt; prefs_shimane = prefs.select { |rec| rec.pref_name =~ &quot;島根県&quot; }    =&gt; #&lt;Groonga::Hash id: &lt;2147483655&gt;, name: (anonymous), path: (temporary), domain: &lt;Prefs&gt;, range: (nil), flags: &lt;WITH_SUBREC&gt;, size: &lt;1&gt;, encoding: &lt;:utf8&gt;, default_tokenizer: (nil), token_filters: [], normalizer: (nil)&gt;
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs_shimane.size
-</span><span class='line'>=&gt; 1
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs_shimane.collect { |rec| rec.key.key }
-</span><span class='line'>=&gt; [&quot;Shimaneken&quot;]
-</span><span class='line'>
-</span><span class='line'>&gt;&gt; prefs_shimane.collect { |rec| rec[&quot;_key&quot;] }
-</span><span class='line'>=&gt; [&quot;Shimaneken&quot;]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>9. 参考サイト</h3>
-
-<ul>
-<li><a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga - カラムストア機能付き全文検索エンジン</a></li>
-<li><a href="http://ranguba.org/ja/" title="RubyでGroonga使って全文検索 - ラングバ">RubyでGroonga使って全文検索 - ラングバ</a></li>
-</ul>
-
-
-<hr />
-
-<p>その他の詳細な使用方法は実際に Ruby コーディングしながら覚えることになるでしょう。</p>
 
 <p>以上。</p>
 ]]></content>
