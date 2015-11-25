@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-21T00:17:30+09:00</updated>
+  <updated>2015-11-26T00:06:16+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,153 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - MTU 最適値の導出！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/26/linux-mtu-best-effort/"/>
+    <updated>2015-11-26T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/26/linux-mtu-best-effort</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux で最適な MTU 値を導出する方法についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>1. MTU について</h3>
+
+<p>MTU とは Maximum Transmission Unit の略で、ネットワーク上において１フレーム（１回の転送）で送信可能な IP パケットの最大サイズのこと。<br/>
+（このサイズは IP ヘッダ ＋ ICMP ヘッダ ＋ データのサイズ）</p>
+
+<h3>2. MTU 現在値の確認</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ifconfig
+</span><span class='line'>ifconfig
+</span><span class='line'>eth0      Link encap:イーサネット  ハードウェアアドレス XX:XX:XX:XX:XX:XX
+</span><span class='line'>          inetアドレス:192.168.XXX.XXX  ブロードキャスト:192.168.XXX.255  マスク:255.255.255.0
+</span><span class='line'>          UP BROADCAST RUNNING MULTICAST  MTU:1500  メトリック:1
+</span><span class='line'>          RXパケット:49793411 エラー:0 損失:0 オーバラン:0 フレーム:0
+</span><span class='line'>          TXパケット:30012458 エラー:0 損失:0 オーバラン:0 キャリア:0
+</span><span class='line'>          衝突(Collisions):0 TXキュー長:1000
+</span><span class='line'>          RXバイト:23207684202 (23.2 GB)  TXバイト:21221894153 (21.2 GB)
+</span><span class='line'>          割り込み:17
+</span><span class='line'>
+</span><span class='line'>lo        Link encap:ローカルループバック
+</span><span class='line'>          inetアドレス:127.0.0.1  マスク:255.0.0.0
+</span><span class='line'>          UP LOOPBACK RUNNING  MTU:65536  メトリック:1
+</span><span class='line'>          RXパケット:27117491 エラー:0 損失:0 オーバラン:0 フレーム:0
+</span><span class='line'>          TXパケット:27117491 エラー:0 損失:0 オーバラン:0 キャリア:0
+</span><span class='line'>          衝突(Collisions):0 TXキュー長:0
+</span><span class='line'>          RXバイト:32672340989 (32.6 GB)  TXバイト:32672340989 (32.6 GB)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>eth0 の MTU 値が <code>1500</code> となっている。</p>
+
+<h3>3. MTU 最適値の導出</h3>
+
+<p>要は、様々なサイズのパケット（データ）を断片化せずに送信してみてロスしない最大値を求めればよい。<br/>
+但し、「IP ヘッダ ＋ ICMP ヘッダ」が「28 バイト」あるので、 MTU に設定する値は +28 したものになる。
+（送信先は存在する URL ならどこでもよい）</p>
+
+<p>では、実際に導出作業を行なってみる。（大体の目星をつけて作業を行うとよいだろう）</p>
+
+<p>以下では <code>ping</code> コマンドを使用するがオプションは次のとおり。</p>
+
+<ul>
+<li><code>-c 1</code> は、リクエスト回数を１回に設定するオプション</li>
+<li><code>-s 9999</code> は、送信パケットサイズを 9999 に設定するオプション</li>
+<li><code>-M do</code> は、パケットの断片化を行わないオプション</li>
+</ul>
+
+
+<p>まず、パケットサイズ 1400 バイトで送信してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># ping -c 1 -s 1400 -M do www.linuxmint.com
+</span><span class='line'>PING www.linuxmint.com (213.175.215.218) 1400(1428) bytes of data.
+</span><span class='line'>1408 bytes from forums.linuxmint.com (213.175.215.218): icmp_seq=1 ttl=49 time=308 ms
+</span><span class='line'>
+</span><span class='line'>--- www.linuxmint.com ping statistics ---
+</span><span class='line'>1 packets transmitted, 1 received, 0% packet loss, time 0ms
+</span><span class='line'>rtt min/avg/max/mdev = 308.674/308.674/308.674/0.000 ms
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>1 received, 0% packet loss</code> なので、正常に送信できているということ。</p>
+
+<p>次に、パケットサイズ 1500 バイトで送信してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ping -c 1 -s 1500 -M do www.linuxmint.com
+</span><span class='line'>PING www.linuxmint.com (213.175.215.218) 1500(1528) bytes of data.
+</span><span class='line'>ping: local error: Message too long, mtu=1454
+</span><span class='line'>
+</span><span class='line'>--- www.linuxmint.com ping statistics ---
+</span><span class='line'>1 packets transmitted, 0 received, +1 errors, 100% packet loss, time 0ms
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>0 received, +1 errors, 100% packet loss</code> なので、送信に失敗しているということ。</p>
+
+<p>このように、パケットサイズを変更しながら絞り込んでいく。</p>
+
+<p>今回の当方の環境の場合、パケットサイズ「1426 バイト」が正常に送信できる最大値であった。</p>
+
+<p>よって、 MTU 値は IP ヘッダ ＋ ICMP ヘッダの 28 バイトをプラスした「1454 バイト」となる。<br/>
+（ちなみに、この値は今回の当方の環境ではよく知られている最適な MTU 値）</p>
+
+<h3>4. MTU 値の変更</h3>
+
+<p>後は、MTU 値を前項で導出した値に変更すればよい。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ifconfig eth0 mtu 1454
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但し、この設定は一時的なものなのでマシンを再起動すると元に戻ってしまう。</p>
+
+<p>恒久的に変更するには、ネットワーク接続の編集の画面で MTU 値を「自動（もしくは、何らかの数値）」から変更、もしくは設定ファイル &ldquo;/etc/NetworkManager/system-connections/Wired\ connection\ 1&rdquo; 等を編集し、再起動（ネットワーク再接続）する。（Linux Mint 等の場合）</p>
+
+<p>ちなみに、 CentOS の CUI ベースなら &ldquo;/etc/sysconfig/network-scripts/ifcfg-eth0&rdquo; 等を編集して再起動する。</p>
+
+<hr />
+
+<p>それほどネットワーク周りが改善されたと体感できないかもしれませんが、最適化しないよりはした方がよいでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - Apt パッケージリストアップデートで GPG 公開鍵の期限切れエラー！]]></title>
@@ -146,7 +293,7 @@
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># iosat -dx
+</pre></td><td class='code'><pre><code class='text'><span class='line'># iostat -dx
 </span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
 </span><span class='line'>
 </span><span class='line'>Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
@@ -4991,191 +5138,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <p>この dRuby による分散処理をいろいろ応用できそうです。</p>
 
 <p>実際、目論んでいることもありますし。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB 10.0.x - Mroonga プラグインの有効化！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/21/mariadb-mroonga-installation/"/>
-    <updated>2015-08-21T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/21/mariadb-mroonga-installation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>全文検索エンジン Groonga をベースとした MySQL のストレージエンジン Mroonga を MariaDB で使用する方法についての簡単な記録です。</p>
-
-<p>MariaDB 10.0.x では Mroonga のプラグインがバンドルされているので、 Mroonga を別途インストールする必要はありません。<br/>
-プラグインを有効にすればすぐに使用できるようになります。（但し、バンドルされている Mroonga はバージョンが少し古いようなので、最新バージョンを使用したければ別途インストールする必要があります）</p>
-
-<p>（Groonga, Mroonga については不勉強で疎いため、乱文ご容赦ください）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MariaDB 10.0.21 (on Linux Mint 17.2) での作業を想定。</li>
-</ul>
-
-
-<h3>1. プラグインの有効化</h3>
-
-<p>以下の SQL を実行して、プラグインを有効にする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; INSTALL PLUGIN Mroonga SONAME &#39;ha_mroonga.so&#39;;
-</span><span class='line'>&gt; CREATE FUNCTION last_insert_grn_id RETURNS INTEGER SONAME &#39;ha_mroonga.so&#39;;
-</span><span class='line'>&gt; CREATE FUNCTION mroonga_snippet RETURNS STRING SONAME &#39;ha_mroonga.so&#39;;
-</span><span class='line'>&gt; CREATE FUNCTION mroonga_command RETURNS STRING SONAME &#39;ha_mroonga.so&#39;;
-</span><span class='line'>&gt; CREATE FUNCTION mroonga_escape RETURNS STRING SONAME &#39;ha_mroonga.so&#39;;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. プラグイン有効化の確認</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; SHOW ENGINES;
-</span><span class='line'>+--------------------+---------+----------------------------------------------------------------------------+--------------+------+------------+
-</span><span class='line'>| Engine             | Support | Comment                                                                    | Transactions | XA   | Savepoints |
-</span><span class='line'>+--------------------+---------+----------------------------------------------------------------------------+--------------+------+------------+
-</span><span class='line'>| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables                  | NO           | NO   | NO         |
-</span><span class='line'>| CSV                | YES     | CSV storage engine                                                         | NO           | NO   | NO         |
-</span><span class='line'>| PERFORMANCE_SCHEMA | YES     | Performance Schema                                                         | NO           | NO   | NO         |
-</span><span class='line'>| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears)             | NO           | NO   | NO         |
-</span><span class='line'>| MyISAM             | YES     | MyISAM storage engine                                                      | NO           | NO   | NO         |
-</span><span class='line'>| MRG_MyISAM         | YES     | Collection of identical MyISAM tables                                      | NO           | NO   | NO         |
-</span><span class='line'>| Mroonga            | YES     | CJK-ready fulltext search, column store                                    | NO           | NO   | NO         |
-</span><span class='line'>| FEDERATED          | YES     | FederatedX pluggable storage engine                                        | YES          | NO   | YES        |
-</span><span class='line'>| InnoDB             | DEFAULT | Percona-XtraDB, Supports transactions, row-level locking, and foreign keys | YES          | YES  | YES        |
-</span><span class='line'>| Aria               | YES     | Crash-safe tables with MyISAM heritage                                     | NO           | NO   | NO         |
-</span><span class='line'>| ARCHIVE            | YES     | Archive storage engine                                                     | NO           | NO   | NO         |
-</span><span class='line'>+--------------------+---------+----------------------------------------------------------------------------+--------------+------+------------+
-</span><span class='line'>11 rows in set (0.00 sec)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. テーブルの作成方法</h3>
-
-<p>以下は、ストレージモードでテーブルを作成する場合で、 <code>col_name_2</code> に全文検索インデックスを張る例（トークナイザはデフォルトの &ldquo;TokenBigram"）。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; CREATE TABLE table_name(
-</span><span class='line'>&gt;   id INT PRIMARY KEY AUTO_INCREMENT,
-</span><span class='line'>&gt;   col_name_1 VARCHAR(255),
-</span><span class='line'>&gt;   col_name_2 VARCHAR(255),
-</span><span class='line'>&gt;   FULLTEXT INDEX (col_name_2)
-</span><span class='line'>&gt; ) ENGINE = Mroonga DEFAULT CHARSET utf8;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以下は、ラッパーモード（元のストレージエンジンは InnoDB）でテーブルを作成する場合で、 <code>col_name_2</code> に全文検索インデックスを張る例（トークナイザはデフォルトの &ldquo;TokenBigram"）。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; CREATE TABLE table_name (
-</span><span class='line'>&gt;   id INT PRIMARY KEY AUTO_INCREMENT,
-</span><span class='line'>&gt;   col_name_1 VARCHAR(255),
-</span><span class='line'>&gt;   col_name_2 VARCHAR(255),
-</span><span class='line'>&gt;   FULLTEXT INDEX (col_name_2)
-</span><span class='line'>&gt; ) ENGINE = Mroonga COMMENT = &#39;engine &quot;InnoDB&quot;&#39; DEFAULT CHARSET utf8;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>※但し、 MariaDB では <code>FULLTEXT INDEX</code> で設定しても <code>FULLTEXT KEY</code> で登録される。</p>
-
-<p>ちなみに、テーブルデフォルトのトークナイザを MeCab に変更したい場合は以下のようにする。（設定ファイルで指定することも可能）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt; ) ENGINE = Mroonga COMMENT=&#39;default_tokenizer &quot;TokenMecab&quot;&#39; DEFAULT CHARSET utf8;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>FULLTEXT INDEX のパーサのみ変更したい場合は以下のようにする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>&gt;   FULLTEXT INDEX (col_name_2) COMMENT=&#39;parser &quot;TokenMecab&quot;&#39;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. 検索例</h3>
-
-<p>以下は、テーブル table_name の col_name_2 に「松江」を含み「出雲」を含まないレコードを検索する例。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span><span class="p">,</span> <span class="k">MATCH</span> <span class="p">(</span><span class="n">col_name_2</span><span class="p">)</span> <span class="n">AGAINST</span><span class="p">(</span><span class="ss">&quot;+松江 -出雲&quot;</span> <span class="k">IN</span> <span class="nb">BOOLEAN</span> <span class="k">MODE</span><span class="p">)</span>
-</span><span class='line'><span class="o">&gt;</span>   <span class="k">FROM</span> <span class="k">table_name</span>
-</span><span class='line'><span class="o">&gt;</span>  <span class="k">WHERE</span> <span class="k">MATCH</span> <span class="p">(</span><span class="n">col_name_2</span><span class="p">)</span> <span class="n">AGAINST</span><span class="p">(</span><span class="ss">&quot;+松江 -出雲&quot;</span> <span class="k">IN</span> <span class="nb">BOOLEAN</span> <span class="k">MODE</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>SELECT</code> 句内の <code>MATCH ... AGAINST ...</code> は、検索スコア。</li>
-<li><code>IN BOOLEAN MODE</code> は、マッチ率の概念を省いて、単純にかつ機械的に検索するモード。</li>
-</ul>
-
-
-<p>ちなみに、当方で 30 万件ほどレコードのあるテーブルで同様に検索してみた結果、 <code>WHERE</code> 句を</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">WHERE</span> <span class="n">col_name_2</span> <span class="k">LIKE</span> <span class="s1">&#39;%松江%&#39;</span> <span class="k">AND</span> <span class="n">col_name_2</span> <span class="k">NOT</span> <span class="k">LIKE</span> <span class="s1">&#39;%出雲%&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>にして検索するより約 100 倍高速に検索できました。さらに、レコード約 1,300 万件では 約 500 倍高速に検索できました。<br/>
-（テーブルレイアウト、レコード数等にもよるでしょうが）</p>
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="http://mroonga.org/ja/" title="Mroonga - MySQLで高速全文検索">Mroonga - MySQLで高速全文検索</a></li>
-</ul>
-
-
-<p>中でも、Mroonga プラグインの有効については以下を参照。</p>
-
-<ul>
-<li><a href="http://mroonga.org/ja/blog/2015/04/29/release.html" title="Mroonga - Mroonga 5.02リリース！">Mroonga - Mroonga 5.02リリース！</a></li>
-</ul>
-
-
-<hr />
-
-<p>検索の高速化を図るには必須の機能でしょう。</p>
-
-<p>当方も InnoDB で構築している既存の DB の高速化を図ってみたいところです。</p>
 
 <p>以上。</p>
 ]]></content>

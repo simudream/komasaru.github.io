@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-21T00:17:30+09:00</updated>
+  <updated>2015-11-26T00:06:16+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,117 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - MTU 最適値の導出！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/11/26/linux-mtu-best-effort/"/>
+    <updated>2015-11-26T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/11/26/linux-mtu-best-effort</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux で最適な MTU 値を導出する方法についての備忘録です。</p>
+
+<!--more-->
+
+
+<h3>1. MTU について</h3>
+
+<p>MTU とは Maximum Transmission Unit の略で、ネットワーク上において１フレーム（１回の転送）で送信可能な IP パケットの最大サイズのこと。<br/>
+（このサイズは IP ヘッダ ＋ ICMP ヘッダ ＋ データのサイズ）</p>
+
+<h3>2. MTU 現在値の確認</h3>
+
+<pre><code class="text">$ ifconfig
+ifconfig
+eth0      Link encap:イーサネット  ハードウェアアドレス XX:XX:XX:XX:XX:XX
+          inetアドレス:192.168.XXX.XXX  ブロードキャスト:192.168.XXX.255  マスク:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  メトリック:1
+          RXパケット:49793411 エラー:0 損失:0 オーバラン:0 フレーム:0
+          TXパケット:30012458 エラー:0 損失:0 オーバラン:0 キャリア:0
+          衝突(Collisions):0 TXキュー長:1000
+          RXバイト:23207684202 (23.2 GB)  TXバイト:21221894153 (21.2 GB)
+          割り込み:17
+
+lo        Link encap:ローカルループバック
+          inetアドレス:127.0.0.1  マスク:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  メトリック:1
+          RXパケット:27117491 エラー:0 損失:0 オーバラン:0 フレーム:0
+          TXパケット:27117491 エラー:0 損失:0 オーバラン:0 キャリア:0
+          衝突(Collisions):0 TXキュー長:0
+          RXバイト:32672340989 (32.6 GB)  TXバイト:32672340989 (32.6 GB)
+</code></pre>
+
+<p>eth0 の MTU 値が <code>1500</code> となっている。</p>
+
+<h3>3. MTU 最適値の導出</h3>
+
+<p>要は、様々なサイズのパケット（データ）を断片化せずに送信してみてロスしない最大値を求めればよい。<br/>
+但し、「IP ヘッダ ＋ ICMP ヘッダ」が「28 バイト」あるので、 MTU に設定する値は +28 したものになる。
+（送信先は存在する URL ならどこでもよい）</p>
+
+<p>では、実際に導出作業を行なってみる。（大体の目星をつけて作業を行うとよいだろう）</p>
+
+<p>以下では <code>ping</code> コマンドを使用するがオプションは次のとおり。</p>
+
+<ul>
+<li><code>-c 1</code> は、リクエスト回数を１回に設定するオプション</li>
+<li><code>-s 9999</code> は、送信パケットサイズを 9999 に設定するオプション</li>
+<li><code>-M do</code> は、パケットの断片化を行わないオプション</li>
+</ul>
+
+
+<p>まず、パケットサイズ 1400 バイトで送信してみる。</p>
+
+<pre><code class="text"># ping -c 1 -s 1400 -M do www.linuxmint.com
+PING www.linuxmint.com (213.175.215.218) 1400(1428) bytes of data.
+1408 bytes from forums.linuxmint.com (213.175.215.218): icmp_seq=1 ttl=49 time=308 ms
+
+--- www.linuxmint.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 308.674/308.674/308.674/0.000 ms
+</code></pre>
+
+<p><code>1 received, 0% packet loss</code> なので、正常に送信できているということ。</p>
+
+<p>次に、パケットサイズ 1500 バイトで送信してみる。</p>
+
+<pre><code class="text">$ ping -c 1 -s 1500 -M do www.linuxmint.com
+PING www.linuxmint.com (213.175.215.218) 1500(1528) bytes of data.
+ping: local error: Message too long, mtu=1454
+
+--- www.linuxmint.com ping statistics ---
+1 packets transmitted, 0 received, +1 errors, 100% packet loss, time 0ms
+</code></pre>
+
+<p><code>0 received, +1 errors, 100% packet loss</code> なので、送信に失敗しているということ。</p>
+
+<p>このように、パケットサイズを変更しながら絞り込んでいく。</p>
+
+<p>今回の当方の環境の場合、パケットサイズ「1426 バイト」が正常に送信できる最大値であった。</p>
+
+<p>よって、 MTU 値は IP ヘッダ ＋ ICMP ヘッダの 28 バイトをプラスした「1454 バイト」となる。<br/>
+（ちなみに、この値は今回の当方の環境ではよく知られている最適な MTU 値）</p>
+
+<h3>4. MTU 値の変更</h3>
+
+<p>後は、MTU 値を前項で導出した値に変更すればよい。</p>
+
+<pre><code class="text">$ ifconfig eth0 mtu 1454
+</code></pre>
+
+<p>但し、この設定は一時的なものなのでマシンを再起動すると元に戻ってしまう。</p>
+
+<p>恒久的に変更するには、ネットワーク接続の編集の画面で MTU 値を「自動（もしくは、何らかの数値）」から変更、もしくは設定ファイル &ldquo;/etc/NetworkManager/system-connections/Wired\ connection\ 1&rdquo; 等を編集し、再起動（ネットワーク再接続）する。（Linux Mint 等の場合）</p>
+
+<p>ちなみに、 CentOS の CUI ベースなら &ldquo;/etc/sysconfig/network-scripts/ifcfg-eth0&rdquo; 等を編集して再起動する。</p>
+
+<hr />
+
+<p>それほどネットワーク周りが改善されたと体感できないかもしれませんが、最適化しないよりはした方がよいでしょう。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - Apt パッケージリストアップデートで GPG 公開鍵の期限切れエラー！]]></title>
@@ -394,157 +505,6 @@ sys     0m3.310s
 <p>非力な環境では、それほど積極的に使用したいと思うようなコマンドでもありませんでした。</p>
 
 <p>しかし、コアを複数使用して圧縮・解凍ができる、といういことを認識できたことに若干の喜びを感じた次第です。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - XML に XSLT を適用して HTML 生成！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc/"/>
-    <updated>2015-09-07T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>以前、 Ruby で XML ファイルに XSL テンプレートを適用して HTML を生成する方法を紹介しました。</p>
-
-<ul>
-<li><a href="/2013/12/04/ruby-apply-xslt-to-xml/" title="Ruby - XML に XSLT を適用して HTML 生成！">Ruby - XML に XSLT を適用して HTML 生成！</a></li>
-</ul>
-
-
-<p>ただ、 Linux ディストリビューションによってはデフォルトで XML に XSL テンプレートを適用するコマンドがインストールされています。<br/>
-わざわざ Ruby を使用しなくてもよいということです。</p>
-
-<p>以下、その使用方法についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>XML に XSL テンプレート適用して HTML ファイルを生成するのに <code>xsltproc</code> コマンドを使用する。</li>
-</ul>
-
-
-<h3>1. xsltproc コマンドのインストール</h3>
-
-<p><code>xsltproc</code> コマンドが未インストールならインストールしておく。</p>
-
-<pre><code class="text">$ sudo apt-get install xsltproc
-</code></pre>
-
-<h3>2. XML ファイルの準備</h3>
-
-<p>試験的に使用する XML ファイルを以下のように作成する。（あくまで一例）</p>
-
-<pre><code class="xml test.xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;?xml-stylesheet type="text/xsl" href="test.xsl" ?&gt;
-
-&lt;Office&gt;
-  &lt;People&gt;
-    &lt;Person&gt;
-      &lt;No&gt;1234&lt;/No&gt;
-      &lt;Name&gt;Ruby 太郎&lt;/Name&gt;
-      &lt;Birthday&gt;1980-01-01&lt;/Birthday&gt;
-      &lt;Age&gt;33&lt;/Age&gt;
-    &lt;/Person&gt;
-    &lt;Person&gt;
-      &lt;No&gt;2345&lt;/No&gt;
-      &lt;Name&gt;XML 二郎&lt;/Name&gt;
-      &lt;Birthday&gt;1985-04-15&lt;/Birthday&gt;
-      &lt;Age&gt;28&lt;/Age&gt;
-    &lt;/Person&gt;
-    &lt;Person&gt;
-      &lt;No&gt;3456&lt;/No&gt;
-      &lt;Name&gt;XSL 花子&lt;/Name&gt;
-      &lt;Birthday&gt;1990-09-30&lt;/Birthday&gt;
-      &lt;Age&gt;23&lt;/Age&gt;
-    &lt;/Person&gt;
-  &lt;/People&gt;
-&lt;/Office&gt;
-</code></pre>
-
-<h3>3. XSL テンプレートファイルの準備</h3>
-
-<p>試験的に使用する XSL テンプレートファイルを以下のように作成する。（あくまで一例）</p>
-
-<pre><code class="xml test.xsl">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-
-&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"&gt;
-   &lt;xsl:output method="html" encoding="UTF-8"/&gt;
-
-  &lt;xsl:template match="/"&gt;
-    &lt;xsl:apply-templates/&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;xsl:template match="Office"&gt;
-    &lt;html lang="ja"&gt;
-    &lt;body&gt;
-    &lt;xsl:apply-templates/&gt;
-    &lt;/body&gt;
-    &lt;/html&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;xsl:template match="People"&gt;
-    &lt;table&gt;
-    &lt;xsl:apply-templates/&gt;
-    &lt;/table&gt;
-  &lt;/xsl:template&gt;
-
-  &lt;xsl:template match="Person"&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;xsl:value-of select="No"/&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;xsl:value-of select="Name"/&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;xsl:value-of select="Birthday"/&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;
-</code></pre>
-
-<h3>4. HTML ファイルの生成</h3>
-
-<p>準備しておいた XML ファイルに XSL テンプレートを適用して HTML ファイルを生成する。</p>
-
-<pre><code class="text">$ xsltproc --output test.html test.xsl test.xml
-</code></pre>
-
-<p>※オプションは他にも多数あるので、 <code>xsltproc --help</code> や <code>man xsltproc</code> で確認する。</p>
-
-<h3>5. HTML ファイルの確認</h3>
-
-<p>&ldquo;test.html&rdquo; というファイルが作成されているはずなので、確認してみる。</p>
-
-<pre><code class="html test.html">&lt;html lang="ja"&gt;&lt;body&gt;
-  &lt;table&gt;
-    &lt;tr&gt;
-&lt;td&gt;1234&lt;/td&gt;
-&lt;td&gt;Ruby 太郎&lt;/td&gt;
-&lt;td&gt;1980-01-01&lt;/td&gt;
-&lt;/tr&gt;
-    &lt;tr&gt;
-&lt;td&gt;2345&lt;/td&gt;
-&lt;td&gt;XML 二郎&lt;/td&gt;
-&lt;td&gt;1985-04-15&lt;/td&gt;
-&lt;/tr&gt;
-    &lt;tr&gt;
-&lt;td&gt;3456&lt;/td&gt;
-&lt;td&gt;XSL 花子&lt;/td&gt;
-&lt;td&gt;1990-09-30&lt;/td&gt;
-&lt;/tr&gt;
-  &lt;/table&gt;
-&lt;/body&gt;&lt;/html&gt;
-</code></pre>
-
-<p>さらに、この HTML ファイルをブラウザで開いて確認してみる。</p>
-
-<p><img src="/images/2015/09/07/XSLTPROC.png" title="XSLTPROC" alt="XSLTPROC" /></p>
-
-<hr />
-
-<p>単に XML ファイルに XSL テンプレートを適用して HTML ファイルを作成するだけなら、今回の方法が楽でいいかもしれませんね。</p>
 
 <p>以上。</p>
 ]]></content>

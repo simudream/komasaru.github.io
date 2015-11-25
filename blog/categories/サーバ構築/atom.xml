@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-11-21T00:17:30+09:00</updated>
+  <updated>2015-11-26T00:06:16+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -42,7 +42,7 @@
 
 <p>以下のようにコマンドを実行する。</p>
 
-<pre><code class="text"># iosat -dx
+<pre><code class="text"># iostat -dx
 Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
 
 Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
