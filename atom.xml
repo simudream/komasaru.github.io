@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-08T00:06:06+09:00</updated>
+  <updated>2015-12-12T00:07:00+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,131 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS - Web/Proxy サーバ Nginx の最新版を yum インストール！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/12/12/centos-nginx-installation-by-yum/"/>
+    <updated>2015-12-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/12/12/centos-nginx-installation-by-yum</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Debian GNU/Linux や Linux Mint への公式 Apt を使用した Nginx のインストールは記録として残していましたが、 CentOS への公式 yum を使用したインストールについて記録として残してなかったので、今回記録しておくことにしました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 7.1-1503(x86_64) での作業を想定。（CentOS 6 系、5系でも同様（起動方法、自動起動設定、ファイアウォール設定以外は））</li>
+</ul>
+
+
+<h3>1. yum リポジトリの登録</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下のようなリポジトリ設定ファイルが作成される。<br/>
+（上記を実行せず、直接以下のようなファイルを作成してもよい）</p>
+
+<figure class='code'><figcaption><span>/etc/yum.repos.d/nginx.repo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># nginx.repo</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>nginx<span class="o">]</span>
+</span><span class='line'><span class="nv">name</span><span class="o">=</span>nginx repo
+</span><span class='line'><span class="nv">baseurl</span><span class="o">=</span>http://nginx.org/packages/OS/OSRELEASE/<span class="nv">$basearch</span>/
+</span><span class='line'><span class="nv">gpgcheck</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">enabled</span><span class="o">=</span>1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. Nginx のインストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum -y install nginx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. Ngins インストールの確認</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># nginx -v
+</span><span class='line'>nginx version: nginx/1.8.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. Nginx 設定ファイルの編集</h3>
+
+<p>Nginx 設定ファイルが &ldquo;/etc/nginx&rdquo; ディレクトリ内にあるので、必要に応じて編集する。<br/>
+（取り急ぎ、今回は編集しない）</p>
+
+<h3>5. Nginx の起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl start nginx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. Nginx 自動起動の設定</h3>
+
+<p>マシン起動時に Nginx が自動で起動するようにしたければ以下のようにする。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl enable nginx
+</span><span class='line'>systemctl list-unit-files -t service | grep nginx
+</span><span class='line'>
+</span><span class='line'># systemctl list-unit-files -t service | grep nginx
+</span><span class='line'>nginx.service                             enabled  # &lt;= enabled であることを確認
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. ファイアウォールの設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># firewall-cmd --add-service=http
+</span><span class='line'>success
+</span><span class='line'># firewall-cmd --add-service=http --permanent
+</span><span class='line'>success
+</span><span class='line'># firewall-cmd --list-services
+</span><span class='line'>dhcpv6-client dns ftp http nfs pop3s smtp ssh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>8. 動作確認</h3>
+
+<p>ブラウザで <code>http://＜サーバ名＞/</code> にアクセスしてみ &ldquo;Welcome to nginx! &hellip;&rdquo; と表示されればよい。</p>
+
+<h3>9. 参考サイト</h3>
+
+<ul>
+<li><a href="http://nginx.org/en/linux_packages.html" title="nginx - Linux packages">nginx - Linux packages</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - マシン起動時にディレクトリ・ファイルを自動作成！]]></title>
@@ -4846,202 +4971,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>単に XML ファイルに XSL テンプレートを適用して HTML ファイルを作成するだけなら、今回の方法が楽でいいかもしれませんね。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - インデックス名一覧取得！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/03/mariadb-index-list/"/>
-    <updated>2015-09-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/03/mariadb-index-list</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) で作成済みのインデックスの名称を確認したい場合、 <code>SHOW INDEX FROM table_name</code> を使用することが多いと思います。</p>
-
-<p>しかし、一度に多数のテーブルについて確認したい場合に、テーブル単位で <code>SHOW INDEX FROM table_name</code> を実行するのは大変面倒です。</p>
-
-<p>以下で、指定データベース内の全テーブルに作成済みのインデックスを一覧表示する SQL 等を紹介します。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MariaDB 10.0.21 での作業を想定。（MySQL でも同様のはず）</li>
-</ul>
-
-
-<h3>1. SQL 作成</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'>  <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">TABLE_SCHEMA</span><span class="p">,</span> <span class="k">TABLE_NAME</span><span class="p">,</span> <span class="n">INDEX_NAME</span>
-</span><span class='line'>    <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="k">STATISTICS</span>
-</span><span class='line'>   <span class="k">WHERE</span> <span class="n">TABLE_SCHEMA</span> <span class="o">=</span> <span class="s1">&#39;scheme_name&#39;</span> <span class="c1">-- &lt;= 対象のデータベース名</span>
-</span><span class='line'>     <span class="k">AND</span> <span class="n">INDEX_NAME</span> <span class="o">&lt;&gt;</span> <span class="s1">&#39;PRIMARY&#39;</span>
-</span><span class='line'><span class="k">ORDER</span> <span class="k">BY</span> <span class="n">TABLE_SCHEMA</span><span class="p">,</span> <span class="k">TABLE_NAME</span><span class="p">,</span> <span class="n">INDEX_NAME</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、インデックスに設定されているカラム名やその順番も確認したければ、以下のような SQL となる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'>  <span class="k">SELECT</span> <span class="n">TABLE_SCHEMA</span><span class="p">,</span> <span class="k">TABLE_NAME</span><span class="p">,</span> <span class="n">INDEX_NAME</span><span class="p">,</span> <span class="k">COLUMN_NAME</span><span class="p">,</span> <span class="n">SEQ_IN_INDEX</span>
-</span><span class='line'>    <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="k">STATISTICS</span>
-</span><span class='line'>   <span class="k">WHERE</span> <span class="n">TABLE_SCHEMA</span> <span class="o">=</span> <span class="s1">&#39;scheme_name&#39;</span> <span class="c1">-- &lt;= 対象のデータベース名</span>
-</span><span class='line'>     <span class="k">AND</span> <span class="n">INDEX_NAME</span> <span class="o">&lt;&gt;</span> <span class="s1">&#39;PRIMARY&#39;</span>
-</span><span class='line'><span class="k">ORDER</span> <span class="k">BY</span> <span class="n">TABLE_SCHEMA</span><span class="p">,</span> <span class="k">TABLE_NAME</span><span class="p">,</span> <span class="n">INDEX_NAME</span><span class="p">,</span> <span class="n">SEQ_IN_INDEX</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. 応用</h3>
-
-<p>参考までに、前項で紹介した SQL を利用して、データベース内の全テーブルの全インデックス（プライマリキーを除く）を削除するストアドプロシージャを作成する。<br/>
-※当方が過去に必要に迫られて作成したストアドプロシージャで、実際はこのストアドプロシージャ実行後にインデックスを一括作成するストアドプロシージャも実行している。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">DEFINER</span><span class="o">=`</span><span class="n">root</span><span class="o">`@`</span><span class="n">localhost</span><span class="o">`</span> <span class="k">PROCEDURE</span> <span class="o">`</span><span class="n">del_index_all</span><span class="o">`</span><span class="p">()</span>
-</span><span class='line'><span class="k">BEGIN</span>
-</span><span class='line'>    <span class="c1">-- 変数宣言</span>
-</span><span class='line'>    <span class="k">DECLARE</span> <span class="n">v_tbl_name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">DECLARE</span> <span class="n">v_idx_name</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">DECLARE</span> <span class="n">v_done</span> <span class="nb">INT</span> <span class="k">DEFAULT</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>    <span class="c1">-- カーソル宣言</span>
-</span><span class='line'>    <span class="k">DECLARE</span> <span class="n">v_cur</span> <span class="k">CURSOR</span> <span class="k">FOR</span>
-</span><span class='line'>        <span class="k">SELECT</span>
-</span><span class='line'>            <span class="k">DISTINCT</span> <span class="k">TABLE_NAME</span><span class="p">,</span> <span class="n">INDEX_NAME</span>
-</span><span class='line'>        <span class="k">FROM</span>
-</span><span class='line'>            <span class="n">information_schema</span><span class="p">.</span><span class="k">STATISTICS</span>
-</span><span class='line'>        <span class="k">WHERE</span>
-</span><span class='line'>            <span class="n">TABLE_SCHEMA</span> <span class="o">=</span> <span class="s1">&#39;jmx&#39;</span>
-</span><span class='line'>        <span class="k">AND</span> <span class="n">INDEX_NAME</span> <span class="o">&lt;&gt;</span> <span class="s1">&#39;PRIMARY&#39;</span>
-</span><span class='line'>        <span class="k">ORDER</span> <span class="k">BY</span>
-</span><span class='line'>            <span class="n">TABLE_SCHEMA</span><span class="p">,</span> <span class="k">TABLE_NAME</span><span class="p">,</span> <span class="n">INDEX_NAME</span><span class="p">;</span>
-</span><span class='line'>    <span class="c1">-- 終了ステータス宣言</span>
-</span><span class='line'>    <span class="k">DECLARE</span> <span class="n">EXIT</span> <span class="k">HANDLER</span> <span class="k">FOR</span> <span class="k">NOT</span> <span class="k">FOUND</span> <span class="k">SET</span> <span class="n">v_done</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">-- カーソル OPEN</span>
-</span><span class='line'>    <span class="k">OPEN</span> <span class="n">v_cur</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">-- LOOP 処理</span>
-</span><span class='line'>    <span class="n">WHILE</span> <span class="n">v_done</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">DO</span>
-</span><span class='line'>        <span class="c1">-- カーソル FETCH</span>
-</span><span class='line'>        <span class="k">FETCH</span> <span class="n">v_cur</span> <span class="k">INTO</span> <span class="n">v_tbl_name</span><span class="p">,</span> <span class="n">v_idx_name</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">-- 動的 SQL 実行</span>
-</span><span class='line'>        <span class="k">SET</span> <span class="o">@</span><span class="n">s</span> <span class="o">=</span> <span class="n">CONCAT</span><span class="p">(</span><span class="s1">&#39;ALTER TABLE &#39;</span><span class="p">,</span> <span class="n">v_tbl_name</span><span class="p">,</span> <span class="s1">&#39; DROP INDEX &#39;</span><span class="p">,</span> <span class="n">v_idx_name</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">PREPARE</span> <span class="n">stmt</span> <span class="k">FROM</span> <span class="o">@</span><span class="n">s</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">EXECUTE</span> <span class="n">stmt</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">END</span> <span class="n">WHILE</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">-- PREPARED STATEMENT 解放</span>
-</span><span class='line'>    <span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> <span class="n">stmt</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">-- カーソル CLOSE</span>
-</span><span class='line'>    <span class="k">CLOSE</span> <span class="n">v_cur</span><span class="p">;</span>
-</span><span class='line'><span class="k">END</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>本当は、動的に SQL を実行する(PREPARED STATEMENT)部分を以下のようにしたかったが、 <code>?</code> は MariaDB のストアドではサポートされてない模様。（<a href="https://mariadb.com/kb/en/mariadb/prepare-statement/" title="PREPARE Statement - MariaDB Knowledge Base">参考</a>）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">--  :</span>
-</span><span class='line'><span class="c1">-- 省略</span>
-</span><span class='line'><span class="c1">--  :</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">SET</span> <span class="o">@</span><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;ALTER TABLE ? DROP INDEX ?&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="k">PREPARE</span> <span class="n">stmt</span> <span class="k">FROM</span> <span class="o">@</span><span class="n">s</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">OPEN</span> <span class="n">v_cur</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">WHILE</span> <span class="n">v_done</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">DO</span>
-</span><span class='line'>    <span class="k">FETCH</span> <span class="n">v_cur</span> <span class="k">INTO</span> <span class="n">v_tbl_name</span><span class="p">,</span> <span class="n">v_idx_name</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">SET</span> <span class="o">@</span><span class="n">tbl_name</span> <span class="o">=</span> <span class="n">v_tbl_name</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">SET</span> <span class="o">@</span><span class="n">idx_name</span> <span class="o">=</span> <span class="n">v_idx_name</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">EXECUTE</span> <span class="n">stmt</span> <span class="k">USING</span> <span class="o">@</span><span class="n">tbl_name</span><span class="p">,</span> <span class="o">@</span><span class="n">idx_name</span><span class="p">;</span>
-</span><span class='line'><span class="k">END</span> <span class="n">WHILE</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">DEALLOCATE</span> <span class="k">PREPARE</span> <span class="n">stmt</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">CLOSE</span> <span class="n">v_cur</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>普段はあまり使用する機会はありませんが、大量のテーブルを再設計する際には有益でしょう。</p>
 
 <p>以上。</p>
 ]]></content>

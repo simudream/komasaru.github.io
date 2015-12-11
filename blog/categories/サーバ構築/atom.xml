@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-08T00:06:06+09:00</updated>
+  <updated>2015-12-12T00:07:00+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,101 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS - Web/Proxy サーバ Nginx の最新版を yum インストール！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/12/12/centos-nginx-installation-by-yum/"/>
+    <updated>2015-12-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/12/12/centos-nginx-installation-by-yum</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Debian GNU/Linux や Linux Mint への公式 Apt を使用した Nginx のインストールは記録として残していましたが、 CentOS への公式 yum を使用したインストールについて記録として残してなかったので、今回記録しておくことにしました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 7.1-1503(x86_64) での作業を想定。（CentOS 6 系、5系でも同様（起動方法、自動起動設定、ファイアウォール設定以外は））</li>
+</ul>
+
+
+<h3>1. yum リポジトリの登録</h3>
+
+<pre><code class="text"># rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+</code></pre>
+
+<p>以下のようなリポジトリ設定ファイルが作成される。<br/>
+（上記を実行せず、直接以下のようなファイルを作成してもよい）</p>
+
+<pre><code class="bash /etc/yum.repos.d/nginx.repo"># nginx.repo
+
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/OS/OSRELEASE/$basearch/
+gpgcheck=0
+enabled=1
+</code></pre>
+
+<h3>2. Nginx のインストール</h3>
+
+<pre><code class="text"># yum -y install nginx
+</code></pre>
+
+<h3>3. Ngins インストールの確認</h3>
+
+<pre><code class="text"># nginx -v
+nginx version: nginx/1.8.0
+</code></pre>
+
+<h3>4. Nginx 設定ファイルの編集</h3>
+
+<p>Nginx 設定ファイルが &ldquo;/etc/nginx&rdquo; ディレクトリ内にあるので、必要に応じて編集する。<br/>
+（取り急ぎ、今回は編集しない）</p>
+
+<h3>5. Nginx の起動</h3>
+
+<pre><code class="text"># systemctl start nginx
+</code></pre>
+
+<h3>6. Nginx 自動起動の設定</h3>
+
+<p>マシン起動時に Nginx が自動で起動するようにしたければ以下のようにする。</p>
+
+<pre><code class="text"># systemctl enable nginx
+systemctl list-unit-files -t service | grep nginx
+
+# systemctl list-unit-files -t service | grep nginx
+nginx.service                             enabled  # &lt;= enabled であることを確認
+</code></pre>
+
+<h3>7. ファイアウォールの設定</h3>
+
+<pre><code class="text"># firewall-cmd --add-service=http
+success
+# firewall-cmd --add-service=http --permanent
+success
+# firewall-cmd --list-services
+dhcpv6-client dns ftp http nfs pop3s smtp ssh
+</code></pre>
+
+<h3>8. 動作確認</h3>
+
+<p>ブラウザで <code>http://＜サーバ名＞/</code> にアクセスしてみ &ldquo;Welcome to nginx! &hellip;&rdquo; と表示されればよい。</p>
+
+<h3>9. 参考サイト</h3>
+
+<ul>
+<li><a href="http://nginx.org/en/linux_packages.html" title="nginx - Linux packages">nginx - Linux packages</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MariaDB(MySQL) - ロールフォワード（ポイント・イン・タイム）リカバリ！]]></title>
@@ -498,158 +593,6 @@ Starting postfix:                       [  OK  ]
 <hr />
 
 <p>送信メールサーバ Postfix と Clam AntiVirus を AMaVisd-new で連携する場合と比べてどうなのか？ということを体感してみたかった故の今回の試行でした。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - データのみを指定件数ずつ分割ダンプ出力！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split/"/>
-    <updated>2015-10-26T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) の指定したデータベースを、テーブル別にデータのみを指定件数ずつ分割してダンプ出力する方法についてです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>MariaDB 10.0.21 サーバでの作業を想定。（MySQL や他のバージョンでも同様（のはず））</li>
-<li>Bash スクリプトを作成して実現させる。</li>
-<li>出力されたダンプファイルはまとめて圧縮保存する。</li>
-<li>必要であれば、「<a href="/2014/06/15/mysql-dump-only-schema-data-stored/" title="MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！">MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！</a>」も参考にしてください。</li>
-<li>以下で紹介する Bash スクリプトでは、トランザクションの単位がテーブル・ループ単位となるため、<strong>データの整合性に注意</strong>。<br/>
-（<strong>ダンプ出力時やリストア時に DB への挿入・更新・削除がないことが前提</strong>）</li>
-</ul>
-
-
-<h3>1. Bash スクリプトの作成</h3>
-
-<p>以下は、当方がデータのみを分割ダンプ出力する際に使用している Bash スクリプトである。（解説はスクリプト内のコメントにて。 <code>(*)</code> はさらなる説明を後述）</p>
-
-<pre><code class="bash db_dump_only_data_by_split.sh">#!/bin/bash
-
-# 定数定義
-DB=db_name                      # データベース・スキーマ名
-USER=user_name                  # ダンプ出力するユーザ名
-PW=user_password                #       〃      ユーザ名のパスワード
-CMD=/usr/bin/mysqldump          # mysqldump コマンドのフルパス
-WK_DIR=/path/to/backup_mysql    # 作業ディレクトリ
-DMP_DIR=$WK_DIR/tabledatas_$DB  # ダンプファイル格納ディレクトリ
-OPTS="-t -Q -F --skip-lock-tables --skip-triggers --skip-dump-date --single-transaction"
-                                # mysqldump オプション(*)
-DCNT=100000                     # 分割するレコード件数
-
-# ダンプファイルクリア
-rm -f $DMP_DIR/*
-
-# DB 内に存在するテーブル毎にループ処理
-for tbl in `mysql -u $USER -p$PW -N -s -e "show tables in $DB;"`; do
-  # テーブル内に存在するレコード件数(*)
-  rows=`mysql -u $USER -p$PW $DB -N -B -e "SELECT COUNT(*) FROM $tbl;"`
-  echo "* $tbl [$rows records]"
-
-  # レコード件数から分割数を算出してループ処理
-  for ((i = 0; i &lt;= $(($rows / $DCNT)); i++))
-  do
-    # 出力ダンプファイル名
-    fname=$(printf ${tbl}_%02d $i)
-    # オフセット算出
-    offset=$((i * $DCNT))
-    echo "  $fname [OFFSET: $offset]"
-    # ダンプ出力(*)
-    $CMD -u $USER -p$PW $DB $tbl $OPTS -w "true LIMIT $offset, $DCNT"&gt; $DMP_DIR/$fname.sql
-  done;
-done;
-
-# タイムスタンプ付ファイル名で圧縮保存
-cd $WK_DIR
-dt=`date '+%Y%m%d_%H%M%S'`
-tar zcvf ${DB}_tabledata_$dt.tar.gz tabledatas_$DB
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/d9cae95bf4d30da5545b" title="Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.">Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.</a></li>
-</ul>
-
-
-<p>mysqldump オプション（上記の<code>OPTS</code>）について。（mysqldump のデフォルトで有効のオプション <code>--opt</code> とは別のもの）</p>
-
-<ul>
-<li><code>-t</code>(or <code>--no-create-info</code>) &hellip; テーブル作成（CREATE TABLE）文を出力しないオプション。</li>
-<li><code>-Q</code>(or <code>--quote-names</code>) &hellip; データベース名、テーブル名、カラム名を <code>`</code> で囲むオプション（デフォルトで有効）。</li>
-<li><code>-F</code>(or <code>--flush-logs</code>) &hellip; ダンプ開始前にログファイルをフラッシュするオプション。</li>
-<li><code>--skip-lock-tables</code> &hellip; デフォルトで有効になる全テーブルをロックするオプション <code>--lock-tables</code> を無効にするオプション。</li>
-<li><code>--skip-triggers</code> &hellip; trigger のダンプ出力を無効にするオプション。</li>
-<li><code>--skip-dump-date</code> &hellip; ダンプ日時の出力を無効にするオプション。</li>
-<li><code>--single-transaction</code> &hellip; データの整合性を保つためにダンプ処理をトランザクションで囲むオプション。</li>
-<li>ちなみに、主キーでソートせずに LIMIT(OFFSET) 句を使用するとフルスキャンになってしまうからと、 <code>--order-by-primary</code> という主キーでソートするオプションを使用すると、 Syntax error が発生しまう。従って、今回は使用していない。<br/>
-主キーでソートしたければ、 <code>-w</code> オプションの <code>LIMIT</code> 句の前に <code>ORDER BY primary_key_col</code> のように追加する。（但し、今回紹介のケースでは DB 内全テーブルの主キーが同じカラムである必要がある）</li>
-</ul>
-
-
-<p>レコード件数取得について。</p>
-
-<ul>
-<li>上記では <code>SELECT COUNT(*) ...</code> としているが、データベース内の全テーブルに同じカラム名で主キーが設定してあるのなら <code>SELECT COUNT(col_name) ...</code> とした方がよい。</li>
-</ul>
-
-
-<p><code>OPTS</code> 以外に追加している <code>-w</code>(or <code>--where</code>) オプションについて。（<strong>今回のポイント</strong>）</p>
-
-<ul>
-<li>本来 <code>-w</code> は抽出条件を指定するオプションだが、 WHERE 条件は <code>true</code>（もしくは <code>1</code>） でスルーして <code>LIMIT</code> 句を指定している。<br/>
-（mysqldump に LIMIT(OFFSET) 句を指定するオプションが存在しないため）</li>
-<li><code>-w "true LIMIT $offset, $DCNT"</code> は <code>-w "true LIMIT $DCNT OFFSET $offset"</code> としてもよい。</li>
-<li>主キーやユニークインデックスが歯抜けでなく件数が正確に取得できるのであれば、 <code>-w</code> オプションで LIMIT 句や OFFSET 句を指定せずに普通に条件指定するようにしてもよいだろう。</li>
-</ul>
-
-
-<h3>2. Bash スクリプトの実行</h3>
-
-<p>作業用ディレクトリやダンプファイル格納用サブディレクトリが存在することを確認し、実行権限を付与後に実行する。</p>
-
-<pre><code class="text">$ chmod +x db_dump_only_data_by_split.sh
-$ ./db_dump_only_data_by_split.sh
-</code></pre>
-
-<p>作業ディレクトリ内のダンプファイル格納用サブディレクトリにダンプファイルが出力され、作業ディレクトリ内にタイムスタンプ付圧縮ファイルが作成されるのを確認する。</p>
-
-<p>また、 LIMIT 句を使用しているのでダンプ出力完了まで時間がかかることを覚悟すること。</p>
-
-<h3>3. その他</h3>
-
-<ul>
-<li>データ量が多すぎるとダンプ出力に時間がかかる、ということに留意する。<br/>
-<code>-w</code> オプションで LIMIT 句を使用するからと、フルスキャンを避けるために <code>--order-by-primary</code> オプションを使用したり、もしくは <code>-w</code> オプションで <code>ORDER BY</code> 句を指定しても、ダンプ出力が徐々に遅くなる。<br/>
-<code>mysqldump</code> の <code>-w</code>(or <code>--where</code>) での LIMIT(OFFSET) 句指定はフルスキャンになってしまうのだろうか？（<code>mysqldump</code> を EXPLAIN で確認できればいいのですが。。。）</li>
-<li>データ量が多すぎるとダンプ出力に時間がかかるため、結局当方は、データ量が多すぎる場合は、エクスポートは <code>SELECT INTO ... OUTFILE</code> で CSV 出力、インポートは <code>LOAD DATA INFILE</code> で CSV 取り込み、とすることにした。以下の過去記事を参照。
-
-<ul>
-<li><a href="/2011/08/31/31002049/" title="MySQL - SELECT結果をCSV出力！">MySQL - SELECT結果をCSV出力！</a></li>
-<li><a href="/2013/06/08/mysql-import-from-csv/" title="MySQL - CSV データインポート！">MySQL - CSV データインポート！</a></li>
-</ul>
-</li>
-</ul>
-
-
-<h3>4. 参考サイト</h3>
-
-<p>mysqldump の各種オプションや LIMIT 句の指定方法については以下のサイトを参照。</p>
-
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/en/mysqldump.html" title="MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program">MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program</a></li>
-</ul>
-
-
-<hr />
-
-<p>結局、当方は今回紹介した方法を積極的には使用していませんが、こういうやり方もあるということを覚えておくと何かの際に役立つかもしれません。</p>
 
 <p>以上。</p>
 ]]></content>
