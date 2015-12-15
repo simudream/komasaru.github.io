@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-12T00:07:00+09:00</updated>
+  <updated>2015-12-16T00:09:04+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,389 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS 7.1 - DB サーバ MySQL 5.7 構築（公式リポジトリ使用）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/12/16/centos-mysql-57-installation-by-yum/"/>
+    <updated>2015-12-16T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/12/16/centos-mysql-57-installation-by-yum</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MySQL 5.7 系の最新版を公式リポジトリを使用して CentOS 7.1 にインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 7.1-1503(x86_64) での作業を想定。（CentOS 6 系、5系でも同様（起動方法、自動起動設定、ファイアウォール設定以外は））</li>
+<li>当記事執筆時点で最新の MySQL 5.7.9 をインストールする。</li>
+<li>環境の相違によっては以下のとおりにならないかもしれないので、適宜対応する。</li>
+</ul>
+
+
+<h3>1. Yum リポジトリの追加</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># rpm -Uvh http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. リポジトリ有効・無効の設定</h3>
+
+<p>まず、どんな種類があるのかを確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum repolist all | grep mysql
+</span><span class='line'>mysql-connectors-community/x86_64 MySQL Connectors Community     有効:      13+4
+</span><span class='line'>mysql-connectors-community-source MySQL Connectors Community - S 無効
+</span><span class='line'>mysql-tools-community/x86_64      MySQL Tools Community          有効:        27
+</span><span class='line'>mysql-tools-community-source      MySQL Tools Community - Source 無効
+</span><span class='line'>mysql55-community/x86_64          MySQL 5.5 Community Server     無効
+</span><span class='line'>mysql55-community-source          MySQL 5.5 Community Server - S 無効
+</span><span class='line'>mysql56-community/x86_64          MySQL 5.6 Community Server     無効
+</span><span class='line'>mysql56-community-source          MySQL 5.6 Community Server - S 無効
+</span><span class='line'>mysql57-community/x86_64          MySQL 5.7 Community Server     有効:        20
+</span><span class='line'>mysql57-community-source          MySQL 5.7 Community Server - S 無効
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>今回は MySQL 5.7 Community Server を使用したいので、<code>mysql57-community/x86_64</code> が <code>有効</code> であることを確認する。</p>
+
+<p><code>無効</code> の場合は、 &ldquo;/etc/yum.repos.d/mysql-community.repo&rdquo; 内 <code>[mysql57-community]</code> の <code>enabled</code> の値を <code>0</code> から <code>1</code> に変更する。<br/>
+さらに、今回使用したいバージョン以外の MySQL Community Server が <code>有効</code> になっていれば、無効（<code>enabled=0</code>）に変更しておく。</p>
+
+<figure class='code'><figcaption><span>/etc/yum.repos.d/mysql-community.repo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[mysql57-community]
+</span><span class='line'>name=MySQL 5.7 Community Server
+</span><span class='line'>baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/
+</span><span class='line'>enabled=1
+</span><span class='line'>gpgcheck=1
+</span><span class='line'>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、有効になったか確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum repolist enabled | grep mysql
+</span><span class='line'>mysql-connectors-community/x86_64 MySQL Connectors Community                13+4
+</span><span class='line'>mysql-tools-community/x86_64      MySQL Tools Community                       27
+</span><span class='line'>mysql57-community/x86_64          MySQL 5.7 Community Server                  20
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. MySQL のインストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum -y install mysql-community-server
+</span><span class='line'>
+</span><span class='line'># mysqld --version   # &lt;= サーバのバージョン
+</span><span class='line'>mysqld  Ver 5.7.9 for Linux on x86_64 (MySQL Community Server (GPL))
+</span><span class='line'>
+</span><span class='line'># mysql --version    # &lt;= クライアントのバージョン
+</span><span class='line'>mysql  Ver 14.14 Distrib 5.7.9, for Linux (x86_64) using  EditLine wrapper
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. MySQL サーバの起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl start mysqld
+</span><span class='line'>
+</span><span class='line'># systemctl status mysqld
+</span><span class='line'>mysqld.service - MySQL Server
+</span><span class='line'>   Loaded: loaded (/usr/lib/systemd/system/mysqld.service; enabled)
+</span><span class='line'>   Active: active (running) since 日 2015-11-08 23:03:02 JST; 8s ago
+</span><span class='line'>  Process: 1843 ExecStart=/usr/sbin/mysqld --daemonize $MYSQLD_OPTS (code=exited, status=0/SUCCESS)
+</span><span class='line'>  Process: 1772 ExecStartPre=/usr/bin/mysqld_pre_systemd (code=exited, status=0/SUCCESS)
+</span><span class='line'> Main PID: 1847 (mysqld)
+</span><span class='line'>   CGroup: /system.slice/mysqld.service
+</span><span class='line'>           └─1847 /usr/sbin/mysqld --daemonize
+</span><span class='line'>
+</span><span class='line'>11月 08 23:02:53 vbox.mk-mode.com systemd[1]: Starting MySQL Server...
+</span><span class='line'>11月 08 23:03:02 vbox.mk-mode.com systemd[1]: Started MySQL Server.
+</span><span class='line'>Hint: Some lines were ellipsized, use -l to show in full.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. MySQL 自動起動の設定</h3>
+
+<p>デフォルトでマシン起動時に MySQL サーバが自動で起動するようになっているが、なっていなければ以下のように設定する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl enable mysqld
+</span><span class='line'>
+</span><span class='line'># systemctl list-unit-files -t service | grep mysqld
+</span><span class='line'>mysqld.service                            enabled  # &lt;= enabled であることを確認
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. root 初期パスワードの確認</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># grep &#39;temporary password&#39; /var/log/mysqld.log
+</span><span class='line'>2015-11-08T14:02:55.559389Z 1 [Note] A temporary password is generated for root@localhost: &amp;d-sa*dv/7Ct
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. MySQL の安全化</h3>
+
+<p>root パスワードの設定等を行う。（説明は後述）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql_secure_installation
+</span><span class='line'>
+</span><span class='line'>Securing the MySQL server deployment.
+</span><span class='line'>
+</span><span class='line'>Enter password for user root:
+</span><span class='line'>
+</span><span class='line'>The existing password for the user account root has expired. Please set a new password.
+</span><span class='line'>
+</span><span class='line'>New password:
+</span><span class='line'>
+</span><span class='line'>Re-enter new password:
+</span><span class='line'>The &#39;validate_password&#39; plugin is installed on the server.
+</span><span class='line'>The subsequent steps will run with the existing configuration
+</span><span class='line'>of the plugin.
+</span><span class='line'>Using existing password for root.
+</span><span class='line'>
+</span><span class='line'>Estimated strength of the password: 100
+</span><span class='line'>Change the password for root ? ((Press y|Y for Yes, any other key for No) : n
+</span><span class='line'>
+</span><span class='line'> ... skipping.
+</span><span class='line'>By default, a MySQL installation has an anonymous user,
+</span><span class='line'>allowing anyone to log into MySQL without having to have
+</span><span class='line'>a user account created for them. This is intended only for
+</span><span class='line'>testing, and to make the installation go a bit smoother.
+</span><span class='line'>You should remove them before moving into a production
+</span><span class='line'>environment.
+</span><span class='line'>
+</span><span class='line'>Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Normally, root should only be allowed to connect from
+</span><span class='line'>&#39;localhost&#39;. This ensures that someone cannot guess at
+</span><span class='line'>the root password from the network.
+</span><span class='line'>
+</span><span class='line'>Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+</span><span class='line'>
+</span><span class='line'> ... skipping.
+</span><span class='line'>By default, MySQL comes with a database named &#39;test&#39; that
+</span><span class='line'>anyone can access. This is also intended only for testing,
+</span><span class='line'>and should be removed before moving into a production
+</span><span class='line'>environment.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'> - Dropping test database...
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'> - Removing privileges on test database...
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>Reloading the privilege tables will ensure that all changes
+</span><span class='line'>made so far will take effect immediately.
+</span><span class='line'>
+</span><span class='line'>Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>All done!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li><code>Enter password for user root:</code> で root の初期パスワードを入力する。</li>
+<li><code>New password:</code> で root の新しいパスワードを設定する。<br/>
+（パスワードに使用する文字は数字・英小文字・英大文字・記号を混在させること。そうしなければポリシー違反でエラーになる）</li>
+<li><code>Re-enter new password:</code> で root の新しいパスワードの確認入力をする。</li>
+<li><code>Estimated strength of the password: 100 ...</code> でより強固なパスワードに変更するか問われるが、 <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove anonymous users?</code> で匿名ユーザを削除するために <code>y</code> で応答する。</li>
+<li><code>Disallow root login remotely?</code> で root のリモート接続を拒否するか問われるが、リモート接続したいので <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove test database and access to it?</code> でテストデータベースを削除するか問われるので、 <code>y</code> で応答する。</li>
+<li><code>Reload privilege tables now?</code> で権限テーブルを即時リロードするか問われるので、 <code>y</code> で応答する。</li>
+</ol>
+
+
+<h4>8. ファイアウォール設定</h4>
+
+<p>ポート TCP:3306 を開放する。（ローカルネット内の別マシンからのアクセスが必要な場合）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># firewall-cmd --add-port=3306/tcp
+</span><span class='line'>success
+</span><span class='line'># firewall-cmd --add-port=873/tcp --permanent
+</span><span class='line'>success
+</span><span class='line'># firewall-cmd --list-ports
+</span><span class='line'>110/tcp 465/tcp 873/tcp 3306/tcp 4000-4005/tcp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>9. 動作確認</h3>
+
+<p>MariaDB サーバにログインしてみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u root -p
+</span><span class='line'>Enter password:
+</span><span class='line'>Welcome to the MySQL monitor.  Commands end with ; or \g.
+</span><span class='line'>Your MySQL connection id is 10
+</span><span class='line'>Server version: 5.7.9 MySQL Community Server (GPL)
+</span><span class='line'>
+</span><span class='line'>Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+</span><span class='line'>
+</span><span class='line'>Oracle is a registered trademark of Oracle Corporation and/or its
+</span><span class='line'>affiliates. Other names may be trademarks of their respective
+</span><span class='line'>owners.
+</span><span class='line'>
+</span><span class='line'>Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+</span><span class='line'>
+</span><span class='line'>mysql&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>10. その他</h3>
+
+<ul>
+<li>設定ファイルは &ldquo;/etc/my.cnf&rdquo; なので、実際に運用する際には綿密に検討して設定する。</li>
+<li>パスワードの有効期限がデフォルトでは「360 日」に設定されている。<br/>
+必要なら、システム変数 <code>default_password_lifetime</code> を編集する。</li>
+</ul>
+
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://dev.mysql.com/doc/mysql-yum-repo-quick-guide/en/" title="MySQL :: A Quick Guide to Using the MySQL Yum Repository">MySQL :: A Quick Guide to Using the MySQL Yum Repository</a></li>
+<li><a href="http://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html" title="MySQL :: MySQL 5.7 Reference Manual :: 5.1.4 Server System Variables">MySQL :: MySQL 5.7 Reference Manual :: 5.1.4 Server System Variables</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS - Web/Proxy サーバ Nginx の最新版を yum インストール！]]></title>
@@ -4738,239 +5121,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>大量にテーブル定義書を生成したければシェル化するのもよいでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - XML に XSLT を適用して HTML 生成！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc/"/>
-    <updated>2015-09-07T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/07/linux-apply-xslt-to-xml-by-xsltproc</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>以前、 Ruby で XML ファイルに XSL テンプレートを適用して HTML を生成する方法を紹介しました。</p>
-
-<ul>
-<li><a href="http://komasaru.github.io/2013/12/04/ruby-apply-xslt-to-xml/" title="Ruby - XML に XSLT を適用して HTML 生成！">Ruby - XML に XSLT を適用して HTML 生成！</a></li>
-</ul>
-
-
-<p>ただ、 Linux ディストリビューションによってはデフォルトで XML に XSL テンプレートを適用するコマンドがインストールされています。<br/>
-わざわざ Ruby を使用しなくてもよいということです。</p>
-
-<p>以下、その使用方法についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>XML に XSL テンプレート適用して HTML ファイルを生成するのに <code>xsltproc</code> コマンドを使用する。</li>
-</ul>
-
-
-<h3>1. xsltproc コマンドのインストール</h3>
-
-<p><code>xsltproc</code> コマンドが未インストールならインストールしておく。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install xsltproc
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. XML ファイルの準備</h3>
-
-<p>試験的に使用する XML ファイルを以下のように作成する。（あくまで一例）</p>
-
-<figure class='code'><figcaption><span>test.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span class='line'><span class="cp">&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;test.xsl&quot; ?&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;Office&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;People&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;Person&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;No&gt;</span>1234<span class="nt">&lt;/No&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Name&gt;</span>Ruby 太郎<span class="nt">&lt;/Name&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Birthday&gt;</span>1980-01-01<span class="nt">&lt;/Birthday&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Age&gt;</span>33<span class="nt">&lt;/Age&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/Person&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;Person&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;No&gt;</span>2345<span class="nt">&lt;/No&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Name&gt;</span>XML 二郎<span class="nt">&lt;/Name&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Birthday&gt;</span>1985-04-15<span class="nt">&lt;/Birthday&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Age&gt;</span>28<span class="nt">&lt;/Age&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/Person&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;Person&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;No&gt;</span>3456<span class="nt">&lt;/No&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Name&gt;</span>XSL 花子<span class="nt">&lt;/Name&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Birthday&gt;</span>1990-09-30<span class="nt">&lt;/Birthday&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Age&gt;</span>23<span class="nt">&lt;/Age&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/Person&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/People&gt;</span>
-</span><span class='line'><span class="nt">&lt;/Office&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. XSL テンプレートファイルの準備</h3>
-
-<p>試験的に使用する XSL テンプレートファイルを以下のように作成する。（あくまで一例）</p>
-
-<figure class='code'><figcaption><span>test.xsl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;xsl:stylesheet</span> <span class="na">xmlns:xsl=</span><span class="s">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;xsl:output</span> <span class="na">method=</span><span class="s">&quot;html&quot;</span> <span class="na">encoding=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;/&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;Office&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;ja&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;People&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;table&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;Person&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;No&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;Name&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;Birthday&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'><span class="nt">&lt;/xsl:stylesheet&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. HTML ファイルの生成</h3>
-
-<p>準備しておいた XML ファイルに XSL テンプレートを適用して HTML ファイルを生成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ xsltproc --output test.html test.xsl test.xml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>※オプションは他にも多数あるので、 <code>xsltproc --help</code> や <code>man xsltproc</code> で確認する。</p>
-
-<h3>5. HTML ファイルの確認</h3>
-
-<p>&ldquo;test.html&rdquo; というファイルが作成されているはずなので、確認してみる。</p>
-
-<figure class='code'><figcaption><span>test.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;ja&quot;</span><span class="nt">&gt;&lt;body&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;table&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>1234<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>Ruby 太郎<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>1980-01-01<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>2345<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>XML 二郎<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>1985-04-15<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>3456<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>XSL 花子<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>1990-09-30<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>さらに、この HTML ファイルをブラウザで開いて確認してみる。</p>
-
-<p><img src="http://komasaru.github.io/images/2015/09/07/XSLTPROC.png" title="XSLTPROC" alt="XSLTPROC" /></p>
-
-<hr />
-
-<p>単に XML ファイルに XSL テンプレートを適用して HTML ファイルを作成するだけなら、今回の方法が楽でいいかもしれませんね。</p>
 
 <p>以上。</p>
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-12T00:07:00+09:00</updated>
+  <updated>2015-12-16T00:09:04+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,249 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS 7.1 - DB サーバ MySQL 5.7 構築（公式リポジトリ使用）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/12/16/centos-mysql-57-installation-by-yum/"/>
+    <updated>2015-12-16T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/12/16/centos-mysql-57-installation-by-yum</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MySQL 5.7 系の最新版を公式リポジトリを使用して CentOS 7.1 にインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 7.1-1503(x86_64) での作業を想定。（CentOS 6 系、5系でも同様（起動方法、自動起動設定、ファイアウォール設定以外は））</li>
+<li>当記事執筆時点で最新の MySQL 5.7.9 をインストールする。</li>
+<li>環境の相違によっては以下のとおりにならないかもしれないので、適宜対応する。</li>
+</ul>
+
+
+<h3>1. Yum リポジトリの追加</h3>
+
+<pre><code class="text"># rpm -Uvh http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
+</code></pre>
+
+<h3>2. リポジトリ有効・無効の設定</h3>
+
+<p>まず、どんな種類があるのかを確認してみる。</p>
+
+<pre><code class="text"># yum repolist all | grep mysql
+mysql-connectors-community/x86_64 MySQL Connectors Community     有効:      13+4
+mysql-connectors-community-source MySQL Connectors Community - S 無効
+mysql-tools-community/x86_64      MySQL Tools Community          有効:        27
+mysql-tools-community-source      MySQL Tools Community - Source 無効
+mysql55-community/x86_64          MySQL 5.5 Community Server     無効
+mysql55-community-source          MySQL 5.5 Community Server - S 無効
+mysql56-community/x86_64          MySQL 5.6 Community Server     無効
+mysql56-community-source          MySQL 5.6 Community Server - S 無効
+mysql57-community/x86_64          MySQL 5.7 Community Server     有効:        20
+mysql57-community-source          MySQL 5.7 Community Server - S 無効
+</code></pre>
+
+<p>今回は MySQL 5.7 Community Server を使用したいので、<code>mysql57-community/x86_64</code> が <code>有効</code> であることを確認する。</p>
+
+<p><code>無効</code> の場合は、 &ldquo;/etc/yum.repos.d/mysql-community.repo&rdquo; 内 <code>[mysql57-community]</code> の <code>enabled</code> の値を <code>0</code> から <code>1</code> に変更する。<br/>
+さらに、今回使用したいバージョン以外の MySQL Community Server が <code>有効</code> になっていれば、無効（<code>enabled=0</code>）に変更しておく。</p>
+
+<pre><code class="text /etc/yum.repos.d/mysql-community.repo">[mysql57-community]
+name=MySQL 5.7 Community Server
+baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql
+</code></pre>
+
+<p>そして、有効になったか確認してみる。</p>
+
+<pre><code class="text"># yum repolist enabled | grep mysql
+mysql-connectors-community/x86_64 MySQL Connectors Community                13+4
+mysql-tools-community/x86_64      MySQL Tools Community                       27
+mysql57-community/x86_64          MySQL 5.7 Community Server                  20
+</code></pre>
+
+<h3>3. MySQL のインストール</h3>
+
+<pre><code class="text"># yum -y install mysql-community-server
+
+# mysqld --version   # &lt;= サーバのバージョン
+mysqld  Ver 5.7.9 for Linux on x86_64 (MySQL Community Server (GPL))
+
+# mysql --version    # &lt;= クライアントのバージョン
+mysql  Ver 14.14 Distrib 5.7.9, for Linux (x86_64) using  EditLine wrapper
+</code></pre>
+
+<h3>4. MySQL サーバの起動</h3>
+
+<pre><code class="text"># systemctl start mysqld
+
+# systemctl status mysqld
+mysqld.service - MySQL Server
+   Loaded: loaded (/usr/lib/systemd/system/mysqld.service; enabled)
+   Active: active (running) since 日 2015-11-08 23:03:02 JST; 8s ago
+  Process: 1843 ExecStart=/usr/sbin/mysqld --daemonize $MYSQLD_OPTS (code=exited, status=0/SUCCESS)
+  Process: 1772 ExecStartPre=/usr/bin/mysqld_pre_systemd (code=exited, status=0/SUCCESS)
+ Main PID: 1847 (mysqld)
+   CGroup: /system.slice/mysqld.service
+           └─1847 /usr/sbin/mysqld --daemonize
+
+11月 08 23:02:53 vbox.mk-mode.com systemd[1]: Starting MySQL Server...
+11月 08 23:03:02 vbox.mk-mode.com systemd[1]: Started MySQL Server.
+Hint: Some lines were ellipsized, use -l to show in full.
+</code></pre>
+
+<h3>5. MySQL 自動起動の設定</h3>
+
+<p>デフォルトでマシン起動時に MySQL サーバが自動で起動するようになっているが、なっていなければ以下のように設定する。</p>
+
+<pre><code class="text"># systemctl enable mysqld
+
+# systemctl list-unit-files -t service | grep mysqld
+mysqld.service                            enabled  # &lt;= enabled であることを確認
+</code></pre>
+
+<h3>6. root 初期パスワードの確認</h3>
+
+<pre><code class="text"># grep 'temporary password' /var/log/mysqld.log
+2015-11-08T14:02:55.559389Z 1 [Note] A temporary password is generated for root@localhost: &amp;d-sa*dv/7Ct
+</code></pre>
+
+<h3>7. MySQL の安全化</h3>
+
+<p>root パスワードの設定等を行う。（説明は後述）</p>
+
+<pre><code class="text"># mysql_secure_installation
+
+Securing the MySQL server deployment.
+
+Enter password for user root:
+
+The existing password for the user account root has expired. Please set a new password.
+
+New password:
+
+Re-enter new password:
+The 'validate_password' plugin is installed on the server.
+The subsequent steps will run with the existing configuration
+of the plugin.
+Using existing password for root.
+
+Estimated strength of the password: 100
+Change the password for root ? ((Press y|Y for Yes, any other key for No) : n
+
+ ... skipping.
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+
+ ... skipping.
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+ - Dropping test database...
+Success.
+
+ - Removing privileges on test database...
+Success.
+
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+All done!
+</code></pre>
+
+<ol>
+<li><code>Enter password for user root:</code> で root の初期パスワードを入力する。</li>
+<li><code>New password:</code> で root の新しいパスワードを設定する。<br/>
+（パスワードに使用する文字は数字・英小文字・英大文字・記号を混在させること。そうしなければポリシー違反でエラーになる）</li>
+<li><code>Re-enter new password:</code> で root の新しいパスワードの確認入力をする。</li>
+<li><code>Estimated strength of the password: 100 ...</code> でより強固なパスワードに変更するか問われるが、 <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove anonymous users?</code> で匿名ユーザを削除するために <code>y</code> で応答する。</li>
+<li><code>Disallow root login remotely?</code> で root のリモート接続を拒否するか問われるが、リモート接続したいので <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove test database and access to it?</code> でテストデータベースを削除するか問われるので、 <code>y</code> で応答する。</li>
+<li><code>Reload privilege tables now?</code> で権限テーブルを即時リロードするか問われるので、 <code>y</code> で応答する。</li>
+</ol>
+
+
+<h4>8. ファイアウォール設定</h4>
+
+<p>ポート TCP:3306 を開放する。（ローカルネット内の別マシンからのアクセスが必要な場合）</p>
+
+<pre><code class="text"># firewall-cmd --add-port=3306/tcp
+success
+# firewall-cmd --add-port=873/tcp --permanent
+success
+# firewall-cmd --list-ports
+110/tcp 465/tcp 873/tcp 3306/tcp 4000-4005/tcp
+</code></pre>
+
+<h3>9. 動作確認</h3>
+
+<p>MariaDB サーバにログインしてみる。</p>
+
+<pre><code class="text"># mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 5.7.9 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql&gt;
+</code></pre>
+
+<h3>10. その他</h3>
+
+<ul>
+<li>設定ファイルは &ldquo;/etc/my.cnf&rdquo; なので、実際に運用する際には綿密に検討して設定する。</li>
+<li>パスワードの有効期限がデフォルトでは「360 日」に設定されている。<br/>
+必要なら、システム変数 <code>default_password_lifetime</code> を編集する。</li>
+</ul>
+
+
+<h3>参考サイト</h3>
+
+<ul>
+<li><a href="http://dev.mysql.com/doc/mysql-yum-repo-quick-guide/en/" title="MySQL :: A Quick Guide to Using the MySQL Yum Repository">MySQL :: A Quick Guide to Using the MySQL Yum Repository</a></li>
+<li><a href="http://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html" title="MySQL :: MySQL 5.7 Reference Manual :: 5.1.4 Server System Variables">MySQL :: MySQL 5.7 Reference Manual :: 5.1.4 Server System Variables</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS - Web/Proxy サーバ Nginx の最新版を yum インストール！]]></title>
@@ -476,123 +719,6 @@ avg-cpu:  %user   %nice %system %iowait  %steal   %idle
 
 
 <hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS 6.7 - Postfix ウィルス対策(ClamAV + ClamSMTP)！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation/"/>
-    <updated>2015-11-05T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>送信メールサーバ Postfix と Clam AntiVirus を ClamSMTP で連携してメールのウィルスチェックを行う方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(32bit) での作業を想定。</li>
-<li>EPEL リポジトリ導入済み。（参考「<a href="/2013/12/13/centos-6-5-first-setting/" title="CentOS 6.5 - 初期設定！">CentOS 6.5 - 初期設定！</a>」）</li>
-<li>SMTP サーバ Postfix 構築済み。</li>
-<li>アンチウィルスソフト ClamAV(<code>clamd</code>) 導入済み。</li>
-</ul>
-
-
-<h3>1. ClamSMTP のインストール</h3>
-
-<pre><code class="text"># yum --enablerepo=epel -y install clamsmtp
-</code></pre>
-
-<h3>2. ClamSMTP 設定ファイルの編集</h3>
-
-<pre><code class="bash /etc/clamsmtpd.conf">Listen: 0.0.0.0:10025                           # &lt;= コメント解除
-
-Header: X-Virus-Scanned: ClamAV using ClamSMTP  # &lt;= コメント解除
-
-Action: drop                                    # &lt;= コメント解除
-</code></pre>
-
-<h3>3. ClamSMTP の起動</h3>
-
-<pre><code class="text"># /etc/rc.d/init.d/clamsmtpd start
-Starting ClamSmtpd:                                        [  OK  ]
-
-# /etc/rc.d/init.d/clamsmtp-clamd start
-</code></pre>
-
-<h3>4. ClamSMTP 自動起動の設定</h3>
-
-<pre><code class="text"># chkconfig clamsmtpd on
-# chkconfig clamsmtp-clamd on
-# chkconfig --list clamsmtpd
-clamsmtpd       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-# chkconfig --list clamsmtp-clamd
-clamsmtp-clamd  0:off   1:Off   2:on    3:on    4:on    5:on    6:off
-</code></pre>
-
-<h3>5. Postfix 設定ファイルの編集</h3>
-
-<pre><code class="bash /etc/postfix/main.cf"># 以下を最終行へ追記
-content_filter = scan:127.0.0.1:10025
-</code></pre>
-
-<pre><code class="bash /etc/postfix/master.cf"># 以下を最終行へ追記
-scan unix -       -       n       -       16       smtp
-   -o smtp_data_done_timeout=1200
-   -o smtp_send_xforward_command=yes
-   -o disable_dns_lookups=yes
-127.0.0.1:10026 inet n       -       n       -       16       smtpd
-   -o content_filter=
-   -o local_recipient_maps=
-   -o relay_recipient_maps=
-   -o smtpd_restriction_classes=
-   -o smtpd_client_restrictions=
-   -o smtpd_helo_restrictions=
-   -o smtpd_sender_restrictions=
-   -o smtpd_recipient_restrictions=permit_mynetworks,reject
-   -o mynetworks_style=host
-   -o smtpd_authorized_xforward_hosts=127.0.0.0/8
-</code></pre>
-
-<ul>
-<li>上記の <code>10026</code> は &ldquo;/etc/clamsmtpd.conf&rdquo; の <code>OutAddress</code> の値に合わせる。</li>
-</ul>
-
-
-<h3>6. Postfix の再起動</h3>
-
-<pre><code class="text"># /etc/rc.d/init.d/postfix restart
-Shutting down postfix:                  [  OK  ]
-Starting postfix:                       [  OK  ]
-</code></pre>
-
-<h3>7. 動作確認</h3>
-
-<p>メールを自分宛に送信してみて受信したメールのヘッダに以下のような記述があるか確認する。</p>
-
-<pre><code class="text">X-Virus-Scanned: ClamAV using ClamSMTP
-</code></pre>
-
-<p>また、ウィルスメールを送信してみて受信しないことも確認する。（例えば、本文に以下（テストウィルス）を記載したメールを送信）</p>
-
-<pre><code class="text">X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
-</code></pre>
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://www.server-world.info/query?os=CentOS_6&amp;p=mail&amp;f=6" title="CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World">CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World</a></li>
-</ul>
-
-
-<hr />
-
-<p>送信メールサーバ Postfix と Clam AntiVirus を AMaVisd-new で連携する場合と比べてどうなのか？ということを体感してみたかった故の今回の試行でした。</p>
 
 <p>以上。</p>
 ]]></content>
