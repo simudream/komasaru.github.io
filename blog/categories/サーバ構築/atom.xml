@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-16T00:09:04+09:00</updated>
+  <updated>2015-12-20T00:07:18+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,398 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS - MySQL 5.7 インストール（ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/12/20/centos-mysql-57-installation-by-src/"/>
+    <updated>2015-12-20T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/12/20/centos-mysql-57-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MySQL 5.7 系の最新版をソースをビルドして CentOS 6.7 にインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7(32bit) での作業を想定。</li>
+<li>搭載メモリは 1GB を想定。</li>
+</ul>
+
+
+<h3>1. 必要パッケージの準備</h3>
+
+<p>以下の必要なパッケージが未インストールならインストールしておく。</p>
+
+<pre><code class="text"># yum install wget cmake gcc-c++ ncurses-devel zlib-devel
+</code></pre>
+
+<h3>2. MySQL ユーザ・グループの作成</h3>
+
+<pre><code class="text"># groupadd mysql
+# useradd -r -g mysql -s /bin/false mysql
+</code></pre>
+
+<h3>3. ソースの取得</h3>
+
+<p>アーカイブファイルを取得、展開後、ディレクトリを移動しておく。</p>
+
+<pre><code># cd /usr/local/src/
+# wget http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.9.tar.gz
+# tar zxvf mysql-5.7.9.tar.gz
+# cd mysql-5.7.9
+</code></pre>
+
+<h3>4. Makefile の生成</h3>
+
+<p><code>cmake</code> コマンドで Makefile を生成する。（よくある <code>configure</code> コマンドと同様の位置付け）</p>
+
+<p>オプションは、デフォルト値とが異なる値を設定したいものだけを指定する。<br/>
+（MySQL 5.7 からは C++ Boost ライブラリが必要なので <code>DOWNLOAD_BOOST</code> と <code>WITH_BOOST</code> は必須）<br/>
+※デフォルト値は<a href="http://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9.4 MySQL Source-Configuration Options">こちら</a>を参照。</p>
+
+<pre><code class="text"># cmake . \
+ -DMYSQL_UNIX_ADDR=/var/run/mysqld/mysqld.sock \
+ -DMYSQL_DATADIR=/var/lib/mysql \
+ -DDEFAULT_CHARSET=utf8 \
+ -DDEFAULT_COLLATION=utf8_general_ci \
+ -DDOWNLOAD_BOOST=1 \
+ -DWITH_BOOST=/usr/local/mysql
+</code></pre>
+
+<p><code>cmake</code> が途中で失敗した等の理由で <code>cmake</code> を再実行する場合は、キャッシュをクリアしてから再実行する。</p>
+
+<pre><code class="text"># rm CMakeCache.txt
+</code></pre>
+
+<h3>5. ビルド</h3>
+
+<pre><code class="text"># make
+</code></pre>
+
+<p>（時間がかかる）</p>
+
+<h3>6. インストール</h3>
+
+<pre><code class="text"># make install
+</code></pre>
+
+<h3>7. 環境変数 PATH の設定</h3>
+
+<pre><code class="bash /etc/bashrc">PATH=$PATH:/usr/local/mysql/bin
+</code></pre>
+
+<p>そして、即時反映。</p>
+
+<pre><code class="text"># source /etc/bashrc
+</code></pre>
+
+<h3>8. インストールの確認</h3>
+
+<pre><code class="text"># mysqld --version
+mysqld  Ver 5.7.9 for Linux on i686 (Source distribution)
+</code></pre>
+
+<h3>9. 所有者・所有グループの設定</h3>
+
+<pre><code class="text"># cd /usr/local/mysql
+# chown -R mysql. .
+</code></pre>
+
+<h3>10. 初期設定</h3>
+
+<pre><code class="text"># bin/mysqld --initialize --user=mysql
+# bin/mysql_ssl_rsa_setup
+# chown -R mysql. /var/lib/mysql
+</code></pre>
+
+<h3>11. 設定ファイルの編集</h3>
+
+<p>環境に合わせて、 &ldquo;/etc/my.cnf&rdquo; を編集する。（サンプルは &ldquo;/usr/local/mysql/support-files&rdquo; ディレクトリ内にある）<br/>
+以下は当方の取り急ぎの例。（実際には、熟考して詳細に設定すること）</p>
+
+<pre><code class="bash /etc/my.cnf"># For advice on how to change settings please see
+# http://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html
+
+[mysqld]
+# ==== Basis
+server-id = 2  # レプリケーション用 (1 〜 2^32 - 1)
+user                   = mysql
+datadir                = /var/lib/mysql
+socket                 = /var/lib/mysql/mysql.sock
+pid-file               = /var/run/mysqld/mysqld.pid
+skip_external_locking
+sql_mode               = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+character_set_server   = utf8
+collation-server       = utf8_general_ci
+default_storage_engine = InnoDB           # Default: InnodDB
+lc_messages            = en_US            # Default: en_US
+lc_messages_dir        = /usr/share/mysql
+
+# ==== Network, Connection
+port                 = 3306
+bind-address         = 0.0.0.0  # 127.0.0.1
+max_connections      = 100      # Default: 151
+max_connect_errors   = 100      # Default: 100
+max_user_connections = 0        # Default: 0
+wait_timeout         = 300      # Default: 28800
+interactive_timeout  = 3600     # Default: 28800
+connect_timeout      = 30       # Default: 10
+
+# ==== Buffer
+max_allowed_packet      = 32M   # Default: 1M
+thread_cache_size       = 40    # Default: 0 (max_connections の 1/3 程度?)
+table_open_cache        = 400   # Default: 400 (同時接続数 * テーブル数?)
+tmp_table_size          = 16M   # Default: System 依存 (for Memory, &lt;= max_heap_table_size)
+max_heap_table_size     = 32M   # Default: 16M         (for Memory, &gt;= tmp_table_size)
+sort_buffer_size        = 4M    # Default: 2M
+read_buffer_size        = 4M    # Default: 128K
+read_rnd_buffer_size    = 4M    # Default: 256K
+join_buffer_size        = 4M    # Default: 128K
+query_cache_size        = 32M   # Default: 0
+query_cache_limit       = 16M   # Default: 1M
+thread_stack            = 192K  # Default: 192K(32bit), 288K(64bit)
+
+# ==== MyISAM
+key_buffer_size         = 8M    # Default: 8M (for MyISAM)
+myisam_sort_buffer_size = 8M    # Default: 8M (for MyISAM)
+
+# ==== Binary Log
+log_bin          = mysql-bin
+expire_logs_days = 10
+max_binlog_size  = 100M
+binlog_format    = MIXED
+log_bin_trust_function_creators = 1  # Default: 0 (for TRIGGER)
+
+# ==== InnoDB
+innodb_data_file_path           = ibdata1:1G  #:autoextend
+innodb_autoextend_increment     = 64          # Default: 64
+innodb_file_per_table           = 1
+innodb_file_format              = Barracuda   # Default: Antelope
+innodb_file_format_max          = Barracuda   # Default: Antelope
+innodb_large_prefix             = 1           # Default: 0
+innodb_buffer_pool_size         = 768M        # Default: 128M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)
+#innodb_buffer_pool_instances    = 8          # Default: autosized(32bit), 8(64bit) (innodb_buffer_pool_size &gt;= 1G の場合にのみ有効)
+innodb_sort_buffer_size         = 2M          # Default: 1M
+innodb_write_io_threads         = 4           # Default: 4 (1 - 64)
+innodb_read_io_threads          = 4           # Default: 4 (1 - 64)
+innodb_log_buffer_size          = 32M         # Default: 8M
+innodb_log_group_home_dir       = /var/lib/mysql
+innodb_log_files_in_group       = 2           # Default: 2
+innodb_log_file_size            = 256M        # Default: 48M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)
+innodb_max_dirty_pages_pct      = 90          # Default: 75(%)
+innodb_io_capacity              = 100         # Default: 200 (100 - 2^64-1)
+innodb_io_capacity_max          = 200         # Default: 200 (100 - 2^64-1)
+innodb_lru_scan_depth           = 100         # Default: 1024 (100 - 2^32-1(32bit))
+innodb_flush_method             = O_DIRECT    # Default: Not set
+innodb_flush_log_at_trx_commit  = 1           # Default: 1
+innodb_doublewrite              = 1           # Default: 1
+
+# ==== Log
+log_output          = FILE  # Default: FILE
+log-error           = /var/log/mysql/error.log
+#general_log_file    = /var/log/mysql/mysql.log  # デバッグ時に有効化
+#general_log         = 1                         # デバッグ時に有効化
+#slow_query_log_file = /var/log/mysql/slow.log   # デバッグ時に有効化
+#slow_query_log      = 1                         # デバッグ時に有効化
+#long_query_time     = 30                        # デバッグ時に有効化
+
+# ==== Event Scheduler
+event_scheduler = 1  # Default: 0
+
+[client]
+port   = 3306
+socket = /var/lib/mysql/mysql.sock
+
+[mysqld_safe]
+socket = /var/lib/mysql/mysql.sock
+nice   = 0
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet = 32M
+
+[mysql]
+pager="less -n -i -F -X -E"
+
+[isamchk]
+key_buffer = 16M
+
+[myisamchk]
+key_buffer_size  = 128M
+sort_buffer_size = 128M
+read_buffer      = 2M
+write_buffer     = 2M
+
+[mysqlhotcopy]
+interactive-timeout
+</code></pre>
+
+<h3>12. PID 用ディレクトリの作成</h3>
+
+<pre><code class="text"># mkdir /var/run/mysqld
+# chown -R mysql. /var/run/mysqld
+</code></pre>
+
+<h3>13. 起動スクリプトの作成</h3>
+
+<pre><code class="text"># cp support-files/mysql.server /etc/rc.d/init.d/mysqld
+# chown root:root /etc/rc.d/init.d/mysqld
+# chmod 755 /etc/rc.d/init.d/mysqld
+</code></pre>
+
+<p>そして、編集する。</p>
+
+<pre><code class="bash /etc/rc.d/init.d/mysqld">basedir=/usr/local/mysql
+datadir=/var/lib/mysql
+</code></pre>
+
+<h3>14. 自動起動の設定</h3>
+
+<pre><code class="text"># chkconfig --add mysqld
+# chkconfig mysqld on
+# chkconfig --list mysqld
+mysqld          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+</code></pre>
+
+<h3>15. MySQL サーバの起動</h3>
+
+<pre><code class="text"># /etc/rc.d/init.d/mysqld start
+</code></pre>
+
+<h3>16. root 初期パスワードの確認</h3>
+
+<p>（記録されているログファイルは環境により異なる）</p>
+
+<pre><code class="text"># grep 'temporary password' /var/log/mysql/error.log
+2015-11-29T06:05:51.282215Z 1 [Note] A temporary password is generated for root@localhost: wH!Y#&gt;(lQ7aQ
+</code></pre>
+
+<h3>17. MySQL の安全化</h3>
+
+<p>root パスワードの設定等を行う。（説明は後述）</p>
+
+<pre><code class="text"># mysql_secure_installation
+
+Securing the MySQL server deployment.
+
+Enter password for user root:
+The 'validate_password' plugin is installed on the server.
+The subsequent steps will run with the existing configuration
+of the plugin.
+Using existing password for root.
+
+Estimated strength of the password: 100
+Change the password for root ? ((Press y|Y for Yes, any other key for No) : y
+
+New password:
+
+Re-enter new password:
+
+Estimated strength of the password: 100
+Change the password for root ? ((Press y|Y for Yes, any other key for No) : n
+
+ ... skipping.
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+
+ ... skipping.
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+ - Dropping test database...
+Success.
+
+ - Removing privileges on test database...
+Success.
+
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+All done!
+</code></pre>
+
+<ol>
+<li><code>Enter password for user root:</code> で root の初期パスワードを入力する。</li>
+<li><code>New password:</code> で root の新しいパスワードを設定する。<br/>
+（パスワードに使用する文字は数字・英小文字・英大文字・記号を混在させること。そうしなければポリシー違反でエラーになる）</li>
+<li><code>Re-enter new password:</code> で root の新しいパスワードの確認入力をする。</li>
+<li><code>Estimated strength of the password: 100 ...</code> でより強固なパスワードに変更するか問われるが、 <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove anonymous users?</code> で匿名ユーザを削除するために <code>y</code> で応答する。</li>
+<li><code>Disallow root login remotely?</code> で root のリモート接続を拒否するか問われるが、リモート接続したいので <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove test database and access to it?</code> でテストデータベースを削除するか問われるので、 <code>y</code> で応答する。</li>
+<li><code>Reload privilege tables now?</code> で権限テーブルを即時リロードするか問われるので、 <code>y</code> で応答する。</li>
+</ol>
+
+
+<h3>18. 動作確認</h3>
+
+<p>MySQL サーバにログインしてみる。</p>
+
+<pre><code class="text"># mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 5.7.9-log Source distribution
+
+Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql&gt;
+</code></pre>
+
+<p>その他、各種操作を試してみる。</p>
+
+<h3>19. その他</h3>
+
+<ul>
+<li>設定ファイルは &ldquo;/etc/my.cnf&rdquo; なので、実際に運用する際には綿密に検討して設定する。</li>
+<li>パスワードの有効期限がデフォルトでは「360 日」に設定されている。<br/>
+必要なら、システム変数 <code>default_password_lifetime</code> を編集する。</li>
+</ul>
+
+
+<h3>20. 参考サイト</h3>
+
+<ul>
+<li><a href="http://dev.mysql.com/doc/refman/5.7/en/source-installation.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source">MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS 7.1 - DB サーバ MySQL 5.7 構築（公式リポジトリ使用）！]]></title>
@@ -200,16 +592,14 @@ All done!
 </ol>
 
 
-<h4>8. ファイアウォール設定</h4>
+<h3>8. ファイアウォール設定</h3>
 
 <p>ポート TCP:3306 を開放する。（ローカルネット内の別マシンからのアクセスが必要な場合）</p>
 
 <pre><code class="text"># firewall-cmd --add-port=3306/tcp
 success
-# firewall-cmd --add-port=873/tcp --permanent
-success
 # firewall-cmd --list-ports
-110/tcp 465/tcp 873/tcp 3306/tcp 4000-4005/tcp
+110/tcp 465/tcp 3306/tcp 4000-4005/tcp
 </code></pre>
 
 <h3>9. 動作確認</h3>
@@ -639,86 +1029,6 @@ avg-cpu:  %user   %nice %system %iowait  %steal   %idle
 <hr />
 
 <p>当方の場合、 HDD の IOPS を確認することは、データベースの入出力に関する設定値を決定するのに必要でした。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - シャットダウン時間の短縮！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/10/mariadb-speedup-shutdown/"/>
-    <updated>2015-11-10T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/10/mariadb-speedup-shutdown</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB や MySQL をシャットダウン（or 再起動）する際に時間がかかりすぎることがあります。</p>
-
-<p>バッファの内容をディスクに書き込むのに時間がかかっているからです。</p>
-
-<p>今回は、そのイライラを軽減するための対処についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MariaDB 10.0.21 での作業を想定（MySQL でも同様）</li>
-<li>ハード環境により成果は異なる、ということに留意。</li>
-</ul>
-
-
-<h3>1. シャットダウン時に行われる時間のかかる処理</h3>
-
-<ul>
-<li>InnoDB Buffer Pool 全領域のチェックポイント。</li>
-<li>チェックポイントとは、ダーティページ（変更されたが、まだデータベースファイルに書き込まれていないページ）をテーブルスペースへ書き込むこと。</li>
-</ul>
-
-
-<h3>2. innodb_max_dirty_pages_pct について</h3>
-
-<ul>
-<li>InnoDB は、ダーティページの割合（単位：%）が <code>innodb_max_dirty_pages_pct</code> の値を超えないように、バッファープールからデータをフラッシュしようとする。</li>
-<li><code>innodb_max_dirty_pages_pct</code> のデフォルト値は <code>75</code></li>
-<li><code>innodb_max_dirty_pages_pct</code> の設定可能値は <code>0</code> 〜 <code>99.999</code> (MariaDB 10.0.15 以上), <code>0</code> 〜 <code>99</code> (MariaDB 10.0.15 未満).</li>
-<li>書き込み回数を減らす（書き込みを遅らせる）ためにはこの値を大きくする。</li>
-<li>この値を小さくし過ぎると書き込みが頻発し、<code>innodb_buffer_pool_size</code> を大きく設定していても効果が小さくなる。</li>
-</ul>
-
-
-<h3>3. シャットダウン時間の短縮方法</h3>
-
-<ol>
-<li>MariaDB(MySQL) サーバにログインし以下の SQLを実行する。<br/>
-<code>SET GLOBAL innodb_max_dirty_pages_pct = 0;</code><br/>
-（但し、環境によっては <code>0</code> を指定できないかもしれない。その場合は <code>1</code> や <code>0.001</code> 等でもよい）</li>
-<li><code>Value</code> 値が十分小さくなる（<code>0</code> に近付く）まで以下の SQL を断続的に実行して待つ。<br/>
-<code>SHOW GLOBAL STATUS like 'innodb_buffer_pool_pages_dirty';</code></li>
-<li>サーバのシャットダウン（or 再起動）
-
-<ul>
-<li>シャットダウン（or 再起動）すると、 <code>innodb_max_dirty_pages_pct</code> の値が設定値に戻る。</li>
-<li>シャットダウン（or 再起動）し忘れると <code>innodb_max_dirty_pages_pct</code> の値が <code>0</code> のままで、頻繁にダーティページのテーブルスペースへの書き込みが発生してレスポンスが悪くなるので注意。</li>
-</ul>
-</li>
-</ol>
-
-
-<h3>4. 所感</h3>
-
-<p>シャットダウンに時間がかかりすぎて不安に感じる際には、シャットダウン前にチェックポイントを実行してダーティページの書込状況を確認できるのでよいかもしれません。</p>
-
-<h3>5. 参考サイト</h3>
-
-<p>シャットダウンプロセスについては以下のサイトを参照。（但し、チェックポイントやダーティページについての記載はない）</p>
-
-<ul>
-<li><a href="http://dev.mysql.com/doc/refman/5.6/ja/server-shutdown.html" title="MySQL :: MySQL 5.6 リファレンスマニュアル :: 5.1.12 シャットダウンプロセス">MySQL :: MySQL 5.6 リファレンスマニュアル :: 5.1.12 シャットダウンプロセス</a></li>
-</ul>
-
-
-<hr />
 
 <p>以上。</p>
 ]]></content>

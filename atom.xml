@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-16T00:09:04+09:00</updated>
+  <updated>2015-12-20T00:07:18+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,649 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS - MySQL 5.7 インストール（ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2015/12/20/centos-mysql-57-installation-by-src/"/>
+    <updated>2015-12-20T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2015/12/20/centos-mysql-57-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MySQL 5.7 系の最新版をソースをビルドして CentOS 6.7 にインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7(32bit) での作業を想定。</li>
+<li>搭載メモリは 1GB を想定。</li>
+</ul>
+
+
+<h3>1. 必要パッケージの準備</h3>
+
+<p>以下の必要なパッケージが未インストールならインストールしておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum install wget cmake gcc-c++ ncurses-devel zlib-devel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. MySQL ユーザ・グループの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># groupadd mysql
+</span><span class='line'># useradd -r -g mysql -s /bin/false mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. ソースの取得</h3>
+
+<p>アーカイブファイルを取得、展開後、ディレクトリを移動しておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># cd /usr/local/src/
+</span><span class='line'># wget http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.9.tar.gz
+</span><span class='line'># tar zxvf mysql-5.7.9.tar.gz
+</span><span class='line'># cd mysql-5.7.9
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. Makefile の生成</h3>
+
+<p><code>cmake</code> コマンドで Makefile を生成する。（よくある <code>configure</code> コマンドと同様の位置付け）</p>
+
+<p>オプションは、デフォルト値とが異なる値を設定したいものだけを指定する。<br/>
+（MySQL 5.7 からは C++ Boost ライブラリが必要なので <code>DOWNLOAD_BOOST</code> と <code>WITH_BOOST</code> は必須）<br/>
+※デフォルト値は<a href="http://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9.4 MySQL Source-Configuration Options">こちら</a>を参照。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># cmake . \
+</span><span class='line'> -DMYSQL_UNIX_ADDR=/var/run/mysqld/mysqld.sock \
+</span><span class='line'> -DMYSQL_DATADIR=/var/lib/mysql \
+</span><span class='line'> -DDEFAULT_CHARSET=utf8 \
+</span><span class='line'> -DDEFAULT_COLLATION=utf8_general_ci \
+</span><span class='line'> -DDOWNLOAD_BOOST=1 \
+</span><span class='line'> -DWITH_BOOST=/usr/local/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>cmake</code> が途中で失敗した等の理由で <code>cmake</code> を再実行する場合は、キャッシュをクリアしてから再実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># rm CMakeCache.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. ビルド</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># make
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（時間がかかる）</p>
+
+<h3>6. インストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. 環境変数 PATH の設定</h3>
+
+<figure class='code'><figcaption><span>/etc/bashrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/usr/local/mysql/bin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、即時反映。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># source /etc/bashrc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>8. インストールの確認</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mysqld --version
+</span><span class='line'>mysqld  Ver 5.7.9 for Linux on i686 (Source distribution)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>9. 所有者・所有グループの設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># cd /usr/local/mysql
+</span><span class='line'># chown -R mysql. .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>10. 初期設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># bin/mysqld --initialize --user=mysql
+</span><span class='line'># bin/mysql_ssl_rsa_setup
+</span><span class='line'># chown -R mysql. /var/lib/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>11. 設定ファイルの編集</h3>
+
+<p>環境に合わせて、 &ldquo;/etc/my.cnf&rdquo; を編集する。（サンプルは &ldquo;/usr/local/mysql/support-files&rdquo; ディレクトリ内にある）<br/>
+以下は当方の取り急ぎの例。（実際には、熟考して詳細に設定すること）</p>
+
+<figure class='code'><figcaption><span>/etc/my.cnf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># For advice on how to change settings please see</span>
+</span><span class='line'><span class="c"># http://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqld<span class="o">]</span>
+</span><span class='line'><span class="c"># ==== Basis</span>
+</span><span class='line'>server-id <span class="o">=</span> <span class="m">2</span>  <span class="c"># レプリケーション用 (1 〜 2^32 - 1)</span>
+</span><span class='line'><span class="nv">user</span>                   <span class="o">=</span> mysql
+</span><span class='line'><span class="nv">datadir</span>                <span class="o">=</span> /var/lib/mysql
+</span><span class='line'><span class="nv">socket</span>                 <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'>pid-file               <span class="o">=</span> /var/run/mysqld/mysqld.pid
+</span><span class='line'>skip_external_locking
+</span><span class='line'><span class="nv">sql_mode</span>               <span class="o">=</span> NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+</span><span class='line'><span class="nv">character_set_server</span>   <span class="o">=</span> utf8
+</span><span class='line'>collation-server       <span class="o">=</span> utf8_general_ci
+</span><span class='line'><span class="nv">default_storage_engine</span> <span class="o">=</span> InnoDB           <span class="c"># Default: InnodDB</span>
+</span><span class='line'><span class="nv">lc_messages</span>            <span class="o">=</span> en_US            <span class="c"># Default: en_US</span>
+</span><span class='line'><span class="nv">lc_messages_dir</span>        <span class="o">=</span> /usr/share/mysql
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Network, Connection</span>
+</span><span class='line'><span class="nv">port</span>                 <span class="o">=</span> 3306
+</span><span class='line'><span class="nb">bind</span>-address         <span class="o">=</span> 0.0.0.0  <span class="c"># 127.0.0.1</span>
+</span><span class='line'><span class="nv">max_connections</span>      <span class="o">=</span> <span class="m">100</span>      <span class="c"># Default: 151</span>
+</span><span class='line'><span class="nv">max_connect_errors</span>   <span class="o">=</span> <span class="m">100</span>      <span class="c"># Default: 100</span>
+</span><span class='line'><span class="nv">max_user_connections</span> <span class="o">=</span> <span class="m">0</span>        <span class="c"># Default: 0</span>
+</span><span class='line'><span class="nv">wait_timeout</span>         <span class="o">=</span> <span class="m">300</span>      <span class="c"># Default: 28800</span>
+</span><span class='line'><span class="nv">interactive_timeout</span>  <span class="o">=</span> <span class="m">3600</span>     <span class="c"># Default: 28800</span>
+</span><span class='line'><span class="nv">connect_timeout</span>      <span class="o">=</span> <span class="m">30</span>       <span class="c"># Default: 10</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Buffer</span>
+</span><span class='line'><span class="nv">max_allowed_packet</span>      <span class="o">=</span> 32M   <span class="c"># Default: 1M</span>
+</span><span class='line'><span class="nv">thread_cache_size</span>       <span class="o">=</span> <span class="m">40</span>    <span class="c"># Default: 0 (max_connections の 1/3 程度?)</span>
+</span><span class='line'><span class="nv">table_open_cache</span>        <span class="o">=</span> <span class="m">400</span>   <span class="c"># Default: 400 (同時接続数 * テーブル数?)</span>
+</span><span class='line'><span class="nv">tmp_table_size</span>          <span class="o">=</span> 16M   <span class="c"># Default: System 依存 (for Memory, &lt;= max_heap_table_size)</span>
+</span><span class='line'><span class="nv">max_heap_table_size</span>     <span class="o">=</span> 32M   <span class="c"># Default: 16M         (for Memory, &gt;= tmp_table_size)</span>
+</span><span class='line'><span class="nv">sort_buffer_size</span>        <span class="o">=</span> 4M    <span class="c"># Default: 2M</span>
+</span><span class='line'><span class="nv">read_buffer_size</span>        <span class="o">=</span> 4M    <span class="c"># Default: 128K</span>
+</span><span class='line'><span class="nv">read_rnd_buffer_size</span>    <span class="o">=</span> 4M    <span class="c"># Default: 256K</span>
+</span><span class='line'><span class="nv">join_buffer_size</span>        <span class="o">=</span> 4M    <span class="c"># Default: 128K</span>
+</span><span class='line'><span class="nv">query_cache_size</span>        <span class="o">=</span> 32M   <span class="c"># Default: 0</span>
+</span><span class='line'><span class="nv">query_cache_limit</span>       <span class="o">=</span> 16M   <span class="c"># Default: 1M</span>
+</span><span class='line'><span class="nv">thread_stack</span>            <span class="o">=</span> 192K  <span class="c"># Default: 192K(32bit), 288K(64bit)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== MyISAM</span>
+</span><span class='line'><span class="nv">key_buffer_size</span>         <span class="o">=</span> 8M    <span class="c"># Default: 8M (for MyISAM)</span>
+</span><span class='line'><span class="nv">myisam_sort_buffer_size</span> <span class="o">=</span> 8M    <span class="c"># Default: 8M (for MyISAM)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Binary Log</span>
+</span><span class='line'><span class="nv">log_bin</span>          <span class="o">=</span> mysql-bin
+</span><span class='line'><span class="nv">expire_logs_days</span> <span class="o">=</span> 10
+</span><span class='line'><span class="nv">max_binlog_size</span>  <span class="o">=</span> 100M
+</span><span class='line'><span class="nv">binlog_format</span>    <span class="o">=</span> MIXED
+</span><span class='line'><span class="nv">log_bin_trust_function_creators</span> <span class="o">=</span> <span class="m">1</span>  <span class="c"># Default: 0 (for TRIGGER)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== InnoDB</span>
+</span><span class='line'><span class="nv">innodb_data_file_path</span>           <span class="o">=</span> ibdata1:1G  <span class="c">#:autoextend</span>
+</span><span class='line'><span class="nv">innodb_autoextend_increment</span>     <span class="o">=</span> <span class="m">64</span>          <span class="c"># Default: 64</span>
+</span><span class='line'><span class="nv">innodb_file_per_table</span>           <span class="o">=</span> 1
+</span><span class='line'><span class="nv">innodb_file_format</span>              <span class="o">=</span> Barracuda   <span class="c"># Default: Antelope</span>
+</span><span class='line'><span class="nv">innodb_file_format_max</span>          <span class="o">=</span> Barracuda   <span class="c"># Default: Antelope</span>
+</span><span class='line'><span class="nv">innodb_large_prefix</span>             <span class="o">=</span> <span class="m">1</span>           <span class="c"># Default: 0</span>
+</span><span class='line'><span class="nv">innodb_buffer_pool_size</span>         <span class="o">=</span> 768M        <span class="c"># Default: 128M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)</span>
+</span><span class='line'><span class="c">#innodb_buffer_pool_instances    = 8          # Default: autosized(32bit), 8(64bit) (innodb_buffer_pool_size &gt;= 1G の場合にのみ有効)</span>
+</span><span class='line'><span class="nv">innodb_sort_buffer_size</span>         <span class="o">=</span> 2M          <span class="c"># Default: 1M</span>
+</span><span class='line'><span class="nv">innodb_write_io_threads</span>         <span class="o">=</span> <span class="m">4</span>           <span class="c"># Default: 4 (1 - 64)</span>
+</span><span class='line'><span class="nv">innodb_read_io_threads</span>          <span class="o">=</span> <span class="m">4</span>           <span class="c"># Default: 4 (1 - 64)</span>
+</span><span class='line'><span class="nv">innodb_log_buffer_size</span>          <span class="o">=</span> 32M         <span class="c"># Default: 8M</span>
+</span><span class='line'><span class="nv">innodb_log_group_home_dir</span>       <span class="o">=</span> /var/lib/mysql
+</span><span class='line'><span class="nv">innodb_log_files_in_group</span>       <span class="o">=</span> <span class="m">2</span>           <span class="c"># Default: 2</span>
+</span><span class='line'><span class="nv">innodb_log_file_size</span>            <span class="o">=</span> 256M        <span class="c"># Default: 48M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)</span>
+</span><span class='line'><span class="nv">innodb_max_dirty_pages_pct</span>      <span class="o">=</span> <span class="m">90</span>          <span class="c"># Default: 75(%)</span>
+</span><span class='line'><span class="nv">innodb_io_capacity</span>              <span class="o">=</span> <span class="m">100</span>         <span class="c"># Default: 200 (100 - 2^64-1)</span>
+</span><span class='line'><span class="nv">innodb_io_capacity_max</span>          <span class="o">=</span> <span class="m">200</span>         <span class="c"># Default: 200 (100 - 2^64-1)</span>
+</span><span class='line'><span class="nv">innodb_lru_scan_depth</span>           <span class="o">=</span> <span class="m">100</span>         <span class="c"># Default: 1024 (100 - 2^32-1(32bit))</span>
+</span><span class='line'><span class="nv">innodb_flush_method</span>             <span class="o">=</span> O_DIRECT    <span class="c"># Default: Not set</span>
+</span><span class='line'><span class="nv">innodb_flush_log_at_trx_commit</span>  <span class="o">=</span> <span class="m">1</span>           <span class="c"># Default: 1</span>
+</span><span class='line'><span class="nv">innodb_doublewrite</span>              <span class="o">=</span> <span class="m">1</span>           <span class="c"># Default: 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Log</span>
+</span><span class='line'><span class="nv">log_output</span>          <span class="o">=</span> FILE  <span class="c"># Default: FILE</span>
+</span><span class='line'>log-error           <span class="o">=</span> /var/log/mysql/error.log
+</span><span class='line'><span class="c">#general_log_file    = /var/log/mysql/mysql.log  # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#general_log         = 1                         # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#slow_query_log_file = /var/log/mysql/slow.log   # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#slow_query_log      = 1                         # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#long_query_time     = 30                        # デバッグ時に有効化</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Event Scheduler</span>
+</span><span class='line'><span class="nv">event_scheduler</span> <span class="o">=</span> <span class="m">1</span>  <span class="c"># Default: 0</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>client<span class="o">]</span>
+</span><span class='line'><span class="nv">port</span>   <span class="o">=</span> 3306
+</span><span class='line'><span class="nv">socket</span> <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqld_safe<span class="o">]</span>
+</span><span class='line'><span class="nv">socket</span> <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'><span class="nv">nice</span>   <span class="o">=</span> 0
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqldump<span class="o">]</span>
+</span><span class='line'>quick
+</span><span class='line'>quote-names
+</span><span class='line'><span class="nv">max_allowed_packet</span> <span class="o">=</span> 32M
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysql<span class="o">]</span>
+</span><span class='line'><span class="nv">pager</span><span class="o">=</span><span class="s2">&quot;less -n -i -F -X -E&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>isamchk<span class="o">]</span>
+</span><span class='line'><span class="nv">key_buffer</span> <span class="o">=</span> 16M
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>myisamchk<span class="o">]</span>
+</span><span class='line'><span class="nv">key_buffer_size</span>  <span class="o">=</span> 128M
+</span><span class='line'><span class="nv">sort_buffer_size</span> <span class="o">=</span> 128M
+</span><span class='line'><span class="nv">read_buffer</span>      <span class="o">=</span> 2M
+</span><span class='line'><span class="nv">write_buffer</span>     <span class="o">=</span> 2M
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqlhotcopy<span class="o">]</span>
+</span><span class='line'>interactive-timeout
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>12. PID 用ディレクトリの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mkdir /var/run/mysqld
+</span><span class='line'># chown -R mysql. /var/run/mysqld
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>13. 起動スクリプトの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># cp support-files/mysql.server /etc/rc.d/init.d/mysqld
+</span><span class='line'># chown root:root /etc/rc.d/init.d/mysqld
+</span><span class='line'># chmod 755 /etc/rc.d/init.d/mysqld
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、編集する。</p>
+
+<figure class='code'><figcaption><span>/etc/rc.d/init.d/mysqld</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">basedir</span><span class="o">=</span>/usr/local/mysql
+</span><span class='line'><span class="nv">datadir</span><span class="o">=</span>/var/lib/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>14. 自動起動の設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># chkconfig --add mysqld
+</span><span class='line'># chkconfig mysqld on
+</span><span class='line'># chkconfig --list mysqld
+</span><span class='line'>mysqld          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>15. MySQL サーバの起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># /etc/rc.d/init.d/mysqld start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>16. root 初期パスワードの確認</h3>
+
+<p>（記録されているログファイルは環境により異なる）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># grep &#39;temporary password&#39; /var/log/mysql/error.log
+</span><span class='line'>2015-11-29T06:05:51.282215Z 1 [Note] A temporary password is generated for root@localhost: wH!Y#&gt;(lQ7aQ
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>17. MySQL の安全化</h3>
+
+<p>root パスワードの設定等を行う。（説明は後述）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql_secure_installation
+</span><span class='line'>
+</span><span class='line'>Securing the MySQL server deployment.
+</span><span class='line'>
+</span><span class='line'>Enter password for user root:
+</span><span class='line'>The &#39;validate_password&#39; plugin is installed on the server.
+</span><span class='line'>The subsequent steps will run with the existing configuration
+</span><span class='line'>of the plugin.
+</span><span class='line'>Using existing password for root.
+</span><span class='line'>
+</span><span class='line'>Estimated strength of the password: 100
+</span><span class='line'>Change the password for root ? ((Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>
+</span><span class='line'>New password:
+</span><span class='line'>
+</span><span class='line'>Re-enter new password:
+</span><span class='line'>
+</span><span class='line'>Estimated strength of the password: 100
+</span><span class='line'>Change the password for root ? ((Press y|Y for Yes, any other key for No) : n
+</span><span class='line'>
+</span><span class='line'> ... skipping.
+</span><span class='line'>By default, a MySQL installation has an anonymous user,
+</span><span class='line'>allowing anyone to log into MySQL without having to have
+</span><span class='line'>a user account created for them. This is intended only for
+</span><span class='line'>testing, and to make the installation go a bit smoother.
+</span><span class='line'>You should remove them before moving into a production
+</span><span class='line'>environment.
+</span><span class='line'>
+</span><span class='line'>Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Normally, root should only be allowed to connect from
+</span><span class='line'>&#39;localhost&#39;. This ensures that someone cannot guess at
+</span><span class='line'>the root password from the network.
+</span><span class='line'>
+</span><span class='line'>Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+</span><span class='line'>
+</span><span class='line'> ... skipping.
+</span><span class='line'>By default, MySQL comes with a database named &#39;test&#39; that
+</span><span class='line'>anyone can access. This is also intended only for testing,
+</span><span class='line'>and should be removed before moving into a production
+</span><span class='line'>environment.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'> - Dropping test database...
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'> - Removing privileges on test database...
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>Reloading the privilege tables will ensure that all changes
+</span><span class='line'>made so far will take effect immediately.
+</span><span class='line'>
+</span><span class='line'>Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>All done!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li><code>Enter password for user root:</code> で root の初期パスワードを入力する。</li>
+<li><code>New password:</code> で root の新しいパスワードを設定する。<br/>
+（パスワードに使用する文字は数字・英小文字・英大文字・記号を混在させること。そうしなければポリシー違反でエラーになる）</li>
+<li><code>Re-enter new password:</code> で root の新しいパスワードの確認入力をする。</li>
+<li><code>Estimated strength of the password: 100 ...</code> でより強固なパスワードに変更するか問われるが、 <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove anonymous users?</code> で匿名ユーザを削除するために <code>y</code> で応答する。</li>
+<li><code>Disallow root login remotely?</code> で root のリモート接続を拒否するか問われるが、リモート接続したいので <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove test database and access to it?</code> でテストデータベースを削除するか問われるので、 <code>y</code> で応答する。</li>
+<li><code>Reload privilege tables now?</code> で権限テーブルを即時リロードするか問われるので、 <code>y</code> で応答する。</li>
+</ol>
+
+
+<h3>18. 動作確認</h3>
+
+<p>MySQL サーバにログインしてみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u root -p
+</span><span class='line'>Enter password:
+</span><span class='line'>Welcome to the MySQL monitor.  Commands end with ; or \g.
+</span><span class='line'>Your MySQL connection id is 10
+</span><span class='line'>Server version: 5.7.9-log Source distribution
+</span><span class='line'>
+</span><span class='line'>Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+</span><span class='line'>
+</span><span class='line'>Oracle is a registered trademark of Oracle Corporation and/or its
+</span><span class='line'>affiliates. Other names may be trademarks of their respective
+</span><span class='line'>owners.
+</span><span class='line'>
+</span><span class='line'>Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+</span><span class='line'>
+</span><span class='line'>mysql&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>その他、各種操作を試してみる。</p>
+
+<h3>19. その他</h3>
+
+<ul>
+<li>設定ファイルは &ldquo;/etc/my.cnf&rdquo; なので、実際に運用する際には綿密に検討して設定する。</li>
+<li>パスワードの有効期限がデフォルトでは「360 日」に設定されている。<br/>
+必要なら、システム変数 <code>default_password_lifetime</code> を編集する。</li>
+</ul>
+
+
+<h3>20. 参考サイト</h3>
+
+<ul>
+<li><a href="http://dev.mysql.com/doc/refman/5.7/en/source-installation.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source">MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS 7.1 - DB サーバ MySQL 5.7 構築（公式リポジトリ使用）！]]></title>
@@ -317,7 +960,7 @@
 </ol>
 
 
-<h4>8. ファイアウォール設定</h4>
+<h3>8. ファイアウォール設定</h3>
 
 <p>ポート TCP:3306 を開放する。（ローカルネット内の別マシンからのアクセスが必要な場合）</p>
 
@@ -325,14 +968,10 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class='text'><span class='line'># firewall-cmd --add-port=3306/tcp
 </span><span class='line'>success
-</span><span class='line'># firewall-cmd --add-port=873/tcp --permanent
-</span><span class='line'>success
 </span><span class='line'># firewall-cmd --list-ports
-</span><span class='line'>110/tcp 465/tcp 873/tcp 3306/tcp 4000-4005/tcp
+</span><span class='line'>110/tcp 465/tcp 3306/tcp 4000-4005/tcp
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -4166,961 +4805,6 @@ CentOS 6.7(32bit) 上の Postfix 2.6.6.-2<br/>
 <hr />
 
 <p>時々使用するコマンドなので、忘れたときのために記録しておいた次第です。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - XML ダンプ出力から HTML テーブル定義書生成！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/12/mariadb-table-definition-from-xmldump-to-html/"/>
-    <updated>2015-09-12T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/12/mariadb-table-definition-from-xmldump-to-html</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) のテーブル定義書を HTML で生成する方法についての記録です。</p>
-
-<p>実際には、スキーマ（テーブル定義）を XML 出力し、それに XSL テンプレートを適用します。</p>
-
-<p>（テーブル定義を行なってからテーブルを作成するのが本来の手順でしょうが）</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>MariaDB 10.0.21 サーバでの作業を想定。</li>
-<li>HTML 生成に <code>xsltproc</code> コマンドを使用するので、未インストールならインストールしておく。</li>
-</ul>
-
-
-<h3>1. XML ダンプ出力</h3>
-
-<p><code>mysqldump</code> コマンドを使用してスキーマ（テーブル定義）のみを XML フォーマットで出力する。<br/>
-（以下は <code>test</code> というデータベースの <code>towns</code> というテーブルを &ldquo;test_towns.xml&rdquo; という XML ファイルに出力する例）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ mysqldump -u username -p --xml --no-data test towns &gt; test_towns.xml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>参考までに、今回出力された XML ファイルの内容は以下のとおり。</p>
-
-<figure class='code'><figcaption><span>text.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;mysqldump</span> <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;database</span> <span class="na">name=</span><span class="s">&quot;test&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;table_structure</span> <span class="na">name=</span><span class="s">&quot;towns&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;id&quot;</span> <span class="na">Type=</span><span class="s">&quot;int(11)&quot;</span> <span class="na">Null=</span><span class="s">&quot;NO&quot;</span> <span class="na">Key=</span><span class="s">&quot;PRI&quot;</span> <span class="na">Extra=</span><span class="s">&quot;auto_increment&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;pref_code&quot;</span> <span class="na">Type=</span><span class="s">&quot;varchar(2)&quot;</span> <span class="na">Null=</span><span class="s">&quot;NO&quot;</span> <span class="na">Key=</span><span class="s">&quot;MUL&quot;</span> <span class="na">Default=</span><span class="s">&quot;&quot;</span> <span class="na">Extra=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;city_code&quot;</span> <span class="na">Type=</span><span class="s">&quot;varchar(5)&quot;</span> <span class="na">Null=</span><span class="s">&quot;NO&quot;</span> <span class="na">Key=</span><span class="s">&quot;MUL&quot;</span> <span class="na">Default=</span><span class="s">&quot;&quot;</span> <span class="na">Extra=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;town_code&quot;</span> <span class="na">Type=</span><span class="s">&quot;varchar(12)&quot;</span> <span class="na">Null=</span><span class="s">&quot;NO&quot;</span> <span class="na">Key=</span><span class="s">&quot;MUL&quot;</span> <span class="na">Default=</span><span class="s">&quot;&quot;</span> <span class="na">Extra=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;latitude&quot;</span> <span class="na">Type=</span><span class="s">&quot;double&quot;</span> <span class="na">Null=</span><span class="s">&quot;YES&quot;</span> <span class="na">Key=</span><span class="s">&quot;&quot;</span> <span class="na">Default=</span><span class="s">&quot;0&quot;</span> <span class="na">Extra=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;longitude&quot;</span> <span class="na">Type=</span><span class="s">&quot;double&quot;</span> <span class="na">Null=</span><span class="s">&quot;YES&quot;</span> <span class="na">Key=</span><span class="s">&quot;&quot;</span> <span class="na">Default=</span><span class="s">&quot;0&quot;</span> <span class="na">Extra=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;field</span> <span class="na">Field=</span><span class="s">&quot;upd_datetime&quot;</span> <span class="na">Type=</span><span class="s">&quot;datetime&quot;</span> <span class="na">Null=</span><span class="s">&quot;YES&quot;</span> <span class="na">Key=</span><span class="s">&quot;&quot;</span> <span class="na">Default=</span><span class="s">&quot;0000-00-00 00:00:00&quot;</span> <span class="na">Extra=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;0&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;PRIMARY&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;1&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;id&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;1&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;idx_1&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;1&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;pref_code&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;1&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;idx_1&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;2&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;city_code&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;1&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;idx_1&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;3&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;town_code&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;1&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;idx_2&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;1&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;city_code&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;1&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;idx_2&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;2&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;town_code&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;key</span> <span class="na">Table=</span><span class="s">&quot;towns&quot;</span> <span class="na">Non_unique=</span><span class="s">&quot;1&quot;</span> <span class="na">Key_name=</span><span class="s">&quot;idx_3&quot;</span> <span class="na">Seq_in_index=</span><span class="s">&quot;1&quot;</span> <span class="na">Column_name=</span><span class="s">&quot;town_code&quot;</span> <span class="na">Collation=</span><span class="s">&quot;A&quot;</span> <span class="na">Cardinality=</span><span class="s">&quot;0&quot;</span> <span class="na">Null=</span><span class="s">&quot;&quot;</span> <span class="na">Index_type=</span><span class="s">&quot;BTREE&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="na">Index_comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;options</span> <span class="na">Name=</span><span class="s">&quot;towns&quot;</span> <span class="na">Engine=</span><span class="s">&quot;InnoDB&quot;</span> <span class="na">Version=</span><span class="s">&quot;10&quot;</span> <span class="na">Row_format=</span><span class="s">&quot;Compact&quot;</span> <span class="na">Rows=</span><span class="s">&quot;0&quot;</span> <span class="na">Avg_row_length=</span><span class="s">&quot;0&quot;</span> <span class="na">Data_length=</span><span class="s">&quot;16384&quot;</span> <span class="na">Max_data_length=</span><span class="s">&quot;0&quot;</span> <span class="na">Index_length=</span><span class="s">&quot;49152&quot;</span> <span class="na">Data_free=</span><span class="s">&quot;0&quot;</span> <span class="na">Auto_increment=</span><span class="s">&quot;1&quot;</span> <span class="na">Create_time=</span><span class="s">&quot;2015-08-18 14:06:07&quot;</span> <span class="na">Collation=</span><span class="s">&quot;utf8_general_ci&quot;</span> <span class="na">Create_options=</span><span class="s">&quot;&quot;</span> <span class="na">Comment=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/table_structure&gt;</span>
-</span><span class='line'><span class="nt">&lt;/database&gt;</span>
-</span><span class='line'><span class="nt">&lt;/mysqldump&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、今回使用しているテーブルの CREATE 文は以下のようになっている。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">towns</span><span class="o">`</span> <span class="p">(</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">pref_code</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">city_code</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">town_code</span><span class="o">`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">latitude</span><span class="o">`</span> <span class="n">double</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">longitude</span><span class="o">`</span> <span class="n">double</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="o">`</span><span class="n">upd_datetime</span><span class="o">`</span> <span class="n">datetime</span> <span class="k">DEFAULT</span> <span class="s1">&#39;0000-00-00 00:00:00&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">KEY</span> <span class="o">`</span><span class="n">idx_1</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">pref_code</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">city_code</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">town_code</span><span class="o">`</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">KEY</span> <span class="o">`</span><span class="n">idx_2</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">city_code</span><span class="o">`</span><span class="p">,</span><span class="o">`</span><span class="n">town_code</span><span class="o">`</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">KEY</span> <span class="o">`</span><span class="n">idx_3</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">town_code</span><span class="o">`</span><span class="p">)</span>
-</span><span class='line'><span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. XSL テンプレートの作成</h3>
-
-<p>以下のように XSL テンプレートを作成する。（あくまで一例。必要であれば適宜編集）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;xsl:stylesheet</span>
-</span><span class='line'>  <span class="na">xmlns:xsl=</span><span class="s">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span>
-</span><span class='line'>  <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:output</span> <span class="na">method=</span><span class="s">&quot;html&quot;</span> <span class="na">encoding=</span><span class="s">&quot;utf-8&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;mysqldump&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;html&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;title&gt;</span>データベース・テーブル定義<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;style</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        h2 {
-</span><span class='line'>          background-color: #8fbc8f;
-</span><span class='line'>          padding:          5px;
-</span><span class='line'>        }
-</span><span class='line'>        h4 {
-</span><span class='line'>          color:            #666;
-</span><span class='line'>          margin-top:       5px;
-</span><span class='line'>          margin-bottom:    5px;
-</span><span class='line'>        }
-</span><span class='line'>        table {
-</span><span class='line'>          border-collapse:  separate;
-</span><span class='line'>          border-spacing:   0px;
-</span><span class='line'>          border-top:       1px solid #ccc;
-</span><span class='line'>          border-left:      1px solid #ccc;
-</span><span class='line'>          margin-bottom:    5px;
-</span><span class='line'>        }
-</span><span class='line'>        table th {
-</span><span class='line'>          text-align:       left;
-</span><span class='line'>          vertical-align:   top;
-</span><span class='line'>          color:            #444;
-</span><span class='line'>          background-color: #ccc;
-</span><span class='line'>          border-top:       1px solid #fff;
-</span><span class='line'>          border-left:      1px solid #fff;
-</span><span class='line'>          border-right:     1px solid #ccc;
-</span><span class='line'>          border-bottom:    1px solid #ccc;
-</span><span class='line'>          padding:          4px;
-</span><span class='line'>          white-space:      nowrap;
-</span><span class='line'>        }
-</span><span class='line'>        table td {
-</span><span class='line'>          background-color: #fafafa;
-</span><span class='line'>          border-right:     1px solid #ccc;
-</span><span class='line'>          border-bottom:    1px solid #ccc;
-</span><span class='line'>          padding:          4px;
-</span><span class='line'>          white-space:      nowrap;
-</span><span class='line'>        }
-</span><span class='line'>        .tbl-db-name {
-</span><span class='line'>          margin-bottom:    10px;
-</span><span class='line'>        }
-</span><span class='line'>        .th-db-title {
-</span><span class='line'>          background-color: #bdb76b;
-</span><span class='line'>          width:            200px;
-</span><span class='line'>        }
-</span><span class='line'>        .th-tbl-title {
-</span><span class='line'>          width:            200px;
-</span><span class='line'>        }
-</span><span class='line'>        .td-name {
-</span><span class='line'>          width:            200px;
-</span><span class='line'>        }
-</span><span class='line'>        .th-no {
-</span><span class='line'>          width:            50px;
-</span><span class='line'>          text-align:       right;
-</span><span class='line'>        }
-</span><span class='line'>        .th-field,
-</span><span class='line'>        .th-type,
-</span><span class='line'>        .th-extra,
-</span><span class='line'>        .th-default,
-</span><span class='line'>        .th-comment,
-</span><span class='line'>        .th-keyname {
-</span><span class='line'>          width:            200px;
-</span><span class='line'>        }
-</span><span class='line'>        .th-null,
-</span><span class='line'>        .th-key {
-</span><span class='line'>          width:            50px;
-</span><span class='line'>        }
-</span><span class='line'>        .th-columns {
-</span><span class='line'>          width:            400px;
-</span><span class='line'>        }
-</span><span class='line'>        .th-nonunique {
-</span><span class='line'>          width:            100px;
-</span><span class='line'>        }
-</span><span class='line'>        .td-no {
-</span><span class='line'>          text-align:       right;
-</span><span class='line'>        }
-</span><span class='line'>      <span class="nt">&lt;/style&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;h2&gt;</span>データベース・テーブル定義書<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;database&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;database&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">&quot;tbl-db-name&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-db-title&quot;</span><span class="nt">&gt;</span>データベース名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-name&quot;</span><span class="nt">&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@name&quot;</span> <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;xsl:apply-templates</span> <span class="na">select=</span><span class="s">&quot;table_structure&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">match=</span><span class="s">&quot;table_structure&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;table&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-tbl-title&quot;</span><span class="nt">&gt;</span>テーブル名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-name&quot;</span><span class="nt">&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@name&quot;</span> <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;h4&gt;</span>カラム情報<span class="nt">&lt;/h4&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;table&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;thead&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-no&quot;</span>     <span class="nt">&gt;</span>#<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-field&quot;</span>  <span class="nt">&gt;</span>フィールド名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-type&quot;</span>   <span class="nt">&gt;</span>データ型<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-null&quot;</span>   <span class="nt">&gt;</span>Null<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-key&quot;</span>    <span class="nt">&gt;</span>キー<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-extra&quot;</span>  <span class="nt">&gt;</span>Extra<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-default&quot;</span><span class="nt">&gt;</span>デフォルト<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-comment&quot;</span><span class="nt">&gt;</span>備考<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/thead&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;tbody&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;field&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;position()&quot;</span><span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Field&quot;</span>   <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Type&quot;</span>    <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Null&quot;</span>    <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Key&quot;</span>     <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Extra&quot;</span>   <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Default&quot;</span> <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Comment&quot;</span> <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/xsl:for-each&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;h4&gt;</span>インデックス情報<span class="nt">&lt;/h4&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;table&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;thead&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-keyname&quot;</span>  <span class="nt">&gt;</span>インデックス名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-columns&quot;</span>  <span class="nt">&gt;</span>カラムリスト<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-nonunique&quot;</span><span class="nt">&gt;</span>ユニーク<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-comment&quot;</span>  <span class="nt">&gt;</span>備考<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/thead&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;tbody&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;key&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;xsl:variable</span> <span class="na">name=</span><span class="s">&quot;key_name&quot;</span> <span class="na">select=</span><span class="s">&quot;@Key_name&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;not(preceding-sibling::key[@Key_name=$key_name])&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$key_name&quot;</span> <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;xsl:for-each</span> <span class="na">select=</span><span class="s">&quot;../key[@Key_name=$key_name]&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Column_name&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;xsl:if</span> <span class="na">test=</span><span class="s">&quot;position()!=last()&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                  <span class="nt">&lt;xsl:text&gt;</span>, <span class="nt">&lt;/xsl:text&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/xsl:if&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;/xsl:for-each&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;xsl:choose&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;xsl:when</span> <span class="na">test=</span><span class="s">&quot;@Non_unique=&#39;0&#39;&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/xsl:when&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;xsl:otherwise&gt;</span>0<span class="nt">&lt;/xsl:otherwise&gt;</span>
-</span><span class='line'>              <span class="nt">&lt;/xsl:choose&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;td&gt;&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;@Comment&quot;</span>    <span class="nt">/&gt;&lt;/td&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;/xsl:if&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/xsl:for-each&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nt">&lt;xsl:template</span> <span class="na">name=</span><span class="s">&quot;no_increment&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;xsl:param</span> <span class="na">name=</span><span class="s">&quot;no&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;xsl:value-of</span> <span class="na">select=</span><span class="s">&quot;$no + 1&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/xsl:template&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;/xsl:stylesheet&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/ecce393eb6056d4c92a7" title="Gist - XSL template to generate a HTML from a XML of MariaDB(MySQL)'s table definition.">Gist - XSL template to generate a HTML from a XML of MariaDB(MySQL)&rsquo;s table definition.</a></li>
-</ul>
-
-
-<h3>3. HTML の生成</h3>
-
-<p><code>xsltproc</code> コマンドを使用して HTML を生成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ xsltproc --output test_towns.html table_definition.xsl test_towns.xml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. HTML の確認</h3>
-
-<p>生成された HTML を確認してみる。</p>
-
-<figure class='code'><figcaption><span>test_towns.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-<span class='line-number'>210</span>
-<span class='line-number'>211</span>
-<span class='line-number'>212</span>
-<span class='line-number'>213</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/REC-html40/loose.dtd&quot;&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'><span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;title&gt;</span>データベース・テーブル定義<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;style </span><span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        <span class="nt">h2</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">background-color</span><span class="o">:</span> <span class="m">#8fbc8f</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">padding</span><span class="o">:</span>          <span class="m">5px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nt">h4</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">color</span><span class="o">:</span>            <span class="m">#666</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">margin-top</span><span class="o">:</span>       <span class="m">5px</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">margin-bottom</span><span class="o">:</span>    <span class="m">5px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nt">table</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">border-collapse</span><span class="o">:</span>  <span class="k">separate</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-spacing</span><span class="o">:</span>   <span class="m">0px</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-top</span><span class="o">:</span>       <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-left</span><span class="o">:</span>      <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">margin-bottom</span><span class="o">:</span>    <span class="m">5px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nt">table</span> <span class="nt">th</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">text-align</span><span class="o">:</span>       <span class="k">left</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">vertical-align</span><span class="o">:</span>   <span class="k">top</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">color</span><span class="o">:</span>            <span class="m">#444</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">background-color</span><span class="o">:</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-top</span><span class="o">:</span>       <span class="m">1px</span> <span class="k">solid</span> <span class="m">#fff</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-left</span><span class="o">:</span>      <span class="m">1px</span> <span class="k">solid</span> <span class="m">#fff</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-right</span><span class="o">:</span>     <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-bottom</span><span class="o">:</span>    <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">padding</span><span class="o">:</span>          <span class="m">4px</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">white-space</span><span class="o">:</span>      <span class="k">nowrap</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nt">table</span> <span class="nt">td</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">background-color</span><span class="o">:</span> <span class="m">#fafafa</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-right</span><span class="o">:</span>     <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">border-bottom</span><span class="o">:</span>    <span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">padding</span><span class="o">:</span>          <span class="m">4px</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">white-space</span><span class="o">:</span>      <span class="k">nowrap</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.tbl-db-name</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">margin-bottom</span><span class="o">:</span>    <span class="m">10px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-db-title</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">background-color</span><span class="o">:</span> <span class="m">#bdb76b</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-tbl-title</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.td-name</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-no</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">50px</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">text-align</span><span class="o">:</span>       <span class="k">right</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-field</span><span class="o">,</span>
-</span><span class='line'>        <span class="nc">.th-type</span><span class="o">,</span>
-</span><span class='line'>        <span class="nc">.th-extra</span><span class="o">,</span>
-</span><span class='line'>        <span class="nc">.th-default</span><span class="o">,</span>
-</span><span class='line'>        <span class="nc">.th-comment</span><span class="o">,</span>
-</span><span class='line'>        <span class="nc">.th-keyname</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">200px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-null</span><span class="o">,</span>
-</span><span class='line'>        <span class="nc">.th-key</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">50px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-columns</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">400px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.th-nonunique</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">width</span><span class="o">:</span>            <span class="m">100px</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="nc">.td-no</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">text-align</span><span class="o">:</span>       <span class="k">right</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="nt">&lt;/style&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'><span class="nt">&lt;h2&gt;</span>データベース・テーブル定義書<span class="nt">&lt;/h2&gt;</span>
-</span><span class='line'><span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">&quot;tbl-db-name&quot;</span><span class="nt">&gt;&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-db-title&quot;</span><span class="nt">&gt;</span>データベース名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-name&quot;</span><span class="nt">&gt;</span>test<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;&lt;/table&gt;</span>
-</span><span class='line'><span class="nt">&lt;table&gt;&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-tbl-title&quot;</span><span class="nt">&gt;</span>テーブル名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-name&quot;</span><span class="nt">&gt;</span>towns<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;&lt;/table&gt;</span>
-</span><span class='line'><span class="nt">&lt;h4&gt;</span>カラム情報<span class="nt">&lt;/h4&gt;</span>
-</span><span class='line'><span class="nt">&lt;table&gt;</span>
-</span><span class='line'><span class="nt">&lt;thead&gt;&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-no&quot;</span><span class="nt">&gt;</span>#<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-field&quot;</span><span class="nt">&gt;</span>フィールド名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-type&quot;</span><span class="nt">&gt;</span>データ型<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-null&quot;</span><span class="nt">&gt;</span>Null<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-key&quot;</span><span class="nt">&gt;</span>キー<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-extra&quot;</span><span class="nt">&gt;</span>Extra<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-default&quot;</span><span class="nt">&gt;</span>デフォルト<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-comment&quot;</span><span class="nt">&gt;</span>備考<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;&lt;/thead&gt;</span>
-</span><span class='line'><span class="nt">&lt;tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>id<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>int(11)<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>NO<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>PRI<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>auto_increment<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>pref_code<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>varchar(2)<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>NO<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>MUL<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>3<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>city_code<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>varchar(5)<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>NO<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>MUL<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>4<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>town_code<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>varchar(12)<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>NO<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>MUL<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>5<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>latitude<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>double<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>YES<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>6<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>longitude<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>double<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>YES<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">&quot;td-no&quot;</span><span class="nt">&gt;</span>7<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>upd_datetime<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>datetime<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>YES<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>0000-00-00 00:00:00<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;/table&gt;</span>
-</span><span class='line'><span class="nt">&lt;h4&gt;</span>インデックス情報<span class="nt">&lt;/h4&gt;</span>
-</span><span class='line'><span class="nt">&lt;table&gt;</span>
-</span><span class='line'><span class="nt">&lt;thead&gt;&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-keyname&quot;</span><span class="nt">&gt;</span>インデックス名<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-columns&quot;</span><span class="nt">&gt;</span>カラムリスト<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-nonunique&quot;</span><span class="nt">&gt;</span>ユニーク<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;th</span> <span class="na">class=</span><span class="s">&quot;th-comment&quot;</span><span class="nt">&gt;</span>備考<span class="nt">&lt;/th&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;&lt;/thead&gt;</span>
-</span><span class='line'><span class="nt">&lt;tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>PRIMARY<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>id<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>1<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>idx_1<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>pref_code, city_code, town_code<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>idx_2<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>city_code, town_code<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>idx_3<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>town_code<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'><span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'><span class="nt">&lt;/table&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>さらに、 HTML ファイルをブラウザで開いて確認してみる。</p>
-
-<p><img src="http://komasaru.github.io/images/2015/09/12/TABLE_DEF_HTML.png" title="TABLE_DEF_HTML" alt="TABLE_DEF_HTML" /></p>
-
-<hr />
-
-<p>大量にテーブル定義書を生成したければシェル化するのもよいでしょう。</p>
 
 <p>以上。</p>
 ]]></content>
