@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 株式 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/株式/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-20T00:07:18+09:00</updated>
+  <updated>2015-12-28T00:10:05+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -317,7 +317,11 @@
     <link href="http://komasaru.github.io/blog/2012/07/22/22002052/"/>
     <updated>2012-07-22T00:20:00+09:00</updated>
     <id>http://komasaru.github.io/blog/2012/07/22/22002052</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
+    <content type="html"><![CDATA[<blockquote><p><strong>【はじめに】<br/>
+Yahoo!ファイナンス掲載情報の自動取得（スクレイピング）は禁止されています。（<a href="http://www.yahoo-help.jp/app/answers/detail/p/546/a_id/93575/" title="Yahoo!ファイナンスヘルプ - Yahoo!ファイナンス掲載情報の自動取得（スクレイピング）は禁止しています">参照</a>）<br/>
+以下の記事を参考にすることもお勧めしません。</strong></p></blockquote>
+
+<p>こんばんは。</p>
 
 <p>当方、今まで Ruby + Hpricot や Java + Tidy で Yahoo!ファイナンスからデータを取得してきました。
 しかし、Ruby + Hpricot での処理を Java + Tidy での処理に変更しても、高速化は実現できませんでした。</p>
@@ -1198,7 +1202,11 @@ HTMLソースの取得には CURL ライブラリを利用し、取得したHTML
     <link href="http://komasaru.github.io/blog/2012/06/28/28002015/"/>
     <updated>2012-06-28T00:20:00+09:00</updated>
     <id>http://komasaru.github.io/blog/2012/06/28/28002015</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
+    <content type="html"><![CDATA[<blockquote><p><strong>【はじめに】<br/>
+Yahoo!ファイナンス掲載情報の自動取得（スクレイピング）は禁止されています。（<a href="http://www.yahoo-help.jp/app/answers/detail/p/546/a_id/93575/" title="Yahoo!ファイナンスヘルプ - Yahoo!ファイナンス掲載情報の自動取得（スクレイピング）は禁止しています">参照</a>）<br/>
+以下の記事を参考にすることもお勧めしません。</strong></p></blockquote>
+
+<p>こんばんは。</p>
 
 <p>当方、以前から Ruby + MySQL で Yahoo!ファイナンスから株価時系列データ等を取得して管理しています。
 データの取得には Hpricot という Ruby 用の HTML パーサを使用しています。</p>
