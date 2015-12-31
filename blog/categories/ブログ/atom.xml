@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ブログ | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/ブログ/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2015-12-28T00:10:05+09:00</updated>
+  <updated>2016-01-01T00:57:07+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,496 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2015年12月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/01/blog-access/"/>
+    <updated>2016-01-01T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/01/blog-access</id>
+    <content type="html"><![CDATA[<p>明けまして、おめでとうございます。</p>
+
+<p>旧年中はお世話になりました。 本年もどうぞよろしくお願いします。</p>
+
+<p>話は変わりまして、先月12月分の当ブログアクセス状況を公開します。</p>
+
+<!--more-->
+
+
+<h4>1. アクセスをOS別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td class="blog-access-pv">31,827</td>
+    <td class="blog-access-rate">60.0736</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td class="blog-access-pv">17,050</td>
+    <td class="blog-access-rate">32.1820</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td class="blog-access-pv">1,848</td>
+    <td class="blog-access-rate">3.4881</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td class="blog-access-pv">1,810</td>
+    <td class="blog-access-rate">3.4164</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">207</td>
+    <td class="blog-access-rate">0.3907</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td class="blog-access-pv">92</td>
+    <td class="blog-access-rate">0.1737</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td class="blog-access-pv">47</td>
+    <td class="blog-access-rate">0.0887</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td class="blog-access-pv">36</td>
+    <td class="blog-access-rate">0.0680</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td class="blog-access-pv">34</td>
+    <td class="blog-access-rate">0.0642</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td class="blog-access-pv">10</td>
+    <td class="blog-access-rate">0.0189</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0170</td>
+  </tr>
+  <tr>
+    <td>CentOS Linux</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0113</td>
+  </tr>
+  <tr>
+    <td>NetBSD</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0038</td>
+  </tr>
+  <tr>
+    <td>Debian GNU/Linux</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0038</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td>X</td>
+    <td class="blog-access-pv">31,826</td>
+    <td class="blog-access-rate">60.0717</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>NT</td>
+    <td class="blog-access-pv">14,699</td>
+    <td class="blog-access-rate">27.7444</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,840</td>
+    <td class="blog-access-rate">3.4730</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,782</td>
+    <td class="blog-access-rate">3.3635</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7</td>
+    <td class="blog-access-pv">797</td>
+    <td class="blog-access-rate">1.5043</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>XP</td>
+    <td class="blog-access-pv">663</td>
+    <td class="blog-access-rate">1.2514</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7 64 bit</td>
+    <td class="blog-access-pv">572</td>
+    <td class="blog-access-rate">1.0797</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista</td>
+    <td class="blog-access-pv">275</td>
+    <td class="blog-access-rate">0.5191</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">206</td>
+    <td class="blog-access-rate">0.3888</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">89</td>
+    <td class="blog-access-rate">0.1680</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td>3.6-1.el5</td>
+    <td class="blog-access-pv">34</td>
+    <td class="blog-access-rate">0.0642</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">33</td>
+    <td class="blog-access-rate">0.0623</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>8 64 bit</td>
+    <td class="blog-access-pv">22</td>
+    <td class="blog-access-rate">0.0415</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td></td>
+    <td class="blog-access-pv">18</td>
+    <td class="blog-access-rate">0.0340</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Server 2003</td>
+    <td class="blog-access-pv">11</td>
+    <td class="blog-access-rate">0.0208</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>64 bit</td>
+    <td class="blog-access-pv">10</td>
+    <td class="blog-access-rate">0.0189</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>2.2</td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0170</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>4.0.1</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0132</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0132</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>2.3.4</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0113</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>3. アクセスをブラウザ別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td class="blog-access-pv">30,742</td>
+    <td class="blog-access-rate">58.0257</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td class="blog-access-pv">12,755</td>
+    <td class="blog-access-rate">24.0751</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td class="blog-access-pv">6,491</td>
+    <td class="blog-access-rate">12.2518</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td class="blog-access-pv">2,095</td>
+    <td class="blog-access-rate">3.9543</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td class="blog-access-pv">471</td>
+    <td class="blog-access-rate">0.8890</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td class="blog-access-pv">195</td>
+    <td class="blog-access-rate">0.3681</td>
+  </tr>
+  <tr>
+    <td>Netscape Navigator</td>
+    <td class="blog-access-pv">129</td>
+    <td class="blog-access-rate">0.2435</td>
+  </tr>
+  <tr>
+    <td>Chrome</td>
+    <td class="blog-access-pv">41</td>
+    <td class="blog-access-rate">0.0774</td>
+  </tr>
+  <tr>
+    <td>Mozilla SeaMonkey</td>
+    <td class="blog-access-pv">22</td>
+    <td class="blog-access-rate">0.0415</td>
+  </tr>
+  <tr>
+    <td>iPhone</td>
+    <td class="blog-access-pv">10</td>
+    <td class="blog-access-rate">0.0189</td>
+  </tr>
+  <tr>
+    <td>Konqueror</td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0170</td>
+  </tr>
+  <tr>
+    <td>PHP</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0132</td>
+  </tr>
+  <tr>
+    <td>Epiphany</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0113</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">4</td>
+    <td class="blog-access-rate">0.0076</td>
+  </tr>
+  <tr>
+    <td>SRWare Iron</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0038</td>
+  </tr>
+  <tr>
+    <td>Namoroka</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0019</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.36</td>
+    <td class="blog-access-pv">23,045</td>
+    <td class="blog-access-rate">43.4975</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>42.0</td>
+    <td class="blog-access-pv">6,978</td>
+    <td class="blog-access-rate">13.1710</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td>11.0</td>
+    <td class="blog-access-pv">6,491</td>
+    <td class="blog-access-rate">12.2518</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>9537.53</td>
+    <td class="blog-access-pv">3,117</td>
+    <td class="blog-access-rate">5.8834</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>43.0</td>
+    <td class="blog-access-pv">3,001</td>
+    <td class="blog-access-rate">5.6644</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.1</td>
+    <td class="blog-access-pv">1,419</td>
+    <td class="blog-access-rate">2.6784</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>38.0</td>
+    <td class="blog-access-pv">1,192</td>
+    <td class="blog-access-rate">2.2499</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.3.9</td>
+    <td class="blog-access-pv">713</td>
+    <td class="blog-access-rate">1.3458</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.1.4</td>
+    <td class="blog-access-pv">644</td>
+    <td class="blog-access-rate">1.2156</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>10.0</td>
+    <td class="blog-access-pv">614</td>
+    <td class="blog-access-rate">1.1589</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.2.7</td>
+    <td class="blog-access-pv">609</td>
+    <td class="blog-access-rate">1.1495</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>9.0</td>
+    <td class="blog-access-pv">564</td>
+    <td class="blog-access-rate">1.0646</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>8.0</td>
+    <td class="blog-access-pv">563</td>
+    <td class="blog-access-rate">1.0627</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>7.0</td>
+    <td class="blog-access-pv">348</td>
+    <td class="blog-access-rate">0.6569</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>41.0</td>
+    <td class="blog-access-pv">279</td>
+    <td class="blog-access-rate">0.5266</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>534.30</td>
+    <td class="blog-access-pv">272</td>
+    <td class="blog-access-rate">0.5134</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td>38.4.0</td>
+    <td class="blog-access-pv">196</td>
+    <td class="blog-access-rate">0.3700</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td>9.80</td>
+    <td class="blog-access-pv">191</td>
+    <td class="blog-access-rate">0.3605</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>44.0</td>
+    <td class="blog-access-pv">162</td>
+    <td class="blog-access-rate">0.3058</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td>38.5.0</td>
+    <td class="blog-access-pv">145</td>
+    <td class="blog-access-rate">0.2737</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[jQuery - 古いブログ記事にメッセージを付加！]]></title>
@@ -102,7 +592,7 @@
 <p>ブラウザで確認してみる。<br/>
 １年以上前の記事の場合記事本文の先頭にメッセージが出力されるはず。</p>
 
-<p><img src="/images/2015/12/24/JQUERY_OLD_POST.png" title="JQUERY_OLD_POST" alt="JQUERY_OLD_POST" /></p>
+<p><img src="images/2015/12/24/JQUERY_OLD_POST.png" title="JQUERY_OLD_POST" alt="JQUERY_OLD_POST" /></p>
 
 <hr />
 
@@ -1565,504 +2055,6 @@
     <td class="blog-access-total-label">合　計</td>
     <td> </td>
     <td class="blog-access-pv">34,377</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2015年08月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
-    <link href="http://komasaru.github.io/blog/2015/09/01/blog-access/"/>
-    <updated>2015-09-01T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/09/01/blog-access</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>09月になりましたので、先月08月分の当ブログアクセス状況を公開します。</p>
-
-<!--more-->
-
-
-<h4>1. アクセスをOS別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td class="blog-access-pv">16,753</td>
-    <td class="blog-access-rate">58.5524</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td class="blog-access-pv">9,973</td>
-    <td class="blog-access-rate">34.8560</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td class="blog-access-pv">867</td>
-    <td class="blog-access-rate">3.0302</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td class="blog-access-pv">761</td>
-    <td class="blog-access-rate">2.6597</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td class="blog-access-pv">110</td>
-    <td class="blog-access-rate">0.3845</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td class="blog-access-pv">78</td>
-    <td class="blog-access-rate">0.2726</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td class="blog-access-pv">37</td>
-    <td class="blog-access-rate">0.1293</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td class="blog-access-pv">8</td>
-    <td class="blog-access-rate">0.0280</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0245</td>
-  </tr>
-  <tr>
-    <td>iPhone OS</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0210</td>
-  </tr>
-  <tr>
-    <td>Solaris</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0175</td>
-  </tr>
-  <tr>
-    <td>CentOS Linux</td>
-    <td class="blog-access-pv">3</td>
-    <td class="blog-access-rate">0.0105</td>
-  </tr>
-  <tr>
-    <td>Debian GNU/Linux</td>
-    <td class="blog-access-pv">3</td>
-    <td class="blog-access-rate">0.0105</td>
-  </tr>
-  <tr>
-    <td>NetBSD</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0035</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">28,612</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td>X</td>
-    <td class="blog-access-pv">16,751</td>
-    <td class="blog-access-rate">58.5454</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>NT</td>
-    <td class="blog-access-pv">8,184</td>
-    <td class="blog-access-rate">28.6034</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7</td>
-    <td class="blog-access-pv">883</td>
-    <td class="blog-access-rate">3.0861</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">851</td>
-    <td class="blog-access-rate">2.9743</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">758</td>
-    <td class="blog-access-rate">2.6492</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7 64 bit</td>
-    <td class="blog-access-pv">462</td>
-    <td class="blog-access-rate">1.6147</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>XP</td>
-    <td class="blog-access-pv">280</td>
-    <td class="blog-access-rate">0.9786</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Vista</td>
-    <td class="blog-access-pv">118</td>
-    <td class="blog-access-rate">0.4124</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">110</td>
-    <td class="blog-access-rate">0.3845</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">77</td>
-    <td class="blog-access-rate">0.2691</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">33</td>
-    <td class="blog-access-rate">0.1153</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>8 64 bit</td>
-    <td class="blog-access-pv">33</td>
-    <td class="blog-access-rate">0.1153</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td></td>
-    <td class="blog-access-pv">10</td>
-    <td class="blog-access-rate">0.0350</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>64 bit</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0210</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Vista 64 bit</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0210</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Server 2003</td>
-    <td class="blog-access-pv">6</td>
-    <td class="blog-access-rate">0.0210</td>
-  </tr>
-  <tr>
-    <td>Solaris</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0140</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td>3.6.24-3.el6 64 bit</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0140</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td>64 bit</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0140</td>
-  </tr>
-  <tr>
-    <td>iPhone OS</td>
-    <td>4_3_5</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0140</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">28,612</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>3. アクセスをブラウザ別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td class="blog-access-pv">16,267</td>
-    <td class="blog-access-rate">56.8538</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td class="blog-access-pv">6,938</td>
-    <td class="blog-access-rate">24.2486</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td class="blog-access-pv">3,045</td>
-    <td class="blog-access-rate">10.6424</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td class="blog-access-pv">1,943</td>
-    <td class="blog-access-rate">6.7909</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td class="blog-access-pv">226</td>
-    <td class="blog-access-rate">0.7899</td>
-  </tr>
-  <tr>
-    <td>Opera</td>
-    <td class="blog-access-pv">97</td>
-    <td class="blog-access-rate">0.3390</td>
-  </tr>
-  <tr>
-    <td>Netscape Navigator</td>
-    <td class="blog-access-pv">46</td>
-    <td class="blog-access-rate">0.1608</td>
-  </tr>
-  <tr>
-    <td>Chrome</td>
-    <td class="blog-access-pv">16</td>
-    <td class="blog-access-rate">0.0559</td>
-  </tr>
-  <tr>
-    <td>Mozilla SeaMonkey</td>
-    <td class="blog-access-pv">9</td>
-    <td class="blog-access-rate">0.0315</td>
-  </tr>
-  <tr>
-    <td>Epiphany</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0245</td>
-  </tr>
-  <tr>
-    <td>Unknown</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0175</td>
-  </tr>
-  <tr>
-    <td>iPod</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0140</td>
-  </tr>
-  <tr>
-    <td>PHP</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0070</td>
-  </tr>
-  <tr>
-    <td>Konqueror</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0070</td>
-  </tr>
-  <tr>
-    <td>iPhone</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0070</td>
-  </tr>
-  <tr>
-    <td>Chromium</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0035</td>
-  </tr>
-  <tr>
-    <td>Sleipnir</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0035</td>
-  </tr>
-  <tr>
-    <td>SRWare Iron</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0035</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">28,612</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>537.36</td>
-    <td class="blog-access-pv">12,364</td>
-    <td class="blog-access-rate">43.2126</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>39.0</td>
-    <td class="blog-access-pv">4,251</td>
-    <td class="blog-access-rate">14.8574</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td>11.0</td>
-    <td class="blog-access-pv">3,043</td>
-    <td class="blog-access-rate">10.6354</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>9537.53</td>
-    <td class="blog-access-pv">1,927</td>
-    <td class="blog-access-rate">6.7349</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>40.0</td>
-    <td class="blog-access-pv">1,318</td>
-    <td class="blog-access-rate">4.6065</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.1.4</td>
-    <td class="blog-access-pv">804</td>
-    <td class="blog-access-rate">2.8100</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>8.0</td>
-    <td class="blog-access-pv">796</td>
-    <td class="blog-access-rate">2.7820</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.7.12</td>
-    <td class="blog-access-pv">587</td>
-    <td class="blog-access-rate">2.0516</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>38.0</td>
-    <td class="blog-access-pv">558</td>
-    <td class="blog-access-rate">1.9502</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>10.0</td>
-    <td class="blog-access-pv">447</td>
-    <td class="blog-access-rate">1.5623</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>9.0</td>
-    <td class="blog-access-pv">443</td>
-    <td class="blog-access-rate">1.5483</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>7.0</td>
-    <td class="blog-access-pv">256</td>
-    <td class="blog-access-rate">0.8947</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>31.0</td>
-    <td class="blog-access-pv">225</td>
-    <td class="blog-access-rate">0.7864</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>534.30</td>
-    <td class="blog-access-pv">176</td>
-    <td class="blog-access-rate">0.6151</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>41.0</td>
-    <td class="blog-access-pv">127</td>
-    <td class="blog-access-rate">0.4439</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td>31.8.0</td>
-    <td class="blog-access-pv">105</td>
-    <td class="blog-access-rate">0.3670</td>
-  </tr>
-  <tr>
-    <td>Opera</td>
-    <td>9.80</td>
-    <td class="blog-access-pv">97</td>
-    <td class="blog-access-rate">0.3390</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>37.0</td>
-    <td class="blog-access-pv">71</td>
-    <td class="blog-access-rate">0.2481</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>537.85.16</td>
-    <td class="blog-access-pv">71</td>
-    <td class="blog-access-rate">0.2481</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.8.9</td>
-    <td class="blog-access-pv">58</td>
-    <td class="blog-access-rate">0.2027</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">28,612</td>
     <td class="blog-access-rate">100.0000</td>
   </tr>
 </table>
