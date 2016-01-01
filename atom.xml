@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-01T00:57:07+09:00</updated>
+  <updated>2016-01-02T00:07:48+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,811 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2015年 - ツイート集計！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/02/summary-tweet-2015/"/>
+    <updated>2016-01-02T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/02/summary-tweet-2015</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>2015年の Twitter でのツイート（メインで使用しているアカウントのみ）を Ruby で集計してみました。</p>
+
+<p>当方は、ツイートは全て自宅サーバ(CentOS)上のデータベース(MySQL)に保存しています。<br/>
+（実際には Ruby + Twitter API で本家からデータを取得して保存）</p>
+
+<p>ほとんど SQL で集計可能でしたが、品詞・単語別の集計は形態素解析エンジン MeCab を使用しました。</p>
+
+<!--more-->
+
+
+<p>集計内容は以下のとおり。</p>
+
+<ol>
+<li>月別ツイート数</li>
+<li>曜日別ツイート数</li>
+<li>時間別ツイート数</li>
+<li>文字数別ツイート数</li>
+<li>１日当たりツイート数別集計</li>
+<li>品詞別出現回数</li>
+<li>単語別出現回数</li>
+</ol>
+
+
+<h3>1. 月別ツイート数</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ 年  月 ]  [件数]  [ 比 率 ]
+</span><span class='line'>2015年01月     295  (  7.47%)
+</span><span class='line'>2015年02月     271  (  6.87%)
+</span><span class='line'>2015年03月     276  (  6.99%)
+</span><span class='line'>2015年04月     288  (  7.30%)
+</span><span class='line'>2015年05月     326  (  8.26%)
+</span><span class='line'>2015年06月     360  (  9.12%)
+</span><span class='line'>2015年07月     397  ( 10.06%)
+</span><span class='line'>2015年08月     393  (  9.96%)
+</span><span class='line'>2015年09月     303  (  7.68%)
+</span><span class='line'>2015年10月     326  (  8.26%)
+</span><span class='line'>2015年11月     330  (  8.36%)
+</span><span class='line'>2015年12月     382  (  9.68%)
+</span><span class='line'>[ 合  計 ]   3,947  (100.00%)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>毎月 300 〜 400 くらいツイートしていたようだ。</p>
+
+<h3>2. 曜日別ツイート数</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ 曜  日 ]  [件数]  [ 比 率 ]
+</span><span class='line'>  日曜日       503  ( 12.74%)
+</span><span class='line'>  月曜日       572  ( 14.49%)
+</span><span class='line'>  火曜日       579  ( 14.67%)
+</span><span class='line'>  水曜日       535  ( 13.55%)
+</span><span class='line'>  木曜日       631  ( 15.99%)
+</span><span class='line'>  金曜日       597  ( 15.13%)
+</span><span class='line'>  土曜日       530  ( 13.43%)
+</span><span class='line'>[ 合  計 ]   3,947  (100.00%)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>木・金曜日辺りが若干多めになっていたようだ。</p>
+
+<h3>3. 時間別ツイート数</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ 時  間 ]  [件数]  [ 比 率 ]
+</span><span class='line'>  00時台       891  ( 22.57%)
+</span><span class='line'>  01時台         7  (  0.18%)
+</span><span class='line'>  02時台         7  (  0.18%)
+</span><span class='line'>  03時台        23  (  0.58%)
+</span><span class='line'>  04時台        20  (  0.51%)
+</span><span class='line'>  05時台        56  (  1.42%)
+</span><span class='line'>  06時台        19  (  0.48%)
+</span><span class='line'>  07時台         6  (  0.15%)
+</span><span class='line'>  08時台         7  (  0.18%)
+</span><span class='line'>  09時台        26  (  0.66%)
+</span><span class='line'>  10時台        36  (  0.91%)
+</span><span class='line'>  11時台        23  (  0.58%)
+</span><span class='line'>  12時台       366  (  9.27%)
+</span><span class='line'>  13時台        14  (  0.35%)
+</span><span class='line'>  14時台        37  (  0.94%)
+</span><span class='line'>  15時台        25  (  0.63%)
+</span><span class='line'>  16時台        56  (  1.42%)
+</span><span class='line'>  17時台       114  (  2.89%)
+</span><span class='line'>  18時台       756  ( 19.15%)
+</span><span class='line'>  19時台       777  ( 19.69%)
+</span><span class='line'>  20時台       284  (  7.20%)
+</span><span class='line'>  21時台       227  (  5.75%)
+</span><span class='line'>  22時台        83  (  2.10%)
+</span><span class='line'>  23時台        87  (  2.20%)
+</span><span class='line'>[ 合  計 ]   3,947  (100.00%)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通常のツイートは 18時台、19時台が多かったようだ。00時台、12時台は Bot によるツイートがほとんど。</p>
+
+<h3>4. 文字数別ツイート数</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ 文字数 ]  [件数]  [ 比 率 ]
+</span><span class='line'> 〜 10文字       1  (  0.03%)
+</span><span class='line'> 〜 20文字      19  (  0.48%)
+</span><span class='line'> 〜 30文字      54  (  1.37%)
+</span><span class='line'> 〜 40文字      92  (  2.33%)
+</span><span class='line'> 〜 50文字     166  (  4.21%)
+</span><span class='line'> 〜 60文字     319  (  8.08%)
+</span><span class='line'> 〜 70文字     420  ( 10.64%)
+</span><span class='line'> 〜 80文字     638  ( 16.16%)
+</span><span class='line'> 〜 90文字     357  (  9.04%)
+</span><span class='line'> 〜100文字     349  (  8.84%)
+</span><span class='line'> 〜110文字     316  (  8.01%)
+</span><span class='line'> 〜120文字     265  (  6.71%)
+</span><span class='line'> 〜130文字     290  (  7.35%)
+</span><span class='line'> 〜140文字     659  ( 16.70%)
+</span><span class='line'> 〜150文字       1  (  0.03%)
+</span><span class='line'> 〜160文字       1  (  0.03%)
+</span><span class='line'>[ 合  計 ]   3,947  (100.00%)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>文字数の少なすぎるツイートはあまりなく、70〜90文字くらいか140字の制限ギリギリのツイートが多かったようだ。<br/>
+（140文字を超えるツイートが存在するのは、ツイート時に BitLy 短縮の URL だったのが Twitter API で取得し直すと Twitter 標準の t.co 短縮になり文字数が増えるため）</p>
+
+<h3>5. １日当たりツイート数別集計</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ Tweets ]  [日数]  [ 比 率 ]
+</span><span class='line'>     4           1  (  0.27%)
+</span><span class='line'>     6          19  (  5.21%)
+</span><span class='line'>     7          26  (  7.12%)
+</span><span class='line'>     8          41  ( 11.23%)
+</span><span class='line'>     9          58  ( 15.89%)
+</span><span class='line'>    10          49  ( 13.42%)
+</span><span class='line'>    11          41  ( 11.23%)
+</span><span class='line'>    12          41  ( 11.23%)
+</span><span class='line'>    13          23  (  6.30%)
+</span><span class='line'>    14          21  (  5.75%)
+</span><span class='line'>    15          14  (  3.84%)
+</span><span class='line'>    16          10  (  2.74%)
+</span><span class='line'>    17           8  (  2.19%)
+</span><span class='line'>    18           5  (  1.37%)
+</span><span class='line'>    19           4  (  1.10%)
+</span><span class='line'>    20           1  (  0.27%)
+</span><span class='line'>    21           1  (  0.27%)
+</span><span class='line'>    24           1  (  0.27%)
+</span><span class='line'>    34           1  (  0.27%)
+</span><span class='line'>[ 合  計 ]     365  (100.00%)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>１日に9〜10ツイート前後が多かったようで、１回もツイートしなかった日は無かったようだ。<br/>
+（１回もツイートしなかった日は、2011年7月7日のアカウント開設以来１日もない）</p>
+
+<h3>6. 品詞別出現回数</h3>
+
+<p>形態素解析エンジン MeCab を使用して品詞別に集計してみた。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ 品詞   ]  [ 出現回数 ]
+</span><span class='line'>  名詞         115,733
+</span><span class='line'>  記号          31,187
+</span><span class='line'>  助詞          28,721
+</span><span class='line'>  動詞          10,205
+</span><span class='line'>  助動詞         6,884
+</span><span class='line'>  接頭詞         1,951
+</span><span class='line'>  形容詞         1,403
+</span><span class='line'>  副詞           1,402
+</span><span class='line'>  連体詞           372
+</span><span class='line'>  接続詞           295
+</span><span class='line'>  感動詞            78
+</span><span class='line'>  フィラー          15
+</span><span class='line'>  その他             4
+</span><span class='line'>[ 合  計 ]     198,250 語
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然ながら、名詞が多い。フィラーとは「えーと」、「あのー」のような、文と文の間を埋めるような単語のこと。<br/>
+いつもながら、全体的に「こういうものなんだ」と実感する程度。</p>
+
+<h3>7. 単語別出現回数</h3>
+
+<p>１年間に出現した単語を集計してみた。（100回以上出現した単語を掲載）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[ 単語               ]  [ 品詞   ]  [ 出現回数 ]
+</span><span class='line'>  の                      助詞           6,982
+</span><span class='line'>  :                       名詞           5,472
+</span><span class='line'>  。                      記号           5,270
+</span><span class='line'>  ▼                      記号           4,080
+</span><span class='line'>  .                       名詞           3,458
+</span><span class='line'>  、                      記号           3,351
+</span><span class='line'>  日                      名詞           3,003
+</span><span class='line'>  に                      助詞           2,940
+</span><span class='line'>  は                      助詞           2,901
+</span><span class='line'>  が                      助詞           2,685
+</span><span class='line'>  「                      記号           2,646
+</span><span class='line'>  」                      記号           2,620
+</span><span class='line'>  /                       名詞           2,618
+</span><span class='line'>  月                      名詞           2,571
+</span><span class='line'>  ：                      記号           2,283
+</span><span class='line'>  た                      助動詞         2,244
+</span><span class='line'>  （                      記号           2,156
+</span><span class='line'>  ）                      記号           2,151
+</span><span class='line'>  t                       名詞           2,145
+</span><span class='line'>  ://                     名詞           2,126
+</span><span class='line'>  co                      名詞           2,121
+</span><span class='line'>  て                      助詞           2,070
+</span><span class='line'>  #                       名詞           1,912
+</span><span class='line'>  で                      助詞           1,872
+</span><span class='line'>  http                    名詞           1,723
+</span><span class='line'>  【                      記号           1,686
+</span><span class='line'>  し                      動詞           1,593
+</span><span class='line'>  を                      助詞           1,566
+</span><span class='line'>  】                      記号           1,494
+</span><span class='line'>  と                      助詞           1,223
+</span><span class='line'>  8                       名詞             931
+</span><span class='line'>  2                       名詞             926
+</span><span class='line'>  3                       名詞             882
+</span><span class='line'>  matsue                  名詞             852
+</span><span class='line'>  松江                    名詞             850
+</span><span class='line'>  も                      助詞             846
+</span><span class='line'>  年                      名詞             840
+</span><span class='line'>  から                    助詞             800
+</span><span class='line'>  2015                    名詞             783
+</span><span class='line'>  市                      名詞             769
+</span><span class='line'>  -                       名詞             758
+</span><span class='line'>  ね                      助詞             752
+</span><span class='line'>  入                      接頭詞           742
+</span><span class='line'>  今日                    名詞             731
+</span><span class='line'>  南中                    名詞             729
+</span><span class='line'>  だ                      助動詞           721
+</span><span class='line'>  12                      名詞             720
+</span><span class='line'>  ない                    助動詞           700
+</span><span class='line'>  (                       名詞             697
+</span><span class='line'>  1                       名詞             687
+</span><span class='line'>  いる                    動詞             683
+</span><span class='line'>  )                       名詞             631
+</span><span class='line'>  な                      助動詞           613
+</span><span class='line'>  10                      名詞             609
+</span><span class='line'>  9                       名詞             588
+</span><span class='line'>  7                       名詞             587
+</span><span class='line'>  4                       名詞             581
+</span><span class='line'>  県                      名詞             570
+</span><span class='line'>  こと                    名詞             563
+</span><span class='line'>  情報                    名詞             557
+</span><span class='line'>  い                      動詞             552
+</span><span class='line'>  5                       名詞             551
+</span><span class='line'>  ・                      記号             550
+</span><span class='line'>  ！                      記号             547
+</span><span class='line'>  する                    動詞             536
+</span><span class='line'>  けど                    助詞             529
+</span><span class='line'>  11                      名詞             526
+</span><span class='line'>  @                       名詞             505
+</span><span class='line'>  32                      名詞             502
+</span><span class='line'>  BLOG                    名詞             501
+</span><span class='line'>  気象庁                  名詞             479
+</span><span class='line'>  さ                      動詞             474
+</span><span class='line'>  ※                      記号             471
+</span><span class='line'>  6                       名詞             465
+</span><span class='line'>  ^M                      記号             464
+</span><span class='line'>  https                   名詞             461
+</span><span class='line'>  ]                       名詞             433
+</span><span class='line'>  RT                      名詞             428
+</span><span class='line'>  れ                      動詞             427
+</span><span class='line'>  Matsue                  名詞             425
+</span><span class='line'>  Wn                      名詞             420
+</span><span class='line'>  よう                    名詞             420
+</span><span class='line'>  ？                      記号             402
+</span><span class='line'>  旧暦                    名詞             399
+</span><span class='line'>  １                      名詞             398
+</span><span class='line'>  頃                      名詞             395
+</span><span class='line'>  日の出                  名詞             377
+</span><span class='line'>  05                      名詞             376
+</span><span class='line'>  か                      助詞             373
+</span><span class='line'>  六                      名詞             370
+</span><span class='line'>  こよみ                  名詞             367
+</span><span class='line'>  曜                      名詞             366
+</span><span class='line'>  干支                    名詞             366
+</span><span class='line'>  明日                    名詞             365
+</span><span class='line'>  月齢                    名詞             364
+</span><span class='line'>  17                      名詞             364
+</span><span class='line'>  出                      動詞             362
+</span><span class='line'>  の                      名詞             358
+</span><span class='line'>  ので                    助詞             356
+</span><span class='line'>  島根                    名詞             350
+</span><span class='line'>  0                       名詞             341
+</span><span class='line'>  です                    助動詞           337
+</span><span class='line'>  IIzWb                   名詞             326
+</span><span class='line'>  Phq                     名詞             326
+</span><span class='line'>  自動                    名詞             325
+</span><span class='line'>  uOKnpLH                 名詞             323
+</span><span class='line'>  gC                      名詞             323
+</span><span class='line'>  18                      名詞             319
+</span><span class='line'>  なる                    動詞             313
+</span><span class='line'>  16                      名詞             312
+</span><span class='line'>  19                      名詞             312
+</span><span class='line'>  第                      接頭詞           307
+</span><span class='line'>  的                      名詞             304
+</span><span class='line'>  や                      助詞             303
+</span><span class='line'>  14                      名詞             299
+</span><span class='line'>  13                      名詞             299
+</span><span class='line'>  で                      助動詞           292
+</span><span class='line'>  06                      名詞             289
+</span><span class='line'>  ある                    動詞             287
+</span><span class='line'>  15                      名詞             284
+</span><span class='line'>  20                      名詞             283
+</span><span class='line'>  う                      助動詞           280
+</span><span class='line'>  個人                    名詞             279
+</span><span class='line'>  台風                    名詞             271
+</span><span class='line'>  ２                      名詞             255
+</span><span class='line'>  07                      名詞             250
+</span><span class='line'>  という                  助詞             247
+</span><span class='line'>  04                      名詞             243
+</span><span class='line'>  21                      名詞             239
+</span><span class='line'>  [                       名詞             236
+</span><span class='line'>  号                      名詞             235
+</span><span class='line'>  なっ                    動詞             232
+</span><span class='line'>  地方                    名詞             230
+</span><span class='line'>  22                      名詞             228
+</span><span class='line'>  でしょ                  助動詞           224
+</span><span class='line'>  だっ                    助動詞           220
+</span><span class='line'>  気象                    名詞             210
+</span><span class='line'>  観測                    名詞             207
+</span><span class='line'>  等                      名詞             201
+</span><span class='line'>  shimane                 名詞             199
+</span><span class='line'>  23                      名詞             198
+</span><span class='line'>  時                      名詞             195
+</span><span class='line'>  00                      名詞             194
+</span><span class='line'>  30                      名詞             193
+</span><span class='line'>  】[                     名詞             192
+</span><span class='line'>  °                      名詞             191
+</span><span class='line'>  24                      名詞             186
+</span><span class='line'>  まで                    助詞             182
+</span><span class='line'>  09                      名詞             173
+</span><span class='line'>  中                      名詞             172
+</span><span class='line'>  地震                    名詞             171
+</span><span class='line'>  もの                    名詞             170
+</span><span class='line'>  03                      名詞             168
+</span><span class='line'>  人                      名詞             167
+</span><span class='line'>  26                      名詞             166
+</span><span class='line'>  さ                      名詞             166
+</span><span class='line'>  発表                    名詞             165
+</span><span class='line'>  ３                      名詞             165
+</span><span class='line'>  れる                    動詞             165
+</span><span class='line'>  No                      名詞             163
+</span><span class='line'>  ん                      名詞             163
+</span><span class='line'>  27                      名詞             163
+</span><span class='line'>  日本                    名詞             161
+</span><span class='line'>  25                      名詞             158
+</span><span class='line'>  28                      名詞             158
+</span><span class='line'>  最大                    名詞             156
+</span><span class='line'>  より                    助詞             156
+</span><span class='line'>  かも                    助詞             155
+</span><span class='line'>  Debian                  名詞             154
+</span><span class='line'>  08                      名詞             153
+</span><span class='line'>  35                      名詞             153
+</span><span class='line'>  そう                    名詞             150
+</span><span class='line'>  使用                    名詞             148
+</span><span class='line'>  01                      名詞             147
+</span><span class='line'>  Linux                   名詞             147
+</span><span class='line'>  02                      名詞             144
+</span><span class='line'>  ,                       名詞             144
+</span><span class='line'>  発生                    名詞             141
+</span><span class='line'>  MariaDB                 名詞             140
+</span><span class='line'>  &quot;                       名詞             140
+</span><span class='line'>  鳥取                    名詞             140
+</span><span class='line'>  震度                    名詞             139
+</span><span class='line'>  注意                    名詞             138
+</span><span class='line'>  ５                      名詞             138
+</span><span class='line'>  前                      名詞             136
+</span><span class='line'>  ください                動詞             134
+</span><span class='line'>  29                      名詞             134
+</span><span class='line'>  ない                    形容詞           133
+</span><span class='line'>  震源                    名詞             132
+</span><span class='line'>  サーバ                  名詞             130
+</span><span class='line'>  MySQL                   名詞             129
+</span><span class='line'>  なく                    助動詞           128
+</span><span class='line'>  度                      名詞             128
+</span><span class='line'>  津波                    名詞             128
+</span><span class='line'>  ば                      助詞             126
+</span><span class='line'>  まし                    助動詞           125
+</span><span class='line'>  50                      名詞             125
+</span><span class='line'>  確認                    名詞             125
+</span><span class='line'>  今                      名詞             124
+</span><span class='line'>  54                      名詞             122
+</span><span class='line'>  あっ                    動詞             120
+</span><span class='line'>  57                      名詞             120
+</span><span class='line'>  ます                    助動詞           119
+</span><span class='line'>  M                       名詞             119
+</span><span class='line'>  以外                    名詞             118
+</span><span class='line'>  以上                    名詞             118
+</span><span class='line'>  Ruby                    名詞             117
+</span><span class='line'>  今年                    名詞             115
+</span><span class='line'>  だけ                    助詞             115
+</span><span class='line'>  38                      名詞             115
+</span><span class='line'>  k                       名詞             113
+</span><span class='line'>  →                      記号             112
+</span><span class='line'>  でし                    助動詞           111
+</span><span class='line'>  気温                    名詞             111
+</span><span class='line'>  気                      名詞             110
+</span><span class='line'>  思っ                    動詞             110
+</span><span class='line'>  のに                    助詞             110
+</span><span class='line'>  E                       名詞             110
+</span><span class='line'>  心配                    名詞             109
+</span><span class='line'>  規模                    名詞             109
+</span><span class='line'>  Jessie                  名詞             109
+</span><span class='line'>  ---                     名詞             109
+</span><span class='line'>  気圧                    名詞             108
+</span><span class='line'>  33                      名詞             108
+</span><span class='line'>  飛行                    名詞             107
+</span><span class='line'>  て                      動詞             106
+</span><span class='line'>  51                      名詞             106
+</span><span class='line'>  52                      名詞             106
+</span><span class='line'>  N                       名詞             106
+</span><span class='line'>  km                      名詞             105
+</span><span class='line'>  上空                    名詞             105
+</span><span class='line'>  にかけて                助詞             104
+</span><span class='line'>  府県                    名詞             104
+</span><span class='line'>  インストール            名詞             104
+</span><span class='line'>  たら                    助動詞           104
+</span><span class='line'>  注意報                  名詞             104
+</span><span class='line'>  中国                    名詞             103
+</span><span class='line'>  時間                    名詞             103
+</span><span class='line'>  そう                    副詞             103
+</span><span class='line'>  H                       名詞             103
+</span><span class='line'>  へ                      助詞             102
+</span><span class='line'>  69                      名詞             102
+</span><span class='line'>  OS                      名詞             101
+</span><span class='line'>  31                      名詞             101
+</span><span class='line'>  二                      名詞             101
+</span><span class='line'>  55                      名詞             101
+</span><span class='line'>  :                        :                :
+</span><span class='line'>  :                        :                :
+</span><span class='line'>  :                        :                :
+</span><span class='line'>[ 合  計 ]                             198,250 語
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>MeCab の仕様による分類なので、半角コロン <code>:</code> は名詞になり、全角コロン <code>：</code> は記号になったりと、非常に厳密な分類となっているのがわかる。<br/>
+例年どおり、今年も助詞の「の」が今年最も使われていた。</p>
+
+<hr />
+
+<p>単純に数を集計するだけではなく、品詞別に集計するのも面白いものです。</p>
+
+<p>ブログ記事は当方<a href="http://www.mk-mode.com/rails/" title="mk-mode SITE">Web サイト</a>で随時検索・参照できるようにしたりしているので、あらためて集計はしていません。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[2015年12月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
@@ -107,7 +912,7 @@
   </tr>
   <tr>
     <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-pv">52,932</td>
     <td class="blog-access-rate">100.0000</td>
   </tr>
 </table>
@@ -251,7 +1056,7 @@
   <tr>
     <td class="blog-access-total-label">合　計</td>
     <td> </td>
-    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-pv">52,932</td>
     <td class="blog-access-rate">100.0000</td>
   </tr>
 </table>
@@ -347,7 +1152,7 @@
   </tr>
   <tr>
     <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-pv">52,932</td>
     <td class="blog-access-rate">100.0000</td>
   </tr>
 </table>
@@ -491,7 +1296,7 @@
   <tr>
     <td class="blog-access-total-label">合　計</td>
     <td> </td>
-    <td class="blog-access-pv">52,980</td>
+    <td class="blog-access-pv">52,932</td>
     <td class="blog-access-rate">100.0000</td>
   </tr>
 </table>
@@ -4397,176 +5202,6 @@
 <hr />
 
 <p>物理メモリの空き容量の減りが気になったら試してみるといいでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - マルチコア CPU で高速圧縮！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/10/03/linux-archive-speed-up-on-multi-core-cpu/"/>
-    <updated>2015-10-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/10/03/linux-archive-speed-up-on-multi-core-cpu</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>通常、 Linux の <code>tar</code> コマンドでファイル等の圧縮を行う場合、 CPU コアを１つしか使用しません。</p>
-
-<p>２つ以上 CPU コアを搭載していることの多い昨今、 CPU コアを全て使用して圧縮を行うと時間の節約になります。</p>
-
-<p>今回、圧縮・解凍をマルチコアで並列に処理してくれる <code>pigz</code> を使用してみました。</p>
-
-<!--more-->
-
-
-<h3>0.前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>Intel Core2Duo CPU E8500 (3.16GHz x 2) での作業を想定。</li>
-</ul>
-
-
-<h3>1. pigz のインストール</h3>
-
-<p>Apt パッケージを使用する（但し、最新版ではない可能性が高い）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install pigz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>もしくは、最新版アーカイブを取得＆展開後、 <code>make</code> して適当な位置に配置してもよい。（但し、当方の環境ではビルドエラーになった）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ wget http://zlib.net/pigz/pigz-2.3.3.tar.gz
-</span><span class='line'>$ tar zxvf pigz-2.3.3.tar.gz
-</span><span class='line'>$ cd pigz-2.3.3
-</span><span class='line'>$ make
-</span><span class='line'>$ sudo mv ./pigz /usr/local/bin/pigz
-</span><span class='line'>$ sudo mv ./unpigz /usr/local/bin/unpigz
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. pigz インストールの確認</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ pigz --version
-</span><span class='line'>pigz 2.3
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. 圧縮</h3>
-
-<p>比較のため、まず <code>tar</code> コマンドで圧縮してみる。<br/>
-（圧縮対象は、サブディレクトリ：2層、ファイル数：121,653個、容量：約100MB の &ldquo;test&rdquo; という名称のディレクトリ）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar zcf test.tar.gz test
-</span><span class='line'>
-</span><span class='line'>real    0m4.711s
-</span><span class='line'>user    0m4.402s
-</span><span class='line'>sys     0m0.938s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>次に、 pigz 圧縮してみる。<br/>
-ディレクトリを再帰的に圧縮できる <code>-r</code> もあるが、これはファイルそれぞれが圧縮されてしまうので、 <code>tar</code> コマンドで一旦ファイルをまとめてから <code>pigz</code> コマンドで圧縮する。また、デフォルトでは全てのプロセッサを使用するが、同時実行スレッド数を指定する <code>-p</code> オプション等もある。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar c test | pigz &gt; test.tar.gz
-</span><span class='line'>
-</span><span class='line'>real    0m2.987s
-</span><span class='line'>user    0m4.624s
-</span><span class='line'>sys     0m0.682s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、単純に１つのファイルを圧縮するだけなら <code>pigz -k test.tar.gz</code> でよい（<code>-k</code> は元のファイルを残すオプション）。</p>
-
-<p>さらに、 <code>pigz</code> コマンドを <code>tar</code> コマンドのオプションで使用して圧縮してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar cf test.tar.gz test --use-compress-program=pigz
-</span><span class='line'>
-</span><span class='line'>real    0m2.970s
-</span><span class='line'>user    0m4.542s
-</span><span class='line'>sys     0m0.632s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. 解凍</h3>
-
-<p>まず、単純に <code>tar</code> コマンドで圧縮したファイルを解凍してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar zxf test.tar.gz
-</span><span class='line'>
-</span><span class='line'>real    0m18.441s
-</span><span class='line'>user    0m1.813s
-</span><span class='line'>sys     0m3.022s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>次に、 <code>pigz</code> で圧縮したファイルを <code>tar</code> コマンドで解凍してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ time tar xf test.tar.gz --use-compress-program=pigz
-</span><span class='line'>
-</span><span class='line'>real    0m17.526s
-</span><span class='line'>user    0m1.193s
-</span><span class='line'>sys     0m3.310s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. 所感</h3>
-
-<ul>
-<li>コア数 2 の非力な環境でも約 2/3 の速度で圧縮することができたのだが、場合によっては pigz を使用する方が遅くなることもある。</li>
-<li>今回、解凍についてはそれほど差が認められなかった。</li>
-<li>当然、環境によって結果は異なるだろう。</li>
-</ul>
-
-
-<p>従って、当方は明らかに圧縮の高速化が見込める場合のみ pigz を使用することとした。</p>
-
-<h3>6. 参考サイト</h3>
-
-<ul>
-<li><a href="http://zlib.net/pigz/" title="pigz - Parallel gzip">pigz - Parallel gzip</a></li>
-</ul>
-
-
-<hr />
-
-<p>非力な環境では、それほど積極的に使用したいと思うようなコマンドでもありませんでした。</p>
-
-<p>しかし、コアを複数使用して圧縮・解凍ができる、といういことを認識できたことに若干の喜びを感じた次第です。</p>
 
 <p>以上。</p>
 ]]></content>
