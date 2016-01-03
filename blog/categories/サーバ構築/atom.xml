@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-02T00:07:48+09:00</updated>
+  <updated>2016-01-04T00:08:53+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,84 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS - Groonga インストール（by yum パッケージ）！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/04/centos-groonga-installation-by-yum/"/>
+    <updated>2016-01-04T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/04/centos-groonga-installation-by-yum</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>カラムストア機能付き全文検索エンジン Groonga を、CentOS 6.7 に Groonga 公式 yum リポジトリを使用してインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7(32bit) での作業を想定。</li>
+<li>当記事執筆時点で最新の Groonga 5.1.0 をインストールする。</li>
+</ul>
+
+
+<h3>1. yum リポジトリの導入</h3>
+
+<pre><code class="text"># rpm -ivh http://packages.groonga.org/centos/groonga-release-1.1.0-1.noarch.rpm
+# yum makecache
+</code></pre>
+
+<h3>2. Groonga のインストール</h3>
+
+<pre><code class="text"># yum -y install groonga
+</code></pre>
+
+<p>形態素解析エンジン MeCab をトークナイザとして使用するために groonga-tokenizer-mecab をインストールする。</p>
+
+<pre><code class="text"># yum -y install groonga-tokenizer-mecab
+</code></pre>
+
+<h3>3. Groonga インストールの確認</h3>
+
+<pre><code class="text"># groonga --version
+Groonga 5.1.0 [linux-gnu,i686,utf8,match-escalation-threshold=0,nfkc,mecab,mruby,onigmo,zlib,epoll]
+
+configure options: &lt; '--build=i686-redhat-linux-gnu' '--host=i686-redhat-linux-gnu'
+ '--target=i686-redhat-linux-gnu' '--program-prefix=' '--prefix=/usr' '--exec-prefix=/usr'
+ '--bindir=/usr/bin' '--sbindir=/usr/sbin' '--sysconfdir=/etc' '--datadir=/usr/share'
+ '--includedir=/usr/include' '--libdir=/usr/lib' '--libexecdir=/usr/libexec'
+ '--localstatedir=/var' '--sharedstatedir=/var/lib' '--mandir=/usr/share/man'
+ '--infodir=/usr/share/info' '--disable-static' '--with-package-platform=redhat'
+ '--with-mecab' '--with-munin-plugins' '--enable-mruby' 'build_alias=i686-redhat-linux-gnu'
+ 'host_alias=i686-redhat-linux-gnu' 'target_alias=i686-redhat-linux-gnu'
+ 'CFLAGS=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector
+  --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables'
+ 'CXXFLAGS=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector
+  --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables'
+ 'PKG_CONFIG_PATH=:/usr/lib/pkgconfig:/usr/share/pkgconfig'&gt;
+</code></pre>
+
+<h3>4. 動作確認</h3>
+
+<p>以下の過去記事を参照。</p>
+
+<ul>
+<li><a href="/2015/08/09/linux-mint-groonga-installation-by-src/" title="Linux Mint - Groonga インストール（by ソースビルド）！">Linux Mint - Groonga インストール（by ソースビルド）！</a></li>
+</ul>
+
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://groonga.org/ja/docs/install/centos.html#centos-6" title="2.5. CentOS — Groonga v5.1.0ドキュメント">2.5. CentOS — Groonga v5.1.0ドキュメント</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS 6.7 - 全文検索ストレージエンジン Mroonga 導入（公式リポジトリ使用）！]]></title>
@@ -852,169 +930,6 @@ dhcpv6-client dns ftp http nfs pop3s smtp ssh
 
 
 <hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - ロールフォワード（ポイント・イン・タイム）リカバリ！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/12/03/mariadb-rollforward-recovery/"/>
-    <updated>2015-12-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/12/03/mariadb-rollforward-recovery</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) で障害発生時に、定期的に取得していたダンプファイルでリストアするだけでは、当然タイミングによっては古い状態になってしまいます。</p>
-
-<p>以下は、定期的に取得していたダンプファイルとそれより後のログファイルで障害発生直前の状態までリカバリする方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MySQL 5.6 系、 MariaDB 10.0 系での作業を想定。<br/>
-（他のバージョンでもそれほど古くなければ同様）</li>
-<li>バイナリロギングが有効になっている。
-（設定ファイル &ldquo;my.cnf&rdquo; で <code>log-bin=...</code> の行がコメント化されていない、もしくはサーバ起動時に <code>--log-bin</code> オプションを使用している）</li>
-</ul>
-
-
-<h3>1. はじめに</h3>
-
-<ul>
-<li>ロールフォワードリカバリとは、簡単には、
-
-<ul>
-<li>バックアップファイルとジャーナルファイルを用いて、障害発生以前の状態に復元すること。（某国家試験で出題される基本的なこと）<br/>
-今回の MariaDB(MySQL) での作業では、ダンプファイルとバイナリログファイルがそれにあたる。</li>
-</ul>
-</li>
-<li>ポイント・イン・タイムリカバリ(Point-In-Time Recovery, PITR)とは、簡単には、
-
-<ul>
-<li>指定した時間の状態に戻すこと。</li>
-<li>障害が発生する直前の状態まで戻すこと。</li>
-<li>Oracle の「完全・不完全リカバリ」にあたるもの。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>2. 基本的な作業の流れ</h3>
-
-<ol>
-<li>ダンプ出力（<code>mysqldump</code> による定期バックアップ）</li>
-<li>通常運用</li>
-<li>障害発生</li>
-<li>ダンプファイルのリストア</li>
-<li>バイナリログの適用（ダンプリストア後〜障害発生直前）</li>
-<li>復元確認</li>
-</ol>
-
-
-<h3>3. 作業例</h3>
-
-<p>当然ながら、当作業中は整合性を保つためにデータベースサーバへのアクセスが発生しないようにしておくこと。（アプリの停止、Web サーバの停止等）</p>
-
-<h4>3-1. ダンプ出力（<code>mysqldump</code> による定期バックアップ）</h4>
-
-<p>以下のようなコマンドを cron 実行するなどして、定期的にバックアップを取る。</p>
-
-<pre><code class="text">mysqldump -u root -proot_password --single-transaction --master-data --flush-logs db_name &gt; db_name.sql
-</code></pre>
-
-<ul>
-<li><code>--single-transaction</code> は、データの整合性を保つためにダンプをトランザクションで囲むオプション。</li>
-<li><code>--master-data</code> は、<code>CHANGE MASTER TO</code> 句（ポイント・イン・タイムリカバリを開始するバイナリファイル・ポイントの情報）を出力するオプション。</li>
-<li><code>--flush-logs</code> は、ダンプ出力後にバイナリログを新しく作成（フラッシュ）するオプション。 <code>-F</code> も同じ。</li>
-<li><code>--flush-logs</code> オプションを使用した場合は、ポイント・イン・タイムリカバリを開始するポイントは新しいバイナリファイルの先頭ポイントなので、 <code>--master-data</code> オプションを使用する不要はないかもしれない。</li>
-<li><code>--master-logs</code> オプションを使用した場合は、ポイント・イン・タイムリカバリを開始するポイントが明確に分かるので、敢えて <code>--flush-logs</code> オプションを使用する必要はないかもしれない。</li>
-<li>場合によっては、 <code>--quote-names</code>（or <code>-Q</code>）, <code>--skip-lock-tables</code> 等のオプションも使用。</li>
-<li>場合によっては、 <code>--all-databases</code>（or <code>-A</code>）オプションで全 DB をダンプ出力してもよいだろう。</li>
-</ul>
-
-
-<h4>3-2. 通常運用</h4>
-
-<p>当然ながら、ダンプ出力後も通常どおり運用されている。(INSERT, UPDATE, DELETE etc.)</p>
-
-<h4>3-3. 障害発生</h4>
-
-<p>通常運用時に何らかの障害が発生する。（今回は、人為的なミスで１テーブルを <code>DROP</code> してしまったことを想定）</p>
-
-<h4>3-4. ダンプファイルのリストア</h4>
-
-<p>障害発生時には、まず定期的に取っていたダンプファイルを使用してリストアする。</p>
-
-<pre><code class="text"># mysql -u root -p db_name &lt; db_name.sql
-</code></pre>
-
-<h4>3-5. バイナリログの適用（ダンプリストア後〜障害発生直前）</h4>
-
-<p>まず、ダンプファイルからポイント・イン・タイムリカバリを開始するバイナリログファイル・ポイントを確認する。</p>
-
-<pre><code class="text"># cat /path/to/db_name.sql | CHANGE
-CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.004962', MASTER_LOG_POS=365;
-</code></pre>
-
-<p>この例では、バイナリログファイル &ldquo;mysql-bin.004962&rdquo; の ポイント &ldquo;365&rdquo; より前まではダンプファイルでリストアできているということ。</p>
-
-<p>次に、障害が発生したポイントを最新のバイナリログから検索する。</p>
-
-<p>以下は、誤ってテーブル test_table を DROP してしまった場合にそのポイントを検索する例。<br/>
-該当行より３行くらい前にポイントが記載されているので、 <code>grep</code> コマンドに <code>-B 3</code> オプションを使用している。<br/>
-また、 &ldquo;my.cnf&rdquo; の <code>[client]</code> に <code>default-character-set</code> が存在すると <code>unknown variable</code> エラーが発生するため、<code>--no-defaults</code> オプションを使用している。</p>
-
-<pre><code class="text"># mysqlbinlog --nodefaults --database=db_name /path/to/mysql-bin.004962 | grep -B 3 DROP
-# at 10923096
-#151029 11:15:17 server id 1  end_log_pos 10923228      Query   thread_id=1124470       exec_time=0     error_code=0
-SET TIMESTAMP=1446084917/*!*/;
-DROP TABLE test_table
-</code></pre>
-
-<p>この場合、ポイントは <code>10923096</code> であるということ。</p>
-
-<p>いよいよ、バイナリログを適用する。<br/>
-以下は、バイナリログファイル &ldquo;mysql-bin.004962&rdquo; の先頭ポイントからポイント &ldquo;10923096&rdquo; の <code>--database</code> オプションで指定したデータベースのバイナリログを適用する例。
-（<code>--disable-log-bin</code>（or <code>-D</code>） オプションはバイナリログの出力を無効にするオプション。バイナリログ適用時にまでバイナリログを出力する必要はないので）</p>
-
-<pre><code class="text"># mysqlbinlog --database=db_name --disable-log-bin --stop-position=10923096 /path/to/mysql-bin.004962 | mysql -u root -p
-</code></pre>
-
-<p>ちなみに、ダンプ出力後のバイナリログファイルが複数ある場合は以下のように並べて記載する。<br/>
-この場合、<code>--stop-position</code> オプションは最後のバイナリログファイルに対してのみ有効。</p>
-
-<pre><code class="text"># mysqlbinlog --database=db_name --disable-log-bin --stop-position=10923096 /path/to/mysql-bin.004960 /path/to/mysql-bin.004962 | mysql -u root -proot_password
-</code></pre>
-
-<p>仮にダンプ出力時に <code>--flush-logs</code> オプションを指定していなかった場合は開始ポイントが明確でないため、明示的に <code>--start-position</code> オプションで指定する必要がある。（バイナリログファイルが複数ある場合は <code>--start-position</code> は最初のバイナリログファイルに対してのみ有効）</p>
-
-<h4>3-6. 復元確認</h4>
-
-<p>後は、正常に復元されたか確認するだけ。</p>
-
-<h3>4. その他＆注意事項</h3>
-
-<ul>
-<li>今回はポジションを意識したリカバリを行なったが、状況によっては日付を意識したリカバリも可能。（<code>--start-datatime</code>, <code>--stop-datetim</code> オプションを使用）</li>
-<li><code>mysqlbinlog</code> コマンドでバイナリログファイルを複数指定する際は、一度に全て指定すること。（１ファイルずつ複数に分けて実行しない）</li>
-<li>バイナリログファイルが複数存在する場合は、１つにマージしてから <code>mysqlbinlog</code> を実行してもよい。</li>
-<li><code>mysqlbinlog ... binlog | mysql -u root -p</code> のようにパイプを使用せず、 <code>mysqlbinlog ... binlog &gt; statements.sql</code> 実行後に <code>mysql -u root -p &lt; statements.sql</code> を実行してもよい。</li>
-</ul>
-
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/ja/point-in-time-recovery.html" title="MySQL :: MySQL 5.6 リファレンスマニュアル :: 7.5 バイナリログを使用したポイントインタイム (増分) リカバリ">MySQL :: MySQL 5.6 リファレンスマニュアル :: 7.5 バイナリログを使用したポイントインタイム (増分) リカバリ</a></li>
-</ul>
-
-
-<hr />
-
-<p>有事の際にしか行わない作業なので、記録として残しておいた次第です。</p>
 
 <p>以上。</p>
 ]]></content>
