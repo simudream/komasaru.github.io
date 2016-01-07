@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 日々の話題 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/日々の話題/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-04T00:08:53+09:00</updated>
+  <updated>2016-01-08T00:07:16+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -308,7 +308,7 @@ T = 26.238500000000002
 <p>正確に計算するには、まず正確な赤道半径・極半径が必要になります。
 <a href="http://ja.wikipedia.org/wiki/%E6%B8%AC%E5%9C%B0%E5%AD%A6" title="測地学 - Wikipedia">測地学 - Wikipedia</a>、<a href="http://ja.wikipedia.org/wiki/%E6%B8%AC%E5%9C%B0%E7%B3%BB" title="測地系 - Wikipedia">測地系 - Wikipedia</a> によると以下の3種類の測地系（測量の前提になる考え方）というものが存在し、それぞれに長半径（赤道半径）・短半径（極半径）が設定されています。</p>
 
-<table>
+<table class="common">
   <tr>
     <th>測地系</th>
     <th align="center">長半径（赤道半径）</th>
@@ -338,8 +338,7 @@ T = 26.238500000000002
 <p>次に、計算方法ですが一番正確な方法は国土地理院のサイトに掲載の方法のような気がします。</p>
 
 <ul>
-<li><a href="http://vldb.gsi.go.jp/sokuchi/surveycalc/algorithm/" title="計算式">計算式</a></li>
-<li><a href="http://vldb.gsi.go.jp/sokuchi/surveycalc/algorithm/xy2st/xy2st.htm" title="緯度・経度から平面直角座標および子午線収差角を求める計算">緯度・経度から平面直角座標および子午線収差角を求める計算</a></li>
+<li><a href="http://vldb.gsi.go.jp/sokuchi/surveycalc/surveycalc/algorithm/bl2st/bl2st.htm" title="距離と方位角の計算 計算式">距離と方位角の計算 計算式</a></li>
 </ul>
 
 
@@ -360,431 +359,190 @@ T = 26.238500000000002
 
 <h4>Ruby スクリプト</h4>
 
-<p>ご利用の環境によっては微修正が必要かもしれません。
-・ファイル名：calc_dist.rb
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-<span class='line-number'>210</span>
-<span class='line-number'>211</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;-&lt;em&gt;- coding: utf-8 -&lt;/em</span><span class="o">&gt;-&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">２地点間の距離を計算（２地点の緯度・経度から）</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;#&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">date</span>          <span class="nb">name</span>            <span class="n">version</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;2011.10.22    mk-mode.com     1.00 新規作成&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="c1">#&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="no">Copyright</span><span class="o">&amp;</span><span class="n">copy</span><span class="p">;</span><span class="mi">2011</span> <span class="n">mk</span><span class="o">-</span><span class="n">mode</span><span class="o">.</span><span class="n">com</span> <span class="no">All</span> <span class="no">Rights</span> <span class="no">Reserved</span><span class="o">.</span><span class="n">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">引数</span> <span class="p">:</span> <span class="o">[</span><span class="err">第１</span><span class="o">]</span> <span class="err">測地系</span> <span class="p">(</span> <span class="mi">0</span><span class="ss">:BESSEL</span> <span class="p">,</span> <span class="mi">1</span><span class="ss">:GRS80</span> <span class="p">,</span> <span class="mi">2</span><span class="ss">:WGS84</span> <span class="p">)</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;[第２] 緯度１ (  -90.00000000 ～  90.00000000 )&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;[</span><span class="err">第３</span><span class="o">]</span> <span class="err">経度１</span> <span class="p">(</span> <span class="o">-</span><span class="mi">180</span><span class="o">.</span><span class="mo">00000000</span> <span class="err">～</span> <span class="mi">180</span><span class="o">.</span><span class="mo">00000000</span> <span class="p">)</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;[第４] 緯度２ (  -90.00000000 ～  90.00000000 )&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;[</span><span class="err">第５</span><span class="o">]</span> <span class="err">経度２</span> <span class="p">(</span> <span class="o">-</span><span class="mi">180</span><span class="o">.</span><span class="mo">00000000</span> <span class="err">～</span> <span class="mi">180</span><span class="o">.</span><span class="mo">00000000</span> <span class="p">)</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">備考</span> <span class="p">:</span> <span class="mi">1</span><span class="ss">:GRS80</span> <span class="err">が最も正確</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;島根原発１号機 ( 35.5382 132.9998 )&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">自宅</span>           <span class="p">(</span> <span class="mi">99</span><span class="o">.</span><span class="mi">9999</span> <span class="mi">179</span><span class="o">.</span><span class="mi">9999</span> <span class="p">)</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;: 完全な球だと想定すると&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">D</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">acos</span><span class="p">(</span> <span class="n">sin</span><span class="p">(</span><span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="n">y1</span><span class="p">)</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span> <span class="p">)</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;h1&gt;++&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">CalcDist</span>
-</span><span class='line'>  <span class="c1"># 使用方法</span>
-</span><span class='line'>  <span class="no">USAGE</span> <span class="o">=</span>  <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">USAGE</span> <span class="p">:</span> <span class="n">ruby</span> <span class="n">calc_disk</span><span class="o">.</span><span class="n">rb</span> <span class="no">Type</span> <span class="no">Lat1</span> <span class="no">Lon1</span> <span class="no">Lat2</span> <span class="no">Lon2</span><span class="p">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
-</span><span class='line'>  <span class="no">USAGE</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Type</span>       <span class="p">:</span> <span class="mi">0</span><span class="ss">:BESSEL</span><span class="p">,</span> <span class="mi">1</span><span class="ss">:GRS80</span><span class="p">,</span> <span class="mi">2</span><span class="ss">:WGS84</span><span class="p">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
-</span><span class='line'>  <span class="no">USAGE</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Lat1</span><span class="p">,</span> <span class="no">Lat2</span> <span class="p">:</span>  <span class="o">-</span><span class="mi">90</span><span class="o">.</span><span class="mo">00000000</span> <span class="o">-</span>  <span class="o">[+]</span><span class="mi">90</span><span class="o">.</span><span class="mo">00000000</span><span class="p">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
-</span><span class='line'>  <span class="no">USAGE</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Lon1</span><span class="p">,</span> <span class="no">Lon2</span> <span class="p">:</span> <span class="o">-</span><span class="mi">180</span><span class="o">.</span><span class="mo">00000000</span> <span class="o">-</span> <span class="o">[+]</span><span class="mi">180</span><span class="o">.</span><span class="mo">00000000</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;  # 定数 ( ベッセル楕円体 ( 旧日本測地系 ) )</span>
-</span><span class='line'><span class="sr">  BESSEL_R_X  = 6377397.155000 # 赤道半径</span>
-</span><span class='line'><span class="sr">  BESSEL_R_Y  = 6356079.000000 # 極半径&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="c1"># 定数 ( GRS80 ( 世界測地系 ) )</span>
-</span><span class='line'>  <span class="no">GRS80_R_X</span>   <span class="o">=</span> <span class="mi">6378137</span><span class="o">.</span><span class="mo">000000</span> <span class="c1"># 赤道半径</span>
-</span><span class='line'>  <span class="no">GRS80_R_Y</span>   <span class="o">=</span> <span class="mi">6356752</span><span class="o">.</span><span class="mi">314140</span> <span class="c1"># 極半径&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="c1"># 定数 ( WGS84 ( GPS ) )</span>
-</span><span class='line'>  <span class="no">WGS84_R_X</span>   <span class="o">=</span> <span class="mi">6378137</span><span class="o">.</span><span class="mo">000000</span> <span class="c1"># 赤道半径</span>
-</span><span class='line'>  <span class="no">WGS84_R_Y</span>   <span class="o">=</span> <span class="mi">6356752</span><span class="o">.</span><span class="mi">314245</span> <span class="c1"># 極半径&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="c1"># 定数 ( 測地系 )</span>
-</span><span class='line'>  <span class="no">MODE</span> <span class="o">=</span> <span class="o">[</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">BESSEL</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">GRS</span><span class="o">-</span><span class="mi">80</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">WGS</span><span class="o">-</span><span class="mi">84</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">]&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;  # [CLASS] 引数</span>
-</span><span class='line'><span class="sr">  class Arg</span>
-</span><span class='line'><span class="sr">    # 引数チェック</span>
-</span><span class='line'><span class="sr">    def check_arg()</span>
-</span><span class='line'><span class="sr">      begin</span>
-</span><span class='line'><span class="sr">        # 存在チェック</span>
-</span><span class='line'><span class="sr">        return false unless ARGV.length == 5&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="c1"># 測地系タイプチェック</span>
-</span><span class='line'>    <span class="k">unless</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/^[012]$/</span>
-</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 緯度チェック</span>
-</span><span class='line'>    <span class="k">unless</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/^[+|-]?(\d|[1-8]\d|90)(\.\d{1,8})?$/</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span>
-</span><span class='line'>           <span class="no">ARGV</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/^[+|-]?(\d|[1-8]\d|90)(\.\d{1,8})?$/</span>
-</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 経度チェック</span>
-</span><span class='line'>    <span class="k">unless</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/^[+|-]?(\d{1,2}|1[0-7]\d|180)(\.\d{1,8})?$/</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span>
-</span><span class='line'>           <span class="no">ARGV</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/^[+|-]?(\d{1,2}|1[0-7]\d|180)(\.\d{1,8})?$/</span>
-</span><span class='line'>      <span class="k">return</span> <span class="kp">false</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="kp">true</span>
-</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">e</span>
-</span><span class='line'>    <span class="c1"># エラーメッセージ</span>
-</span><span class='line'>    <span class="n">str_msg</span> <span class="o">=</span> <span class="s2">&quot;[EXCEPTION][&quot;</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.check_arg] &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>    <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span> <span class="n">str_msg</span> <span class="p">)</span>
-</span><span class='line'>    <span class="nb">exit!</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;  # [CLASS] 計算</span>
-</span><span class='line'><span class="sr">  class Calc</span>
-</span><span class='line'><span class="sr">    # INITIALIZE</span>
-</span><span class='line'><span class="sr">    def initialize( mode, lat_1, lon_1, lat_2, lon_2 )</span>
-</span><span class='line'><span class="sr">      @mode  = mode</span>
-</span><span class='line'><span class="sr">      @lat_1 = lat_1</span>
-</span><span class='line'><span class="sr">      @lon_1 = lon_1</span>
-</span><span class='line'><span class="sr">      @lat_2 = lat_2</span>
-</span><span class='line'><span class="sr">      @lon_2 = lon_2</span>
-</span><span class='line'><span class="sr">    end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1"># 距離計算</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">calc_dist</span>
-</span><span class='line'>  <span class="k">begin</span>
-</span><span class='line'>    <span class="c1"># 指定測地系の赤道半径・極半径を設定</span>
-</span><span class='line'>    <span class="k">case</span> <span class="vi">@mode</span>
-</span><span class='line'>      <span class="k">when</span> <span class="mi">0</span>
-</span><span class='line'>        <span class="n">r_x</span> <span class="o">=</span> <span class="no">BESSEL_R_X</span>
-</span><span class='line'>        <span class="n">r_y</span> <span class="o">=</span> <span class="no">BESSEL_R_Y</span>
-</span><span class='line'>      <span class="k">when</span> <span class="mi">1</span>
-</span><span class='line'>        <span class="n">r_x</span> <span class="o">=</span> <span class="no">GRS80_R_X</span>
-</span><span class='line'>        <span class="n">r_y</span> <span class="o">=</span> <span class="no">GRS80_R_Y</span>
-</span><span class='line'>      <span class="k">when</span> <span class="mi">2</span>
-</span><span class='line'>        <span class="n">r_x</span> <span class="o">=</span> <span class="no">WGS84_R_X</span>
-</span><span class='line'>        <span class="n">r_y</span> <span class="o">=</span> <span class="no">WGS84_R_Y</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 2点の経度の差を計算 ( ラジアン )</span>
-</span><span class='line'>    <span class="n">a_x</span> <span class="o">=</span> <span class="vi">@lon_1</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="vi">@lon_2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 2点の緯度の差を計算 ( ラジアン )</span>
-</span><span class='line'>    <span class="n">a_y</span> <span class="o">=</span> <span class="vi">@lat_1</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="vi">@lat_2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 2点の緯度の平均を計算</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="o">=</span> <span class="p">(</span> <span class="vi">@lat_1</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="o">+</span> <span class="vi">@lat_2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 離心率を計算</span>
-</span><span class='line'>    <span class="n">e</span> <span class="o">=</span> <span class="no">Math</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span> <span class="n">r_x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">r_y</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="n">r_x</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span><span class="o">.</span><span class="n">to_f</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 子午線・卯酉線曲率半径の分母Wを計算</span>
-</span><span class='line'>    <span class="n">w</span> <span class="o">=</span> <span class="no">Math</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span> <span class="n">e</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span> <span class="no">Math</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span> <span class="nb">p</span> <span class="p">)</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 子午線曲率半径を計算</span>
-</span><span class='line'>    <span class="n">m</span> <span class="o">=</span> <span class="n">r_x</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">e</span> <span class="o">**</span> <span class="mi">2</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="n">w</span> <span class="o">**</span> <span class="mi">3</span> <span class="p">)</span><span class="o">.</span><span class="n">to_f</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 卯酉線曲率半径を計算</span>
-</span><span class='line'>    <span class="n">n</span> <span class="o">=</span> <span class="n">r_x</span> <span class="o">/</span> <span class="n">w</span><span class="o">.</span><span class="n">to_f</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 距離を計算</span>
-</span><span class='line'>    <span class="n">d</span>  <span class="o">=</span> <span class="p">(</span> <span class="n">a_y</span> <span class="o">*</span> <span class="n">m</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-</span><span class='line'>    <span class="n">d</span> <span class="o">+=</span> <span class="p">(</span> <span class="n">a_x</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="no">Math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span> <span class="nb">p</span> <span class="p">)</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-</span><span class='line'>    <span class="n">d</span>  <span class="o">=</span> <span class="no">Math</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">d</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># 地球を完全な球とみなした場合</span>
-</span><span class='line'>    <span class="c1"># ( 球面三角法 )</span>
-</span><span class='line'>    <span class="c1"># D = R * acos( sin(y1) * sin(y2) + cos(y1) * cos(y2) * cos(x2-x1) )</span>
-</span><span class='line'>    <span class="n">d_1</span>  <span class="o">=</span> <span class="no">Math</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span> <span class="vi">@lat_1</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">d_1</span> <span class="o">*=</span> <span class="no">Math</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span> <span class="vi">@lat_2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">d_2</span>  <span class="o">=</span> <span class="no">Math</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span> <span class="vi">@lat_1</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">d_2</span> <span class="o">*=</span> <span class="no">Math</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span> <span class="vi">@lat_2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">d_2</span> <span class="o">*=</span> <span class="no">Math</span><span class="o">::</span><span class="n">cos</span><span class="p">(</span> <span class="vi">@lon_2</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="o">-</span> <span class="vi">@lon_1</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="no">PI</span> <span class="o">/</span> <span class="mi">180</span><span class="o">.</span><span class="mi">0</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">d_0</span>  <span class="o">=</span> <span class="n">r_x</span> <span class="o">*</span> <span class="no">Math</span><span class="o">::</span><span class="n">acos</span><span class="p">(</span> <span class="n">d_1</span> <span class="o">+</span> <span class="n">d_2</span> <span class="p">)</span><span class="o">.</span><span class="n">to_f</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="o">[</span> <span class="n">d</span><span class="p">,</span> <span class="n">d_0</span> <span class="o">]</span>
-</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">e</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># エラーメッセージ</span>
-</span><span class='line'>    <span class="n">str_msg</span> <span class="o">=</span> <span class="s2">&quot;[EXCEPTION][&quot;</span> <span class="o">+</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.calc_dist] &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>    <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span> <span class="n">str_msg</span> <span class="p">)</span>
-</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;  #### MAIN ####</span>
-</span><span class='line'><span class="sr">  if &lt;strong&gt;FILE&lt;/s</span><span class="n">trong</span><span class="o">&gt;</span> <span class="o">==</span> <span class="vg">$0</span>
-</span><span class='line'>    <span class="c1"># 引数チェック( エラーなら終了 )</span>
-</span><span class='line'>    <span class="n">obj_arg</span> <span class="o">=</span> <span class="no">Arg</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>    <span class="k">unless</span> <span class="n">obj_arg</span><span class="o">.</span><span class="n">check_arg</span>
-</span><span class='line'>      <span class="c1"># エラーの場合、終了</span>
-</span><span class='line'>      <span class="nb">puts</span> <span class="no">USAGE</span>
-</span><span class='line'>      <span class="nb">exit!</span>
-</span><span class='line'>    <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;# 引数取得</span>
-</span><span class='line'><span class="sr">mode  = ARGV[0].to_i</span>
-</span><span class='line'><span class="sr">lat_1 = ARGV[1].to_f</span>
-</span><span class='line'><span class="sr">lon_1 = ARGV[2].to_f</span>
-</span><span class='line'><span class="sr">lat_2 = ARGV[3].to_f</span>
-</span><span class='line'><span class="sr">lon_2 = ARGV[4].to_f</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr"># 距離計算</span>
-</span><span class='line'><span class="sr">obj_calc = Calc.new( mode, lat_1, lon_1, lat_2, lon_2 )</span>
-</span><span class='line'><span class="sr">dist = obj_calc.calc_dist</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr"># 結果出力</span>
-</span><span class='line'><span class="sr">puts &quot;Mode        : </span><span class="si">#{</span><span class="no">MODE</span><span class="o">[</span><span class="n">mode</span><span class="o">]</span><span class="si">}</span><span class="sr">&quot;</span>
-</span><span class='line'><span class="sr">puts &quot;Latitude (1): </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s2">&quot;%13.8f&quot;</span><span class="p">,</span><span class="n">lat_1</span><span class="p">)</span><span class="si">}</span><span class="sr"> degrees&quot;</span>
-</span><span class='line'><span class="sr">puts &quot;Longitude(1): </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s2">&quot;%13.8f&quot;</span><span class="p">,</span><span class="n">lon_1</span><span class="p">)</span><span class="si">}</span><span class="sr"> degrees&quot;</span>
-</span><span class='line'><span class="sr">puts &quot;Latitude (2): </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s2">&quot;%13.8f&quot;</span><span class="p">,</span><span class="n">lat_2</span><span class="p">)</span><span class="si">}</span><span class="sr"> degrees&quot;</span>
-</span><span class='line'><span class="sr">puts &quot;Longitude(2): </span><span class="si">#{</span><span class="nb">sprintf</span><span class="p">(</span><span class="s2">&quot;%13.8f&quot;</span><span class="p">,</span><span class="n">lon_2</span><span class="p">)</span><span class="si">}</span><span class="sr"> degrees&quot;</span>
-</span><span class='line'><span class="sr">puts &quot;Distance = </span><span class="si">#{</span><span class="n">dist</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="sr"> m ( </span><span class="si">#{</span><span class="n">dist</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="sr"> m )&quot;</span>
-</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
-</span><span class='line'><span class="sr">end</span>
-</span></code></pre></td></tr></table></div></figure></p>
+<p>ご利用の環境によっては微修正が必要かもしれません。</p>
+
+<pre><code class="ruby calc_dist.rb"># -*- coding: utf-8 -*-
+# 
+# ２地点間の距離を計算（２地点の緯度・経度から）
+#
+# date          name            version
+# 2011.10.22    mk-mode.com     1.00 新規作成
+#
+# Copyright(C)2011 mk-mode.com All Rights Reserved.
+#---------------------------------------------------------------------------------
+# 引数 : [第１] 測地系 ( 0:BESSEL , 1:GRS80 , 2:WGS84 )
+#        [第２] 緯度１ (  -90.00000000 ～  90.00000000 )
+#        [第３] 経度１ ( -180.00000000 ～ 180.00000000 )
+#        [第４] 緯度２ (  -90.00000000 ～  90.00000000 )
+#        [第５] 経度２ ( -180.00000000 ～ 180.00000000 )
+#---------------------------------------------------------------------------------
+# 備考 : 1:GRS80 が最も正確
+#        島根原発１号機 ( 35.5382 132.9998 )
+#        自宅           ( 99.9999 179.9999 )
+#      : 完全な球だと想定すると
+#        D = R * acos( sin(y1) * sin(y2) + cos(y1) * cos(y2) * cos(x2-x1) )
+#++
+
+class CalcDist
+  # 使用方法
+  USAGE =  "USAGE : ruby calc_disk.rb Type Lat1 Lon1 Lat2 Lon2\n"
+  USAGE &lt;&lt; "Type       : 0:BESSEL, 1:GRS80, 2:WGS84\n"
+  USAGE &lt;&lt; "Lat1, Lat2 :  -90.00000000 -  [+]90.00000000\n"
+  USAGE &lt;&lt; "Lon1, Lon2 : -180.00000000 - [+]180.00000000"
+
+  # 定数 ( ベッセル楕円体 ( 旧日本測地系 ) )
+  BESSEL_R_X  = 6377397.155000 # 赤道半径
+  BESSEL_R_Y  = 6356079.000000 # 極半径
+
+  # 定数 ( GRS80 ( 世界測地系 ) )
+  GRS80_R_X   = 6378137.000000 # 赤道半径
+  GRS80_R_Y   = 6356752.314140 # 極半径
+
+  # 定数 ( WGS84 ( GPS ) )
+  WGS84_R_X   = 6378137.000000 # 赤道半径
+  WGS84_R_Y   = 6356752.314245 # 極半径
+
+  # 定数 ( 測地系 )
+  MODE = [ "BESSEL", "GRS-80", "WGS-84" ]
+
+  # [CLASS] 引数
+  class Arg
+    # 引数チェック
+    def check_arg()
+      begin
+        # 存在チェック
+        return false unless ARGV.length == 5
+
+        # 測地系タイプチェック
+        unless ARGV[0] =~ /^[012]$/
+          return false
+        end
+
+        # 緯度チェック
+        unless ARGV[1] =~ /^[+|-]?(\d|[1-8]\d|90)(\.\d{1,8})?$/ &amp;&amp;
+               ARGV[3] =~ /^[+|-]?(\d|[1-8]\d|90)(\.\d{1,8})?$/
+          return false
+        end
+
+        # 経度チェック
+        unless ARGV[2] =~ /^[+|-]?(\d{1,2}|1[0-7]\d|180)(\.\d{1,8})?$/ &amp;&amp;
+               ARGV[4] =~ /^[+|-]?(\d{1,2}|1[0-7]\d|180)(\.\d{1,8})?$/
+          return false
+        end
+
+        return true
+      rescue =&gt; e
+        # エラーメッセージ
+        str_msg = "[EXCEPTION][" + self.class.name + ".check_arg] " + e.to_s
+        STDERR.puts( str_msg )
+        exit! 1
+      end
+    end
+  end
+
+  # [CLASS] 計算
+  class Calc
+    def initialize(mode, lat_1, lon_1, lat_2, lon_2)
+      @mode  = mode
+      @lat_1 = lat_1
+      @lon_1 = lon_1
+      @lat_2 = lat_2
+      @lon_2 = lon_2
+    end
+
+    # 距離計算
+    def calc_dist
+      begin
+        # 指定測地系の赤道半径・極半径を設定
+        case @mode
+          when 0
+            r_x = BESSEL_R_X
+            r_y = BESSEL_R_Y
+          when 1
+            r_x = GRS80_R_X
+            r_y = GRS80_R_Y
+          when 2
+            r_x = WGS84_R_X
+            r_y = WGS84_R_Y
+        end
+
+        # 2点の経度の差を計算 ( ラジアン )
+        a_x = @lon_1 * Math::PI / 180.0 - @lon_2 * Math::PI / 180.0
+
+        # 2点の緯度の差を計算 ( ラジアン )
+        a_y = @lat_1 * Math::PI / 180.0 - @lat_2 * Math::PI / 180.0
+
+        # 2点の緯度の平均を計算
+        p = ( @lat_1 * Math::PI / 180.0 + @lat_2 * Math::PI / 180.0 ) / 2.0
+
+        # 離心率を計算
+        e = Math::sqrt( ( r_x ** 2 - r_y ** 2 ) / ( r_x ** 2 ).to_f )
+
+        # 子午線・卯酉線曲率半径の分母Wを計算
+        w = Math::sqrt( 1 - ( e ** 2 ) * ( ( Math::sin( p ) ) ** 2 ) )
+
+        # 子午線曲率半径を計算
+        m = r_x * ( 1 - e ** 2 ) / ( w ** 3 ).to_f
+
+        # 卯酉線曲率半径を計算
+        n = r_x / w.to_f
+
+        # 距離を計算
+        d  = ( a_y * m ) ** 2
+        d += ( a_x * n * Math.cos( p ) ) ** 2
+        d  = Math::sqrt( d )
+
+        # 地球を完全な球とみなした場合
+        # ( 球面三角法 )
+        # D = R * acos( sin(y1) * sin(y2) + cos(y1) * cos(y2) * cos(x2-x1) )
+        d_1  = Math::sin( @lat_1 * Math::PI / 180.0 ) 
+        d_1 *= Math::sin( @lat_2 * Math::PI / 180.0 )
+        d_2  = Math::cos( @lat_1 * Math::PI / 180.0 )
+        d_2 *= Math::cos( @lat_2 * Math::PI / 180.0 )
+        d_2 *= Math::cos( @lon_2 * Math::PI / 180.0 - @lon_1 * Math::PI / 180.0 )
+        d_0  = r_x * Math::acos( d_1 + d_2 ).to_f
+
+        return [ d, d_0 ]
+      rescue =&gt; e
+        # エラーメッセージ
+        str_msg = "[EXCEPTION][" + self.class.name + ".calc_dist] " + e.to_s
+        STDERR.puts( str_msg )
+        exit 1
+      end
+    end
+  end
+
+  #### MAIN ####
+  if __FILE__ == $0
+    # 引数チェック( エラーなら終了 )
+    obj_arg = Arg.new
+    unless obj_arg.check_arg
+      # エラーの場合、終了
+      puts USAGE
+      exit!
+    end
+
+    # 引数取得
+    mode  = ARGV[0].to_i
+    lat_1 = ARGV[1].to_f
+    lon_1 = ARGV[2].to_f
+    lat_2 = ARGV[3].to_f
+    lon_2 = ARGV[4].to_f
+
+    # 距離計算
+    obj_calc = Calc.new( mode, lat_1, lon_1, lat_2, lon_2 )
+    dist = obj_calc.calc_dist
+
+    # 結果出力
+    puts "Mode        : #{MODE[mode]}"
+    puts "Latitude (1): #{sprintf("%13.8f",lat_1)} degrees"
+    puts "Longitude(1): #{sprintf("%13.8f",lon_1)} degrees"
+    puts "Latitude (2): #{sprintf("%13.8f",lat_2)} degrees"
+    puts "Longitude(2): #{sprintf("%13.8f",lon_2)} degrees"
+    puts "Distance = #{dist[0]} m ( #{dist[1]} m )"
+  end
+end
+</code></pre>
 
 <h4>使用例</h4>
 
@@ -809,16 +567,15 @@ T = 26.238500000000002
 <span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
 </span><span class='line'>
-</span><span class='line'>&lt;blockquote>&lt;p>ruby calc_dist.rb 1 35.5382 132.9998 99.99999999 179.99999999
+</span><span class='line'>&lt;blockquote>&lt;p>ruby calc_dist.rb 1 35.5382 132.9998 35.47222 133.050556
 </span><span class='line'>Mode        : GRS-80
 </span><span class='line'>Latitude (1):   35.53820000 degrees
 </span><span class='line'>Longitude(1):  132.99980000 degrees
-</span><span class='line'>Latitude (2):   99.99999999 degrees
-</span><span class='line'>Longitude(2):  179.99999999 degrees
-</span><span class='line'>Distance = 8648.073534540106 m ( 8665.96408676231 m )</span></code></pre></td></tr></table></div></figure></p></blockquote>
+</span><span class='line'>Latitude (2):   35.47222000 degrees
+</span><span class='line'>Longitude(2):  133.05055600 degrees
+</span><span class='line'>Distance = 8648.30331225593 m ( 8666.19473153661 m )</span></code></pre></td></tr></table></div></figure></p></blockquote>
 
 <p>※上記は、島根原子力発電所１号機の位置（Googleマップより取得）と島根県庁の位置の距離です。<br/>
-※上記では、実際には自宅との距離を計算していますが、自宅の位置が判明しないように架空の数値で表示しています。<br/>
 ※計算結果の ( )内の数値は、地球が測地系の長半径を半径とする完全な球体とみなした場合の球面三角法による計算結果。</p>
 
 <p>このように、地球が完全な球体であると仮定した場合との差は、今回の場合 18 メートル位となります。</p>
