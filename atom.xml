@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-08T00:07:16+09:00</updated>
+  <updated>2016-01-12T00:10:54+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,510 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - ３次スプライン補間！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/12/ruby-spline-interpolation/"/>
+    <updated>2016-01-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/12/ruby-spline-interpolation</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>過去に「ラグランジュ補間」や「ニュートン補間」を C++ や Ruby で実装したことがありました。</p>
+
+<ul>
+<li><a href="http://komasaru.github.io/2013/03/10/cpp-interpolate-lagrange/" title="C++ - ラグランジュ補間！ - mk-mode BLOG">C++ - ラグランジュ補間！ - mk-mode BLOG</a></li>
+<li><a href="http://komasaru.github.io/2013/03/11/ruby-interpolate-lagrange/" title="Ruby - ラグランジュ補間！ - mk-mode BLOG">Ruby - ラグランジュ補間！ - mk-mode BLOG</a></li>
+<li><a href="http://komasaru.github.io/2013/03/13/cpp-interpolate-newton/" title="C++ - ニュートン補間！ - mk-mode BLOG">C++ - ニュートン補間！ - mk-mode BLOG</a></li>
+<li><a href="http://komasaru.github.io/2013/03/14/ruby-interpolate-newton/" title="Ruby - ニュートン補間！ - mk-mode BLOG">Ruby - ニュートン補間！ - mk-mode BLOG</a></li>
+</ul>
+
+
+<p>今回は「３次スプライン補間」を Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>グラフも描画するので、RubyGems ライブラリの gnuplot をインストールしておく。</li>
+</ul>
+
+
+<h3>1. ３次スプライン補間について</h3>
+
+<p><a href="http://akita-nct.jp/yamamoto/lecture/2007/5E_comp_app/interpolation/interpolation_html/node3.html" title="3 スプライン補間">こちらの内容</a>を自分なりに理解して以下のようにまとめた。</p>
+
+<p>（数式が多いので別途 <script type="math/tex">\LaTeX</script> で記載した文書を貼り付け）</p>
+
+<p><img src="http://komasaru.github.io/images/2016/01/12/SPLINE_INTERPOLATION_1.png" title="SPLINE_INTERPOLATION_1" alt="SPLINE_INTERPOLATION_1" />
+<img src="http://komasaru.github.io/images/2016/01/12/SPLINE_INTERPOLATION_2.png" title="SPLINE_INTERPOLATION_2" alt="SPLINE_INTERPOLATION_2" />
+<img src="http://komasaru.github.io/images/2016/01/12/SPLINE_INTERPOLATION_3.png" title="SPLINE_INTERPOLATION_3" alt="SPLINE_INTERPOLATION_3" />
+<img src="http://komasaru.github.io/images/2016/01/12/SPLINE_INTERPOLATION_4.png" title="SPLINE_INTERPOLATION_4" alt="SPLINE_INTERPOLATION_4" />
+<img src="http://komasaru.github.io/images/2016/01/12/SPLINE_INTERPOLATION_5.png" title="SPLINE_INTERPOLATION_5" alt="SPLINE_INTERPOLATION_5" />
+<img src="http://komasaru.github.io/images/2016/01/12/SPLINE_INTERPOLATION_6.png" title="SPLINE_INTERPOLATION_6" alt="SPLINE_INTERPOLATION_6" /></p>
+
+<p>（上記文書の PDF は<a href="http://www.mk-mode.com/rails/docs/INTERPOLATION_SPLINE.pdf" title="３次スプライン補間.pdf（Ａ４・４ページ）">こちら</a>）</p>
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>以下のような Ruby スクリプトを作成する。<br/>
+ロジックは前項の説明（アルゴリズム）どおりなので説明しない。（ただ、連立一次方程式の解法には「<a href="http://komasaru.github.io/2013/09/21/ruby-simultaneous-equation-by-gauss-jorden/" title="Ruby - 連立方程式解法（ガウス・ジョルダン法）！">ガウス・ジョルダン法</a>」を使用した）</p>
+
+<figure class='code'><figcaption><span>spline_interpolation.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/local/bin/ruby</span>
+</span><span class='line'><span class="c1"># coding: utf-8</span>
+</span><span class='line'><span class="c1">#*********************************************</span>
+</span><span class='line'><span class="c1"># ３次スプライン補間</span>
+</span><span class='line'><span class="c1"># （gnuplot によるグラフ描画付き）</span>
+</span><span class='line'><span class="c1">#*********************************************</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;gnuplot&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># N + 1 個の点</span>
+</span><span class='line'><span class="n">X</span> <span class="o">=</span> <span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'><span class="n">Y</span> <span class="o">=</span> <span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">9</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">SplineInterpolation</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>    <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
+</span><span class='line'>    <span class="vi">@n</span> <span class="o">=</span> <span class="vi">@x</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">h</span> <span class="o">=</span> <span class="n">calc_h</span>
+</span><span class='line'>    <span class="n">w</span> <span class="o">=</span> <span class="n">calc_w</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">matrix</span> <span class="o">=</span> <span class="n">gen_matrix</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">v</span> <span class="o">=</span> <span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">gauss_jordan</span><span class="p">(</span><span class="n">matrix</span><span class="p">),</span> <span class="mi">0</span><span class="o">].</span><span class="n">flatten</span>
+</span><span class='line'>    <span class="vi">@b</span> <span class="o">=</span> <span class="n">calc_b</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@a</span> <span class="o">=</span> <span class="n">calc_a</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@d</span> <span class="o">=</span> <span class="n">calc_d</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@c</span> <span class="o">=</span> <span class="n">calc_c</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">i</span> <span class="o">=</span> <span class="n">search_i</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">s</span>  <span class="o">=</span> <span class="vi">@a</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span>
+</span><span class='line'>    <span class="n">s</span> <span class="o">+=</span> <span class="vi">@b</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="n">s</span> <span class="o">+=</span> <span class="vi">@c</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">s</span> <span class="o">+=</span> <span class="vi">@d</span><span class="o">[</span><span class="n">i</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">s</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">calc_h</span>
+</span><span class='line'>    <span class="n">h</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span> <span class="n">h</span> <span class="o">&lt;&lt;</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">h</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">calc_w</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">w</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">w</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">*</span> <span class="p">((</span><span class="vi">@y</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@y</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">-</span> <span class="p">(</span><span class="vi">@y</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@y</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">w</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">gen_matrix</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">matrix</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@n</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">i</span><span class="o">]</span>     <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][-</span><span class="mi">1</span><span class="o">]</span>    <span class="o">=</span> <span class="n">w</span><span class="o">[</span><span class="n">i</span><span class="o">]</span>
+</span><span class='line'>      <span class="k">next</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span class='line'>      <span class="n">matrix</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">][</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">matrix</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">gauss_jordan</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">v</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="n">n</span> <span class="o">=</span> <span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">k</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">k</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">j</span><span class="o">|</span> <span class="n">matrix</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">/</span> <span class="nb">p</span><span class="o">.</span><span class="n">to_f</span> <span class="p">}</span>
+</span><span class='line'>      <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>        <span class="k">unless</span> <span class="n">i</span> <span class="o">==</span> <span class="n">k</span>
+</span><span class='line'>          <span class="n">d</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">k</span><span class="o">]</span>
+</span><span class='line'>          <span class="n">k</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">j</span><span class="o">|</span> <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">-</span> <span class="n">d</span> <span class="o">*</span> <span class="n">matrix</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">matrix</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span> <span class="n">v</span> <span class="o">&lt;&lt;</span> <span class="n">row</span><span class="o">[-</span><span class="mi">1</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">v</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">calc_a</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span> <span class="n">a</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">v</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="n">v</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="vi">@x</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">))</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">calc_b</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">b</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span> <span class="n">b</span> <span class="o">&lt;&lt;</span> <span class="n">v</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">b</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">calc_c</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">c</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="vi">@n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">c</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="vi">@y</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@y</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="vi">@x</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="p">\</span>
+</span><span class='line'>         <span class="o">-</span> <span class="p">(</span><span class="vi">@x</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">-</span> <span class="vi">@x</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="n">v</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">c</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">calc_d</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="vi">@y</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">search_i</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="vi">@x</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span>
+</span><span class='line'>      <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class='line'>      <span class="k">if</span> <span class="vi">@x</span><span class="o">[</span><span class="n">k</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">t</span>
+</span><span class='line'>        <span class="n">i</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="n">j</span> <span class="o">=</span> <span class="n">k</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">i</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Graph</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">x_g</span><span class="p">,</span> <span class="n">y_g</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@x_g</span><span class="p">,</span> <span class="vi">@y_g</span><span class="p">,</span> <span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span> <span class="o">=</span> <span class="n">x_g</span><span class="p">,</span> <span class="n">y_g</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">plot</span>
+</span><span class='line'>    <span class="no">Gnuplot</span><span class="o">.</span><span class="n">open</span> <span class="k">do</span> <span class="o">|</span><span class="n">gp</span><span class="o">|</span>
+</span><span class='line'>      <span class="no">Gnuplot</span><span class="o">::</span><span class="no">Plot</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">plot</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">terminal</span> <span class="s2">&quot;png enhanced font &#39;IPA P ゴシック&#39; fontscale 1.2&quot;</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">output</span>   <span class="s2">&quot;spline_interpolation.png&quot;</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">title</span>    <span class="s2">&quot;スプライン補間&quot;</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span>   <span class="s2">&quot;x&quot;</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">ylabel</span>   <span class="s2">&quot;y&quot;</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">grid</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># 計算によって得られた点</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="no">Gnuplot</span><span class="o">::</span><span class="no">DataSet</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">[</span><span class="vi">@x_g</span><span class="p">,</span> <span class="vi">@y_g</span><span class="o">]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">with</span>      <span class="o">=</span> <span class="s2">&quot;points&quot;</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">linecolor</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">notitle</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1"># 予め与えらた点</span>
+</span><span class='line'>        <span class="n">plot</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="no">Gnuplot</span><span class="o">::</span><span class="no">DataSet</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">[</span><span class="vi">@x</span><span class="p">,</span> <span class="vi">@y</span><span class="o">]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">with</span>      <span class="o">=</span> <span class="s2">&quot;points&quot;</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">linewidth</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">linecolor</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>          <span class="n">ds</span><span class="o">.</span><span class="n">notitle</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># グラフ用配列</span>
+</span><span class='line'><span class="n">x_g</span><span class="p">,</span> <span class="n">y_g</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span><span class="p">,</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># ３次スプライン補間</span>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">SplineInterpolation</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">X</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">step</span><span class="p">(</span><span class="n">X</span><span class="o">[-</span><span class="mi">1</span><span class="o">]</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">y</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">printf</span><span class="p">(</span><span class="s2">&quot;%8.4f, %8.4f</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">x_g</span> <span class="o">&lt;&lt;</span> <span class="n">x</span>
+</span><span class='line'>  <span class="n">y_g</span> <span class="o">&lt;&lt;</span> <span class="n">y</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># グラフ描画</span>
+</span><span class='line'><span class="no">Graph</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">x_g</span><span class="p">,</span> <span class="n">y_g</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/01b9a98af2a6cae0a5df" title="Gist - Ruby script to calc 3D-Spline-Interpolation.">Gist - Ruby script to calc 3D-Spline-Interpolation.</a></li>
+</ul>
+
+
+<h3>3. Ruby スクリプトの実行</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./spline_interpolation.rb
+</span><span class='line'>  0.0000,   0.8000
+</span><span class='line'>  0.1000,   0.9861
+</span><span class='line'>  0.2000,   1.1713
+</span><span class='line'>  0.3000,   1.3544
+</span><span class='line'>  0.4000,   1.5346
+</span><span class='line'>  0.5000,   1.7108
+</span><span class='line'>  0.6000,   1.8820
+</span><span class='line'>  0.7000,   2.0473
+</span><span class='line'>  0.8000,   2.2056
+</span><span class='line'>  0.9000,   2.3559
+</span><span class='line'>  1.0000,   2.4973
+</span><span class='line'>  1.1000,   2.6287
+</span><span class='line'>  1.2000,   2.7492
+</span><span class='line'>  1.3000,   2.8578
+</span><span class='line'>  1.4000,   2.9534
+</span><span class='line'>  1.5000,   3.0351
+</span><span class='line'>  1.6000,   3.1019
+</span><span class='line'>  1.7000,   3.1528
+</span><span class='line'>  1.8000,   3.1868
+</span><span class='line'>  1.9000,   3.2028
+</span><span class='line'>  2.0000,   3.2000
+</span><span class='line'>  2.1000,   3.1782
+</span><span class='line'>     :         :
+</span><span class='line'>====&lt; 途中省略&gt;====
+</span><span class='line'>     :         :
+</span><span class='line'>  7.5000,   2.1279
+</span><span class='line'>  7.6000,   2.0754
+</span><span class='line'>  7.7000,   2.0275
+</span><span class='line'>  7.8000,   1.9831
+</span><span class='line'>  7.9000,   1.9410
+</span><span class='line'>  8.0000,   1.9000
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. グラフ確認</h3>
+
+<p>Ruby スクリプトと同じディレクトリ内に &ldquo;spline_interpolation.png&rdquo; という画像ファイルが存在するはずなので、確認してみる。<br/>
+（赤色の <code>x</code> が予め与えられた点、水色の <code>+</code> が補間された点）</p>
+
+<p><img src="http://komasaru.github.io/images/2016/01/12/spline_interpolation.png" title="SPLINE_INTERPOLATION" alt="SPLINE_INTERPOLATION" /></p>
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://akita-nct.jp/yamamoto/lecture/2007/5E_comp_app/interpolation/interpolation_html/node3.html" title="3 スプライン補間">スプライン補間</a></li>
+<li><a href="http://komasaru.github.io/2013/09/21/ruby-simultaneous-equation-by-gauss-jorden/" title="Ruby - 連立方程式解法（ガウス・ジョルダン法）！">ガウス・ジョルダン法</a></li>
+</ul>
+
+
+<hr />
+
+<p>スプライン補間ができないと先に進めない（私的な）事案があったために今回まとめてみた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS - Mroonga インストール（by ソースビルド）！]]></title>
@@ -5083,154 +5587,6 @@
 <hr />
 
 <p>結局、当方は今回紹介した方法を積極的には使用していませんが、こういうやり方もあるということを覚えておくと何かの際に役立つかもしれません。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - スワップ領域の作成！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/10/20/linux-create-swap-area/"/>
-    <updated>2015-10-20T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/10/20/linux-create-swap-area</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>スワップ領域の容量が不足した際に追加で作成する方法についてです。</p>
-
-<p>本来なら物理メモリを増設すべきでしょうが、それまでの緊急的な措置としてスワップファイルを作成してそれをスワップ領域に割り当てるのです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.6(32bit) での作業を想定。（他のディストリビューションでも同じ）</li>
-</ul>
-
-
-<h3>1. スワップファイルの作成</h3>
-
-<p>以下は、ブロックサイズ 1KB で 2GB(1024 x 1024 x 2ブロック) のスワップ領域用のファイルを作成する例。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># dd if=/dev/zero of=/var/tmp/swap bs=1024 count=2097152
-</span><span class='line'>2097152+0 records in
-</span><span class='line'>2097152+0 records out
-</span><span class='line'>2147483648 bytes (2.1 GB) copied, 74.8475 s, 28.7 MB/s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. スワップ領域の作成</h3>
-
-<p>先ほど作成したスワップファイルをスワップ領域に割り当てる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mkswap /var/tmp/swap
-</span><span class='line'>mkswap: /var/tmp/swap: warning: don&#39;t erase bootbits sectors
-</span><span class='line'>        on whole disk. Use -f to force.
-</span><span class='line'>スワップ空間バージョン1を設定します、サイズ = 2097148 KiB
-</span><span class='line'>ラベルはありません, UUID=1a802279-4f23-4466-8579-fa38a2cc4d5a
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>スワップ領域を作成する前にデバイスの不良ブロックのチェックを行いたい場合は、 <code>-c</code> オプションを使用する。<br/>
-（不良ブロックを検出した場合は、その件数が出力される）</li>
-<li>スワップファイルにラベルを指定する（ラベル指定でスワップ領域の有効化したい）場合は、 <code>-L</code> オプションで指定する。</li>
-</ul>
-
-
-<h3>3. スワップ領域の有効化</h3>
-
-<p>先ほど作成したスワップ領域を有効化する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># swapon /var/tmp/swap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>当然ながら、スワップファイルではなくパーティションを指定することも可能。</li>
-<li>スワップファイル名でなくラベルで指定することも可能。</li>
-<li>優先度を指定したければ、 <code>-p priority</code> で指定する。 <code>priority</code> は 0 〜 32767 の数値で、大きいほど優先度が高い。</li>
-<li>同じ優先度のスワップ領域が複数ある場合、ページがラウンド・ロビン方式で配分される。</li>
-</ul>
-
-
-<h3>4. スワップ領域の確認</h3>
-
-<p>スワップ領域の一覧を確認するには以下のようにする。（以下は一例）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># swapon -s
-</span><span class='line'>Filename                                Type            Size    Used    Priority
-</span><span class='line'>/dev/sda2                               partition       2097148 766580  -1
-</span><span class='line'>/var/tmp/swap                           file            2097148 0       -2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>優先度を指定しない場合、自動で既存スワップ領域で最低の優先度に続く優先度になるのではなかろうか。</li>
-</ul>
-
-
-<h3>5. スワップ領域の削除</h3>
-
-<p>スワップが不要になった場合は以下のようにして削除する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># swapoff /var/tmp/swap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>当然ながら、スワップファイルではなくパーティションを指定することも可能。</li>
-<li>スワップファイル名でなくラベルで指定することも可能。</li>
-</ul>
-
-
-<h3>6. スワップファイルの削除</h3>
-
-<p>完全にスワップ領域が不要なら、スワップファイルも削除する。（単純なファイル削除）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># rm -f /var/tmp/swap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. 自動マウント</h3>
-
-<p>マシン起動時に自動でスワップ領域を有効化したい場合は、 &ldquo;/etc/fstab&rdquo; に以下のように追記する。</p>
-
-<figure class='code'><figcaption><span>/etc/fstab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>/var/tmp/swap         swap    swap    sw    0 0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>1列目 &hellip; デバイス名・スワップファイル名</li>
-<li>2列目 &hellip; マウントポイント（スワップ領域にはマウントポイントがないので <code>none</code> でもよい）</li>
-<li>3列目 &hellip; ファイルシステム</li>
-<li>4列目 &hellip; マウント時のオプション（<code>defaults</code> でもよい。優先度を指定するなら <code>sw,pri=X</code>（<code>X</code> は <code>0</code> 〜 <code>32767</code> の数値））</li>
-<li>5列目 &hellip; ファイルシステムを dump する必要があるか否かの指定（<code>0</code> は dump の必要なし）</li>
-<li>6列目 &hellip; システム起動時に fsck チェックを行うか否かの指定（<code>0</code> は fsck チェックを行わない）</li>
-</ul>
-
-
-<hr />
-
-<p>これで取り急ぎのスワップ領域拡大ができますが、この間に物理メモリ増設について検討しましょう。</p>
 
 <p>以上。</p>
 ]]></content>

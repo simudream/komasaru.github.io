@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 数学 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/数学/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-08T00:07:16+09:00</updated>
+  <updated>2016-01-12T00:10:54+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,299 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - ３次スプライン補間！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/12/ruby-spline-interpolation/"/>
+    <updated>2016-01-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/12/ruby-spline-interpolation</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>過去に「ラグランジュ補間」や「ニュートン補間」を C++ や Ruby で実装したことがありました。</p>
+
+<ul>
+<li><a href="/2013/03/10/cpp-interpolate-lagrange/" title="C++ - ラグランジュ補間！ - mk-mode BLOG">C++ - ラグランジュ補間！ - mk-mode BLOG</a></li>
+<li><a href="/2013/03/11/ruby-interpolate-lagrange/" title="Ruby - ラグランジュ補間！ - mk-mode BLOG">Ruby - ラグランジュ補間！ - mk-mode BLOG</a></li>
+<li><a href="/2013/03/13/cpp-interpolate-newton/" title="C++ - ニュートン補間！ - mk-mode BLOG">C++ - ニュートン補間！ - mk-mode BLOG</a></li>
+<li><a href="/2013/03/14/ruby-interpolate-newton/" title="Ruby - ニュートン補間！ - mk-mode BLOG">Ruby - ニュートン補間！ - mk-mode BLOG</a></li>
+</ul>
+
+
+<p>今回は「３次スプライン補間」を Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>グラフも描画するので、RubyGems ライブラリの gnuplot をインストールしておく。</li>
+</ul>
+
+
+<h3>1. ３次スプライン補間について</h3>
+
+<p><a href="http://akita-nct.jp/yamamoto/lecture/2007/5E_comp_app/interpolation/interpolation_html/node3.html" title="3 スプライン補間">こちらの内容</a>を自分なりに理解して以下のようにまとめた。</p>
+
+<p>（数式が多いので別途 <script type="math/tex">\LaTeX</script> で記載した文書を貼り付け）</p>
+
+<p><img src="/images/2016/01/12/SPLINE_INTERPOLATION_1.png" title="SPLINE_INTERPOLATION_1" alt="SPLINE_INTERPOLATION_1" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_2.png" title="SPLINE_INTERPOLATION_2" alt="SPLINE_INTERPOLATION_2" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_3.png" title="SPLINE_INTERPOLATION_3" alt="SPLINE_INTERPOLATION_3" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_4.png" title="SPLINE_INTERPOLATION_4" alt="SPLINE_INTERPOLATION_4" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_5.png" title="SPLINE_INTERPOLATION_5" alt="SPLINE_INTERPOLATION_5" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_6.png" title="SPLINE_INTERPOLATION_6" alt="SPLINE_INTERPOLATION_6" /></p>
+
+<p>（上記文書の PDF は<a href="http://www.mk-mode.com/rails/docs/INTERPOLATION_SPLINE.pdf" title="３次スプライン補間.pdf（Ａ４・４ページ）">こちら</a>）</p>
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>以下のような Ruby スクリプトを作成する。<br/>
+ロジックは前項の説明（アルゴリズム）どおりなので説明しない。（ただ、連立一次方程式の解法には「<a href="/2013/09/21/ruby-simultaneous-equation-by-gauss-jorden/" title="Ruby - 連立方程式解法（ガウス・ジョルダン法）！">ガウス・ジョルダン法</a>」を使用した）</p>
+
+<pre><code class="ruby spline_interpolation.rb">#!/usr/local/bin/ruby
+# coding: utf-8
+#*********************************************
+# ３次スプライン補間
+# （gnuplot によるグラフ描画付き）
+#*********************************************
+#
+require 'gnuplot'
+
+# N + 1 個の点
+X = [0.0, 2.0, 3.0, 5.0, 7.0, 8.0]
+Y = [0.8, 3.2, 2.8, 4.5, 2.5, 1.9]
+
+class SplineInterpolation
+  def initialize
+    @x, @y = X, Y
+    @n = @x.size - 1
+    h = calc_h
+    w = calc_w(h)
+    matrix = gen_matrix(h, w)
+    v = [0, gauss_jordan(matrix), 0].flatten
+    @b = calc_b(v)
+    @a = calc_a(v)
+    @d = calc_d(v)
+    @c = calc_c(v)
+  end
+
+  def interpolate(t)
+    i = search_i(t)
+    s  = @a[i] * (t - @x[i]) ** 3
+    s += @b[i] * (t - @x[i]) ** 2
+    s += @c[i] * (t - @x[i])
+    s += @d[i]
+    return s
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    exit 1
+  end
+
+  private
+
+  def calc_h
+    h = Array.new
+    0.upto(@n - 1) { |i| h &lt;&lt; @x[i + 1] - @x[i] }
+    return h
+  end
+
+  def calc_w(h)
+    w = Array.new
+    1.upto(@n - 1) do |i|
+      w &lt;&lt; 6 * ((@y[i + 1] - @y[i]) / h[i] - (@y[i] - @y[i - 1]) / h[i - 1])
+    end
+    return w
+  end
+
+  def gen_matrix(h, w)
+    matrix = Array.new(@n - 1).map { Array.new(@n, 0) }
+    0.upto(@n - 2) do |i|
+      matrix[i][i]     = 2 * (h[i] + h[i + 1])
+      matrix[i][-1]    = w[i]
+      next if i == 0
+      matrix[i - 1][i] = h[i]
+      matrix[i][i - 1] = h[i]
+      matrix[i][i - 1] = h[i]
+    end
+    return matrix
+  end
+
+  def gauss_jordan(matrix)
+    v = Array.new
+    n = @n - 1
+    0.upto(n - 1) do |k|
+      p = matrix[k][k]
+      k.upto(n) { |j| matrix[k][j] = matrix[k][j] / p.to_f }
+      0.upto(n - 1) do |i|
+        unless i == k
+          d = matrix[i][k]
+          k.upto(n) { |j| matrix[i][j] = matrix[i][j] - d * matrix[k][j] }
+        end
+      end
+    end
+    matrix.each { |row| v &lt;&lt; row[-1] }
+    return v
+  end
+
+  def calc_a(v)
+    a = Array.new
+    0.upto(@n - 1) { |i| a &lt;&lt; (v[i + 1] - v[i]) / (6 * (@x[i + 1] - @x[i])) }
+    return a
+  end
+
+  def calc_b(v)
+    b = Array.new
+    0.upto(@n - 1) { |i| b &lt;&lt; v[i] / 2.0 }
+    return b
+  end
+
+  def calc_c(v)
+    c = Array.new
+    0.upto(@n - 1) do |i|
+      c &lt;&lt; (@y[i + 1] - @y[i]) / (@x[i + 1] - @x[i]) \
+         - (@x[i + 1] - @x[i]) * (2 * v[i] + v[i + 1]) / 6
+    end
+    return c
+  end
+
+  def calc_d(v)
+    return @y[0..-1]
+  end
+
+  def search_i(t)
+    i, j = 0, j = @x.size - 1
+    while i &lt; j
+      k = (i + j) / 2
+      if @x[k] &lt; t
+        i = k + 1
+      else
+        j = k
+      end
+    end
+    i -= 1 if i &gt; 0
+    return i
+  end
+end
+
+class Graph
+  def initialize(x_g, y_g)
+    @x_g, @y_g, @x, @y = x_g, y_g, X, Y
+  end
+
+  def plot
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
+        plot.output   "spline_interpolation.png"
+        plot.title    "スプライン補間"
+        plot.xlabel   "x"
+        plot.ylabel   "y"
+        plot.grid
+
+        # 計算によって得られた点
+        plot.data &lt;&lt; Gnuplot::DataSet.new([@x_g, @y_g]) do |ds|
+          ds.with      = "points"
+          ds.linewidth = 2
+          ds.linecolor = 3
+          ds.notitle
+        end
+
+        # 予め与えらた点
+        plot.data &lt;&lt; Gnuplot::DataSet.new([@x, @y]) do |ds|
+          ds.with      = "points"
+          ds.linewidth = 2
+          ds.linecolor = 1
+          ds.notitle
+        end
+      end
+    end
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    exit 1
+  end
+end
+
+# グラフ用配列
+x_g, y_g = Array.new, Array.new
+
+# ３次スプライン補間
+obj = SplineInterpolation.new
+X[0].step(X[-1], 0.1) do |x|
+  y = obj.interpolate(x)
+  printf("%8.4f, %8.4f\r\n", x, y)
+  x_g &lt;&lt; x
+  y_g &lt;&lt; y
+end
+
+# グラフ描画
+Graph.new(x_g, y_g).plot
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/01b9a98af2a6cae0a5df" title="Gist - Ruby script to calc 3D-Spline-Interpolation.">Gist - Ruby script to calc 3D-Spline-Interpolation.</a></li>
+</ul>
+
+
+<h3>3. Ruby スクリプトの実行</h3>
+
+<pre><code class="text">$ ./spline_interpolation.rb
+  0.0000,   0.8000
+  0.1000,   0.9861
+  0.2000,   1.1713
+  0.3000,   1.3544
+  0.4000,   1.5346
+  0.5000,   1.7108
+  0.6000,   1.8820
+  0.7000,   2.0473
+  0.8000,   2.2056
+  0.9000,   2.3559
+  1.0000,   2.4973
+  1.1000,   2.6287
+  1.2000,   2.7492
+  1.3000,   2.8578
+  1.4000,   2.9534
+  1.5000,   3.0351
+  1.6000,   3.1019
+  1.7000,   3.1528
+  1.8000,   3.1868
+  1.9000,   3.2028
+  2.0000,   3.2000
+  2.1000,   3.1782
+     :         :
+====&lt; 途中省略&gt;====
+     :         :
+  7.5000,   2.1279
+  7.6000,   2.0754
+  7.7000,   2.0275
+  7.8000,   1.9831
+  7.9000,   1.9410
+  8.0000,   1.9000
+</code></pre>
+
+<h3>4. グラフ確認</h3>
+
+<p>Ruby スクリプトと同じディレクトリ内に &ldquo;spline_interpolation.png&rdquo; という画像ファイルが存在するはずなので、確認してみる。<br/>
+（赤色の <code>x</code> が予め与えられた点、水色の <code>+</code> が補間された点）</p>
+
+<p><img src="/images/2016/01/12/spline_interpolation.png" title="SPLINE_INTERPOLATION" alt="SPLINE_INTERPOLATION" /></p>
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://akita-nct.jp/yamamoto/lecture/2007/5E_comp_app/interpolation/interpolation_html/node3.html" title="3 スプライン補間">スプライン補間</a></li>
+<li><a href="/2013/09/21/ruby-simultaneous-equation-by-gauss-jorden/" title="Ruby - 連立方程式解法（ガウス・ジョルダン法）！">ガウス・ジョルダン法</a></li>
+</ul>
+
+
+<hr />
+
+<p>スプライン補間ができないと先に進めない（私的な）事案があったために今回まとめてみた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - 円周率計算（BBP の公式使用）！]]></title>
@@ -804,200 +1097,6 @@ $ ./ModularExponentiation2
 <p>べき乗の計算だけで莫大な桁数になるものが、整数型の範囲内でコストをかけずに瞬時に計算できるのはよいですね。</p>
 
 <p>プログラミングで実装する際のアルゴリズム考察は重要であると再認識した次第です。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - 円周率計算（Chudnovsky の公式使用）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/05/08/ruby-pi-computation-by-chudnovsky-bsa-with-gmp/"/>
-    <updated>2015-05-08T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/05/08/ruby-pi-computation-by-chudnovsky-bsa-with-gmp</id>
-    <content type="html"><![CDATA[<p>こんにちは。</p>
-
-<p>前回、C++ で Chudnovsky の公式を使用して円周率を１億桁まで計算しました。（任意精度算術ライブラリ GMP(The GNU Multi Precision Arithmetic Library) を使用）</p>
-
-<p>今回は、同じことを Ruby で実装してみました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.1(64bit) での作業を想定。</li>
-<li>演算には GMP(The GNU Multi Precision Arithmetic Library) 任意精度算術ライブラリを Ruby 用にラップした gmp という RubyGems ライブラリ使用するので、インストール済みであること。</li>
-<li>RubyGems ライブラリ gmp で浮動小数点数を扱う場合は MPFR(The GNU Multiple Precision Floating-Point Reliably) ライブラリが必要であるので、インストール済みであること。（後日、ソースをビルドしてインストール方法は紹介する予定）</li>
-<li>計算に使用したマシンは CPU: Intel Core2Duo E8500 ( 3.16GHz ), MEM: 3.9GiB</li>
-</ul>
-
-
-<h3>1. Chudonvsky の公式を使用した円周率計算について</h3>
-
-<p>前回の記事を参照。（「<a href="/2015/05/06/cpp-pi-computation-by-chudnovsky-bsa-with-gmp/" title="C++ - 円周率計算（Chudnovsky の公式使用）！">C++ - 円周率計算（Chudnovsky の公式使用）！</a>」）</p>
-
-<h3>2. Ruby スクリプトの作成</h3>
-
-<p>級数計算部分で Binary Splitting Algorithm を適用し、四則演算・平方根計算では GMP ライブラリを使用する。</p>
-
-<p>注意する点は、</p>
-
-<ul>
-<li><code>n</code> を 1 進める度に <script type="math/tex">log(53360^{3}) / log(10) \simeq 14.1816</script> 桁精度が上昇する。（14桁に丸めても問題ない）</li>
-<li>浮動小数点の精度を <script type="math/tex">a</script> とする場合、バイナリ <code>mpf_class</code> の精度は <script type="math/tex">a \times log_2(10)</script> となる。</li>
-<li>【疑問点】スクリプト中で <code>@n</code>, <code>@prec</code> 設定時に <code>@digits</code> を <code>+ 1</code> しているのは、こうしないと最後の１桁が合わなくなるため。</li>
-</ul>
-
-
-<pre><code class="ruby chudnovsky.rb">#!/usr/local/bin/ruby
-#**************************************************************
-# Computing pi by Binary Splitting Algorithm with GMP libarary.
-#**************************************************************
-require 'gmp'
-
-class Chudnovsky
-  # Constants
-  A = 13591409
-  B = 545140134
-  C = 640320
-  D = 426880
-  E = 10005
-  DIGITS_PER_TERM = Math.log(53360 ** 3) / Math.log(10)  # = 14.1816474627254776555
-
-  def initialize(digits)
-    @digits = digits
-    @c3_24  = C ** 3 / 24
-    @n      = ((@digits + 1) / DIGITS_PER_TERM).truncate  # Somehow, need to add 1 to digits.
-    @prec   = ((@digits + 1) * Math.log2(10)).truncate    # Somehow, need to add 1 to digits.
-  end
-
-  # Compute PI
-  def comp_pi
-    puts "**** PI Computation ( #{@digits} digits )"
-
-    begin
-      # Compute Pi
-      pqt = comp_pqt(0, @n)
-      pi  = GMP.F(D)
-      pi *= GMP.F(E, @prec).sqrt
-      pi *= pqt[:q]
-      pi /= A * pqt[:q] + pqt[:t]
-
-      # Output
-      File.open("pi.txt", "w") { |f| f.puts pi }
-    rescue =&gt; e
-      raise
-    end
-  end
-
-private
-
-  # Compute PQT (by Binary Splitting Algorith)
-  def comp_pqt(n1, n2)
-    pqt = Hash.new
-
-    begin
-      if n1 + 1 == n2
-        pqt[:p]  = GMP.Z(2 * n2 - 1)
-        pqt[:p] *= GMP.Z(6 * n2 - 1)
-        pqt[:p] *= GMP.Z(6 * n2 - 5)
-        pqt[:q]  = GMP.Z(@c3_24 * n2 * n2 * n2)
-        pqt[:t]  = GMP.Z((A + B * n2) * pqt[:p])
-        pqt[:t]  = pqt[:t].neg if (n2 &amp; 1) == 1
-      else
-        m = (n1 + n2) / 2
-        res1 = comp_pqt(n1, m)
-        res2 = comp_pqt(m, n2)
-        pqt[:p] = res1[:p] * res2[:p]
-        pqt[:q] = res1[:q] * res2[:q]
-        pqt[:t] = res1[:t] * res2[:q]+ res1[:p] * res2[:t]
-      end
-
-      return pqt
-    rescue =&gt; e
-      raise
-    end
-  end
-end
-
-exit unless __FILE__ ==$0
-
-begin
-  digits = ARGV[0] ? ARGV[0].to_i : 100
-  obj = Chudnovsky.new(digits)
-  res = Benchmark.realtime { obj.comp_pi }
-  puts "( TIME: #{res} seconds )"
-rescue =&gt; e
-  puts "[#{e.class}] #{e.message}\n"
-  e.backtrace.each{ |tr| puts "\t#{tr}" }
-  exit 1
-end
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/a5639355b3b37302a970" title="Gist - Ruby script to compute pi with Chudnovsky formula and Binary Splitting Algorithm using GMP libarary.">Gist - Ruby script to compute pi by Chudnovsky formula and Binary Splitting Algorithm using GMP libarary.</a></li>
-</ul>
-
-
-<h3>3. 動作確認</h3>
-
-<p>引数に計算したい桁数を指定して実行する。（以下は 1,000,000 桁を計算する例。引数a指定しない場合のデフォルト値は <code>100</code>）</p>
-
-<pre><code class="text">$ ./chudnovsky.rb 1000000
-**** PI Computation ( 1000000 digits )
-( TIME: 1.8596882179990644 seconds )
-</code></pre>
-
-<p>計算結果は &ldquo;pi.txt&rdquo; ファイルに出力される。<br/>
-以下は、1,000,000 桁のうち最初と最後の150桁を抜粋後、可読性を高めるために整形。また、指数表現で出力されることに留意。</p>
-
-<pre><code class="text pi.txt">0.314159265358979323846264338327950288419716939937510
-   58209749445923078164062862089986280348253421170679
-   82148086513282306647093844609550582231725359408128
-                      :
-                      :
-                      :
-   99779937654232062337471732470336976335792589151526
-   03156140333212728491944184371506965520875424505989
-   567879613033116462839963464604220901061057794581514e+1
-</code></pre>
-
-<h3>4. 計算結果検証</h3>
-
-<p>本来は別の公式・アルゴリズムで計算した結果と比較すべきでしょうが、（今回は計算桁数も少なくテキストエディタで開けるので）取り急ぎ任意の桁の数字が誤っていないかを別途計算済みの結果と目視で比較確認する。</p>
-
-<p>当方は &ldquo;<a href="http://bellard.org/pi/pi2700e9/pidigits.html" title="Pi Digits">Pi Digits</a>&rdquo; の計算結果と比較し、最初・中間・最後の部分が一致することを確認した。（現時点では１億桁までは）</p>
-
-<p>テキストファイルのサイズは 1,000 万桁で 10MB(約 9.5 MiB), 1 億桁で 100MB(約 95.4MiB) になる。非力なマシンの場合は（そうでない場合も）テキストエディタで開くのに注意すること！</p>
-
-<h3>5. 桁別計算時間検証</h3>
-
-<table class="common">
-  <tr><td class="right">計算桁数(桁)</td><td class="right">計算時間(秒)（結果出力時間を含む）</td></tr>
-  <tr><td class="right">        100</td><td class="right">  0.00043896799616049975</td></tr>
-  <tr><td class="right">      1,000</td><td class="right">  0.00116081099986331540</td></tr>
-  <tr><td class="right">     10,000</td><td class="right">  0.01096508799673756600</td></tr>
-  <tr><td class="right">    100,000</td><td class="right">  0.13042284899711376000</td></tr>
-  <tr><td class="right">  1,000,000</td><td class="right">  1.86623293700540670000</td></tr>
-  <tr><td class="right"> 10,000,000</td><td class="right"> 26.85289008899417200000</td></tr>
-  <tr><td class="right">100,000,000</td><td class="right">440.39495715600060000000</td></tr>
-</table>
-
-
-<h3>6. 参考サイト</h3>
-
-<ol>
-<li><a href="http://xn--w6q13e505b.jp/" title="円周率.jp">円周率.jp</a></li>
-<li><a href="http://bellard.org/pi/pi2700e9/announce.html" title="Pi Computation Record">Pi Computation Record</a></li>
-</ol>
-
-
-<p>（計算アルゴリズムは 2 内の &ldquo;pipcrecord.pdf&rdquo; を参考にした）</p>
-
-<hr />
-
-<p>当然ながら C++ より計算に時間がかかりますが、それでも１億桁を計算してファイル出力するのに約７分少ししかかからないのには一種の感動を覚えます。（ライブラリのおかげで）</p>
 
 <p>以上。</p>
 ]]></content>

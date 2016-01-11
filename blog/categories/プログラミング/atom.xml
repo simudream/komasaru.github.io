@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-08T00:07:16+09:00</updated>
+  <updated>2016-01-12T00:10:54+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,299 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - ３次スプライン補間！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/12/ruby-spline-interpolation/"/>
+    <updated>2016-01-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/12/ruby-spline-interpolation</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>過去に「ラグランジュ補間」や「ニュートン補間」を C++ や Ruby で実装したことがありました。</p>
+
+<ul>
+<li><a href="/2013/03/10/cpp-interpolate-lagrange/" title="C++ - ラグランジュ補間！ - mk-mode BLOG">C++ - ラグランジュ補間！ - mk-mode BLOG</a></li>
+<li><a href="/2013/03/11/ruby-interpolate-lagrange/" title="Ruby - ラグランジュ補間！ - mk-mode BLOG">Ruby - ラグランジュ補間！ - mk-mode BLOG</a></li>
+<li><a href="/2013/03/13/cpp-interpolate-newton/" title="C++ - ニュートン補間！ - mk-mode BLOG">C++ - ニュートン補間！ - mk-mode BLOG</a></li>
+<li><a href="/2013/03/14/ruby-interpolate-newton/" title="Ruby - ニュートン補間！ - mk-mode BLOG">Ruby - ニュートン補間！ - mk-mode BLOG</a></li>
+</ul>
+
+
+<p>今回は「３次スプライン補間」を Ruby で実装してみました。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.3-p173 での作業を想定。</li>
+<li>グラフも描画するので、RubyGems ライブラリの gnuplot をインストールしておく。</li>
+</ul>
+
+
+<h3>1. ３次スプライン補間について</h3>
+
+<p><a href="http://akita-nct.jp/yamamoto/lecture/2007/5E_comp_app/interpolation/interpolation_html/node3.html" title="3 スプライン補間">こちらの内容</a>を自分なりに理解して以下のようにまとめた。</p>
+
+<p>（数式が多いので別途 <script type="math/tex">\LaTeX</script> で記載した文書を貼り付け）</p>
+
+<p><img src="/images/2016/01/12/SPLINE_INTERPOLATION_1.png" title="SPLINE_INTERPOLATION_1" alt="SPLINE_INTERPOLATION_1" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_2.png" title="SPLINE_INTERPOLATION_2" alt="SPLINE_INTERPOLATION_2" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_3.png" title="SPLINE_INTERPOLATION_3" alt="SPLINE_INTERPOLATION_3" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_4.png" title="SPLINE_INTERPOLATION_4" alt="SPLINE_INTERPOLATION_4" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_5.png" title="SPLINE_INTERPOLATION_5" alt="SPLINE_INTERPOLATION_5" />
+<img src="/images/2016/01/12/SPLINE_INTERPOLATION_6.png" title="SPLINE_INTERPOLATION_6" alt="SPLINE_INTERPOLATION_6" /></p>
+
+<p>（上記文書の PDF は<a href="http://www.mk-mode.com/rails/docs/INTERPOLATION_SPLINE.pdf" title="３次スプライン補間.pdf（Ａ４・４ページ）">こちら</a>）</p>
+
+<h3>2. Ruby スクリプトの作成</h3>
+
+<p>以下のような Ruby スクリプトを作成する。<br/>
+ロジックは前項の説明（アルゴリズム）どおりなので説明しない。（ただ、連立一次方程式の解法には「<a href="/2013/09/21/ruby-simultaneous-equation-by-gauss-jorden/" title="Ruby - 連立方程式解法（ガウス・ジョルダン法）！">ガウス・ジョルダン法</a>」を使用した）</p>
+
+<pre><code class="ruby spline_interpolation.rb">#!/usr/local/bin/ruby
+# coding: utf-8
+#*********************************************
+# ３次スプライン補間
+# （gnuplot によるグラフ描画付き）
+#*********************************************
+#
+require 'gnuplot'
+
+# N + 1 個の点
+X = [0.0, 2.0, 3.0, 5.0, 7.0, 8.0]
+Y = [0.8, 3.2, 2.8, 4.5, 2.5, 1.9]
+
+class SplineInterpolation
+  def initialize
+    @x, @y = X, Y
+    @n = @x.size - 1
+    h = calc_h
+    w = calc_w(h)
+    matrix = gen_matrix(h, w)
+    v = [0, gauss_jordan(matrix), 0].flatten
+    @b = calc_b(v)
+    @a = calc_a(v)
+    @d = calc_d(v)
+    @c = calc_c(v)
+  end
+
+  def interpolate(t)
+    i = search_i(t)
+    s  = @a[i] * (t - @x[i]) ** 3
+    s += @b[i] * (t - @x[i]) ** 2
+    s += @c[i] * (t - @x[i])
+    s += @d[i]
+    return s
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    exit 1
+  end
+
+  private
+
+  def calc_h
+    h = Array.new
+    0.upto(@n - 1) { |i| h &lt;&lt; @x[i + 1] - @x[i] }
+    return h
+  end
+
+  def calc_w(h)
+    w = Array.new
+    1.upto(@n - 1) do |i|
+      w &lt;&lt; 6 * ((@y[i + 1] - @y[i]) / h[i] - (@y[i] - @y[i - 1]) / h[i - 1])
+    end
+    return w
+  end
+
+  def gen_matrix(h, w)
+    matrix = Array.new(@n - 1).map { Array.new(@n, 0) }
+    0.upto(@n - 2) do |i|
+      matrix[i][i]     = 2 * (h[i] + h[i + 1])
+      matrix[i][-1]    = w[i]
+      next if i == 0
+      matrix[i - 1][i] = h[i]
+      matrix[i][i - 1] = h[i]
+      matrix[i][i - 1] = h[i]
+    end
+    return matrix
+  end
+
+  def gauss_jordan(matrix)
+    v = Array.new
+    n = @n - 1
+    0.upto(n - 1) do |k|
+      p = matrix[k][k]
+      k.upto(n) { |j| matrix[k][j] = matrix[k][j] / p.to_f }
+      0.upto(n - 1) do |i|
+        unless i == k
+          d = matrix[i][k]
+          k.upto(n) { |j| matrix[i][j] = matrix[i][j] - d * matrix[k][j] }
+        end
+      end
+    end
+    matrix.each { |row| v &lt;&lt; row[-1] }
+    return v
+  end
+
+  def calc_a(v)
+    a = Array.new
+    0.upto(@n - 1) { |i| a &lt;&lt; (v[i + 1] - v[i]) / (6 * (@x[i + 1] - @x[i])) }
+    return a
+  end
+
+  def calc_b(v)
+    b = Array.new
+    0.upto(@n - 1) { |i| b &lt;&lt; v[i] / 2.0 }
+    return b
+  end
+
+  def calc_c(v)
+    c = Array.new
+    0.upto(@n - 1) do |i|
+      c &lt;&lt; (@y[i + 1] - @y[i]) / (@x[i + 1] - @x[i]) \
+         - (@x[i + 1] - @x[i]) * (2 * v[i] + v[i + 1]) / 6
+    end
+    return c
+  end
+
+  def calc_d(v)
+    return @y[0..-1]
+  end
+
+  def search_i(t)
+    i, j = 0, j = @x.size - 1
+    while i &lt; j
+      k = (i + j) / 2
+      if @x[k] &lt; t
+        i = k + 1
+      else
+        j = k
+      end
+    end
+    i -= 1 if i &gt; 0
+    return i
+  end
+end
+
+class Graph
+  def initialize(x_g, y_g)
+    @x_g, @y_g, @x, @y = x_g, y_g, X, Y
+  end
+
+  def plot
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
+        plot.output   "spline_interpolation.png"
+        plot.title    "スプライン補間"
+        plot.xlabel   "x"
+        plot.ylabel   "y"
+        plot.grid
+
+        # 計算によって得られた点
+        plot.data &lt;&lt; Gnuplot::DataSet.new([@x_g, @y_g]) do |ds|
+          ds.with      = "points"
+          ds.linewidth = 2
+          ds.linecolor = 3
+          ds.notitle
+        end
+
+        # 予め与えらた点
+        plot.data &lt;&lt; Gnuplot::DataSet.new([@x, @y]) do |ds|
+          ds.with      = "points"
+          ds.linewidth = 2
+          ds.linecolor = 1
+          ds.notitle
+        end
+      end
+    end
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    exit 1
+  end
+end
+
+# グラフ用配列
+x_g, y_g = Array.new, Array.new
+
+# ３次スプライン補間
+obj = SplineInterpolation.new
+X[0].step(X[-1], 0.1) do |x|
+  y = obj.interpolate(x)
+  printf("%8.4f, %8.4f\r\n", x, y)
+  x_g &lt;&lt; x
+  y_g &lt;&lt; y
+end
+
+# グラフ描画
+Graph.new(x_g, y_g).plot
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/01b9a98af2a6cae0a5df" title="Gist - Ruby script to calc 3D-Spline-Interpolation.">Gist - Ruby script to calc 3D-Spline-Interpolation.</a></li>
+</ul>
+
+
+<h3>3. Ruby スクリプトの実行</h3>
+
+<pre><code class="text">$ ./spline_interpolation.rb
+  0.0000,   0.8000
+  0.1000,   0.9861
+  0.2000,   1.1713
+  0.3000,   1.3544
+  0.4000,   1.5346
+  0.5000,   1.7108
+  0.6000,   1.8820
+  0.7000,   2.0473
+  0.8000,   2.2056
+  0.9000,   2.3559
+  1.0000,   2.4973
+  1.1000,   2.6287
+  1.2000,   2.7492
+  1.3000,   2.8578
+  1.4000,   2.9534
+  1.5000,   3.0351
+  1.6000,   3.1019
+  1.7000,   3.1528
+  1.8000,   3.1868
+  1.9000,   3.2028
+  2.0000,   3.2000
+  2.1000,   3.1782
+     :         :
+====&lt; 途中省略&gt;====
+     :         :
+  7.5000,   2.1279
+  7.6000,   2.0754
+  7.7000,   2.0275
+  7.8000,   1.9831
+  7.9000,   1.9410
+  8.0000,   1.9000
+</code></pre>
+
+<h3>4. グラフ確認</h3>
+
+<p>Ruby スクリプトと同じディレクトリ内に &ldquo;spline_interpolation.png&rdquo; という画像ファイルが存在するはずなので、確認してみる。<br/>
+（赤色の <code>x</code> が予め与えられた点、水色の <code>+</code> が補間された点）</p>
+
+<p><img src="/images/2016/01/12/spline_interpolation.png" title="SPLINE_INTERPOLATION" alt="SPLINE_INTERPOLATION" /></p>
+
+<h3>5. 参考サイト</h3>
+
+<ul>
+<li><a href="http://akita-nct.jp/yamamoto/lecture/2007/5E_comp_app/interpolation/interpolation_html/node3.html" title="3 スプライン補間">スプライン補間</a></li>
+<li><a href="/2013/09/21/ruby-simultaneous-equation-by-gauss-jorden/" title="Ruby - 連立方程式解法（ガウス・ジョルダン法）！">ガウス・ジョルダン法</a></li>
+</ul>
+
+
+<hr />
+
+<p>スプライン補間ができないと先に進めない（私的な）事案があったために今回まとめてみた次第です。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - Nokogiri による XML 解析の速度検証！]]></title>
@@ -705,197 +998,6 @@ $ ./druby_client.rb
 <hr />
 
 <p>その他の詳細な使用方法は実際に Ruby コーディングしながら覚えることになるでしょう。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - gnuplot でグラフ描画！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/13/ruby-graph-drawing-by-gnuplot/"/>
-    <updated>2015-08-13T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/13/ruby-graph-drawing-by-gnuplot</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Ruby で容易にグラフを描画できる RubyGems ライブラリ gnuplot を使用してみました。</p>
-
-<p>RubyGems ライブラリ gnuplot は、2次元や3次元のグラフを描画するためのコマンドラインツール Gnuplot を Ruby で使用できるようにラップしたものです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.1(64bit) 一般ユーザでの作業を想定。</li>
-<li>Ruby 2.2.2-p95 での作業を想定。</li>
-<li>Gnuplot インストール済みであること。（<a href="/2015/07/30/linux-mint-installation-gnuplot/" title="Linux Mint - Gnuplot でグラフ描画！">Linux Mint - Gnuplot でグラフ描画！</a>）</li>
-</ul>
-
-
-<h3>1. RubyGems パッケージのインストール</h3>
-
-<pre><code class="text">$ sudo gem install gnuplot
-</code></pre>
-
-<h3>2. 動作確認</h3>
-
-<h4>2-1. 作成例・１</h4>
-
-<p>単純な<script type="math/tex">sin</script>曲線・<script type="math/tex">cos</script>曲線を描画する例。</p>
-
-<pre><code class="ruby gnuplot_1.rb">#! /usr/local/bin/ruby
-#-----------------------------------------------
-# Ruby script to draw a graph by gnuplot.(Ex.1)
-#-----------------------------------------------
-require 'gnuplot'
-
-Gnuplot.open do |gp|
-  Gnuplot::Plot.new(gp) do |plot|
-    plot.xrange "[-10:10]"
-    plot.title  "作成例１"
-    plot.xlabel "x"
-    plot.ylabel "y"
-    plot.grid
-
-    plot.data &lt;&lt; Gnuplot::DataSet.new("sin(x)") do |ds|
-      ds.with      = "lines"
-      ds.linewidth = 2
-    end
-
-    plot.data &lt;&lt; Gnuplot::DataSet.new("cos(x)") do |ds|
-      ds.with      = "lines"
-      ds.linewidth = 2
-    end
-  end
-end
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/18575f0245952cae7d02" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.1)">Gist - Ruby script to draw a graph by gnuplot.(Ex.1)</a></li>
-</ul>
-
-
-<p>そして、実行権限を付与して実行。</p>
-
-<pre><code class="text">$ sudo chmod +x gnuplot_1.rb
-
-$ ./gnuplot_1.rb
-</code></pre>
-
-<p>Gnuplot ウィンドウが開き、グラフが描画される。</p>
-
-<p><img src="/images/2015/08/13/GNUPLOT_1.png" title="GNUPLOT_1" alt="GNUPLOT_1" /></p>
-
-<p>但し、環境によってはこのウィンドウを閉じようとしてもうまく閉じれないかもしれない。（termnal が &ldquo;wxt&rdquo; の場合。 terminal が &ldquo;x11&rdquo; 等なら閉じれるが、日本語は使用できない）<br/>
-ちなみに、本家の gnuplot では、この問題は &ldquo;Close&rdquo; を &ldquo;exit&rdquo; でなく &ldquo;exit gnuplot&rdquo; にバインドすれば解決するようだが、今回の RubyGems ライブラリでは通用しない模様。（試行してみた結果）</p>
-
-<h4>2-2. 作成例・２</h4>
-
-<p><script type="math/tex">y=x<sup>3</sup> - 2x + 2 \ (x={-2.0,-1.9,\cdots,1.9,2.0})</script>のグラフを PNG ファイルに描画・出力する例。</p>
-
-<pre><code class="ruby gnuplot_2.rb">#! /usr/local/bin/ruby
-#-----------------------------------------------
-# Ruby script to draw a graph by gnuplot.(Ex.2)
-#-----------------------------------------------
-require 'gnuplot'
-
-Gnuplot.open do |gp|
-  Gnuplot::Plot.new(gp) do |plot|
-    plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
-    plot.output   "gnuplot_2.png"
-    plot.title    "作成例２"
-    plot.xlabel   "x"
-    plot.ylabel   "y=x^3-2x+2"
-    plot.grid
-
-    x = (-20..20).collect { |v| v.to_f / 10.0 }
-    y = x.collect { |v| v ** 3 - 2 * v + 2}
-
-    plot.data &lt;&lt; Gnuplot::DataSet.new([x, y]) do |ds|
-      ds.with      = "linespoints"  # 点のみなら "points"
-      ds.linewidth = 2
-      ds.linecolor = 3
-      ds.notitle
-    end
-  end
-end
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/27e65a70d4681dd73370" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.2)">Gist - Ruby script to draw a graph by gnuplot.(Ex.2)</a></li>
-</ul>
-
-
-<p>そして、実行権限を付与して実行。</p>
-
-<pre><code class="text">$ sudo chmod +x gnuplot_2.rb
-
-$ ./gnuplot_2.rb
-</code></pre>
-
-<p>&ldquo;gnuplot_2.png&rdquo; というファイルが出力される。</p>
-
-<p><img src="/images/2015/08/13/GNUPLOT_2.png" title="GNUPLOT_2" alt="GNUPLOT_2" /></p>
-
-<h4>2-3. 作成例・３</h4>
-
-<p><script type="math/tex">z=sin(x)cos(x)</script>の三次元グラフを PNG ファイルに描画・出力する例。</p>
-
-<pre><code class="ruby gnuplot_3.rb">#! /usr/local/bin/ruby
-#-----------------------------------------------
-# Ruby script to draw a graph by gnuplot.(Ex.3)
-#-----------------------------------------------
-
-require 'gnuplot'
-
-Gnuplot.open do |gp|
-  Gnuplot::SPlot.new(gp) do |plot|
-    plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
-    plot.output   "gnuplot_3.png"
-    plot.set      "object 1 rect from screen 0,0 to screen 1,1 fc rgb '#D0D0E0' fillstyle solid 1.0 behind"
-    plot.title    "作成例３"
-    plot.xrange   "[-10:10]"
-    plot.yrange   "[-10:10]"
-    plot.xlabel   "x"
-    plot.ylabel   "y"
-    plot.zlabel   "z"
-    plot.pm3d
-    plot.grid
-
-    plot.data &lt;&lt; Gnuplot::DataSet.new("sin(x)*cos(y)") do |ds|
-      ds.with      = "lines"
-      ds.linecolor = 6
-    end
-  end
-end
-</code></pre>
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/1395add506fd9a1a4bd6" title="Gist - Ruby script to draw a graph by gnuplot.(Ex.3)">Gist - Ruby script to draw a graph by gnuplot.(Ex.3)</a></li>
-</ul>
-
-
-<p>そして、実行権限を付与して実行。</p>
-
-<pre><code class="text">$ sudo chmod +x gnuplot_3.rb
-
-$ ./gnuplot_3.rb
-</code></pre>
-
-<p><img src="/images/2015/08/13/GNUPLOT_3.png" title="GNUPLOT_3" alt="GNUPLOT_3" /></p>
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://www.gnuplot.info/" title="gnuplot">gnuplot</a></li>
-<li><a href="https://rubygems.org/gems/gnuplot" title="gnuplot - RubyGems.org - your community gem host">gnuplot - RubyGems.org - your community gem host</a></li>
-</ul>
-
-
-<hr />
-
-<p>Ruby で処理した得た数値をグラフ化することが多い場合は重宝するでしょう。</p>
 
 <p>以上。</p>
 ]]></content>
