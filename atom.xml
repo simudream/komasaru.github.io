@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-12T00:10:54+09:00</updated>
+  <updated>2016-01-18T00:07:17+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,290 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - TeX Live 2015 インストール！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/18/texlive-installation-on-linux-mint/"/>
+    <updated>2016-01-18T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/18/texlive-installation-on-linux-mint</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>以前、組版処理ソフトの<script type="math/tex">\TeX Live 2015</script> を CentOS にインストールする方法については記事にしました。</p>
+
+<ul>
+<li><a href="http://komasaru.github.io/2012/09/15/15002016/" title="CentOS - TeX Live 2012 インストール！ - mk-mode BLOG">CentOS - TeX Live 2012 インストール！ - mk-mode BLOG</a></li>
+</ul>
+
+
+<p>今回は、Linux Mint へインストールする方法についてです。（実際のところ、ほぼ同じですが）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>パッケージ管理システムを使用したインストールではなく、アーカイブを取得してのインストール。（パッケージ管理システムを使用したインストールがうまく行かなかったため）</li>
+</ul>
+
+
+<h3>1. アーカイブの取得</h3>
+
+<p>アーカイブファイルを取得して展開する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ wget http://ftp.jaist.ac.jp/pub/CTAN/systems/texlive/tlnet/install-tl-unx.tar.gz
+</span><span class='line'>$ tar zxvf install-tl-unx.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. インストールの開始</h3>
+
+<p>ディレクトリを移動後、<a href="https://oku.edu.mie-u.ac.jp/~okumura/texwiki/?TeX%20Live#tlnet" title="ミラーサイト一覧">ミラーサイト一覧</a>から接続先を選んでインストールを開始する。（途中の問いには <code>I</code> で応答）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd install-tl-*/
+</span><span class='line'>$ sudo ./install-tl --repository http://ftp.jaist.ac.jp/pub/CTAN/systems/texlive/tlnet/
+</span><span class='line'>
+</span><span class='line'>====&lt; 途中省略 &gt;====
+</span><span class='line'>
+</span><span class='line'>Actions:
+</span><span class='line'> &lt;I&gt; start installation to hard disk
+</span><span class='line'> &lt;H&gt; help
+</span><span class='line'> &lt;Q&gt; quit
+</span><span class='line'>
+</span><span class='line'>Enter command: I
+</span><span class='line'>
+</span><span class='line'>====&lt; 途中省略 &gt;====
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>サーバの接続エラーが発生する場合は<a href="https://oku.edu.mie-u.ac.jp/~okumura/texwiki/?TeX%20Live#tlnet" title="ミラーサイト一覧">接続先</a>を変更してみる。</p>
+
+<h3>3. 環境変数 PATH の設定</h3>
+
+<p>環境変数 PATH を設定する。（当方は <code>~/.bashrc</code> を編集）</p>
+
+<figure class='code'><figcaption><span>~/.bashrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;/usr/local/texlive/2015/bin/x86_64-linux:$PATH&quot;</span>
+</span><span class='line'><span class="nv">MANPATH</span><span class="o">=</span><span class="s2">&quot;/usr/local/texlive/2015/texmf-dist/doc/man:$MANPATH&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、即時反映。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ source ~/.bashrc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. TeX Live インストールの確認</h3>
+
+<p><code>tex</code> や <code>platex</code> 等のバージョンを確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ tex --version
+</span><span class='line'>TeX 3.14159265 (TeX Live 2015)
+</span><span class='line'>kpathsea version 6.2.1
+</span><span class='line'>Copyright 2015 D.E. Knuth.
+</span><span class='line'>There is NO warranty.  Redistribution of this software is
+</span><span class='line'>covered by the terms of both the TeX copyright and
+</span><span class='line'>the Lesser GNU General Public License.
+</span><span class='line'>For more information about these matters, see the file
+</span><span class='line'>named COPYING and the TeX source.
+</span><span class='line'>Primary author of TeX: D.E. Knuth.
+</span><span class='line'>
+</span><span class='line'>$ platex --version
+</span><span class='line'>e-pTeX 3.14159265-p3.6-141210-2.6 (utf8.euc) (TeX Live 2015)
+</span><span class='line'>kpathsea version 6.2.1
+</span><span class='line'>ptexenc version 1.3.3
+</span><span class='line'>Copyright 2015 D.E. Knuth.
+</span><span class='line'>There is NO warranty.  Redistribution of this software is
+</span><span class='line'>covered by the terms of both the e-pTeX copyright and
+</span><span class='line'>the Lesser GNU General Public License.
+</span><span class='line'>For more information about these matters, see the file
+</span><span class='line'>named COPYING and the e-pTeX source.
+</span><span class='line'>Primary author of e-pTeX: Peter Breitenlohner.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 動作確認用 tex ファイルの作成</h3>
+
+<figure class='code'><figcaption><span>test.tex</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>\documentclass[14pt,a4j]{jsarticle}
+</span><span class='line'>%--余白の設定 ( A4サイズ: 290 * 210 ) の半分
+</span><span class='line'>\setlength{\voffset}{10mm}               %用紙上部の余白
+</span><span class='line'>\addtolength{\voffset}{-1in}             %はじめからある余白を消す
+</span><span class='line'>\setlength{\hoffset}{15mm}               %用紙左部の余白
+</span><span class='line'>\addtolength{\hoffset}{-1in}             %はじめからある余白を消す
+</span><span class='line'>\setlength{\topmargin}{0mm}              %上部余白からヘッダーまでの長さ
+</span><span class='line'>\setlength{\oddsidemargin}{0mm}          %左部余白から本文までの長さ
+</span><span class='line'>\setlength{\headheight}{0mm}             %ヘッダーの高さ
+</span><span class='line'>\setlength{\headsep}{0mm}                %ヘッダーから本文までの長さ
+</span><span class='line'>\setlength{\textheight}{29\baselineskip} %本文の高さ
+</span><span class='line'>\setlength{\textwidth}{270pt}            %本文の幅
+</span><span class='line'>\setlength{\marginparwidth}{0mm}         %注釈の幅
+</span><span class='line'>\setlength{\topskip}{0mm}                %本文の上部から一行目までの長さ
+</span><span class='line'>\setlength{\baselineskip}{11pt}          %行の高さ
+</span><span class='line'>%--PageStyle設定
+</span><span class='line'>\pagestyle{empty}
+</span><span class='line'>
+</span><span class='line'>\begin{document}
+</span><span class='line'>
+</span><span class='line'>\noindent
+</span><span class='line'>\section*{標準偏差}
+</span><span class='line'>【不偏分散】
+</span><span class='line'>\begin{eqnarray*}
+</span><span class='line'>単純移動平均 \ \ \overline{x} &amp; = &amp; \frac{1}{n}{\displaystyle\sum_{i=0}^{n-1} x_{i}}\\
+</span><span class='line'>標準偏差 \ \ \sigma &amp; = &amp; \sqrt{ \frac{1}{n-1}{\displaystyle\sum_{i=0}^{n-1} \left( x_{i} - \overline{x} \right)^{2}} } \\
+</span><span class='line'>&amp; = &amp; \sqrt{ \frac{1}{n\left(n-1\right)}\Biggl\{n\displaystyle\sum_{i=0}^{n-1}x_{i}^{2} - \left( \displaystyle\sum_{i=0}^{n-1}x_{i} \right)^{2}\Biggl\} }
+</span><span class='line'>\end{eqnarray*}\par
+</span><span class='line'>【標本分散】
+</span><span class='line'>\begin{eqnarray*}
+</span><span class='line'>単純移動平均 \ \ \overline{x} &amp; = &amp; \frac{1}{n}{\displaystyle\sum_{i=0}^{n-1} x_{i}}\\
+</span><span class='line'>標準偏差 \ \ \sigma &amp; = &amp; \sqrt{ \frac{1}{n}{\displaystyle\sum_{i=0}^{n-1} \left( x_{i} - \overline{x} \right)^{2}} } \\
+</span><span class='line'>&amp; = &amp; \sqrt{ \frac{1}{n^{2}}\Biggl\{n\displaystyle\sum_{i=0}^{n-1}x_{i}^{2} - \left( \displaystyle\sum_{i=0}^{n-1}x_{i} \right)^{2}\Biggl\} }
+</span><span class='line'>\end{eqnarray*}
+</span><span class='line'>
+</span><span class='line'>\end{document}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. PDF の作成</h3>
+
+<p>以下のようにして、PDF ファイル作成まで実行する。<br/>
+&ldquo;test.tex&rdquo; に間違いがなければ <code>platex</code> コマンドで &ldquo;test.dvi&rdquo; ファイルが作成され、<code>dvipdfmx</code> コマンドで &ldquo;test.pdf&rdquo; が作成されるはずです。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ platex test.tex
+</span><span class='line'>This is e-pTeX, Version 3.14159265-p3.6-141210-2.6 (utf8.euc) (TeX Live 2015) (preloaded format=platex)
+</span><span class='line'> restricted \write18 enabled.
+</span><span class='line'>entering extended mode
+</span><span class='line'>(./test.tex
+</span><span class='line'>pLaTeX2e &lt;2006/11/10&gt; (based on LaTeX2e &lt;2015/10/01&gt; patch level 2)
+</span><span class='line'>Babel &lt;3.9m&gt; and hyphenation patterns for 79 languages loaded.
+</span><span class='line'>(/usr/local/texlive/2015/texmf-dist/tex/platex/jsclasses/jsarticle.cls
+</span><span class='line'>Document Class: jsarticle 2014/02/07 okumura
+</span><span class='line'>) (./test.aux) [1] (./test.aux) )
+</span><span class='line'>Output written on test.dvi (1 page, 2304 bytes).
+</span><span class='line'>Transcript written on test.log.
+</span><span class='line'>
+</span><span class='line'>$ dvipdfmx test.dvi
+</span><span class='line'>test.dvi -&gt; test.pdf
+</span><span class='line'>[1]
+</span><span class='line'>8137 bytes written
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. PDF の確認</h3>
+
+<p>作成された PDF ファイルを確認してみる。（以下は公開の都合上 PNG 画像として切り取ったもの）</p>
+
+<p><img src="http://komasaru.github.io/images/2016/01/18/TEXLIVE_2015_TEST.png" title="TEXLIVE_2015_TEST" alt="TEXLIVE_2015_TEST" /></p>
+
+<h3>8. その他</h3>
+
+<p>GUI ツールの <script type="math/tex">\TeX Works</script> を導入するとより扱いやすいでしょう。</p>
+
+<h3>9. 参考サイト</h3>
+
+<ul>
+<li><a href="https://oku.edu.mie-u.ac.jp/~okumura/texwiki/?Linux#texlive" title="Linux - TeX Wiki">Linux - TeX Wiki</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - ３次スプライン補間！]]></title>
@@ -5392,201 +5676,6 @@
 
 
 <hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - データのみを指定件数ずつ分割ダンプ出力！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split/"/>
-    <updated>2015-10-26T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/10/26/mariadb-dump-only-data-by-split</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) の指定したデータベースを、テーブル別にデータのみを指定件数ずつ分割してダンプ出力する方法についてです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>MariaDB 10.0.21 サーバでの作業を想定。（MySQL や他のバージョンでも同様（のはず））</li>
-<li>Bash スクリプトを作成して実現させる。</li>
-<li>出力されたダンプファイルはまとめて圧縮保存する。</li>
-<li>必要であれば、「<a href="http://komasaru.github.io/2014/06/15/mysql-dump-only-schema-data-stored/" title="MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！">MySQL(MariaDB) - スキーマのみ、データのみ、ストアド・トリガーのみのダンプ！</a>」も参考にしてください。</li>
-<li>以下で紹介する Bash スクリプトでは、トランザクションの単位がテーブル・ループ単位となるため、<strong>データの整合性に注意</strong>。<br/>
-（<strong>ダンプ出力時やリストア時に DB への挿入・更新・削除がないことが前提</strong>）</li>
-</ul>
-
-
-<h3>1. Bash スクリプトの作成</h3>
-
-<p>以下は、当方がデータのみを分割ダンプ出力する際に使用している Bash スクリプトである。（解説はスクリプト内のコメントにて。 <code>(*)</code> はさらなる説明を後述）</p>
-
-<figure class='code'><figcaption><span>db_dump_only_data_by_split.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 定数定義</span>
-</span><span class='line'><span class="nv">DB</span><span class="o">=</span>db_name                      <span class="c"># データベース・スキーマ名</span>
-</span><span class='line'><span class="nv">USER</span><span class="o">=</span>user_name                  <span class="c"># ダンプ出力するユーザ名</span>
-</span><span class='line'><span class="nv">PW</span><span class="o">=</span>user_password                <span class="c">#       〃      ユーザ名のパスワード</span>
-</span><span class='line'><span class="nv">CMD</span><span class="o">=</span>/usr/bin/mysqldump          <span class="c"># mysqldump コマンドのフルパス</span>
-</span><span class='line'><span class="nv">WK_DIR</span><span class="o">=</span>/path/to/backup_mysql    <span class="c"># 作業ディレクトリ</span>
-</span><span class='line'><span class="nv">DMP_DIR</span><span class="o">=</span><span class="nv">$WK_DIR</span>/tabledatas_<span class="nv">$DB</span>  <span class="c"># ダンプファイル格納ディレクトリ</span>
-</span><span class='line'><span class="nv">OPTS</span><span class="o">=</span><span class="s2">&quot;-t -Q -F --skip-lock-tables --skip-triggers --skip-dump-date --single-transaction&quot;</span>
-</span><span class='line'>                                <span class="c"># mysqldump オプション(*)</span>
-</span><span class='line'><span class="nv">DCNT</span><span class="o">=</span><span class="m">100000</span>                     <span class="c"># 分割するレコード件数</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># ダンプファイルクリア</span>
-</span><span class='line'>rm -f <span class="nv">$DMP_DIR</span>/*
-</span><span class='line'>
-</span><span class='line'><span class="c"># DB 内に存在するテーブル毎にループ処理</span>
-</span><span class='line'><span class="k">for</span> tbl in <span class="sb">`</span>mysql -u <span class="nv">$USER</span> -p<span class="nv">$PW</span> -N -s -e <span class="s2">&quot;show tables in $DB;&quot;</span><span class="sb">`</span><span class="p">;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="c"># テーブル内に存在するレコード件数(*)</span>
-</span><span class='line'>  <span class="nv">rows</span><span class="o">=</span><span class="sb">`</span>mysql -u <span class="nv">$USER</span> -p<span class="nv">$PW</span> <span class="nv">$DB</span> -N -B -e <span class="s2">&quot;SELECT COUNT(*) FROM $tbl;&quot;</span><span class="sb">`</span>
-</span><span class='line'>  <span class="nb">echo</span> <span class="s2">&quot;* $tbl [$rows records]&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c"># レコード件数から分割数を算出してループ処理</span>
-</span><span class='line'>  <span class="k">for</span> <span class="o">((</span><span class="nv">i</span> <span class="o">=</span> 0<span class="p">;</span> i &lt;<span class="o">=</span> <span class="k">$((</span><span class="nv">$rows</span> <span class="o">/</span> <span class="nv">$DCNT</span><span class="k">))</span><span class="p">;</span> i++<span class="o">))</span>
-</span><span class='line'>  <span class="k">do</span>
-</span><span class='line'>    <span class="c"># 出力ダンプファイル名</span>
-</span><span class='line'>    <span class="nv">fname</span><span class="o">=</span><span class="k">$(</span><span class="nb">printf</span> <span class="k">${</span><span class="nv">tbl</span><span class="k">}</span>_%02d <span class="nv">$i</span><span class="k">)</span>
-</span><span class='line'>    <span class="c"># オフセット算出</span>
-</span><span class='line'>    <span class="nv">offset</span><span class="o">=</span><span class="k">$((</span>i <span class="o">*</span> <span class="nv">$DCNT</span><span class="k">))</span>
-</span><span class='line'>    <span class="nb">echo</span> <span class="s2">&quot;  $fname [OFFSET: $offset]&quot;</span>
-</span><span class='line'>    <span class="c"># ダンプ出力(*)</span>
-</span><span class='line'>    <span class="nv">$CMD</span> -u <span class="nv">$USER</span> -p<span class="nv">$PW</span> <span class="nv">$DB</span> <span class="nv">$tbl</span> <span class="nv">$OPTS</span> -w <span class="s2">&quot;true LIMIT $offset, $DCNT&quot;</span>&gt; <span class="nv">$DMP_DIR</span>/<span class="nv">$fname</span>.sql
-</span><span class='line'>  <span class="k">done</span><span class="p">;</span>
-</span><span class='line'><span class="k">done</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># タイムスタンプ付ファイル名で圧縮保存</span>
-</span><span class='line'><span class="nb">cd</span> <span class="nv">$WK_DIR</span>
-</span><span class='line'><span class="nv">dt</span><span class="o">=</span><span class="sb">`</span>date <span class="s1">&#39;+%Y%m%d_%H%M%S&#39;</span><span class="sb">`</span>
-</span><span class='line'>tar zcvf <span class="k">${</span><span class="nv">DB</span><span class="k">}</span>_tabledata_<span class="nv">$dt</span>.tar.gz tabledatas_<span class="nv">$DB</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><a href="https://gist.github.com/komasaru/d9cae95bf4d30da5545b" title="Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.">Gist - Bash script to dump only records of MariaDB(MySQL) tables by split.</a></li>
-</ul>
-
-
-<p>mysqldump オプション（上記の<code>OPTS</code>）について。（mysqldump のデフォルトで有効のオプション <code>--opt</code> とは別のもの）</p>
-
-<ul>
-<li><code>-t</code>(or <code>--no-create-info</code>) &hellip; テーブル作成（CREATE TABLE）文を出力しないオプション。</li>
-<li><code>-Q</code>(or <code>--quote-names</code>) &hellip; データベース名、テーブル名、カラム名を <code>`</code> で囲むオプション（デフォルトで有効）。</li>
-<li><code>-F</code>(or <code>--flush-logs</code>) &hellip; ダンプ開始前にログファイルをフラッシュするオプション。</li>
-<li><code>--skip-lock-tables</code> &hellip; デフォルトで有効になる全テーブルをロックするオプション <code>--lock-tables</code> を無効にするオプション。</li>
-<li><code>--skip-triggers</code> &hellip; trigger のダンプ出力を無効にするオプション。</li>
-<li><code>--skip-dump-date</code> &hellip; ダンプ日時の出力を無効にするオプション。</li>
-<li><code>--single-transaction</code> &hellip; データの整合性を保つためにダンプ処理をトランザクションで囲むオプション。</li>
-<li>ちなみに、主キーでソートせずに LIMIT(OFFSET) 句を使用するとフルスキャンになってしまうからと、 <code>--order-by-primary</code> という主キーでソートするオプションを使用すると、 Syntax error が発生しまう。従って、今回は使用していない。<br/>
-主キーでソートしたければ、 <code>-w</code> オプションの <code>LIMIT</code> 句の前に <code>ORDER BY primary_key_col</code> のように追加する。（但し、今回紹介のケースでは DB 内全テーブルの主キーが同じカラムである必要がある）</li>
-</ul>
-
-
-<p>レコード件数取得について。</p>
-
-<ul>
-<li>上記では <code>SELECT COUNT(*) ...</code> としているが、データベース内の全テーブルに同じカラム名で主キーが設定してあるのなら <code>SELECT COUNT(col_name) ...</code> とした方がよい。</li>
-</ul>
-
-
-<p><code>OPTS</code> 以外に追加している <code>-w</code>(or <code>--where</code>) オプションについて。（<strong>今回のポイント</strong>）</p>
-
-<ul>
-<li>本来 <code>-w</code> は抽出条件を指定するオプションだが、 WHERE 条件は <code>true</code>（もしくは <code>1</code>） でスルーして <code>LIMIT</code> 句を指定している。<br/>
-（mysqldump に LIMIT(OFFSET) 句を指定するオプションが存在しないため）</li>
-<li><code>-w "true LIMIT $offset, $DCNT"</code> は <code>-w "true LIMIT $DCNT OFFSET $offset"</code> としてもよい。</li>
-<li>主キーやユニークインデックスが歯抜けでなく件数が正確に取得できるのであれば、 <code>-w</code> オプションで LIMIT 句や OFFSET 句を指定せずに普通に条件指定するようにしてもよいだろう。</li>
-</ul>
-
-
-<h3>2. Bash スクリプトの実行</h3>
-
-<p>作業用ディレクトリやダンプファイル格納用サブディレクトリが存在することを確認し、実行権限を付与後に実行する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ chmod +x db_dump_only_data_by_split.sh
-</span><span class='line'>$ ./db_dump_only_data_by_split.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>作業ディレクトリ内のダンプファイル格納用サブディレクトリにダンプファイルが出力され、作業ディレクトリ内にタイムスタンプ付圧縮ファイルが作成されるのを確認する。</p>
-
-<p>また、 LIMIT 句を使用しているのでダンプ出力完了まで時間がかかることを覚悟すること。</p>
-
-<h3>3. その他</h3>
-
-<ul>
-<li>データ量が多すぎるとダンプ出力に時間がかかる、ということに留意する。<br/>
-<code>-w</code> オプションで LIMIT 句を使用するからと、フルスキャンを避けるために <code>--order-by-primary</code> オプションを使用したり、もしくは <code>-w</code> オプションで <code>ORDER BY</code> 句を指定しても、ダンプ出力が徐々に遅くなる。<br/>
-<code>mysqldump</code> の <code>-w</code>(or <code>--where</code>) での LIMIT(OFFSET) 句指定はフルスキャンになってしまうのだろうか？（<code>mysqldump</code> を EXPLAIN で確認できればいいのですが。。。）</li>
-<li>データ量が多すぎるとダンプ出力に時間がかかるため、結局当方は、データ量が多すぎる場合は、エクスポートは <code>SELECT INTO ... OUTFILE</code> で CSV 出力、インポートは <code>LOAD DATA INFILE</code> で CSV 取り込み、とすることにした。以下の過去記事を参照。
-
-<ul>
-<li><a href="http://komasaru.github.io/2011/08/31/31002049/" title="MySQL - SELECT結果をCSV出力！">MySQL - SELECT結果をCSV出力！</a></li>
-<li><a href="http://komasaru.github.io/2013/06/08/mysql-import-from-csv/" title="MySQL - CSV データインポート！">MySQL - CSV データインポート！</a></li>
-</ul>
-</li>
-</ul>
-
-
-<h3>4. 参考サイト</h3>
-
-<p>mysqldump の各種オプションや LIMIT 句の指定方法については以下のサイトを参照。</p>
-
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/en/mysqldump.html" title="MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program">MySQL :: MySQL 5.6 Reference Manual :: 4.5.4 mysqldump — A Database Backup Program</a></li>
-</ul>
-
-
-<hr />
-
-<p>結局、当方は今回紹介した方法を積極的には使用していませんが、こういうやり方もあるということを覚えておくと何かの際に役立つかもしれません。</p>
 
 <p>以上。</p>
 ]]></content>

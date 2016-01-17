@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Tag: TeX | mk-mode BLOG]]></title>
+  <title><![CDATA[Tag: tex | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/tags/tex/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-12T00:10:54+09:00</updated>
+  <updated>2016-01-18T00:07:17+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
