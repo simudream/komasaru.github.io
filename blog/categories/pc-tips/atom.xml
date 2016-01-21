@@ -4,7 +4,7 @@
   <title><![CDATA[Category: pc_tips | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/pc-tips/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-18T00:07:17+09:00</updated>
+  <updated>2016-01-22T00:06:23+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,165 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Pandoc で Markdown 文書を PDF に変換！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/22/pandoc-md2pdf-conversion/"/>
+    <updated>2016-01-22T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/22/pandoc-md2pdf-conversion</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Pandoc（あるマークアップ形式で書かれた文書を別の形式へ変換するためのコマンドラインツール）を使用して Markdown 文書を PDF に変換する方法についての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>組版処理ソフト<script type="math/tex">\LaTeX</script>が必要なので、<script type="math/tex">\TeX Live</script>がインストール済みであること。（以下を参照）
+
+<ul>
+<li><a href="/2016/01/18/texlive-installation-on-linux-mint/" title="Linux Mint - TeX Live 2015 インストール！">Linux Mint - TeX Live 2015 インストール！</a></li>
+<li><a href="https://oku.edu.mie-u.ac.jp/~okumura/texwiki/?TeX%20Live#w628bee6" title="TeX Live - TeX Wiki">TeX Live - TeX Wiki</a></li>
+</ul>
+</li>
+<li>Apt パッケージ版をインストールする。</li>
+<li>今回は使用しないが、最新版をインストールしたければ Cabal（Haskell ライブラリやプログラムをビルド・パッケージングするシステム）を使用してソースからインストールする。（但し、パッケージ依存性の問題が発生しやすいとされているため、利用には注意）</li>
+<li>Pandoc では様々な変換が可能だが、今回は Markdown から PDF への変換を行う。</li>
+</ul>
+
+
+<h3>1. Pandoc のインストール</h3>
+
+<p>これだけ。</p>
+
+<pre><code class="text">$ sudo apt-get install pandoc
+</code></pre>
+
+<p>ちなみに、 RedHat 系ディストリビューションなら <code>yum install pandoc</code> でインストールできる。（但し、 EPEL リポジトリからインストールするので導入済みであること）</p>
+
+<h3>2. Pandoc インストールの確認</h3>
+
+<pre><code class="text">$ pandoc --version
+pandoc 1.12.2.1
+Compiled with texmath 0.6.5.2, highlighting-kate 0.5.5.1.
+Syntax highlighting is supported for the following languages:
+    actionscript, ada, apache, asn1, asp, awk, bash, bibtex, boo, c, changelog,
+    clojure, cmake, coffee, coldfusion, commonlisp, cpp, cs, css, curry, d,
+    diff, djangotemplate, doxygen, doxygenlua, dtd, eiffel, email, erlang,
+    fortran, fsharp, gnuassembler, go, haskell, haxe, html, ini, java, javadoc,
+    javascript, json, jsp, julia, latex, lex, literatecurry, literatehaskell,
+    lua, makefile, mandoc, markdown, matlab, maxima, metafont, mips, modelines,
+    modula2, modula3, monobasic, nasm, noweb, objectivec, objectivecpp, ocaml,
+    octave, pascal, perl, php, pike, postscript, prolog, python, r,
+    relaxngcompact, rhtml, roff, ruby, rust, scala, scheme, sci, sed, sgml, sql,
+    sqlmysql, sqlpostgresql, tcl, texinfo, verilog, vhdl, xml, xorg, xslt, xul,
+    yacc, yaml
+Default user data directory: /home/masaru/.pandoc
+Copyright (C) 2006-2013 John MacFarlane
+Web:  http://johnmacfarlane.net/pandoc
+This is free software; see the source for copying conditions.  There is no
+warranty, not even for merchantability or fitness for a particular purpose.
+</code></pre>
+
+<h3>3. テスト用 Markdown 文書の作成</h3>
+
+<pre><code class="text pandoc_test.md">Pandoc 変換テスト
+=================
+
+はじめに
+--------
+
+### はじめにー１
+
+これは `Pandoc` の変換テストです。これは `Pandoc` の変換テストです。
+
+### はじめにー２
+
+これは `Pandoc` の変換テストです。これは `Pandoc` の変換テストです。
+
+概要
+----
+
+#### 概要ー１
+
+Markdown 文書を PDF に変換します。Markdown 文書を PDF に変換します。
+
+#### 概要ー２
+
+Markdown 文書を PDF に変換します。Markdown 文書を PDF に変換します。
+
+参考
+----
+
+* [Pandoc - About pandoc](http://pandoc.org/ "Pandoc - About pandoc")
+* [Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User's Association](http://sky-y.github.io/site-pandoc-jp/users-guide/ "Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User's Association")
+
+｀｀｀
+class Test
+  def initialize
+    @name = "Pandoc"
+  end
+
+  def hello
+    puts "Hello #{@name}."
+  end
+end
+
+a = Test.new
+a.hello
+｀｀｀
+</code></pre>
+
+<p>（上記コード内の最後の <code>｀｀｀</code> は、実際は半角（1バイト）文字）</p>
+
+<h3>4. Markdown から PDF への変換</h3>
+
+<pre><code class="text">$ pandoc pandoc_test.md -V documentclass=ltjarticle --latex-engine=lualatex -o pandoc_test.pdf
+</code></pre>
+
+<ul>
+<li><code>-V documentclass=ltjarticle</code> は、日本語フォントを使用するためのオプション。<br/>
+（<script type="math/tex">\LaTeX</script>文書の <code>documentclass</code> を <code>ltjarticle</code> に設定するオプション）</li>
+<li><code>--latex-engine=lualatex</code> は、<script type="math/tex">\LaTeX</script>エンジンを <code>lualatex</code>（日本語を扱う場合の推奨値）に設定するオプション。<br/>
+（指定しない場合は、デフォルトの <code>pdflatex</code> となる）</li>
+<li><code>-o pandoc_test.pdf</code> は、出力ファイルを指定するオプション。<br/>
+（指定しない場合は、標準出力に HTML 出力される）</li>
+<li>その他、各種オプションあり。
+
+<ul>
+<li>A4 用紙に設定したければ <code>-V geometry:a4paper</code> オプションを指定する。</li>
+<li>余白を 2cm に設定したければ <code>-V geometry:margin=2cm</code> オプションを指定する。</li>
+</ul>
+</li>
+</ul>
+
+
+<p>（想像していたより変換に時間がかかる）</p>
+
+<h3>5. PDF の確認</h3>
+
+<p>作成された PDF 文書を確認してみる。（以下は、公開の都合上 PNG 画像としてキャプチャしたもの）</p>
+
+<p><img src="/images/2016/01/22/PANDOC_TEST.png" title="PANDOC_TEST" alt="PANDOC_TEST" /></p>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://pandoc.org/" title="Pandoc - About pandoc">Pandoc - About pandoc</a></li>
+<li><a href="http://sky-y.github.io/site-pandoc-jp/users-guide/" title="Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User's Association">Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User&rsquo;s Association</a></li>
+</ul>
+
+
+<hr />
+
+<p>普段 Markdown でテキストを保存することが多いので、何かと重宝しそうです。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - TeX Live 2015 インストール！]]></title>
@@ -459,70 +618,6 @@ sub   2048R/1CFF3E8F 2010-10-19 [満了: 2020-10-16]
 <hr />
 
 <p>めったに遭遇しない事象なので、後学のために記録として残しておいた次第です。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux Mint - apt-get update で GPG 公開鍵エラー！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error/"/>
-    <updated>2015-10-14T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/10/14/linux-mint-apt-gpg-pubkey-error</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Linux Mint で、いつしか Apt パッケージの一覧を更新しようとすると GPG 公開鍵エラーが発生するようになりました。</p>
-
-<p>以下、現象・原因・対策についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) を想定。</li>
-</ul>
-
-
-<h3>1. 現象</h3>
-
-<p>Apt パッケージ一覧をアップデートした際に以下のようなエラーが発生する。（<code>W</code> なので分類としては「警告」でしょうが）<br/>
-（以下は QGIS というパッケージの部分で発生した例で、実際のメッセージは１行）</p>
-
-<pre><code class="text">$ sudo apt-get update
-
-====&lt; 途中省略 &gt;====
-
-W: GPG エラー: http://qgis.org trusty InRelease: 
-公開鍵を利用できないため、以下の署名は検証できませんでした: NO_PUBKEY 3FF5FFCAD71472C4
-
-====&lt; 以下省略 &gt;====
-</code></pre>
-
-<p>当然ながら、アップデートマネージャでも同じエラーが発生する。</p>
-
-<h3>2. 原因</h3>
-
-<p>メッセージのとおり、GPG 署名の検証に必要な公開鍵が存在しないため。</p>
-
-<h3>3. 対策</h3>
-
-<p>キーサーバに問い合わせればよい。（<code>--recv-keys</code> の値は、エラーメッセージ中 <code>NO_PUBKEY</code> の後ろの値）</p>
-
-<pre><code class="text">$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FF5FFCAD71472C4
-Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.Wv6W1dQY2n --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv-keys 3FF5FFCAD71472C4
-gpg: 鍵D71472C4をhkpからサーバーkeyserver.ubuntu.comに要求
-gpg: 鍵D71472C4: 公開鍵“QGIS Archive Automatic Signing Key (2015) &lt;qgis-developer@lists.osgeo.org&gt;”を読み込みました
-gpg: 処理数の合計: 1
-gpg:               読込み: 1  (RSA: 1)
-</code></pre>
-
-<p>再度 <code>apt-get update</code> でエラーが発生しないことを確認する。</p>
-
-<hr />
-
-<p>稀に遭遇するエラーなので備忘録として残しておいた次第です。</p>
 
 <p>以上。</p>
 ]]></content>

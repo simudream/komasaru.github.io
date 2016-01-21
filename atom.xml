@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-18T00:07:17+09:00</updated>
+  <updated>2016-01-22T00:06:23+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,236 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Pandoc で Markdown 文書を PDF に変換！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/22/pandoc-md2pdf-conversion/"/>
+    <updated>2016-01-22T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/22/pandoc-md2pdf-conversion</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Pandoc（あるマークアップ形式で書かれた文書を別の形式へ変換するためのコマンドラインツール）を使用して Markdown 文書を PDF に変換する方法についての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>組版処理ソフト<script type="math/tex">\LaTeX</script>が必要なので、<script type="math/tex">\TeX Live</script>がインストール済みであること。（以下を参照）
+
+<ul>
+<li><a href="http://komasaru.github.io/2016/01/18/texlive-installation-on-linux-mint/" title="Linux Mint - TeX Live 2015 インストール！">Linux Mint - TeX Live 2015 インストール！</a></li>
+<li><a href="https://oku.edu.mie-u.ac.jp/~okumura/texwiki/?TeX%20Live#w628bee6" title="TeX Live - TeX Wiki">TeX Live - TeX Wiki</a></li>
+</ul>
+</li>
+<li>Apt パッケージ版をインストールする。</li>
+<li>今回は使用しないが、最新版をインストールしたければ Cabal（Haskell ライブラリやプログラムをビルド・パッケージングするシステム）を使用してソースからインストールする。（但し、パッケージ依存性の問題が発生しやすいとされているため、利用には注意）</li>
+<li>Pandoc では様々な変換が可能だが、今回は Markdown から PDF への変換を行う。</li>
+</ul>
+
+
+<h3>1. Pandoc のインストール</h3>
+
+<p>これだけ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install pandoc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに、 RedHat 系ディストリビューションなら <code>yum install pandoc</code> でインストールできる。（但し、 EPEL リポジトリからインストールするので導入済みであること）</p>
+
+<h3>2. Pandoc インストールの確認</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ pandoc --version
+</span><span class='line'>pandoc 1.12.2.1
+</span><span class='line'>Compiled with texmath 0.6.5.2, highlighting-kate 0.5.5.1.
+</span><span class='line'>Syntax highlighting is supported for the following languages:
+</span><span class='line'>    actionscript, ada, apache, asn1, asp, awk, bash, bibtex, boo, c, changelog,
+</span><span class='line'>    clojure, cmake, coffee, coldfusion, commonlisp, cpp, cs, css, curry, d,
+</span><span class='line'>    diff, djangotemplate, doxygen, doxygenlua, dtd, eiffel, email, erlang,
+</span><span class='line'>    fortran, fsharp, gnuassembler, go, haskell, haxe, html, ini, java, javadoc,
+</span><span class='line'>    javascript, json, jsp, julia, latex, lex, literatecurry, literatehaskell,
+</span><span class='line'>    lua, makefile, mandoc, markdown, matlab, maxima, metafont, mips, modelines,
+</span><span class='line'>    modula2, modula3, monobasic, nasm, noweb, objectivec, objectivecpp, ocaml,
+</span><span class='line'>    octave, pascal, perl, php, pike, postscript, prolog, python, r,
+</span><span class='line'>    relaxngcompact, rhtml, roff, ruby, rust, scala, scheme, sci, sed, sgml, sql,
+</span><span class='line'>    sqlmysql, sqlpostgresql, tcl, texinfo, verilog, vhdl, xml, xorg, xslt, xul,
+</span><span class='line'>    yacc, yaml
+</span><span class='line'>Default user data directory: /home/masaru/.pandoc
+</span><span class='line'>Copyright (C) 2006-2013 John MacFarlane
+</span><span class='line'>Web:  http://johnmacfarlane.net/pandoc
+</span><span class='line'>This is free software; see the source for copying conditions.  There is no
+</span><span class='line'>warranty, not even for merchantability or fitness for a particular purpose.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. テスト用 Markdown 文書の作成</h3>
+
+<figure class='code'><figcaption><span>pandoc_test.md</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>Pandoc 変換テスト
+</span><span class='line'>=================
+</span><span class='line'>
+</span><span class='line'>はじめに
+</span><span class='line'>--------
+</span><span class='line'>
+</span><span class='line'>### はじめにー１
+</span><span class='line'>
+</span><span class='line'>これは `Pandoc` の変換テストです。これは `Pandoc` の変換テストです。
+</span><span class='line'>
+</span><span class='line'>### はじめにー２
+</span><span class='line'>
+</span><span class='line'>これは `Pandoc` の変換テストです。これは `Pandoc` の変換テストです。
+</span><span class='line'>
+</span><span class='line'>概要
+</span><span class='line'>----
+</span><span class='line'>
+</span><span class='line'>#### 概要ー１
+</span><span class='line'>
+</span><span class='line'>Markdown 文書を PDF に変換します。Markdown 文書を PDF に変換します。
+</span><span class='line'>
+</span><span class='line'>#### 概要ー２
+</span><span class='line'>
+</span><span class='line'>Markdown 文書を PDF に変換します。Markdown 文書を PDF に変換します。
+</span><span class='line'>
+</span><span class='line'>参考
+</span><span class='line'>----
+</span><span class='line'>
+</span><span class='line'>* [Pandoc - About pandoc](http://pandoc.org/ &quot;Pandoc - About pandoc&quot;)
+</span><span class='line'>* [Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User&#39;s Association](http://sky-y.github.io/site-pandoc-jp/users-guide/ &quot;Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User&#39;s Association&quot;)
+</span><span class='line'>
+</span><span class='line'>｀｀｀
+</span><span class='line'>class Test
+</span><span class='line'>  def initialize
+</span><span class='line'>    @name = &quot;Pandoc&quot;
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def hello
+</span><span class='line'>    puts &quot;Hello #{@name}.&quot;
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>a = Test.new
+</span><span class='line'>a.hello
+</span><span class='line'>｀｀｀
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（上記コード内の最後の <code>｀｀｀</code> は、実際は半角（1バイト）文字）</p>
+
+<h3>4. Markdown から PDF への変換</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ pandoc pandoc_test.md -V documentclass=ltjarticle --latex-engine=lualatex -o pandoc_test.pdf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>-V documentclass=ltjarticle</code> は、日本語フォントを使用するためのオプション。<br/>
+（<script type="math/tex">\LaTeX</script>文書の <code>documentclass</code> を <code>ltjarticle</code> に設定するオプション）</li>
+<li><code>--latex-engine=lualatex</code> は、<script type="math/tex">\LaTeX</script>エンジンを <code>lualatex</code>（日本語を扱う場合の推奨値）に設定するオプション。<br/>
+（指定しない場合は、デフォルトの <code>pdflatex</code> となる）</li>
+<li><code>-o pandoc_test.pdf</code> は、出力ファイルを指定するオプション。<br/>
+（指定しない場合は、標準出力に HTML 出力される）</li>
+<li>その他、各種オプションあり。
+
+<ul>
+<li>A4 用紙に設定したければ <code>-V geometry:a4paper</code> オプションを指定する。</li>
+<li>余白を 2cm に設定したければ <code>-V geometry:margin=2cm</code> オプションを指定する。</li>
+</ul>
+</li>
+</ul>
+
+
+<p>（想像していたより変換に時間がかかる）</p>
+
+<h3>5. PDF の確認</h3>
+
+<p>作成された PDF 文書を確認してみる。（以下は、公開の都合上 PNG 画像としてキャプチャしたもの）</p>
+
+<p><img src="http://komasaru.github.io/images/2016/01/22/PANDOC_TEST.png" title="PANDOC_TEST" alt="PANDOC_TEST" /></p>
+
+<h3>6. 参考サイト</h3>
+
+<ul>
+<li><a href="http://pandoc.org/" title="Pandoc - About pandoc">Pandoc - About pandoc</a></li>
+<li><a href="http://sky-y.github.io/site-pandoc-jp/users-guide/" title="Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User's Association">Pandoc ユーザーズガイド 日本語版 - Japanese Pandoc User&rsquo;s Association</a></li>
+</ul>
+
+
+<hr />
+
+<p>普段 Markdown でテキストを保存することが多いので、何かと重宝しそうです。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - TeX Live 2015 インストール！]]></title>
@@ -5188,494 +5418,6 @@
 <hr />
 
 <p>送信メールサーバ Postfix と Clam AntiVirus を AMaVisd-new で連携する場合と比べてどうなのか？ということを体感してみたかった故の今回の試行でした。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2015年10月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/01/blog-access/"/>
-    <updated>2015-11-01T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/01/blog-access</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>11月になりましたので、先月10月分の当ブログアクセス状況を公開します。</p>
-
-<!--more-->
-
-
-<h4>1. アクセスをOS別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td class="blog-access-pv">30,161</td>
-    <td class="blog-access-rate">59.5021</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td class="blog-access-pv">16,941</td>
-    <td class="blog-access-rate">33.4215</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td class="blog-access-pv">1,758</td>
-    <td class="blog-access-rate">3.4682</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td class="blog-access-pv">1,289</td>
-    <td class="blog-access-rate">2.5430</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td class="blog-access-pv">342</td>
-    <td class="blog-access-rate">0.6747</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td class="blog-access-pv">81</td>
-    <td class="blog-access-rate">0.1598</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td class="blog-access-pv">50</td>
-    <td class="blog-access-rate">0.0986</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td class="blog-access-pv">42</td>
-    <td class="blog-access-rate">0.0829</td>
-  </tr>
-  <tr>
-    <td>iPhone OS</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0138</td>
-  </tr>
-  <tr>
-    <td>CentOS Linux</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0099</td>
-  </tr>
-  <tr>
-    <td>Solaris</td>
-    <td class="blog-access-pv">5</td>
-    <td class="blog-access-rate">0.0099</td>
-  </tr>
-  <tr>
-    <td>RedHat Linux</td>
-    <td class="blog-access-pv">4</td>
-    <td class="blog-access-rate">0.0079</td>
-  </tr>
-  <tr>
-    <td>Debian GNU/Linux</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0039</td>
-  </tr>
-  <tr>
-    <td>OpenBSD</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0039</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">50,689</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>OS</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Mac OS</td>
-    <td>X</td>
-    <td class="blog-access-pv">30,158</td>
-    <td class="blog-access-rate">59.4961</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>NT</td>
-    <td class="blog-access-pv">14,314</td>
-    <td class="blog-access-rate">28.2389</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">1,735</td>
-    <td class="blog-access-rate">3.4228</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">1,269</td>
-    <td class="blog-access-rate">2.5035</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7</td>
-    <td class="blog-access-pv">1,232</td>
-    <td class="blog-access-rate">2.4305</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>7 64 bit</td>
-    <td class="blog-access-pv">788</td>
-    <td class="blog-access-rate">1.5546</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">342</td>
-    <td class="blog-access-rate">0.6747</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>XP</td>
-    <td class="blog-access-pv">324</td>
-    <td class="blog-access-rate">0.6392</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Vista</td>
-    <td class="blog-access-pv">194</td>
-    <td class="blog-access-rate">0.3827</td>
-  </tr>
-  <tr>
-    <td>Fedora Linux</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">77</td>
-    <td class="blog-access-rate">0.1519</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>8 64 bit</td>
-    <td class="blog-access-pv">55</td>
-    <td class="blog-access-rate">0.1085</td>
-  </tr>
-  <tr>
-    <td>FreeBSD</td>
-    <td>unknown</td>
-    <td class="blog-access-pv">42</td>
-    <td class="blog-access-rate">0.0829</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>Server 2003</td>
-    <td class="blog-access-pv">18</td>
-    <td class="blog-access-rate">0.0355</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td></td>
-    <td class="blog-access-pv">13</td>
-    <td class="blog-access-rate">0.0256</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td>4.0.4</td>
-    <td class="blog-access-pv">12</td>
-    <td class="blog-access-rate">0.0237</td>
-  </tr>
-  <tr>
-    <td>Ubuntu Linux</td>
-    <td></td>
-    <td class="blog-access-pv">12</td>
-    <td class="blog-access-rate">0.0237</td>
-  </tr>
-  <tr>
-    <td>Linux</td>
-    <td>64 bit</td>
-    <td class="blog-access-pv">10</td>
-    <td class="blog-access-rate">0.0197</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td>4.0.1</td>
-    <td class="blog-access-pv">10</td>
-    <td class="blog-access-rate">0.0197</td>
-  </tr>
-  <tr>
-    <td>Windows</td>
-    <td>2000</td>
-    <td class="blog-access-pv">8</td>
-    <td class="blog-access-rate">0.0158</td>
-  </tr>
-  <tr>
-    <td>Android</td>
-    <td>2.3.4</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0138</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">50,689</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>3. アクセスをブラウザ別に集計</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td class="blog-access-pv">29,168</td>
-    <td class="blog-access-rate">57.5431</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td class="blog-access-pv">12,131</td>
-    <td class="blog-access-rate">23.9322</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td class="blog-access-pv">5,428</td>
-    <td class="blog-access-rate">10.7084</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td class="blog-access-pv">2,945</td>
-    <td class="blog-access-rate">5.8099</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td class="blog-access-pv">446</td>
-    <td class="blog-access-rate">0.8799</td>
-  </tr>
-  <tr>
-    <td>Opera</td>
-    <td class="blog-access-pv">404</td>
-    <td class="blog-access-rate">0.7970</td>
-  </tr>
-  <tr>
-    <td>Netscape Navigator</td>
-    <td class="blog-access-pv">74</td>
-    <td class="blog-access-rate">0.1460</td>
-  </tr>
-  <tr>
-    <td>Chrome</td>
-    <td class="blog-access-pv">51</td>
-    <td class="blog-access-rate">0.1006</td>
-  </tr>
-  <tr>
-    <td>Epiphany</td>
-    <td class="blog-access-pv">13</td>
-    <td class="blog-access-rate">0.0256</td>
-  </tr>
-  <tr>
-    <td>Mozilla SeaMonkey</td>
-    <td class="blog-access-pv">8</td>
-    <td class="blog-access-rate">0.0158</td>
-  </tr>
-  <tr>
-    <td>Konqueror</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0138</td>
-  </tr>
-  <tr>
-    <td>iPhone</td>
-    <td class="blog-access-pv">7</td>
-    <td class="blog-access-rate">0.0138</td>
-  </tr>
-  <tr>
-    <td>unknown</td>
-    <td class="blog-access-pv">3</td>
-    <td class="blog-access-rate">0.0059</td>
-  </tr>
-  <tr>
-    <td>PHP</td>
-    <td class="blog-access-pv">2</td>
-    <td class="blog-access-rate">0.0039</td>
-  </tr>
-  <tr>
-    <td>Namoroka</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0020</td>
-  </tr>
-  <tr>
-    <td>SRWare Iron</td>
-    <td class="blog-access-pv">1</td>
-    <td class="blog-access-rate">0.0020</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td class="blog-access-pv">50,689</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
-
-<table class="blog-access">
-  <tr>
-    <th>ブラウザ</th>
-    <th>Version</th>
-    <th>PageViews</th>
-    <th>比率(%)</th>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>537.36</td>
-    <td class="blog-access-pv">21,898</td>
-    <td class="blog-access-rate">43.2007</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>41.0</td>
-    <td class="blog-access-pv">8,646</td>
-    <td class="blog-access-rate">17.0570</td>
-  </tr>
-  <tr>
-    <td>Mozilla</td>
-    <td>11.0</td>
-    <td class="blog-access-pv">5,428</td>
-    <td class="blog-access-rate">10.7084</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>9537.53</td>
-    <td class="blog-access-pv">3,172</td>
-    <td class="blog-access-rate">6.2578</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>38.0</td>
-    <td class="blog-access-pv">1,166</td>
-    <td class="blog-access-rate">2.3003</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>8.0</td>
-    <td class="blog-access-pv">1,047</td>
-    <td class="blog-access-rate">2.0655</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>40.0</td>
-    <td class="blog-access-pv">976</td>
-    <td class="blog-access-rate">1.9255</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.1.4</td>
-    <td class="blog-access-pv">931</td>
-    <td class="blog-access-rate">1.8367</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>601.1</td>
-    <td class="blog-access-pv">919</td>
-    <td class="blog-access-rate">1.8130</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>601.1.56</td>
-    <td class="blog-access-pv">779</td>
-    <td class="blog-access-rate">1.5368</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>10.0</td>
-    <td class="blog-access-pv">718</td>
-    <td class="blog-access-rate">1.4165</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>9.0</td>
-    <td class="blog-access-pv">656</td>
-    <td class="blog-access-rate">1.2942</td>
-  </tr>
-  <tr>
-    <td>Internet Explorer</td>
-    <td>7.0</td>
-    <td class="blog-access-pv">497</td>
-    <td class="blog-access-rate">0.9805</td>
-  </tr>
-  <tr>
-    <td>Opera</td>
-    <td>9.80</td>
-    <td class="blog-access-pv">398</td>
-    <td class="blog-access-rate">0.7852</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>534.30</td>
-    <td class="blog-access-pv">321</td>
-    <td class="blog-access-rate">0.6333</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>601.2.7</td>
-    <td class="blog-access-pv">285</td>
-    <td class="blog-access-rate">0.5623</td>
-  </tr>
-  <tr>
-    <td>Debian IceWeasel</td>
-    <td>38.3.0</td>
-    <td class="blog-access-pv">284</td>
-    <td class="blog-access-rate">0.5603</td>
-  </tr>
-  <tr>
-    <td>Safari</td>
-    <td>600.8.9</td>
-    <td class="blog-access-pv">215</td>
-    <td class="blog-access-rate">0.4242</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>31.0</td>
-    <td class="blog-access-pv">196</td>
-    <td class="blog-access-rate">0.3867</td>
-  </tr>
-  <tr>
-    <td>Mozilla Firefox</td>
-    <td>39.0</td>
-    <td class="blog-access-pv">148</td>
-    <td class="blog-access-rate">0.2920</td>
-  </tr>
-  <tr>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-    <td class="blog-access-dot">:</td>
-  </tr>
-  <tr>
-    <td class="blog-access-total-label">合　計</td>
-    <td> </td>
-    <td class="blog-access-pv">50,689</td>
-    <td class="blog-access-rate">100.0000</td>
-  </tr>
-</table>
-
-
-<hr />
 
 <p>以上。</p>
 ]]></content>
