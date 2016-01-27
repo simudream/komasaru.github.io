@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-22T00:06:23+09:00</updated>
+  <updated>2016-01-28T00:03:25+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,754 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - MySQL 5.7 インストール（by ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/01/28/linuxmint-mysql-57-installation-by-src/"/>
+    <updated>2016-01-28T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/01/28/linuxmint-mysql-57-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>MySQL 5.7 系の最新版をソースをビルドして Linux Mint 17.2 にインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>当記事執筆時点で最新の MySQL 5.7.10 をソースをビルドしてインストールする。</li>
+<li>マシン搭載メモリは 4GB を想定。</li>
+<li>一般ユーザでの作業を想定。</li>
+<li>環境の相違等のために以下の方法ではうまく行かないこともあるだろう。<br/>
+ログを確認して適宜対処すること。</li>
+</ul>
+
+
+<h3>1. 必要パッケージの準備</h3>
+
+<p>以下の必要なパッケージが未インストールならインストールしておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install wget cmake g++ bison libncurses5-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. MySQL ユーザ・グループの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo groupadd mysql
+</span><span class='line'>$ sudo useradd -r -g mysql -s /bin/false mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>useradd</code> コマンドの <code>-r</code> は、システムアカウントを作成するオプション。</li>
+<li><code>useradd</code> コマンドの <code>-s /bin/false</code> は、ログインシェルを無効にするオプション。</li>
+</ul>
+
+
+<h3>3. ソースの取得</h3>
+
+<p>アーカイブファイルを取得、展開後、ディレクトリを移動しておく。（ダウンロード先は一般ユーザホームディレクトリとする）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd ~/
+</span><span class='line'>$ wget http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.10.tar.gz
+</span><span class='line'>$ tar zxvf mysql-5.7.10.tar.gz
+</span><span class='line'>$ cd mysql-5.7.10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. Makefile の生成</h3>
+
+<p><code>cmake</code> コマンドで Makefile を生成する。（よくある <code>configure</code> コマンドと同様の位置付け）</p>
+
+<p>オプションは、デフォルト値とが異なる値を設定したいものだけを指定する。<br/>
+（MySQL 5.7 からは C++ Boost ライブラリが必要なので <code>DOWNLOAD_BOOST</code> と <code>WITH_BOOST</code> は必須）<br/>
+※デフォルト値は<a href="http://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9.4 MySQL Source-Configuration Options">こちら</a>を参照。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo cmake . \
+</span><span class='line'> -DMYSQL_UNIX_ADDR=/var/lib/mysql/mysqld.sock \
+</span><span class='line'> -DMYSQL_DATADIR=/var/lib/mysql \
+</span><span class='line'> -DDEFAULT_CHARSET=utf8 \
+</span><span class='line'> -DDEFAULT_COLLATION=utf8_general_ci \
+</span><span class='line'> -DDOWNLOAD_BOOST=1 \
+</span><span class='line'> -DWITH_BOOST=/usr/local/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>cmake</code> が途中で失敗した等の理由で <code>cmake</code> を再実行する場合は、キャッシュをクリアしてから再実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo rm CMakeCache.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. ビルド</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo make
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（時間がかかる）</p>
+
+<h3>6. インストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>7. 環境変数 PATH の設定</h3>
+
+<p>（当方は、 &ldquo;~/.profile&rdquo; で設定）</p>
+
+<figure class='code'><figcaption><span>~/.profile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/usr/local/mysql/bin
+</span><span class='line'><span class="nb">export </span>PATH
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、即時反映。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ source ~/.profile
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>8. インストールの確認</h3>
+
+<p>MySQL サーバとクライアントのバージョンを確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ mysqld --version
+</span><span class='line'>mysqld  Ver 5.7.10 for Linux on x86_64 (Source distribution)
+</span><span class='line'>
+</span><span class='line'>$ mysql --version
+</span><span class='line'>mysql  Ver 14.14 Distrib 5.7.10, for Linux (x86_64) using  EditLine wrapper
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>9. 設定ファイルの編集</h3>
+
+<p>環境に合わせて、 &ldquo;/etc/my.cnf&rdquo; を編集する。（サンプルは &ldquo;/usr/local/mysql/support-files&rdquo; ディレクトリ内にある）<br/>
+（以下は当方の取り急ぎの例。<strong>実際に運用する際は綿密に検討して設定すること</strong>）</p>
+
+<figure class='code'><figcaption><span>/etc/my.cnf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># For advice on how to change settings please see</span>
+</span><span class='line'><span class="c"># http://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqld<span class="o">]</span>
+</span><span class='line'><span class="c"># ==== Basis</span>
+</span><span class='line'>server-id                 <span class="o">=</span> <span class="m">1</span>  <span class="c"># レプリケーション時に使用 (1 〜 2^32 - 1)</span>
+</span><span class='line'><span class="nv">user</span>                      <span class="o">=</span> mysql
+</span><span class='line'><span class="nv">datadir</span>                   <span class="o">=</span> /var/lib/mysql
+</span><span class='line'><span class="nv">socket</span>                    <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'>pid-file                  <span class="o">=</span> /var/run/mysqld/mysqld.pid
+</span><span class='line'><span class="nv">performance_schema</span>        <span class="o">=</span> OFF     <span class="c"># Default: ON</span>
+</span><span class='line'>skip_external_locking
+</span><span class='line'><span class="nv">sql_mode</span>                  <span class="o">=</span> STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+</span><span class='line'><span class="nv">character_set_server</span>      <span class="o">=</span> utf8mb4
+</span><span class='line'>collation-server          <span class="o">=</span> utf8mb4_general_ci
+</span><span class='line'>skip-character-set-client-handshake
+</span><span class='line'><span class="nv">default_storage_engine</span>    <span class="o">=</span> InnoDB  <span class="c"># Default: InnoDB</span>
+</span><span class='line'><span class="nv">default_password_lifetime</span> <span class="o">=</span> <span class="m">3650</span>    <span class="c"># Default: 360</span>
+</span><span class='line'><span class="nv">lc_messages</span>               <span class="o">=</span> en_US   <span class="c"># Default: en_US</span>
+</span><span class='line'><span class="nv">lc_messages_dir</span>           <span class="o">=</span> /usr/local/mysql/share
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Network, Connection</span>
+</span><span class='line'><span class="nv">port</span>                 <span class="o">=</span> 3306
+</span><span class='line'><span class="nb">bind</span>-address         <span class="o">=</span> 0.0.0.0   <span class="c"># 127.0.0.1</span>
+</span><span class='line'><span class="nv">max_connections</span>      <span class="o">=</span> <span class="m">100</span>       <span class="c"># Default: 151</span>
+</span><span class='line'><span class="nv">max_connect_errors</span>   <span class="o">=</span> <span class="m">100</span>       <span class="c"># Default: 100</span>
+</span><span class='line'><span class="nv">max_user_connections</span> <span class="o">=</span> <span class="m">0</span>         <span class="c"># Default: 0</span>
+</span><span class='line'><span class="nv">wait_timeout</span>         <span class="o">=</span> <span class="m">3600</span>      <span class="c"># Default: 28800 (通常時:300, データインポート時:3600程度)</span>
+</span><span class='line'><span class="nv">interactive_timeout</span>  <span class="o">=</span> <span class="m">3600</span>      <span class="c"># Default: 28800</span>
+</span><span class='line'><span class="nv">connect_timeout</span>      <span class="o">=</span> <span class="m">30</span>        <span class="c"># Default: 10</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Buffer</span>
+</span><span class='line'><span class="nv">max_allowed_packet</span>      <span class="o">=</span> 32M    <span class="c"># Default: 1M (通常時:32M程度, データインポート時:128M程度)</span>
+</span><span class='line'><span class="nv">thread_cache_size</span>       <span class="o">=</span> <span class="m">40</span>     <span class="c"># Default: 0 (max_connections の 1/3 程度?)</span>
+</span><span class='line'><span class="nv">table_open_cache</span>        <span class="o">=</span> <span class="m">400</span>    <span class="c"># Default: 400 (同時接続数 * テーブル数?)</span>
+</span><span class='line'><span class="nv">table_definition_cache</span>  <span class="o">=</span> <span class="m">400</span>    <span class="c"># Default: -1:autosized = 400 + (table_open_cache / 2)</span>
+</span><span class='line'><span class="nv">tmp_table_size</span>          <span class="o">=</span> 16M    <span class="c"># Default: System 依存 (for Memory, &lt;= max_heap_table_size)</span>
+</span><span class='line'><span class="nv">max_heap_table_size</span>     <span class="o">=</span> 32M    <span class="c"># Default: 16M         (for Memory, &gt;= tmp_table_size)</span>
+</span><span class='line'><span class="nv">sort_buffer_size</span>        <span class="o">=</span> 4M     <span class="c"># Default: 2M (通常時:4M, ALTER TABLE 時:64M)</span>
+</span><span class='line'><span class="nv">read_buffer_size</span>        <span class="o">=</span> 4M     <span class="c"># Default: 128K</span>
+</span><span class='line'><span class="nv">read_rnd_buffer_size</span>    <span class="o">=</span> 4M     <span class="c"># Default: 256K</span>
+</span><span class='line'><span class="nv">join_buffer_size</span>        <span class="o">=</span> 4M     <span class="c"># Default: 128K</span>
+</span><span class='line'><span class="nv">query_cache_size</span>        <span class="o">=</span> 32M    <span class="c"># Default: 0 (通常時: 32M, データインポート時: 0)</span>
+</span><span class='line'><span class="nv">query_cache_limit</span>       <span class="o">=</span> 16M    <span class="c"># Default: 1M</span>
+</span><span class='line'><span class="nv">thread_stack</span>            <span class="o">=</span> 192K   <span class="c"># Default: 192K(32bit), 288K(64bit)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== MyISAM</span>
+</span><span class='line'><span class="nv">key_buffer_size</span>         <span class="o">=</span> 8M     <span class="c"># Default: 8M (for MyISAM)</span>
+</span><span class='line'><span class="nv">myisam_sort_buffer_size</span> <span class="o">=</span> 8M     <span class="c"># Default: 8M (for MyISAM)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Binary Log</span>
+</span><span class='line'><span class="nv">log_bin</span>          <span class="o">=</span> mysql-bin     <span class="c"># データインポート時はコメントアウト</span>
+</span><span class='line'><span class="nv">expire_logs_days</span> <span class="o">=</span> 10
+</span><span class='line'><span class="nv">max_binlog_size</span>  <span class="o">=</span> 100M
+</span><span class='line'><span class="nv">binlog_format</span>    <span class="o">=</span> MIXED
+</span><span class='line'><span class="nv">log_bin_trust_function_creators</span> <span class="o">=</span> <span class="m">1</span>  <span class="c"># Default: 0 (for TRIGGER)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== InnoDB</span>
+</span><span class='line'><span class="nv">innodb_data_file_path</span>           <span class="o">=</span> ibdata1:1G  <span class="c">#:autoextend</span>
+</span><span class='line'><span class="nv">innodb_autoextend_increment</span>     <span class="o">=</span> <span class="m">64</span>          <span class="c"># Default: 64</span>
+</span><span class='line'><span class="nv">innodb_file_per_table</span>           <span class="o">=</span> 1
+</span><span class='line'><span class="nv">innodb_file_format</span>              <span class="o">=</span> Barracuda   <span class="c"># Default: Antelope</span>
+</span><span class='line'><span class="nv">innodb_file_format_max</span>          <span class="o">=</span> Barracuda   <span class="c"># Default: Antelope</span>
+</span><span class='line'><span class="nv">innodb_large_prefix</span>             <span class="o">=</span> <span class="m">1</span>           <span class="c"># Default: 0</span>
+</span><span class='line'><span class="nv">innodb_buffer_pool_size</span>         <span class="o">=</span> 1024M       <span class="c"># Default: 128M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)</span>
+</span><span class='line'><span class="c">#innodb_buffer_pool_instances    = 8           # Default: autosized(32bit), 8(64bit) (innodb_buffer_pool_size &gt;= 1G の場合にのみ有効)</span>
+</span><span class='line'><span class="nv">innodb_sort_buffer_size</span>         <span class="o">=</span> 2M          <span class="c"># Default: 1M (通常時:2M, ALTER TABLE 時:64M)</span>
+</span><span class='line'><span class="nv">innodb_write_io_threads</span>         <span class="o">=</span> <span class="m">4</span>           <span class="c"># Default: 4 (1 - 64)</span>
+</span><span class='line'><span class="nv">innodb_read_io_threads</span>          <span class="o">=</span> <span class="m">4</span>           <span class="c"># Default: 4 (1 - 64)</span>
+</span><span class='line'><span class="nv">innodb_log_buffer_size</span>          <span class="o">=</span> 32M         <span class="c"># Default: 8M (通常時:32M, データインポート時:128M程度)</span>
+</span><span class='line'><span class="nv">innodb_log_group_home_dir</span>       <span class="o">=</span> /var/lib/mysql
+</span><span class='line'><span class="nv">innodb_log_files_in_group</span>       <span class="o">=</span> <span class="m">2</span>           <span class="c"># Default: 2   (変更注意!)</span>
+</span><span class='line'><span class="nv">innodb_log_file_size</span>            <span class="o">=</span> 256M        <span class="c"># Default: 48M (変更注意!)</span>
+</span><span class='line'><span class="c"># &lt;= innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size</span>
+</span><span class='line'><span class="c">#    [変更方法](http://dev.mysql.com/doc/refman/5.6/ja/innodb-data-log-reconfiguration.html)</span>
+</span><span class='line'><span class="nv">innodb_max_dirty_pages_pct</span>      <span class="o">=</span> <span class="m">90</span>          <span class="c"># Default: 75(%)</span>
+</span><span class='line'><span class="c"># &lt;= 小さい値：低速＆安定、大きい値：高速＆不安定(?)</span>
+</span><span class='line'><span class="nv">innodb_io_capacity</span>              <span class="o">=</span> <span class="m">100</span>         <span class="c"># Default: 200 (100 - 2^64-1)</span>
+</span><span class='line'><span class="nv">innodb_io_capacity_max</span>          <span class="o">=</span> <span class="m">200</span>         <span class="c"># Default: 200 (100 - 2^64-1)</span>
+</span><span class='line'><span class="nv">innodb_lru_scan_depth</span>           <span class="o">=</span> <span class="m">100</span>         <span class="c"># Default: 1024 (100 - 2^32-1(32bit))</span>
+</span><span class='line'><span class="nv">innodb_flush_method</span>             <span class="o">=</span> O_DIRECT    <span class="c"># Default: Not set</span>
+</span><span class='line'><span class="nv">innodb_flush_log_at_trx_commit</span>  <span class="o">=</span> <span class="m">1</span>           <span class="c"># Default: 1 (データインポート時: 2 or 0)</span>
+</span><span class='line'><span class="nv">innodb_doublewrite</span>              <span class="o">=</span> <span class="m">1</span>           <span class="c"># Default: 1 (データインポート時: 0)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Log</span>
+</span><span class='line'><span class="nv">log_output</span>          <span class="o">=</span> FILE  <span class="c"># Default: FILE</span>
+</span><span class='line'><span class="nv">log_warnings</span>        <span class="o">=</span> <span class="m">1</span>     <span class="c"># Default: 1</span>
+</span><span class='line'>log-error           <span class="o">=</span> /var/log/mysql/error.log
+</span><span class='line'><span class="c">#general_log_file    = /var/log/mysql/mysql.log  # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#general_log         = 1                         # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#slow_query_log_file = /var/log/mysql/slow.log   # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#slow_query_log      = 1                         # デバッグ時に有効化</span>
+</span><span class='line'><span class="c">#long_query_time     = 30                        # デバッグ時に有効化</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># ==== Event Scheduler</span>
+</span><span class='line'><span class="nv">event_scheduler</span> <span class="o">=</span> <span class="m">1</span>  <span class="c"># Default: 0</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>client<span class="o">]</span>
+</span><span class='line'><span class="nv">port</span>   <span class="o">=</span> 3306
+</span><span class='line'><span class="nv">socket</span> <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'>default-character-set <span class="o">=</span> utf8mb4
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqld_safe<span class="o">]</span>
+</span><span class='line'><span class="nv">socket</span> <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'><span class="nv">nice</span>   <span class="o">=</span> 0
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqldump<span class="o">]</span>
+</span><span class='line'>quick
+</span><span class='line'>quote-names
+</span><span class='line'><span class="nv">max_allowed_packet</span> <span class="o">=</span> 32M
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysql<span class="o">]</span>
+</span><span class='line'>default-character-set <span class="o">=</span> utf8mb4
+</span><span class='line'>no-auto-rehash
+</span><span class='line'>show-warnings
+</span><span class='line'><span class="nv">prompt</span><span class="o">=</span><span class="se">\u</span>@<span class="se">\h</span>:<span class="se">\d\_\R</span>:<span class="se">\m</span>:<span class="se">\\</span>s&gt;<span class="se">\_</span>
+</span><span class='line'><span class="nv">pager</span><span class="o">=</span><span class="s2">&quot;less -n -i -F -X -E&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>isamchk<span class="o">]</span>
+</span><span class='line'><span class="nv">key_buffer</span> <span class="o">=</span> 16M
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>myisamchk<span class="o">]</span>
+</span><span class='line'><span class="nv">key_buffer_size</span>  <span class="o">=</span> 128M
+</span><span class='line'><span class="nv">sort_buffer_size</span> <span class="o">=</span> 128M
+</span><span class='line'><span class="nv">read_buffer</span>      <span class="o">=</span> 2M
+</span><span class='line'><span class="nv">write_buffer</span>     <span class="o">=</span> 2M
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqlhotcopy<span class="o">]</span>
+</span><span class='line'>interactive-timeout
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqladmin<span class="o">]</span>
+</span><span class='line'><span class="nv">user</span>     <span class="o">=</span> root
+</span><span class='line'><span class="nv">password</span> <span class="o">=</span> xxxxxxxx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>10. 所有者・所有グループの設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd /usr/local/mysql
+</span><span class='line'>$ sudo chown -R mysql. .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>11. ログディレクトリの作成</h3>
+
+<p>ログ用ディレクトリを作成し、所有者・グループを設定しておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo mkdir /var/log/mysql
+</span><span class='line'>$ sudo chown -R mysql. /var/log/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>12. PID ディレクトリの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo mkdir /var/run/mysqld
+</span><span class='line'>$ sudo chown -R mysql. /var/run/mysqld
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>13. 初期設定</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo bin/mysqld --initialize --user=mysql
+</span><span class='line'>$ sudo bin/mysql_ssl_rsa_setup
+</span><span class='line'>$ sudo chown -R mysql. /var/lib/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>14. 起動スクリプトの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo cp support-files/mysql.server /etc/init.d/mysqld
+</span><span class='line'>$ sudo chown root:root /etc//init.d/mysqld
+</span><span class='line'>$ sudo chmod 755 /etc/init.d/mysqld
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、編集する。</p>
+
+<figure class='code'><figcaption><span>/etc/init.d/mysqld</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">if</span> <span class="o">[</span> ! -d /var/run/mysqld <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  mkdir /var/run/mysqld <span class="o">&amp;&amp;</span> chown -R mysql. /var/run/mysqld
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">basedir</span><span class="o">=</span>/usr/local/mysql
+</span><span class='line'><span class="nv">datadir</span><span class="o">=</span>/var/lib/mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>上記の <code>if ... mkdir ... fi</code> の部分について
+&ldquo;/var/run&rdquo; ディレクトリは tmpfs であるため、マシンの電源を落とすと &ldquo;/var/run/mysqld&rdquo; ディレクトリが消滅してしまう。<br/>
+その対策として、サービス起動時に &ldquo;/var/run/mysqld&rdquo; ディレクトリが存在しなければ作成し、所有者を設定している。<br/>
+（過去、MySQL サーバ構築時にこのような対策をしたことはなかったけども。。。）</li>
+</ul>
+
+
+<h3>15. MySQL サーバの起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo /etc/init.d/mysqld start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>16. 自動起動の設定</h3>
+
+<p>マシン起動時に MySQL サーバを自動起動するようにしたければ、以下のようにする。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo update-rc.d mysqld defaults
+</span><span class='line'> Adding system startup for /etc/init.d/mysqld ...
+</span><span class='line'>   /etc/rc0.d/K20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>   /etc/rc1.d/K20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>   /etc/rc6.d/K20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>   /etc/rc2.d/S20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>   /etc/rc3.d/S20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>   /etc/rc4.d/S20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>   /etc/rc5.d/S20mysqld -&gt; ../init.d/mysqld
+</span><span class='line'>
+</span><span class='line'>$ sudo sysv-rc-conf --list | grep mysqld  # &lt;= 2,3,4,5 が on であることを確認
+</span><span class='line'>mysqld       0:off      1:off   2:on    3:on    4:on    5:on    6:off
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>17. root 初期パスワードの確認</h3>
+
+<p>（記録されているログファイルは環境により異なる）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo grep &#39;temporary password&#39; /var/log/mysql/error.log
+</span><span class='line'>2015-12-10T07:42:55.685053Z 1 [Note] A temporary password is generated for root@localhost: O&lt;ZeyQmcX5wQ
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>18. MySQL の安全化</h3>
+
+<p>root パスワードの設定等を行う。（説明は後述）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ mysql_secure_installation
+</span><span class='line'>mysql_secure_installation: [ERROR] unknown variable &#39;default-character-set=utf8&#39;
+</span><span class='line'>
+</span><span class='line'>Securing the MySQL server deployment.
+</span><span class='line'>
+</span><span class='line'>Enter password for user root:
+</span><span class='line'>
+</span><span class='line'>The existing password for the user account root has expired. Please set a new password.
+</span><span class='line'>
+</span><span class='line'>New password:
+</span><span class='line'>
+</span><span class='line'>Re-enter new password:
+</span><span class='line'>
+</span><span class='line'>VALIDATE PASSWORD PLUGIN can be used to test passwords
+</span><span class='line'>and improve security. It checks the strength of password
+</span><span class='line'>and allows the users to set only those passwords which are
+</span><span class='line'>secure enough. Would you like to setup VALIDATE PASSWORD plugin?
+</span><span class='line'>
+</span><span class='line'>Press y|Y for Yes, any other key for No: n
+</span><span class='line'>Using existing password for root.
+</span><span class='line'>Change the password for root ? ((Press y|Y for Yes, any other key for No) : n
+</span><span class='line'>
+</span><span class='line'> ... skipping.
+</span><span class='line'>By default, a MySQL installation has an anonymous user,
+</span><span class='line'>allowing anyone to log into MySQL without having to have
+</span><span class='line'>a user account created for them. This is intended only for
+</span><span class='line'>testing, and to make the installation go a bit smoother.
+</span><span class='line'>You should remove them before moving into a production
+</span><span class='line'>environment.
+</span><span class='line'>
+</span><span class='line'>Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Normally, root should only be allowed to connect from
+</span><span class='line'>&#39;localhost&#39;. This ensures that someone cannot guess at
+</span><span class='line'>the root password from the network.
+</span><span class='line'>
+</span><span class='line'>Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+</span><span class='line'>
+</span><span class='line'> ... skipping.
+</span><span class='line'>By default, MySQL comes with a database named &#39;test&#39; that
+</span><span class='line'>anyone can access. This is also intended only for testing,
+</span><span class='line'>and should be removed before moving into a production
+</span><span class='line'>environment.
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'> - Dropping test database...
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'> - Removing privileges on test database...
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>Reloading the privilege tables will ensure that all changes
+</span><span class='line'>made so far will take effect immediately.
+</span><span class='line'>
+</span><span class='line'>Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+</span><span class='line'>Success.
+</span><span class='line'>
+</span><span class='line'>All done!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li><code>Enter password for user root:</code> で root の初期パスワードを入力する。</li>
+<li><code>New password:</code> で root の新しいパスワードを設定する。<br/>
+（パスワードに使用する文字は数字・英小文字・英大文字・記号を混在させること。そうしなければポリシー違反でエラーになる）</li>
+<li><code>VALIDATE PASSWORD PLUGIN ... Press y|Y for Yes, any other key for No:</code> でパスワード検証プラグインの設定を行うか問われるが、今回は行わないので <code>n</code> で応答する。</li>
+<li><code>Change the password for root ? ((Press y|Y for Yes, any other key for No) :</code> で root のパスワードを変更するか問われるが、先ほど設定したの <code>n</code> で応答する。</li>
+<li><code>Remove anonymous users?</code> で匿名ユーザを削除するために <code>y</code> で応答する。</li>
+<li><code>Disallow root login remotely?</code> で root のリモート接続を拒否するか問われるが、リモート接続したいので <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
+<li><code>Remove test database and access to it?</code> でテストデータベースを削除するか問われるので、 <code>y</code> で応答する。</li>
+<li><code>Reload privilege tables now?</code> で権限テーブルを即時リロードするか問われるので、 <code>y</code> で応答する。</li>
+</ol>
+
+
+<h3>19. 動作確認</h3>
+
+<p>MySQL サーバにログインしてみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u root -p
+</span><span class='line'>Enter password:
+</span><span class='line'>Welcome to the MySQL monitor.  Commands end with ; or \g.
+</span><span class='line'>Your MySQL connection id is 6
+</span><span class='line'>Server version: 5.7.10 Source distribution
+</span><span class='line'>
+</span><span class='line'>Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+</span><span class='line'>
+</span><span class='line'>Oracle is a registered trademark of Oracle Corporation and/or its
+</span><span class='line'>affiliates. Other names may be trademarks of their respective
+</span><span class='line'>owners.
+</span><span class='line'>
+</span><span class='line'>Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+</span><span class='line'>
+</span><span class='line'>root@localhost:(none) 16:52:28&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>その他、各種操作を試してみる。</p>
+
+<h3>20. その他</h3>
+
+<ul>
+<li>設定ファイルは &ldquo;/etc/my.cnf&rdquo; なので、実際に運用する際には綿密に検討して設定する。</li>
+<li>パスワードの有効期限がデフォルトでは「360 日」に設定されている。<br/>
+必要なら、システム変数 <code>default_password_lifetime</code> を編集する。</li>
+</ul>
+
+
+<h3>21. 参考サイト</h3>
+
+<ul>
+<li><a href="http://dev.mysql.com/doc/refman/5.7/en/source-installation.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source">MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Pandoc で Markdown 文書を PDF に変換！]]></title>
@@ -5251,173 +5999,6 @@
 
 
 <hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS 6.7 - Postfix ウィルス対策(ClamAV + ClamSMTP)！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation/"/>
-    <updated>2015-11-05T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/05/centos-clamsmtp-installation</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>送信メールサーバ Postfix と Clam AntiVirus を ClamSMTP で連携してメールのウィルスチェックを行う方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(32bit) での作業を想定。</li>
-<li>EPEL リポジトリ導入済み。（参考「<a href="http://komasaru.github.io/2013/12/13/centos-6-5-first-setting/" title="CentOS 6.5 - 初期設定！">CentOS 6.5 - 初期設定！</a>」）</li>
-<li>SMTP サーバ Postfix 構築済み。</li>
-<li>アンチウィルスソフト ClamAV(<code>clamd</code>) 導入済み。</li>
-</ul>
-
-
-<h3>1. ClamSMTP のインストール</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># yum --enablerepo=epel -y install clamsmtp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. ClamSMTP 設定ファイルの編集</h3>
-
-<figure class='code'><figcaption><span>/etc/clamsmtpd.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Listen: 0.0.0.0:10025                           <span class="c"># &lt;= コメント解除</span>
-</span><span class='line'>
-</span><span class='line'>Header: X-Virus-Scanned: ClamAV using ClamSMTP  <span class="c"># &lt;= コメント解除</span>
-</span><span class='line'>
-</span><span class='line'>Action: drop                                    <span class="c"># &lt;= コメント解除</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. ClamSMTP の起動</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># /etc/rc.d/init.d/clamsmtpd start
-</span><span class='line'>Starting ClamSmtpd:                                        [  OK  ]
-</span><span class='line'>
-</span><span class='line'># /etc/rc.d/init.d/clamsmtp-clamd start
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. ClamSMTP 自動起動の設定</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># chkconfig clamsmtpd on
-</span><span class='line'># chkconfig clamsmtp-clamd on
-</span><span class='line'># chkconfig --list clamsmtpd
-</span><span class='line'>clamsmtpd       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-</span><span class='line'># chkconfig --list clamsmtp-clamd
-</span><span class='line'>clamsmtp-clamd  0:off   1:Off   2:on    3:on    4:on    5:on    6:off
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. Postfix 設定ファイルの編集</h3>
-
-<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 以下を最終行へ追記</span>
-</span><span class='line'><span class="nv">content_filter</span> <span class="o">=</span> scan:127.0.0.1:10025
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>/etc/postfix/master.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 以下を最終行へ追記</span>
-</span><span class='line'>scan unix -       -       n       -       <span class="m">16</span>       smtp
-</span><span class='line'>   -o <span class="nv">smtp_data_done_timeout</span><span class="o">=</span>1200
-</span><span class='line'>   -o <span class="nv">smtp_send_xforward_command</span><span class="o">=</span>yes
-</span><span class='line'>   -o <span class="nv">disable_dns_lookups</span><span class="o">=</span>yes
-</span><span class='line'>127.0.0.1:10026 inet n       -       n       -       <span class="m">16</span>       smtpd
-</span><span class='line'>   -o <span class="nv">content_filter</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">local_recipient_maps</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">relay_recipient_maps</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">smtpd_restriction_classes</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">smtpd_client_restrictions</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">smtpd_helo_restrictions</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">smtpd_sender_restrictions</span><span class="o">=</span>
-</span><span class='line'>   -o <span class="nv">smtpd_recipient_restrictions</span><span class="o">=</span>permit_mynetworks,reject
-</span><span class='line'>   -o <span class="nv">mynetworks_style</span><span class="o">=</span>host
-</span><span class='line'>   -o <span class="nv">smtpd_authorized_xforward_hosts</span><span class="o">=</span>127.0.0.0/8
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>上記の <code>10026</code> は &ldquo;/etc/clamsmtpd.conf&rdquo; の <code>OutAddress</code> の値に合わせる。</li>
-</ul>
-
-
-<h3>6. Postfix の再起動</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># /etc/rc.d/init.d/postfix restart
-</span><span class='line'>Shutting down postfix:                  [  OK  ]
-</span><span class='line'>Starting postfix:                       [  OK  ]
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. 動作確認</h3>
-
-<p>メールを自分宛に送信してみて受信したメールのヘッダに以下のような記述があるか確認する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>X-Virus-Scanned: ClamAV using ClamSMTP
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>また、ウィルスメールを送信してみて受信しないことも確認する。（例えば、本文に以下（テストウィルス）を記載したメールを送信）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://www.server-world.info/query?os=CentOS_6&amp;p=mail&amp;f=6" title="CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World">CentOS 6 - MAILサーバー - Clamav との連携 - ClamSMTP ： Server World</a></li>
-</ul>
-
-
-<hr />
-
-<p>送信メールサーバ Postfix と Clam AntiVirus を AMaVisd-new で連携する場合と比べてどうなのか？ということを体感してみたかった故の今回の試行でした。</p>
 
 <p>以上。</p>
 ]]></content>
