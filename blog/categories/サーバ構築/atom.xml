@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-28T00:03:25+09:00</updated>
+  <updated>2016-02-02T00:04:52+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,130 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - Mroonga インストール（by ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/02/linuxmint-mroonga-installation-by-src/"/>
+    <updated>2016-02-02T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/02/linuxmint-mroonga-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux Mint 上の MySQL 5.7 に全文検索エンジン Groonga の機能を実現するストレージエンジン Mroonga をソースをビルドしてインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>当記事執筆時点で最新の Mroonga 5.10 をインストールする。</li>
+<li>Groonga 5.1.0 がインストール済みであることを想定。<br/>
+（参照「<a href="/2015/08/09/linux-mint-groonga-installation-by-src/" title="Linux Mint - Groonga インストール（by ソースビルド）！">Linux Mint - Groonga インストール（by ソースビルド）！</a>」）<br/>
+※ソースビルでなく PPA リポジトリからインストールしてもよいだろう（参照「<a href="http://groonga.org/ja/docs/install/ubuntu.html" title="2.4. Ubuntu — Groonga v5.1.0ドキュメント">2.4. Ubuntu — Groonga v5.1.0ドキュメント</a>」）</li>
+<li>MySQL 5.7.10 をソースをビルドしてインストールしていること。（Mroonga のビルドに MySQL のソースが必要なため）<br/>
+（参照「<a href="" title="Linux Mint - MySQL 5.7 インストール（by ソースビルド）！">Linux Mint - MySQL 5.7 インストール（by ソースビルド）！</a>」）</li>
+<li>MySQL 5.7.10 は &ldquo;/usr/local/mysql&rdquo; ディレクトリにインストールされていることを想定。</li>
+<li>MySQL 5.7.10 のインストールに使用したソースは &ldquo;~/mysql-5.7.10&rdquo; ディレクトリに存在することを想定。</li>
+<li>一般ユーザでの作業を想定。</li>
+<li>環境の相違等のために以下の方法ではうまく行かないこともあるだろう。<br/>
+ログを確認して適宜対処すること。</li>
+</ul>
+
+
+<h3>1. 必要ライブラリのインストール</h3>
+
+<p>必要なライブラリ groonga-normalizer-mysql をインストールする。</p>
+
+<pre><code class="text">$ sudo apt-get -y install software-properties-common
+$ sudo add-apt-repository -y universe
+$ sudo add-apt-repository -y ppa:groonga/ppa
+$ sudo apt-get update
+$ sudo apt-get -y install groonga-normalizer-mysql
+</code></pre>
+
+<p>（groonga-normalizer-mysql を Apt インストールするなら Groonga 自体も Apt インストールしてもよかったかもしれないが、当方は既に Groonga をソースビルドでインストール済み）</p>
+
+<h3>2. ソースの取得</h3>
+
+<p>アーカイブファイルを取得、展開後、ディレクトリを移動しておく。（ダウンロード先は一般ユーザホームディレクトリとする）</p>
+
+<pre><code class="text">$ cd ~/
+$ wget http://packages.groonga.org/source/mroonga/mroonga-5.10.tar.gz
+$ tar zxvf mroonga-5.10.tar.gz
+$ cd mroonga-5.10
+</code></pre>
+
+<h3>3. Makefile の生成</h3>
+
+<pre><code class="text">$ ./configure \
+--with-mysql-source=/home/masaru/mysql-5.7.10 \
+--with-mysql-build=/home/masaru/mysql-5.7.10 \
+--with-mysql-config=/usr/local/mysql/bin/mysql_config
+</code></pre>
+
+<h3>4. ビルド</h3>
+
+<pre><code class="text">$ make
+</code></pre>
+
+<h3>5. インストール</h3>
+
+<pre><code class="text">$ sudo make install
+</code></pre>
+
+<h3>6. MySQL への Mroonga プラグインの適用</h3>
+
+<p>MySQL サーバが起動していることを確認してから以下を実行する。</p>
+
+<pre><code class="text">$ mysql -u root -p &lt; /usr/local/share/mroonga/install.sql
+</code></pre>
+
+<p><code>... does not exist</code> のメッセージが出力されるかもしれないが問題ない。（おそらく）</p>
+
+<h3>7. Mroonga 導入の確認</h3>
+
+<p>MySQL サーバに root でログインして確認してみる。</p>
+
+<pre><code class="text">mysql&gt; SHOW ENGINES;
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+| Mroonga            | YES     | CJK-ready fulltext search, column store                        | NO           | NO   | NO         |
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
+| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+10 rows in set (0.00 sec)
+</code></pre>
+
+<p><code>Mroonga</code> 行が存在することを確認する。</p>
+
+<p>その他、 Mroonga の簡単な使用方法は以下の過去記事等を参照。</p>
+
+<ul>
+<li><a href="/2015/08/21/mariadb-mroonga-installation" title="MariaDB 10.0.x - Mroonga プラグインの有効化！">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
+</ul>
+
+
+<h3>8. 参考サイト</h3>
+
+<ul>
+<li><a href="http://mroonga.org/ja/docs/install/others.html" title="2.7. その他 — Mroonga v5.10 documentation">2.7. その他 — Mroonga v5.10 documentation</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - MySQL 5.7 インストール（by ソースビルド）！]]></title>
@@ -774,398 +898,6 @@ mysql&gt; SHOW ENGINES;
 
 <ul>
 <li><a href="http://mroonga.org/ja/docs/install/centos.html#centos-6-with-the-oracle-mysql-5-6-package" title="2.5. CentOS — Mroonga v5.09 documentation">2.5. CentOS — Mroonga v5.09 documentation</a></li>
-</ul>
-
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS - MySQL 5.7 インストール（ソースビルド）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/12/20/centos-mysql-57-installation-by-src/"/>
-    <updated>2015-12-20T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/12/20/centos-mysql-57-installation-by-src</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MySQL 5.7 系の最新版をソースをビルドして CentOS 6.7 にインストールする方法についてです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(32bit) での作業を想定。</li>
-<li>搭載メモリは 1GB を想定。</li>
-</ul>
-
-
-<h3>1. 必要パッケージの準備</h3>
-
-<p>以下の必要なパッケージが未インストールならインストールしておく。</p>
-
-<pre><code class="text"># yum install wget cmake gcc-c++ ncurses-devel zlib-devel
-</code></pre>
-
-<h3>2. MySQL ユーザ・グループの作成</h3>
-
-<pre><code class="text"># groupadd mysql
-# useradd -r -g mysql -s /bin/false mysql
-</code></pre>
-
-<h3>3. ソースの取得</h3>
-
-<p>アーカイブファイルを取得、展開後、ディレクトリを移動しておく。</p>
-
-<pre><code># cd /usr/local/src/
-# wget http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.9.tar.gz
-# tar zxvf mysql-5.7.9.tar.gz
-# cd mysql-5.7.9
-</code></pre>
-
-<h3>4. Makefile の生成</h3>
-
-<p><code>cmake</code> コマンドで Makefile を生成する。（よくある <code>configure</code> コマンドと同様の位置付け）</p>
-
-<p>オプションは、デフォルト値とが異なる値を設定したいものだけを指定する。<br/>
-（MySQL 5.7 からは C++ Boost ライブラリが必要なので <code>DOWNLOAD_BOOST</code> と <code>WITH_BOOST</code> は必須）<br/>
-※デフォルト値は<a href="http://dev.mysql.com/doc/refman/5.7/en/source-configuration-options.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9.4 MySQL Source-Configuration Options">こちら</a>を参照。</p>
-
-<pre><code class="text"># cmake . \
- -DMYSQL_UNIX_ADDR=/var/run/mysqld/mysqld.sock \
- -DMYSQL_DATADIR=/var/lib/mysql \
- -DDEFAULT_CHARSET=utf8 \
- -DDEFAULT_COLLATION=utf8_general_ci \
- -DDOWNLOAD_BOOST=1 \
- -DWITH_BOOST=/usr/local/mysql
-</code></pre>
-
-<p><code>cmake</code> が途中で失敗した等の理由で <code>cmake</code> を再実行する場合は、キャッシュをクリアしてから再実行する。</p>
-
-<pre><code class="text"># rm CMakeCache.txt
-</code></pre>
-
-<h3>5. ビルド</h3>
-
-<pre><code class="text"># make
-</code></pre>
-
-<p>（時間がかかる）</p>
-
-<h3>6. インストール</h3>
-
-<pre><code class="text"># make install
-</code></pre>
-
-<h3>7. 環境変数 PATH の設定</h3>
-
-<pre><code class="bash /etc/bashrc">PATH=$PATH:/usr/local/mysql/bin
-</code></pre>
-
-<p>そして、即時反映。</p>
-
-<pre><code class="text"># source /etc/bashrc
-</code></pre>
-
-<h3>8. インストールの確認</h3>
-
-<pre><code class="text"># mysqld --version
-mysqld  Ver 5.7.9 for Linux on i686 (Source distribution)
-</code></pre>
-
-<h3>9. 所有者・所有グループの設定</h3>
-
-<pre><code class="text"># cd /usr/local/mysql
-# chown -R mysql. .
-</code></pre>
-
-<h3>10. 初期設定</h3>
-
-<pre><code class="text"># bin/mysqld --initialize --user=mysql
-# bin/mysql_ssl_rsa_setup
-# chown -R mysql. /var/lib/mysql
-</code></pre>
-
-<h3>11. 設定ファイルの編集</h3>
-
-<p>環境に合わせて、 &ldquo;/etc/my.cnf&rdquo; を編集する。（サンプルは &ldquo;/usr/local/mysql/support-files&rdquo; ディレクトリ内にある）<br/>
-以下は当方の取り急ぎの例。（実際には、熟考して詳細に設定すること）</p>
-
-<pre><code class="bash /etc/my.cnf"># For advice on how to change settings please see
-# http://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html
-
-[mysqld]
-# ==== Basis
-server-id = 2  # レプリケーション用 (1 〜 2^32 - 1)
-user                   = mysql
-datadir                = /var/lib/mysql
-socket                 = /var/lib/mysql/mysql.sock
-pid-file               = /var/run/mysqld/mysqld.pid
-skip_external_locking
-sql_mode               = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
-character_set_server   = utf8
-collation-server       = utf8_general_ci
-default_storage_engine = InnoDB           # Default: InnodDB
-lc_messages            = en_US            # Default: en_US
-lc_messages_dir        = /usr/share/mysql
-
-# ==== Network, Connection
-port                 = 3306
-bind-address         = 0.0.0.0  # 127.0.0.1
-max_connections      = 100      # Default: 151
-max_connect_errors   = 100      # Default: 100
-max_user_connections = 0        # Default: 0
-wait_timeout         = 300      # Default: 28800
-interactive_timeout  = 3600     # Default: 28800
-connect_timeout      = 30       # Default: 10
-
-# ==== Buffer
-max_allowed_packet      = 32M   # Default: 1M
-thread_cache_size       = 40    # Default: 0 (max_connections の 1/3 程度?)
-table_open_cache        = 400   # Default: 400 (同時接続数 * テーブル数?)
-tmp_table_size          = 16M   # Default: System 依存 (for Memory, &lt;= max_heap_table_size)
-max_heap_table_size     = 32M   # Default: 16M         (for Memory, &gt;= tmp_table_size)
-sort_buffer_size        = 4M    # Default: 2M
-read_buffer_size        = 4M    # Default: 128K
-read_rnd_buffer_size    = 4M    # Default: 256K
-join_buffer_size        = 4M    # Default: 128K
-query_cache_size        = 32M   # Default: 0
-query_cache_limit       = 16M   # Default: 1M
-thread_stack            = 192K  # Default: 192K(32bit), 288K(64bit)
-
-# ==== MyISAM
-key_buffer_size         = 8M    # Default: 8M (for MyISAM)
-myisam_sort_buffer_size = 8M    # Default: 8M (for MyISAM)
-
-# ==== Binary Log
-log_bin          = mysql-bin
-expire_logs_days = 10
-max_binlog_size  = 100M
-binlog_format    = MIXED
-log_bin_trust_function_creators = 1  # Default: 0 (for TRIGGER)
-
-# ==== InnoDB
-innodb_data_file_path           = ibdata1:1G  #:autoextend
-innodb_autoextend_increment     = 64          # Default: 64
-innodb_file_per_table           = 1
-innodb_file_format              = Barracuda   # Default: Antelope
-innodb_file_format_max          = Barracuda   # Default: Antelope
-innodb_large_prefix             = 1           # Default: 0
-innodb_buffer_pool_size         = 768M        # Default: 128M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)
-#innodb_buffer_pool_instances    = 8          # Default: autosized(32bit), 8(64bit) (innodb_buffer_pool_size &gt;= 1G の場合にのみ有効)
-innodb_sort_buffer_size         = 2M          # Default: 1M
-innodb_write_io_threads         = 4           # Default: 4 (1 - 64)
-innodb_read_io_threads          = 4           # Default: 4 (1 - 64)
-innodb_log_buffer_size          = 32M         # Default: 8M
-innodb_log_group_home_dir       = /var/lib/mysql
-innodb_log_files_in_group       = 2           # Default: 2
-innodb_log_file_size            = 256M        # Default: 48M (innodb_log_files_in_group * innodb_log_file_size &lt; innodb_buffer_pool_size)
-innodb_max_dirty_pages_pct      = 90          # Default: 75(%)
-innodb_io_capacity              = 100         # Default: 200 (100 - 2^64-1)
-innodb_io_capacity_max          = 200         # Default: 200 (100 - 2^64-1)
-innodb_lru_scan_depth           = 100         # Default: 1024 (100 - 2^32-1(32bit))
-innodb_flush_method             = O_DIRECT    # Default: Not set
-innodb_flush_log_at_trx_commit  = 1           # Default: 1
-innodb_doublewrite              = 1           # Default: 1
-
-# ==== Log
-log_output          = FILE  # Default: FILE
-log-error           = /var/log/mysql/error.log
-#general_log_file    = /var/log/mysql/mysql.log  # デバッグ時に有効化
-#general_log         = 1                         # デバッグ時に有効化
-#slow_query_log_file = /var/log/mysql/slow.log   # デバッグ時に有効化
-#slow_query_log      = 1                         # デバッグ時に有効化
-#long_query_time     = 30                        # デバッグ時に有効化
-
-# ==== Event Scheduler
-event_scheduler = 1  # Default: 0
-
-[client]
-port   = 3306
-socket = /var/lib/mysql/mysql.sock
-
-[mysqld_safe]
-socket = /var/lib/mysql/mysql.sock
-nice   = 0
-
-[mysqldump]
-quick
-quote-names
-max_allowed_packet = 32M
-
-[mysql]
-pager="less -n -i -F -X -E"
-
-[isamchk]
-key_buffer = 16M
-
-[myisamchk]
-key_buffer_size  = 128M
-sort_buffer_size = 128M
-read_buffer      = 2M
-write_buffer     = 2M
-
-[mysqlhotcopy]
-interactive-timeout
-</code></pre>
-
-<h3>12. PID 用ディレクトリの作成</h3>
-
-<pre><code class="text"># mkdir /var/run/mysqld
-# chown -R mysql. /var/run/mysqld
-</code></pre>
-
-<h3>13. 起動スクリプトの作成</h3>
-
-<pre><code class="text"># cp support-files/mysql.server /etc/rc.d/init.d/mysqld
-# chown root:root /etc/rc.d/init.d/mysqld
-# chmod 755 /etc/rc.d/init.d/mysqld
-</code></pre>
-
-<p>そして、編集する。</p>
-
-<pre><code class="bash /etc/rc.d/init.d/mysqld">basedir=/usr/local/mysql
-datadir=/var/lib/mysql
-</code></pre>
-
-<h3>14. 自動起動の設定</h3>
-
-<pre><code class="text"># chkconfig --add mysqld
-# chkconfig mysqld on
-# chkconfig --list mysqld
-mysqld          0:off   1:off   2:on    3:on    4:on    5:on    6:off
-</code></pre>
-
-<h3>15. MySQL サーバの起動</h3>
-
-<pre><code class="text"># /etc/rc.d/init.d/mysqld start
-</code></pre>
-
-<h3>16. root 初期パスワードの確認</h3>
-
-<p>（記録されているログファイルは環境により異なる）</p>
-
-<pre><code class="text"># grep 'temporary password' /var/log/mysql/error.log
-2015-11-29T06:05:51.282215Z 1 [Note] A temporary password is generated for root@localhost: wH!Y#&gt;(lQ7aQ
-</code></pre>
-
-<h3>17. MySQL の安全化</h3>
-
-<p>root パスワードの設定等を行う。（説明は後述）</p>
-
-<pre><code class="text"># mysql_secure_installation
-
-Securing the MySQL server deployment.
-
-Enter password for user root:
-The 'validate_password' plugin is installed on the server.
-The subsequent steps will run with the existing configuration
-of the plugin.
-Using existing password for root.
-
-Estimated strength of the password: 100
-Change the password for root ? ((Press y|Y for Yes, any other key for No) : y
-
-New password:
-
-Re-enter new password:
-
-Estimated strength of the password: 100
-Change the password for root ? ((Press y|Y for Yes, any other key for No) : n
-
- ... skipping.
-By default, a MySQL installation has an anonymous user,
-allowing anyone to log into MySQL without having to have
-a user account created for them. This is intended only for
-testing, and to make the installation go a bit smoother.
-You should remove them before moving into a production
-environment.
-
-Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
-Success.
-
-
-Normally, root should only be allowed to connect from
-'localhost'. This ensures that someone cannot guess at
-the root password from the network.
-
-Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
-
- ... skipping.
-By default, MySQL comes with a database named 'test' that
-anyone can access. This is also intended only for testing,
-and should be removed before moving into a production
-environment.
-
-
-Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
- - Dropping test database...
-Success.
-
- - Removing privileges on test database...
-Success.
-
-Reloading the privilege tables will ensure that all changes
-made so far will take effect immediately.
-
-Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
-Success.
-
-All done!
-</code></pre>
-
-<ol>
-<li><code>Enter password for user root:</code> で root の初期パスワードを入力する。</li>
-<li><code>New password:</code> で root の新しいパスワードを設定する。<br/>
-（パスワードに使用する文字は数字・英小文字・英大文字・記号を混在させること。そうしなければポリシー違反でエラーになる）</li>
-<li><code>Re-enter new password:</code> で root の新しいパスワードの確認入力をする。</li>
-<li><code>Estimated strength of the password: 100 ...</code> でより強固なパスワードに変更するか問われるが、 <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
-<li><code>Remove anonymous users?</code> で匿名ユーザを削除するために <code>y</code> で応答する。</li>
-<li><code>Disallow root login remotely?</code> で root のリモート接続を拒否するか問われるが、リモート接続したいので <code>n</code> で応答する。（当然 <code>y</code> でもよい）</li>
-<li><code>Remove test database and access to it?</code> でテストデータベースを削除するか問われるので、 <code>y</code> で応答する。</li>
-<li><code>Reload privilege tables now?</code> で権限テーブルを即時リロードするか問われるので、 <code>y</code> で応答する。</li>
-</ol>
-
-
-<h3>18. 動作確認</h3>
-
-<p>MySQL サーバにログインしてみる。</p>
-
-<pre><code class="text"># mysql -u root -p
-Enter password:
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 10
-Server version: 5.7.9-log Source distribution
-
-Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
-
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-mysql&gt;
-</code></pre>
-
-<p>その他、各種操作を試してみる。</p>
-
-<h3>19. その他</h3>
-
-<ul>
-<li>設定ファイルは &ldquo;/etc/my.cnf&rdquo; なので、実際に運用する際には綿密に検討して設定する。</li>
-<li>パスワードの有効期限がデフォルトでは「360 日」に設定されている。<br/>
-必要なら、システム変数 <code>default_password_lifetime</code> を編集する。</li>
-</ul>
-
-
-<h3>20. 参考サイト</h3>
-
-<ul>
-<li><a href="http://dev.mysql.com/doc/refman/5.7/en/source-installation.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source">MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source</a></li>
 </ul>
 
 

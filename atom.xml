@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-01-28T00:03:25+09:00</updated>
+  <updated>2016-02-02T00:04:52+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,662 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux Mint - Mroonga インストール（by ソースビルド）！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/02/linuxmint-mroonga-installation-by-src/"/>
+    <updated>2016-02-02T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/02/linuxmint-mroonga-installation-by-src</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux Mint 上の MySQL 5.7 に全文検索エンジン Groonga の機能を実現するストレージエンジン Mroonga をソースをビルドしてインストールする方法についてです。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Linux Mint 17.2(64bit) での作業を想定。</li>
+<li>当記事執筆時点で最新の Mroonga 5.10 をインストールする。</li>
+<li>Groonga 5.1.0 がインストール済みであることを想定。<br/>
+（参照「<a href="http://komasaru.github.io/2015/08/09/linux-mint-groonga-installation-by-src/" title="Linux Mint - Groonga インストール（by ソースビルド）！">Linux Mint - Groonga インストール（by ソースビルド）！</a>」）<br/>
+※ソースビルでなく PPA リポジトリからインストールしてもよいだろう（参照「<a href="http://groonga.org/ja/docs/install/ubuntu.html" title="2.4. Ubuntu — Groonga v5.1.0ドキュメント">2.4. Ubuntu — Groonga v5.1.0ドキュメント</a>」）</li>
+<li>MySQL 5.7.10 をソースをビルドしてインストールしていること。（Mroonga のビルドに MySQL のソースが必要なため）<br/>
+（参照「<a href="" title="Linux Mint - MySQL 5.7 インストール（by ソースビルド）！">Linux Mint - MySQL 5.7 インストール（by ソースビルド）！</a>」）</li>
+<li>MySQL 5.7.10 は &ldquo;/usr/local/mysql&rdquo; ディレクトリにインストールされていることを想定。</li>
+<li>MySQL 5.7.10 のインストールに使用したソースは &ldquo;~/mysql-5.7.10&rdquo; ディレクトリに存在することを想定。</li>
+<li>一般ユーザでの作業を想定。</li>
+<li>環境の相違等のために以下の方法ではうまく行かないこともあるだろう。<br/>
+ログを確認して適宜対処すること。</li>
+</ul>
+
+
+<h3>1. 必要ライブラリのインストール</h3>
+
+<p>必要なライブラリ groonga-normalizer-mysql をインストールする。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get -y install software-properties-common
+</span><span class='line'>$ sudo add-apt-repository -y universe
+</span><span class='line'>$ sudo add-apt-repository -y ppa:groonga/ppa
+</span><span class='line'>$ sudo apt-get update
+</span><span class='line'>$ sudo apt-get -y install groonga-normalizer-mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（groonga-normalizer-mysql を Apt インストールするなら Groonga 自体も Apt インストールしてもよかったかもしれないが、当方は既に Groonga をソースビルドでインストール済み）</p>
+
+<h3>2. ソースの取得</h3>
+
+<p>アーカイブファイルを取得、展開後、ディレクトリを移動しておく。（ダウンロード先は一般ユーザホームディレクトリとする）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ cd ~/
+</span><span class='line'>$ wget http://packages.groonga.org/source/mroonga/mroonga-5.10.tar.gz
+</span><span class='line'>$ tar zxvf mroonga-5.10.tar.gz
+</span><span class='line'>$ cd mroonga-5.10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. Makefile の生成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./configure \
+</span><span class='line'>--with-mysql-source=/home/masaru/mysql-5.7.10 \
+</span><span class='line'>--with-mysql-build=/home/masaru/mysql-5.7.10 \
+</span><span class='line'>--with-mysql-config=/usr/local/mysql/bin/mysql_config
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. ビルド</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ make
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. インストール</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. MySQL への Mroonga プラグインの適用</h3>
+
+<p>MySQL サーバが起動していることを確認してから以下を実行する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ mysql -u root -p &lt; /usr/local/share/mroonga/install.sql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>... does not exist</code> のメッセージが出力されるかもしれないが問題ない。（おそらく）</p>
+
+<h3>7. Mroonga 導入の確認</h3>
+
+<p>MySQL サーバに root でログインして確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>mysql&gt; SHOW ENGINES;
+</span><span class='line'>+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+</span><span class='line'>| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
+</span><span class='line'>+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+</span><span class='line'>| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+</span><span class='line'>| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+</span><span class='line'>| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+</span><span class='line'>| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+</span><span class='line'>| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+</span><span class='line'>| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+</span><span class='line'>| Mroonga            | YES     | CJK-ready fulltext search, column store                        | NO           | NO   | NO         |
+</span><span class='line'>| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+</span><span class='line'>| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
+</span><span class='line'>| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
+</span><span class='line'>+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+</span><span class='line'>10 rows in set (0.00 sec)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Mroonga</code> 行が存在することを確認する。</p>
+
+<p>その他、 Mroonga の簡単な使用方法は以下の過去記事等を参照。</p>
+
+<ul>
+<li><a href="http://komasaru.github.io/2015/08/21/mariadb-mroonga-installation" title="MariaDB 10.0.x - Mroonga プラグインの有効化！">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
+</ul>
+
+
+<h3>8. 参考サイト</h3>
+
+<ul>
+<li><a href="http://mroonga.org/ja/docs/install/others.html" title="2.7. その他 — Mroonga v5.10 documentation">2.7. その他 — Mroonga v5.10 documentation</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2016年01月 - OS・ブラウザ別アクセス状況！【自動集計】]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/01/blog-access/"/>
+    <updated>2016-02-01T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/01/blog-access</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>02月になりましたので、先月01月分の当ブログアクセス状況を公開します。</p>
+
+<!--more-->
+
+
+<h4>1. アクセスをOS別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td class="blog-access-pv">30,885</td>
+    <td class="blog-access-rate">59.7770</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td class="blog-access-pv">17,034</td>
+    <td class="blog-access-rate">32.9688</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td class="blog-access-pv">1,819</td>
+    <td class="blog-access-rate">3.5206</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td class="blog-access-pv">1,429</td>
+    <td class="blog-access-rate">2.7658</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td class="blog-access-pv">302</td>
+    <td class="blog-access-rate">0.5845</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td class="blog-access-pv">74</td>
+    <td class="blog-access-rate">0.1432</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td class="blog-access-pv">66</td>
+    <td class="blog-access-rate">0.1277</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td class="blog-access-pv">15</td>
+    <td class="blog-access-rate">0.0290</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td class="blog-access-pv">15</td>
+    <td class="blog-access-rate">0.0290</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td class="blog-access-pv">12</td>
+    <td class="blog-access-rate">0.0232</td>
+  </tr>
+  <tr>
+    <td>CentOS Linux</td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0174</td>
+  </tr>
+  <tr>
+    <td>Solaris</td>
+    <td class="blog-access-pv">3</td>
+    <td class="blog-access-rate">0.0058</td>
+  </tr>
+  <tr>
+    <td>NetBSD</td>
+    <td class="blog-access-pv">2</td>
+    <td class="blog-access-rate">0.0039</td>
+  </tr>
+  <tr>
+    <td>Debian GNU/Linux</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0019</td>
+  </tr>
+  <tr>
+    <td>SuSE Linux</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0019</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">51,642</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>2. アクセスをOS・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>OS</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td>X</td>
+    <td class="blog-access-pv">30,879</td>
+    <td class="blog-access-rate">59.7654</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>NT</td>
+    <td class="blog-access-pv">15,560</td>
+    <td class="blog-access-rate">30.1159</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,802</td>
+    <td class="blog-access-rate">3.4877</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">1,420</td>
+    <td class="blog-access-rate">2.7484</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7</td>
+    <td class="blog-access-pv">472</td>
+    <td class="blog-access-rate">0.9135</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>7 64 bit</td>
+    <td class="blog-access-pv">377</td>
+    <td class="blog-access-rate">0.7297</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>XP</td>
+    <td class="blog-access-pv">362</td>
+    <td class="blog-access-rate">0.7006</td>
+  </tr>
+  <tr>
+    <td>unknown</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">301</td>
+    <td class="blog-access-rate">0.5826</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Vista</td>
+    <td class="blog-access-pv">187</td>
+    <td class="blog-access-rate">0.3619</td>
+  </tr>
+  <tr>
+    <td>FreeBSD</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">74</td>
+    <td class="blog-access-rate">0.1432</td>
+  </tr>
+  <tr>
+    <td>Fedora Linux</td>
+    <td>unknown</td>
+    <td class="blog-access-pv">62</td>
+    <td class="blog-access-rate">0.1200</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>2000</td>
+    <td class="blog-access-pv">44</td>
+    <td class="blog-access-rate">0.0852</td>
+  </tr>
+  <tr>
+    <td>Linux</td>
+    <td></td>
+    <td class="blog-access-pv">13</td>
+    <td class="blog-access-rate">0.0252</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>8 64 bit</td>
+    <td class="blog-access-pv">11</td>
+    <td class="blog-access-rate">0.0213</td>
+  </tr>
+  <tr>
+    <td>Ubuntu Linux</td>
+    <td></td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0174</td>
+  </tr>
+  <tr>
+    <td>Windows</td>
+    <td>Server 2003</td>
+    <td class="blog-access-pv">9</td>
+    <td class="blog-access-rate">0.0174</td>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>2.3.6</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0116</td>
+  </tr>
+  <tr>
+    <td>iPhone OS</td>
+    <td>4_3_2</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0116</td>
+  </tr>
+  <tr>
+    <td>RedHat Linux</td>
+    <td>3.6-1.el5</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0116</td>
+  </tr>
+  <tr>
+    <td>Mac OS</td>
+    <td>X PowerPC</td>
+    <td class="blog-access-pv">6</td>
+    <td class="blog-access-rate">0.0116</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">51,642</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>3. アクセスをブラウザ別に集計</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td class="blog-access-pv">29,797</td>
+    <td class="blog-access-rate">57.6712</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td class="blog-access-pv">11,853</td>
+    <td class="blog-access-rate">22.9411</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td class="blog-access-pv">7,654</td>
+    <td class="blog-access-rate">14.8141</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td class="blog-access-pv">1,259</td>
+    <td class="blog-access-rate">2.4368</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td class="blog-access-pv">551</td>
+    <td class="blog-access-rate">1.0664</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td class="blog-access-pv">333</td>
+    <td class="blog-access-rate">0.6445</td>
+  </tr>
+  <tr>
+    <td>Netscape Navigator</td>
+    <td class="blog-access-pv">116</td>
+    <td class="blog-access-rate">0.2245</td>
+  </tr>
+  <tr>
+    <td>Mozilla SeaMonkey</td>
+    <td class="blog-access-pv">28</td>
+    <td class="blog-access-rate">0.0542</td>
+  </tr>
+  <tr>
+    <td>Chrome</td>
+    <td class="blog-access-pv">24</td>
+    <td class="blog-access-rate">0.0465</td>
+  </tr>
+  <tr>
+    <td>Epiphany</td>
+    <td class="blog-access-pv">18</td>
+    <td class="blog-access-rate">0.0348</td>
+  </tr>
+  <tr>
+    <td>iPhone</td>
+    <td class="blog-access-pv">12</td>
+    <td class="blog-access-rate">0.0232</td>
+  </tr>
+  <tr>
+    <td>Konqueror</td>
+    <td class="blog-access-pv">8</td>
+    <td class="blog-access-rate">0.0155</td>
+  </tr>
+  <tr>
+    <td>Unknown</td>
+    <td class="blog-access-pv">7</td>
+    <td class="blog-access-rate">0.0135</td>
+  </tr>
+  <tr>
+    <td>PHP</td>
+    <td class="blog-access-pv">5</td>
+    <td class="blog-access-rate">0.0097</td>
+  </tr>
+  <tr>
+    <td>Namoroka</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0019</td>
+  </tr>
+  <tr>
+    <td>SRWare Iron</td>
+    <td class="blog-access-pv">1</td>
+    <td class="blog-access-rate">0.0019</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td class="blog-access-pv">51,642</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<h4>4. アクセスをブラウザ・バージョン別に集計（上位20件）</h4>
+
+<table class="blog-access">
+  <tr>
+    <th>ブラウザ</th>
+    <th>Version</th>
+    <th>PageViews</th>
+    <th>比率(%)</th>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>537.36</td>
+    <td class="blog-access-pv">22,909</td>
+    <td class="blog-access-rate">44.3397</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>43.0</td>
+    <td class="blog-access-pv">8,577</td>
+    <td class="blog-access-rate">16.6005</td>
+  </tr>
+  <tr>
+    <td>Mozilla</td>
+    <td>11.0</td>
+    <td class="blog-access-pv">7,653</td>
+    <td class="blog-access-rate">14.8122</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>9537.53</td>
+    <td class="blog-access-pv">2,651</td>
+    <td class="blog-access-rate">5.1309</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.1</td>
+    <td class="blog-access-pv">1,262</td>
+    <td class="blog-access-rate">2.4426</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>38.0</td>
+    <td class="blog-access-pv">1,122</td>
+    <td class="blog-access-rate">2.1716</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.3.9</td>
+    <td class="blog-access-pv">944</td>
+    <td class="blog-access-rate">1.8271</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>44.0</td>
+    <td class="blog-access-pv">548</td>
+    <td class="blog-access-rate">1.0606</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>600.1.4</td>
+    <td class="blog-access-pv">533</td>
+    <td class="blog-access-rate">1.0316</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>10.0</td>
+    <td class="blog-access-pv">413</td>
+    <td class="blog-access-rate">0.7993</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>9.0</td>
+    <td class="blog-access-pv">343</td>
+    <td class="blog-access-rate">0.6639</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>534.30</td>
+    <td class="blog-access-pv">318</td>
+    <td class="blog-access-rate">0.6155</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>42.0</td>
+    <td class="blog-access-pv">316</td>
+    <td class="blog-access-rate">0.6116</td>
+  </tr>
+  <tr>
+    <td>Opera</td>
+    <td>9.80</td>
+    <td class="blog-access-pv">293</td>
+    <td class="blog-access-rate">0.5671</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.4.4</td>
+    <td class="blog-access-pv">289</td>
+    <td class="blog-access-rate">0.5594</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>8.0</td>
+    <td class="blog-access-pv">287</td>
+    <td class="blog-access-rate">0.5555</td>
+  </tr>
+  <tr>
+    <td>Debian IceWeasel</td>
+    <td>38.5.0</td>
+    <td class="blog-access-pv">275</td>
+    <td class="blog-access-rate">0.5323</td>
+  </tr>
+  <tr>
+    <td>Internet Explorer</td>
+    <td>7.0</td>
+    <td class="blog-access-pv">204</td>
+    <td class="blog-access-rate">0.3948</td>
+  </tr>
+  <tr>
+    <td>Safari</td>
+    <td>601.1.46</td>
+    <td class="blog-access-pv">161</td>
+    <td class="blog-access-rate">0.3116</td>
+  </tr>
+  <tr>
+    <td>Mozilla Firefox</td>
+    <td>41.0</td>
+    <td class="blog-access-pv">147</td>
+    <td class="blog-access-rate">0.2845</td>
+  </tr>
+  <tr>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+    <td class="blog-access-dot">:</td>
+  </tr>
+  <tr>
+    <td class="blog-access-total-label">合　計</td>
+    <td> </td>
+    <td class="blog-access-pv">51,642</td>
+    <td class="blog-access-rate">100.0000</td>
+  </tr>
+</table>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - MySQL 5.7 インストール（by ソースビルド）！]]></title>
@@ -5771,234 +6427,6 @@
 <hr />
 
 <p>めったに遭遇しない事象なので、後学のために記録として残しておいた次第です。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - Disk の IOPS の確認！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/15/linux-check-disk-iops/"/>
-    <updated>2015-11-15T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/15/linux-check-disk-iops</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>今回は、Linux OS でハードディスクが単位時間当たりどれくらい入出力要求をこなしているのか？を確認する方法についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CPU と入出力装置の負荷を確認するための <code>iostat</code> コマンドを使用する。</li>
-<li>Linux Mint や Debian 等はデフォルトではインストールされていないかもしれない。<br/>
-その場合は、 <code>apt-get install sysstat</code> 等でインストールする。</li>
-</ul>
-
-
-<h3>1. IOPS について</h3>
-
-<p>まず &ldquo;IOPS&rdquo; とは、記憶装置がある条件下で1秒間で読み込み・書き込みができる回数のことで、 &ldquo;Input/Output Per Second&rdquo; の略である。</p>
-
-<h3>2. コマンドの実行</h3>
-
-<p>以下のようにコマンドを実行する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># iostat -dx
-</span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
-</span><span class='line'>
-</span><span class='line'>Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
-</span><span class='line'>sda              51.59    64.81   72.45   15.82    17.47    44.00     0.70     0.31    3.47   0.89   7.82
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>-d</code> はデバイスの利用統計のみを表示するオプション。</li>
-<li><code>-x</code> は指定したデバイスの統計を追加表示するオプション。<br/>
-（デバイス名を指定しなかった場合は、 &ldquo;/proc/partitions&rdquo; に登録されている全てのデバイスについて表示される）</li>
-<li><code>iostat -dx 3 10</code> のように実行すると、3秒間隔で10回表示する。</li>
-<li>出力項目について
-
-<ul>
-<li><code>rrqm/s</code> &hellip; 結合したデバイスの入力要求の数</li>
-<li><code>wrqm/s</code> &hellip; 結合したデバイスの出力要求の数</li>
-<li><code>r/s</code> &hellip; 1秒間にデバイスに出力された入力要求の数</li>
-<li><code>w/s</code> &hellip; 1秒間にデバイスに出力された出力要求の数</li>
-<li><code>rsec/s</code> &hellip; 1秒間にデバイスから読み込んだセクタ数</li>
-<li><code>wsec/s</code> &hellip; 1秒間にデバイスへ書き込んだセクタ数</li>
-<li><code>avgrq-sz</code> &hellip; デバイスに出された入出力要求の平均サイズ</li>
-<li><code>avgqu-sz</code> &hellip; デバイスに出された入出力要求のキューの長さの平均</li>
-<li><code>await</code> &hellip; デバイスに出された入出力要求が受け取られるまでの平均時間</li>
-<li><code>svctm</code> &hellip; デバイスに出された入出力要求の平均処理時間</li>
-<li><code>%util</code> &hellip; デバイスの入出力要求を出す間に使用したCPUの平均時間</li>
-</ul>
-</li>
-</ul>
-
-
-<p>ちなみに、 <code>-x</code> オプションを使用しない場合は以下のように出力される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># iostat -d
-</span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
-</span><span class='line'>
-</span><span class='line'>Device:            tps   Blk_read/s   Blk_wrtn/s   Blk_read   Blk_wrtn
-</span><span class='line'>sda              88.28        17.98        44.05  249632216  611679582
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>出力項目について
-
-<ul>
-<li><code>tps</code> &hellip; デバイスへの入出力要求の数</li>
-<li><code>Blk_read/s</code> &hellip; デバイスから読み込んだブロック数の平均</li>
-<li><code>Blk_wrtn/s</code> &hellip; デバイスへ書き込んだブロック数の平均</li>
-<li><code>Blk_read</code> &hellip; 読み込んだブロック数</li>
-<li><code>Blk_wrtn</code> &hellip; 書き込んだブロック数</li>
-</ul>
-</li>
-</ul>
-
-
-<p>更には、 <code>-c</code> オプションで CPU の利用統計が確認できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># iostat -c
-</span><span class='line'>Linux 2.6.32-504.16.2.el6.i686 (hoge.mk-mode.com)     2015年10月06日 _i686_  (1 CPU)
-</span><span class='line'>
-</span><span class='line'>avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-</span><span class='line'>          11.57    2.39    2.35   31.88    0.00   51.81
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>出力項目について
-
-<ul>
-<li><code>%user</code> &hellip; ユーザレベルでのCPU使用率(%)</li>
-<li><code>%nice</code> &hellip; ユーザレベルで、優先的にCPUを使用したときのCPU使用率(%)</li>
-<li><code>%system</code> &hellip; システムレベルでのCPU使用率(%)</li>
-<li><code>%iowait</code> &hellip; CPU総時間当たりのI/O待ち時間率(%)</li>
-<li><code>%steal</code> &hellip; ゲストOSがリソース要求を行ったにもかかわらずCPUリソースを割り当ててもらえなかった時間の割合(%)</li>
-<li><code>%idle</code> &hellip; CPUのアイドル率(%)</li>
-</ul>
-</li>
-</ul>
-
-
-<p>そして、<code>iostat</code> をオプションを全く指定しないで実行するのは <code>-cd</code> オプションを指定して実行するのと同じ。（おそらく）</p>
-
-<h3>3. IOPS の確認</h3>
-
-<p>前項のようにコマンドを実行した後に表示された値のうち、 <code>r/s</code> と <code>w/s</code> の値を加算したものが IOPS の値となる。</p>
-
-<p>前項の場合、 <code>72.45</code> と <code>15.82</code> を加算した <code>88.27</code> が IOPS 値となる。</p>
-
-<h3>4. 注意</h3>
-
-<ul>
-<li>実際には、マシン稼働中は時々刻々と値は変化しているので、何回も実行して平均を取るのがよいだろう。</li>
-</ul>
-
-
-<hr />
-
-<p>当方の場合、 HDD の IOPS を確認することは、データベースの入出力に関する設定値を決定するのに必要でした。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - シャットダウン時間の短縮！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/10/mariadb-speedup-shutdown/"/>
-    <updated>2015-11-10T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/10/mariadb-speedup-shutdown</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB や MySQL をシャットダウン（or 再起動）する際に時間がかかりすぎることがあります。</p>
-
-<p>バッファの内容をディスクに書き込むのに時間がかかっているからです。</p>
-
-<p>今回は、そのイライラを軽減するための対処についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MariaDB 10.0.21 での作業を想定（MySQL でも同様）</li>
-<li>ハード環境により成果は異なる、ということに留意。</li>
-</ul>
-
-
-<h3>1. シャットダウン時に行われる時間のかかる処理</h3>
-
-<ul>
-<li>InnoDB Buffer Pool 全領域のチェックポイント。</li>
-<li>チェックポイントとは、ダーティページ（変更されたが、まだデータベースファイルに書き込まれていないページ）をテーブルスペースへ書き込むこと。</li>
-</ul>
-
-
-<h3>2. innodb_max_dirty_pages_pct について</h3>
-
-<ul>
-<li>InnoDB は、ダーティページの割合（単位：%）が <code>innodb_max_dirty_pages_pct</code> の値を超えないように、バッファープールからデータをフラッシュしようとする。</li>
-<li><code>innodb_max_dirty_pages_pct</code> のデフォルト値は <code>75</code></li>
-<li><code>innodb_max_dirty_pages_pct</code> の設定可能値は <code>0</code> 〜 <code>99.999</code> (MariaDB 10.0.15 以上), <code>0</code> 〜 <code>99</code> (MariaDB 10.0.15 未満).</li>
-<li>書き込み回数を減らす（書き込みを遅らせる）ためにはこの値を大きくする。</li>
-<li>この値を小さくし過ぎると書き込みが頻発し、<code>innodb_buffer_pool_size</code> を大きく設定していても効果が小さくなる。</li>
-</ul>
-
-
-<h3>3. シャットダウン時間の短縮方法</h3>
-
-<ol>
-<li>MariaDB(MySQL) サーバにログインし以下の SQLを実行する。<br/>
-<code>SET GLOBAL innodb_max_dirty_pages_pct = 0;</code><br/>
-（但し、環境によっては <code>0</code> を指定できないかもしれない。その場合は <code>1</code> や <code>0.001</code> 等でもよい）</li>
-<li><code>Value</code> 値が十分小さくなる（<code>0</code> に近付く）まで以下の SQL を断続的に実行して待つ。<br/>
-<code>SHOW GLOBAL STATUS like 'innodb_buffer_pool_pages_dirty';</code></li>
-<li>サーバのシャットダウン（or 再起動）
-
-<ul>
-<li>シャットダウン（or 再起動）すると、 <code>innodb_max_dirty_pages_pct</code> の値が設定値に戻る。</li>
-<li>シャットダウン（or 再起動）し忘れると <code>innodb_max_dirty_pages_pct</code> の値が <code>0</code> のままで、頻繁にダーティページのテーブルスペースへの書き込みが発生してレスポンスが悪くなるので注意。</li>
-</ul>
-</li>
-</ol>
-
-
-<h3>4. 所感</h3>
-
-<p>シャットダウンに時間がかかりすぎて不安に感じる際には、シャットダウン前にチェックポイントを実行してダーティページの書込状況を確認できるのでよいかもしれません。</p>
-
-<h3>5. 参考サイト</h3>
-
-<p>シャットダウンプロセスについては以下のサイトを参照。（但し、チェックポイントやダーティページについての記載はない）</p>
-
-<ul>
-<li><a href="http://dev.mysql.com/doc/refman/5.6/ja/server-shutdown.html" title="MySQL :: MySQL 5.6 リファレンスマニュアル :: 5.1.12 シャットダウンプロセス">MySQL :: MySQL 5.6 リファレンスマニュアル :: 5.1.12 シャットダウンプロセス</a></li>
-</ul>
-
-
-<hr />
 
 <p>以上。</p>
 ]]></content>
