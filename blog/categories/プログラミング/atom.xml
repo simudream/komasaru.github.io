@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-02T00:04:52+09:00</updated>
+  <updated>2016-02-06T00:08:25+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,193 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Flightradar24 から空港情報一覧取得！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/06/ruby-getting-airport-list-from-fr24/"/>
+    <updated>2016-02-06T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/06/ruby-getting-airport-list-from-fr24</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>航空機の運行状況をリアルタイムで確認できる Web サイト <a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a> に登録されている空港情報の一覧を Ruby で取得してみました。（と言っても、 JSON データを取得しているだけですが）</p>
+
+<p>（<strong>当ページ内の Flightradar24.com のリンクはうまく接続できないかもしれません。その場合は URL をブラウザにコピペしてみてください。</strong>）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.4-p230 での作業を想定。</li>
+<li>世界中の全空港を網羅している訳ではない。（例えば、島根県の隠岐空港や萩・石見空港のような規模の小さい(?)空港の情報は登録されていない）</li>
+</ul>
+
+
+<h3>1. Ruby スクリプトの作成</h3>
+
+<p>難しいことはしていないので、説明は省略する。<br/>
+ただ、悪質な Bot でないことを主張するために連絡先を User Agent に設定している。（伏字は適宜置き換えること）</p>
+
+<pre><code class="ruby fr24_airports.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+#---------------------------------------------------------------------------------
+#= Flightradar24 空港情報取得
+#
+# date          name            version
+# 2015.12.20    mk-mode.com     1.00 新規作成
+#
+# Copyright(C) 2015 mk-mode.com All Rights Reserved.
+#---------------------------------------------------------------------------------
+#++
+require 'json'
+require 'open-uri'
+require 'timeout'
+
+class Fr24Airports
+  URL        = "http://www.flightradar24.com/_json/airports.php"  # 接続先 URL
+  TIMEOUT    = 10                                                 # OpenURI 接続時のタイムアウト
+  USER_AGENT = "xxxxxxx Bot (by Ruby/#{RUBY_VERSION}, Administrator: xxxxxxxx@yyyyyyy.zzz)"
+                                                                  # OpenURI 接続時の User-Agent, Mail Address
+  FILE_PATH  = "./data/airports"                                  # 保存ファイル
+
+  def exec
+    get_json        # JSON 取得
+    save_file       # ファイル保存 (見やすく整形したものがよければこちら)
+    #save_file_csv  # ファイル保存（CSV 形式がよければこちら）
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    e.backtrace.each { |tr| $stderr.puts "\t#{tr}" }
+    exit 1
+  end
+
+private
+
+  # JSON 取得
+  def get_json
+    str = nil
+    timeout(TIMEOUT) do
+      str = open(URL, {"User-Agent" =&gt; USER_AGENT}) { |f| f.read }
+    end
+    @json = JSON.parse(str)["rows"].sort_by { |j| [j["country"], j["iata"]] }
+  rescue =&gt; e
+    raise
+  end
+
+  # ファイル保存
+  # * 最大文字数（country: 32, name: 63）
+  # * name の末尾に改行コードが含まれていることがあるので chomp している
+  def save_file
+    File.open("#{FILE_PATH}.txt", "w") do |f|
+      str =  "COUNTRY" + " " * 27 + "IATA  ICAO  NAME" + " " * 68
+      str &lt;&lt; "LAT          LON    ALT"
+      f.puts str
+      @json.each do |j|
+        str =  sprintf("%-32s  %3s   %4s", j["country"], j["iata"], j["icao"])
+        str &lt;&lt; sprintf("  %-63s", j["name"].chomp)
+        str &lt;&lt; sprintf("  %10.6f", j["lat"].to_f)
+        str &lt;&lt; sprintf("  %11.6f", j["lon"].to_f)
+        str &lt;&lt; sprintf("  %5d", j["alt"].to_i)
+        f.puts str
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  # ファイル保存（CSV 形式）
+  # * 最大文字数（country: 32, name: 63）
+  # * name の末尾に改行コードが含まれていることがあるので chomp している
+  # * カンマが含まれる可能性のある country, name のみ "" でくくっている
+  def save_file_csv
+    File.open("#{FILE_PATH}.csv", "w") do |f|
+      f.puts "COUNTRY,IATA,ICAO,NAME,LAT,LON,ALT"
+      @json.each do |j|
+        str =  "\"#{j["country"]}\",#{j["iata"]},#{j["icao"]},\"#{j["name"].chomp}\","
+        str &lt;&lt; "#{j["lat"]},#{j["lon"]},#{j["alt"]}"
+        f.puts str
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+end
+
+Fr24Airports.new.exec
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/75bd0abfbe95814c50bb" title="Gist - Ruby script to get a airport list from Flightradar24.">Gist - Ruby script to get a airport list from Flightradar24.</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの実行</h3>
+
+<p>Ruby スクリプトと同じディレクトリ内に &ldquo;data&rdquo; ディレクトリを作成後、以下を実行。</p>
+
+<pre><code class="text">$ ./fr24_airports.rb
+</code></pre>
+
+<h3>3. データの確認</h3>
+
+<p>&ldquo;data&rdquo; ディレクトリ内に &ldquo;airports.txt&rdquo; が作成されるので確認してみる。</p>
+
+<pre><code class="text data/airports.txt">COUNTRY                           IATA  ICAO  NAME                                                                    LAT          LON    ALT
+Afghanistan                       KBL   OAKB  Kabul International Airport                                       34.565842    69.212410   5871
+Afghanistan                       MZR   OAMS  Mazar-I-Sharif International Airport                              36.706909    67.209671   1284
+Albania                           TIA   LATI  Tirana International Airport                                      41.414742    19.720560    126
+Algeria                           AAE   DABB  Annaba Rabah Bitat Airport                                        36.822220     7.809167     16
+Algeria                           ALG   DAAG  Algiers Houari Boumediene Airport                                 36.691010     3.215408     82
+Algeria                           BJA   DAAE  Bejaia Soummam Airport                                            36.711990     5.069922     20
+Algeria                           CFK   DAOI  Chlef International Airport                                       36.212223     1.331667    469
+Algeria                           CZL   DABC  Constantine Mohamed Boudiaf International Airport                 36.276020     6.620386   2316
+Algeria                           GJL   DAAV  Jijel Ferhat Abbas Airport                                        36.795132     5.873608     36
+Algeria                           ORN   DAOO  Oran Es Senia Airport                                             35.623852    -0.621180    299
+         :
+====&lt; 以下省略 &gt;====
+         :
+</code></pre>
+
+<p>CSV 形式で出力した場合は &ldquo;airports.csv&rdquo; を確認してみる。</p>
+
+<pre><code class="text data/airports.csv">COUNTRY,IATA,ICAO,NAME,LAT,LON,ALT
+"Afghanistan",KBL,OAKB,"Kabul International Airport",34.565842,69.212410,5871
+"Afghanistan",MZR,OAMS,"Mazar-I-Sharif International Airport",36.706909,67.209671,1284
+"Albania",TIA,LATI,"Tirana International Airport",41.414742,19.720560,126
+"Algeria",AAE,DABB,"Annaba Rabah Bitat Airport",36.822220,7.809167,16
+"Algeria",ALG,DAAG,"Algiers Houari Boumediene Airport",36.691010,3.215408,82
+"Algeria",BJA,DAAE,"Bejaia Soummam Airport",36.711990,5.069922,20
+"Algeria",CFK,DAOI,"Chlef International Airport",36.212223,1.331667,469
+"Algeria",CZL,DABC,"Constantine Mohamed Boudiaf International Airport",36.276020,6.620386,2316
+"Algeria",GJL,DAAV,"Jijel Ferhat Abbas Airport",36.795132,5.873608,36
+"Algeria",ORN,DAOO,"Oran Es Senia Airport",35.623852,-0.621180,299
+         :
+====&lt; 以下省略 &gt;====
+         :
+</code></pre>
+
+<h3>4. 関係のある過去の記事</h3>
+
+<ul>
+<li><a href="/2014/03/27/ruby-noaa-weather-stations/" title="Ruby - NOAA（アメリカ海洋大気庁）気象観測所一覧！">Ruby - NOAA（アメリカ海洋大気庁）気象観測所一覧！</a></li>
+<li><a href="/2014/03/28/bash-getting-a-weather-station-noaa/" title="Bash - NOAA 気象観測所検索！">Bash - NOAA 気象観測所検索！</a></li>
+<li><a href="/2014/03/30/bash-getting-a-metar/" title="Bash - METAR 気象情報取得！">Bash - METAR 気象情報取得！</a></li>
+</ul>
+
+
+<h3>5. その他</h3>
+
+<p>&ldquo;<a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a>&rdquo; が提供するリアルタイムの航空機の飛行情報も、調査に調査を重ねて取得できるようになりました。（後日紹介）</p>
+
+<p>ちなみに、Web 検索するとリアルタイム飛行情報を取得する方法についてある程度はヒットしますが、その９割くらいは情報が古いです。</p>
+
+<hr />
+
+<p>全ての空港が網羅されていればうれしいのですが。。。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby - ３次スプライン補間！]]></title>
@@ -804,200 +991,6 @@ $ ./druby_client.rb
 <p>この dRuby による分散処理をいろいろ応用できそうです。</p>
 
 <p>実際、目論んでいることもありますし。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - Rroonga で全文検索！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/17/ruby-rroonga-fulltext-searching/"/>
-    <updated>2015-08-17T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/17/ruby-rroonga-fulltext-searching</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Ruby でカラムストア機能付き全文検索エンジン Groonga の機能を容易に使用できる Rroonga を使用してみました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>Ruby 2.2.2-p95 での作業を想定。</li>
-<li>カラムストア機能付き全文検索エンジン Groonga がインストール済みであること。</li>
-</ul>
-
-
-<h3>1. Rroonga のインストール</h3>
-
-<p>以下のようにしてインストールする。<br/>
-（ちなみ、 Groonga 未インストールなら、ここでインストールされるはず。（当方 Groonga インストール済みなので、未確認））</p>
-
-<pre><code class="text">$ sudo gem install rroonga
-</code></pre>
-
-<h3>2. データベースの作成</h3>
-
-<p>簡単な都道府県名データベースを作成してみる。</p>
-
-<p>取り急ぎ対話形式で作業を行いたいので、 pry(or irb) に入る。（プロンプトを簡易表示。 <code>groonga</code> を <code>require</code> して）</p>
-
-<pre><code class="text">$ pry --simple-prompt -r groonga
-</code></pre>
-
-<p>まず、エンコーディングの設定を行う。（今回は Linux なので UTF-8 に設定）</p>
-
-<pre><code class="text">&gt;&gt; Groonga::Context.default_options = {:encoding =&gt; :utf8}
-=&gt; {:encoding=&gt;:utf8}
-</code></pre>
-
-<p>そして、データベースを作成する。（データベースファイル名を指定）</p>
-
-<pre><code class="text">&gt;&gt; Groonga::Database.create(:path =&gt; "/path/to/prefs.db")
-=&gt; #&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;
-</code></pre>
-
-<h3>3. テーブルの作成</h3>
-
-<p>都道府県名テーブルを作成してみる。（テーブル名、テーブルタイプを指定）<br/>
-（テーブルタイプには <code>hash</code>, <code>patricia_trie</code>, <code>double_array_trie</code>, <code>array</code> が指定可能）</p>
-
-<pre><code class="text">&gt;&gt; Groonga::Schema.create_table("Prefs", :type =&gt; :hash) do |tbl|
- |   tbl.text("pref_name")
- | end
-=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe62cef60
-  @definitions=
-   [#&lt;Groonga::Schema::ColumnDefinition:0x007f9fe62ce1f0
-     @name="pref_name",
-     @options={:persistent=&gt;true, :named_path=&gt;nil},
-     @type="Text"&gt;],
-  @name="Prefs",
-  @options=
-   {:context=&gt;
-     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
-    :type=&gt;:hash},
-  @table_type=Groonga::Hash&gt;]
-</code></pre>
-
-<p>テーブルが作成されたか確認してみる。</p>
-
-<pre><code class="text">&gt;&gt; prefs = Groonga["Prefs"]
-=&gt; #&lt;Groonga::Hash id: &lt;256&gt;, name: &lt;Prefs&gt;, path: &lt;/path/to/prefs.db.0000100&gt;, domain: &lt;ShortText&gt;, range: (nil), flags: &lt;&gt;, size: &lt;0&gt;, encoding: &lt;:utf8&gt;, default_tokenizer: (nil), token_filters: [], normalizer: (nil)&gt;
-&gt;&gt; prefs.size
-=&gt; 0
-</code></pre>
-
-<h3>4. レコードの追加</h3>
-
-<p>以下のようにして、テーブルにレコードを追加していく。（47都道府県分。別途作成しておいた配列をループさせて登録するのがよいだろう）</p>
-
-<pre><code class="text">&gt;&gt; prefs.add("Hokkaido", :pref_name =&gt; "北海道")
-=&gt; #&lt;Groonga::Record:0x007f9fe69e4480 ..., attributes: {"_id"=&gt;1, "_key"=&gt;"Hokkaido", "pref_name"=&gt;"北海道"}&gt;
-</code></pre>
-
-<p>以下のような方法で追加することも可能。</p>
-
-<pre><code class="text">&gt;&gt; prefs.add("Aomoriken")
-=&gt; #&lt;Groonga::Record:0x007f9fe6755020 ..., attributes: {"_id"=&gt;3, "_key"=&gt;"Aomoriken", "pref_name"=&gt;nil}&gt;
-&gt;&gt; prefs["Aomoriken"].pref_name = "青森県"
-=&gt; "青森県"
-</code></pre>
-
-<p>ちなみに、削除するには以下のようにする。</p>
-
-<pre><code class="text">&gt;&gt; prefs.delete("Aomoriken")
-=&gt; nil
-</code></pre>
-
-<h3>5. レコードの参照</h3>
-
-<p>登録したレコードを参照してみる。</p>
-
-<pre><code class="text">&gt;&gt; prefs["Shimaneken"]
-=&gt; #&lt;Groonga::Record:0x007f9fe671a1f0 ..., attributes: {"_id"=&gt;32, "_key"=&gt;"Shimaneken", "pref_name"=&gt;"島根県"}&gt;
-
-&gt;&gt; prefs["Shimaneken"].id
-=&gt; 32
-
-&gt;&gt; prefs["Shimaneken"].key
-=&gt; "Shimaneken"
-
-&gt;&gt; prefs["Shimaneken"].pref_name
-=&gt; "島根県"
-
-&gt;&gt; prefs.size
-=&gt; 47
-</code></pre>
-
-<h3>6. 全文検索用語彙テーブルの作成</h3>
-
-<p>全文検索用語彙テーブルを作成する。（以下は、テーブルタイプを PatriciaTrie に、ノーマライザを大文字小文字の区別をしない NormalizerAuto に、デフォルトトークナイザを N-gram の一種バイグラムに設定する例）</p>
-
-<pre><code class="text">&gt;&gt; Groonga::Schema.create_table("Terms",
- |   :type =&gt; :patricia_trie,
- |   :normalizer =&gt; :NormalizerAuto,
- | :default_tokenizer =&gt; "TokenBigram")
-=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe6bb9cb0
-  @definitions=[],
-  @name="Terms",
-  @options=
-   {:context=&gt;
-     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
-    :type=&gt;:patricia_trie,
-    :normalizer=&gt;:NormalizerAuto,
-    :default_tokenizer=&gt;"TokenBigram"},
-  @table_type=Groonga::PatriciaTrie&gt;]
-</code></pre>
-
-<h3>7. 全文検索用語彙テーブルのインデックス定義</h3>
-
-<p>今回は都道府県名ローマ字で検索してみることにする。</p>
-
-<pre><code class="text">&gt;&gt; Groonga::Schema.change_table("Terms") do |tbl|
- |   tbl.index("Prefs.pref_name")
- | end
-=&gt; [#&lt;Groonga::Schema::TableDefinition:0x007f9fe6a823d8
-  @definitions=
-   [#&lt;Groonga::Schema::IndexColumnDefinition:0x007f9fe6a81d48
-     @name=nil,
-     @options={:persistent=&gt;true, :named_path=&gt;nil},
-     @target_columns=["pref_name"],
-     @target_table="Prefs"&gt;],
-  @name="Terms",
-  @options=
-   {:context=&gt;
-     #&lt;Groonga::Context encoding: &lt;:utf8&gt;, database: &lt;#&lt;Groonga::Database id: &lt;nil&gt;, name: (anonymous), path: &lt;/path/to/prefs.db&gt;, domain: (nil), range: (nil), flags: &lt;&gt;&gt;&gt;&gt;,
-    :change=&gt;true},
-  @table_type=Groonga::Array&gt;]
-</code></pre>
-
-<h3>8. 検索の確認</h3>
-
-<pre><code class="text">&gt;&gt; prefs_shimane = prefs.select { |rec| rec.pref_name =~ "島根県" }    =&gt; #&lt;Groonga::Hash id: &lt;2147483655&gt;, name: (anonymous), path: (temporary), domain: &lt;Prefs&gt;, range: (nil), flags: &lt;WITH_SUBREC&gt;, size: &lt;1&gt;, encoding: &lt;:utf8&gt;, default_tokenizer: (nil), token_filters: [], normalizer: (nil)&gt;
-
-&gt;&gt; prefs_shimane.size
-=&gt; 1
-
-&gt;&gt; prefs_shimane.collect { |rec| rec.key.key }
-=&gt; ["Shimaneken"]
-
-&gt;&gt; prefs_shimane.collect { |rec| rec["_key"] }
-=&gt; ["Shimaneken"]
-</code></pre>
-
-<h3>9. 参考サイト</h3>
-
-<ul>
-<li><a href="http://groonga.org/ja/" title="Groonga - カラムストア機能付き全文検索エンジン">Groonga - カラムストア機能付き全文検索エンジン</a></li>
-<li><a href="http://ranguba.org/ja/" title="RubyでGroonga使って全文検索 - ラングバ">RubyでGroonga使って全文検索 - ラングバ</a></li>
-</ul>
-
-
-<hr />
-
-<p>その他の詳細な使用方法は実際に Ruby コーディングしながら覚えることになるでしょう。</p>
 
 <p>以上。</p>
 ]]></content>
