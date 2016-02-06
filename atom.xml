@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-06T00:08:25+09:00</updated>
+  <updated>2016-02-07T00:05:21+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -14,6 +14,297 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Ruby - Flightradar24 から航空会社情報一覧取得！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/07/ruby-getting-airline-list-from-fr24/"/>
+    <updated>2016-02-07T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/07/ruby-getting-airline-list-from-fr24</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>航空機の運行状況をリアルタイムで確認できる Web サイト <a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a> に登録されている航空会社情報の一覧を Ruby で取得してみました。（と言っても、 JSON データを取得しているだけですが）</p>
+
+<p>空港情報一覧の取得については前回の記事をご参照ください。</p>
+
+<ul>
+<li><a href="http://komasaru.github.io/2016/02/06/ruby-getting-airport-list-from-fr24/" title="Ruby - Flightradar24 から空港情報一覧取得！">Ruby - Flightradar24 から空港情報一覧取得！</a></li>
+</ul>
+
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.4-p230 での作業を想定。</li>
+<li>世界中の全航空会社を網羅している訳ではないかもしれない。（空港情報一覧と同様に）</li>
+</ul>
+
+
+<h3>1. Ruby スクリプトの作成</h3>
+
+<p>難しいことはしていないので、説明は省略する。<br/>
+ただ、悪質な Bot でないことを主張するため、連絡先を User Agent に設定している。（伏字は適宜置き換えること）</p>
+
+<figure class='code'><figcaption><span>fr24_airlines.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#! /usr/local/bin/ruby</span>
+</span><span class='line'><span class="c1"># coding: utf-8</span>
+</span><span class='line'><span class="c1">#---------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="c1">#= Flightradar24 航空会社情報取得</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># date          name            version</span>
+</span><span class='line'><span class="c1"># 2015.12.20    mk-mode.com     1.00 新規作成</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># Copyright(C) 2015 mk-mode.com All Rights Reserved.</span>
+</span><span class='line'><span class="c1">#---------------------------------------------------------------------------------</span>
+</span><span class='line'><span class="c1">#++</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;open-uri&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;timeout&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Fr24Airlines</span>
+</span><span class='line'>  <span class="no">URL</span>        <span class="o">=</span> <span class="s2">&quot;http://www.flightradar24.com/_json/airlines.php&quot;</span>  <span class="c1"># 接続先 URL</span>
+</span><span class='line'>  <span class="no">TIMEOUT</span>    <span class="o">=</span> <span class="mi">10</span>                                                 <span class="c1"># OpenURI 接続時のタイムアウト</span>
+</span><span class='line'>  <span class="no">USER_AGENT</span> <span class="o">=</span> <span class="s2">&quot;xxxxxxx Bot (by Ruby/</span><span class="si">#{</span><span class="no">RUBY_VERSION</span><span class="si">}</span><span class="s2">, Administrator: xxxxxxxx@yyyyyyy.zzz)&quot;</span>
+</span><span class='line'>                                                                  <span class="c1"># OpenURI 接続時の User-Agent, Mail Address</span>
+</span><span class='line'>  <span class="no">FILE_PATH</span>  <span class="o">=</span> <span class="s2">&quot;./data/airlines&quot;</span>                                  <span class="c1"># 保存ファイル</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">exec</span>
+</span><span class='line'>    <span class="n">get_json</span>       <span class="c1"># JSON 取得</span>
+</span><span class='line'>    <span class="c1">#save_file      # ファイル保存</span>
+</span><span class='line'>    <span class="n">save_file_csv</span>  <span class="c1"># ファイル保存（CSV 形式）</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;[</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">] </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">tr</span><span class="o">|</span> <span class="vg">$stderr</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="si">#{</span><span class="n">tr</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># JSON 取得</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">get_json</span>
+</span><span class='line'>    <span class="n">str</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>    <span class="n">timeout</span><span class="p">(</span><span class="no">TIMEOUT</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">str</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="no">URL</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span> <span class="o">=&gt;</span> <span class="no">USER_AGENT</span><span class="p">})</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="vi">@json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">str</span><span class="p">)</span><span class="o">[</span><span class="s2">&quot;rows&quot;</span><span class="o">].</span><span class="n">sort_by</span> <span class="p">{</span> <span class="o">|</span><span class="n">j</span><span class="o">|</span> <span class="n">j</span><span class="o">[</span><span class="s2">&quot;Name&quot;</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># ファイル保存</span>
+</span><span class='line'>  <span class="c1"># * 最大文字数（name: 33）</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">save_file</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">FILE_PATH</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">str</span> <span class="o">=</span>  <span class="s2">&quot;NAME&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">31</span> <span class="o">+</span> <span class="s2">&quot;IATA  ICAO&quot;</span>
+</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="n">str</span>
+</span><span class='line'>      <span class="vi">@json</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">j</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">f</span><span class="o">.</span><span class="n">printf</span><span class="p">(</span><span class="s2">&quot;%-33s  %2s    %3s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">j</span><span class="o">[</span><span class="s2">&quot;Name&quot;</span><span class="o">]</span><span class="p">,</span> <span class="n">j</span><span class="o">[</span><span class="s2">&quot;Code&quot;</span><span class="o">]</span><span class="p">,</span> <span class="n">j</span><span class="o">[</span><span class="s2">&quot;ICAO&quot;</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># ファイル保存（CSV 形式）</span>
+</span><span class='line'>  <span class="c1"># * 最大文字数（name: 33）</span>
+</span><span class='line'>  <span class="c1"># * Code が &quot;&quot; のこともあることに注意</span>
+</span><span class='line'>  <span class="c1"># * カンマが含まれる可能性のある Name のみ &quot;&quot; でくくっている</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">save_file_csv</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">FILE_PATH</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;NAME,IATA,ICAO&quot;</span>
+</span><span class='line'>      <span class="vi">@json</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">j</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">j</span><span class="o">[</span><span class="s2">&quot;Name&quot;</span><span class="o">]</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">,</span><span class="si">#{</span><span class="n">j</span><span class="o">[</span><span class="s2">&quot;Code&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">j</span><span class="o">[</span><span class="s2">&quot;ICAO&quot;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="k">raise</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Fr24Airlines</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">exec</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/940d11d07a3fd452ba10" title="Gist - Ruby script to get a airline list from Flightradar24.">Gist - Ruby script to get a airline list from Flightradar24.</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの実行</h3>
+
+<p>Ruby スクリプトと同じディレクトリ内に &ldquo;data&rdquo; ディレクトリを作成後、以下を実行。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./fr24_airlines.rb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. データの確認</h3>
+
+<p>&ldquo;data&rdquo; ディレクトリ内に &ldquo;airlines.txt&rdquo; が作成されるので確認してみる。</p>
+
+<figure class='code'><figcaption><span>data/airlines.txt</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>NAME                               IATA  ICAO
+</span><span class='line'>1Time                              T6    RNX
+</span><span class='line'>9 Air                              AQ    JYH
+</span><span class='line'>ABSA Cargo                         M3    TUS
+</span><span class='line'>ABX Air                            GB    ABX
+</span><span class='line'>ACT Airlines                       9T    RUN
+</span><span class='line'>AIS Airlines                       IS    PNX
+</span><span class='line'>ALPI Eagles                        E8    ELG
+</span><span class='line'>ASL Airlines France                5O    FPO
+</span><span class='line'>ASL Airlines Ireland               AG    ABR
+</span><span class='line'>ASL Airlines Switzerland           FT    FAT
+</span><span class='line'>         :
+</span><span class='line'>====&lt; 以下省略 &gt;====
+</span><span class='line'>         :
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>CSV 形式で出力した場合は &ldquo;airlines.csv&rdquo; を確認してみる。</p>
+
+<figure class='code'><figcaption><span>data/airlines.csv</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>NAME,IATA,ICAO
+</span><span class='line'>&quot;1Time&quot;,T6,RNX
+</span><span class='line'>&quot;9 Air&quot;,AQ,JYH
+</span><span class='line'>&quot;ABSA Cargo&quot;,M3,TUS
+</span><span class='line'>&quot;ABX Air&quot;,GB,ABX
+</span><span class='line'>&quot;ACT Airlines&quot;,9T,RUN
+</span><span class='line'>&quot;AIS Airlines&quot;,IS,PNX
+</span><span class='line'>&quot;ALPI Eagles&quot;,E8,ELG
+</span><span class='line'>&quot;ASL Airlines France&quot;,5O,FPO
+</span><span class='line'>&quot;ASL Airlines Ireland&quot;,AG,ABR
+</span><span class='line'>&quot;ASL Airlines Switzerland&quot;,FT,FAT
+</span><span class='line'>         :
+</span><span class='line'>====&lt; 以下省略 &gt;====
+</span><span class='line'>         :
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. 関係のある過去の記事</h3>
+
+<ul>
+<li><a href="http://komasaru.github.io/2014/03/27/ruby-noaa-weather-stations/" title="Ruby - NOAA（アメリカ海洋大気庁）気象観測所一覧！">Ruby - NOAA（アメリカ海洋大気庁）気象観測所一覧！</a></li>
+<li><a href="http://komasaru.github.io/2014/03/28/bash-getting-a-weather-station-noaa/" title="Bash - NOAA 気象観測所検索！">Bash - NOAA 気象観測所検索！</a></li>
+<li><a href="http://komasaru.github.io/2014/03/30/bash-getting-a-metar/" title="Bash - METAR 気象情報取得！">Bash - METAR 気象情報取得！</a></li>
+<li><a href="http://komasaru.github.io/2016/01/28/ruby-getting-airport-list-from-fr24/" title="Ruby - Flightradar24 から空港情報一覧取得！">Ruby - Flightradar24 から空港情報一覧取得！</a></li>
+</ul>
+
+
+<h3>5. その他</h3>
+
+<p>&ldquo;<a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a>&rdquo; が提供するリアルタイムの航空機の飛行情報も、調査に調査を重ねて取得できるようになりました。（後日紹介）</p>
+
+<p>ちなみに、Web で期間を指定せずに検索するとリアルタイム飛行情報を取得する方法についてある程度はヒットしますが、その９割くらいは情報が古いです。</p>
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Ruby - Flightradar24 から空港情報一覧取得！]]></title>
     <link href="http://komasaru.github.io/blog/2016/02/06/ruby-getting-airport-list-from-fr24/"/>
     <updated>2016-02-06T00:20:00+09:00</updated>
@@ -21,8 +312,6 @@
     <content type="html"><![CDATA[<p>こんばんは。</p>
 
 <p>航空機の運行状況をリアルタイムで確認できる Web サイト <a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a> に登録されている空港情報の一覧を Ruby で取得してみました。（と言っても、 JSON データを取得しているだけですが）</p>
-
-<p>（<strong>当ページ内の Flightradar24.com のリンクはうまく接続できないかもしれません。その場合は URL をブラウザにコピペしてみてください。</strong>）</p>
 
 <!--more-->
 
@@ -6486,153 +6775,6 @@
 
 
 <hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - MTU 最適値の導出！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/11/26/linux-mtu-best-effort/"/>
-    <updated>2015-11-26T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/11/26/linux-mtu-best-effort</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Linux で最適な MTU 値を導出する方法についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>1. MTU について</h3>
-
-<p>MTU とは Maximum Transmission Unit の略で、ネットワーク上において１フレーム（１回の転送）で送信可能な IP パケットの最大サイズのこと。<br/>
-（このサイズは IP ヘッダ ＋ ICMP ヘッダ ＋ データのサイズ）</p>
-
-<h3>2. MTU 現在値の確認</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ifconfig
-</span><span class='line'>ifconfig
-</span><span class='line'>eth0      Link encap:イーサネット  ハードウェアアドレス XX:XX:XX:XX:XX:XX
-</span><span class='line'>          inetアドレス:192.168.XXX.XXX  ブロードキャスト:192.168.XXX.255  マスク:255.255.255.0
-</span><span class='line'>          UP BROADCAST RUNNING MULTICAST  MTU:1500  メトリック:1
-</span><span class='line'>          RXパケット:49793411 エラー:0 損失:0 オーバラン:0 フレーム:0
-</span><span class='line'>          TXパケット:30012458 エラー:0 損失:0 オーバラン:0 キャリア:0
-</span><span class='line'>          衝突(Collisions):0 TXキュー長:1000
-</span><span class='line'>          RXバイト:23207684202 (23.2 GB)  TXバイト:21221894153 (21.2 GB)
-</span><span class='line'>          割り込み:17
-</span><span class='line'>
-</span><span class='line'>lo        Link encap:ローカルループバック
-</span><span class='line'>          inetアドレス:127.0.0.1  マスク:255.0.0.0
-</span><span class='line'>          UP LOOPBACK RUNNING  MTU:65536  メトリック:1
-</span><span class='line'>          RXパケット:27117491 エラー:0 損失:0 オーバラン:0 フレーム:0
-</span><span class='line'>          TXパケット:27117491 エラー:0 損失:0 オーバラン:0 キャリア:0
-</span><span class='line'>          衝突(Collisions):0 TXキュー長:0
-</span><span class='line'>          RXバイト:32672340989 (32.6 GB)  TXバイト:32672340989 (32.6 GB)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>eth0 の MTU 値が <code>1500</code> となっている。</p>
-
-<h3>3. MTU 最適値の導出</h3>
-
-<p>要は、様々なサイズのパケット（データ）を断片化せずに送信してみてロスしない最大値を求めればよい。<br/>
-但し、「IP ヘッダ ＋ ICMP ヘッダ」が「28 バイト」あるので、 MTU に設定する値は +28 したものになる。
-（送信先は存在する URL ならどこでもよい）</p>
-
-<p>では、実際に導出作業を行なってみる。（大体の目星をつけて作業を行うとよいだろう）</p>
-
-<p>以下では <code>ping</code> コマンドを使用するがオプションは次のとおり。</p>
-
-<ul>
-<li><code>-c 1</code> は、リクエスト回数を１回に設定するオプション</li>
-<li><code>-s 9999</code> は、送信パケットサイズを 9999 に設定するオプション</li>
-<li><code>-M do</code> は、パケットの断片化を行わないオプション</li>
-</ul>
-
-
-<p>まず、パケットサイズ 1400 バイトで送信してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># ping -c 1 -s 1400 -M do www.linuxmint.com
-</span><span class='line'>PING www.linuxmint.com (213.175.215.218) 1400(1428) bytes of data.
-</span><span class='line'>1408 bytes from forums.linuxmint.com (213.175.215.218): icmp_seq=1 ttl=49 time=308 ms
-</span><span class='line'>
-</span><span class='line'>--- www.linuxmint.com ping statistics ---
-</span><span class='line'>1 packets transmitted, 1 received, 0% packet loss, time 0ms
-</span><span class='line'>rtt min/avg/max/mdev = 308.674/308.674/308.674/0.000 ms
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>1 received, 0% packet loss</code> なので、正常に送信できているということ。</p>
-
-<p>次に、パケットサイズ 1500 バイトで送信してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ping -c 1 -s 1500 -M do www.linuxmint.com
-</span><span class='line'>PING www.linuxmint.com (213.175.215.218) 1500(1528) bytes of data.
-</span><span class='line'>ping: local error: Message too long, mtu=1454
-</span><span class='line'>
-</span><span class='line'>--- www.linuxmint.com ping statistics ---
-</span><span class='line'>1 packets transmitted, 0 received, +1 errors, 100% packet loss, time 0ms
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>0 received, +1 errors, 100% packet loss</code> なので、送信に失敗しているということ。</p>
-
-<p>このように、パケットサイズを変更しながら絞り込んでいく。</p>
-
-<p>今回の当方の環境の場合、パケットサイズ「1426 バイト」が正常に送信できる最大値であった。</p>
-
-<p>よって、 MTU 値は IP ヘッダ ＋ ICMP ヘッダの 28 バイトをプラスした「1454 バイト」となる。<br/>
-（ちなみに、この値は今回の当方の環境ではよく知られている最適な MTU 値）</p>
-
-<h3>4. MTU 値の変更</h3>
-
-<p>後は、MTU 値を前項で導出した値に変更すればよい。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ifconfig eth0 mtu 1454
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但し、この設定は一時的なものなのでマシンを再起動すると元に戻ってしまう。</p>
-
-<p>恒久的に変更するには、ネットワーク接続の編集の画面で MTU 値を「自動（もしくは、何らかの数値）」から変更、もしくは設定ファイル &ldquo;/etc/NetworkManager/system-connections/Wired\ connection\ 1&rdquo; 等を編集し、再起動（ネットワーク再接続）する。（Linux Mint 等の場合）</p>
-
-<p>ちなみに、 CentOS の CUI ベースなら &ldquo;/etc/sysconfig/network-scripts/ifcfg-eth0&rdquo; 等を編集して再起動する。</p>
-
-<hr />
-
-<p>それほどネットワーク周りが改善されたと体感できないかもしれませんが、最適化しないよりはした方がよいでしょう。</p>
 
 <p>以上。</p>
 ]]></content>

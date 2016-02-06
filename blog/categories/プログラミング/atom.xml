@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-06T00:08:25+09:00</updated>
+  <updated>2016-02-07T00:05:21+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -14,6 +14,188 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Ruby - Flightradar24 から航空会社情報一覧取得！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/07/ruby-getting-airline-list-from-fr24/"/>
+    <updated>2016-02-07T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/07/ruby-getting-airline-list-from-fr24</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>航空機の運行状況をリアルタイムで確認できる Web サイト <a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a> に登録されている航空会社情報の一覧を Ruby で取得してみました。（と言っても、 JSON データを取得しているだけですが）</p>
+
+<p>空港情報一覧の取得については前回の記事をご参照ください。</p>
+
+<ul>
+<li><a href="/2016/02/06/ruby-getting-airport-list-from-fr24/" title="Ruby - Flightradar24 から空港情報一覧取得！">Ruby - Flightradar24 から空港情報一覧取得！</a></li>
+</ul>
+
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>Ruby 2.2.4-p230 での作業を想定。</li>
+<li>世界中の全航空会社を網羅している訳ではないかもしれない。（空港情報一覧と同様に）</li>
+</ul>
+
+
+<h3>1. Ruby スクリプトの作成</h3>
+
+<p>難しいことはしていないので、説明は省略する。<br/>
+ただ、悪質な Bot でないことを主張するため、連絡先を User Agent に設定している。（伏字は適宜置き換えること）</p>
+
+<pre><code class="ruby fr24_airlines.rb">#! /usr/local/bin/ruby
+# coding: utf-8
+#---------------------------------------------------------------------------------
+#= Flightradar24 航空会社情報取得
+#
+# date          name            version
+# 2015.12.20    mk-mode.com     1.00 新規作成
+#
+# Copyright(C) 2015 mk-mode.com All Rights Reserved.
+#---------------------------------------------------------------------------------
+#++
+require 'json'
+require 'open-uri'
+require 'timeout'
+
+class Fr24Airlines
+  URL        = "http://www.flightradar24.com/_json/airlines.php"  # 接続先 URL
+  TIMEOUT    = 10                                                 # OpenURI 接続時のタイムアウト
+  USER_AGENT = "xxxxxxx Bot (by Ruby/#{RUBY_VERSION}, Administrator: xxxxxxxx@yyyyyyy.zzz)"
+                                                                  # OpenURI 接続時の User-Agent, Mail Address
+  FILE_PATH  = "./data/airlines"                                  # 保存ファイル
+
+  def exec
+    get_json       # JSON 取得
+    #save_file      # ファイル保存
+    save_file_csv  # ファイル保存（CSV 形式）
+  rescue =&gt; e
+    $stderr.puts "[#{e.class}] #{e.message}"
+    e.backtrace.each { |tr| $stderr.puts "\t#{tr}" }
+    exit 1
+  end
+
+private
+
+  # JSON 取得
+  def get_json
+    str = nil
+    timeout(TIMEOUT) do
+      str = open(URL, {"User-Agent" =&gt; USER_AGENT}) { |f| f.read }
+    end
+    @json = JSON.parse(str)["rows"].sort_by { |j| j["Name"] }
+  rescue =&gt; e
+    raise
+  end
+
+  # ファイル保存
+  # * 最大文字数（name: 33）
+  def save_file
+    File.open("#{FILE_PATH}.txt", "w") do |f|
+      str =  "NAME" + " " * 31 + "IATA  ICAO"
+      f.puts str
+      @json.each do |j|
+        f.printf("%-33s  %2s    %3s\n", j["Name"], j["Code"], j["ICAO"])
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+
+  # ファイル保存（CSV 形式）
+  # * 最大文字数（name: 33）
+  # * Code が "" のこともあることに注意
+  # * カンマが含まれる可能性のある Name のみ "" でくくっている
+  def save_file_csv
+    File.open("#{FILE_PATH}.csv", "w") do |f|
+      f.puts "NAME,IATA,ICAO"
+      @json.each do |j|
+        f.puts "\"#{j["Name"]}\",#{j["Code"]},#{j["ICAO"]}"
+      end
+    end
+  rescue =&gt; e
+    raise
+  end
+end
+
+Fr24Airlines.new.exec
+</code></pre>
+
+<ul>
+<li><a href="https://gist.github.com/komasaru/940d11d07a3fd452ba10" title="Gist - Ruby script to get a airline list from Flightradar24.">Gist - Ruby script to get a airline list from Flightradar24.</a></li>
+</ul>
+
+
+<h3>2. Ruby スクリプトの実行</h3>
+
+<p>Ruby スクリプトと同じディレクトリ内に &ldquo;data&rdquo; ディレクトリを作成後、以下を実行。</p>
+
+<pre><code class="text">$ ./fr24_airlines.rb
+</code></pre>
+
+<h3>3. データの確認</h3>
+
+<p>&ldquo;data&rdquo; ディレクトリ内に &ldquo;airlines.txt&rdquo; が作成されるので確認してみる。</p>
+
+<pre><code class="text data/airlines.txt">NAME                               IATA  ICAO
+1Time                              T6    RNX
+9 Air                              AQ    JYH
+ABSA Cargo                         M3    TUS
+ABX Air                            GB    ABX
+ACT Airlines                       9T    RUN
+AIS Airlines                       IS    PNX
+ALPI Eagles                        E8    ELG
+ASL Airlines France                5O    FPO
+ASL Airlines Ireland               AG    ABR
+ASL Airlines Switzerland           FT    FAT
+         :
+====&lt; 以下省略 &gt;====
+         :
+</code></pre>
+
+<p>CSV 形式で出力した場合は &ldquo;airlines.csv&rdquo; を確認してみる。</p>
+
+<pre><code class="text data/airlines.csv">NAME,IATA,ICAO
+"1Time",T6,RNX
+"9 Air",AQ,JYH
+"ABSA Cargo",M3,TUS
+"ABX Air",GB,ABX
+"ACT Airlines",9T,RUN
+"AIS Airlines",IS,PNX
+"ALPI Eagles",E8,ELG
+"ASL Airlines France",5O,FPO
+"ASL Airlines Ireland",AG,ABR
+"ASL Airlines Switzerland",FT,FAT
+         :
+====&lt; 以下省略 &gt;====
+         :
+</code></pre>
+
+<h3>4. 関係のある過去の記事</h3>
+
+<ul>
+<li><a href="/2014/03/27/ruby-noaa-weather-stations/" title="Ruby - NOAA（アメリカ海洋大気庁）気象観測所一覧！">Ruby - NOAA（アメリカ海洋大気庁）気象観測所一覧！</a></li>
+<li><a href="/2014/03/28/bash-getting-a-weather-station-noaa/" title="Bash - NOAA 気象観測所検索！">Bash - NOAA 気象観測所検索！</a></li>
+<li><a href="/2014/03/30/bash-getting-a-metar/" title="Bash - METAR 気象情報取得！">Bash - METAR 気象情報取得！</a></li>
+<li><a href="/2016/01/28/ruby-getting-airport-list-from-fr24/" title="Ruby - Flightradar24 から空港情報一覧取得！">Ruby - Flightradar24 から空港情報一覧取得！</a></li>
+</ul>
+
+
+<h3>5. その他</h3>
+
+<p>&ldquo;<a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a>&rdquo; が提供するリアルタイムの航空機の飛行情報も、調査に調査を重ねて取得できるようになりました。（後日紹介）</p>
+
+<p>ちなみに、Web で期間を指定せずに検索するとリアルタイム飛行情報を取得する方法についてある程度はヒットしますが、その９割くらいは情報が古いです。</p>
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Ruby - Flightradar24 から空港情報一覧取得！]]></title>
     <link href="http://komasaru.github.io/blog/2016/02/06/ruby-getting-airport-list-from-fr24/"/>
     <updated>2016-02-06T00:20:00+09:00</updated>
@@ -21,8 +203,6 @@
     <content type="html"><![CDATA[<p>こんばんは。</p>
 
 <p>航空機の運行状況をリアルタイムで確認できる Web サイト <a href="http://www.flightradar24.com" title="Flightradar24.com - Live flight tracker!">Flightradar24.com</a> に登録されている空港情報の一覧を Ruby で取得してみました。（と言っても、 JSON データを取得しているだけですが）</p>
-
-<p>（<strong>当ページ内の Flightradar24.com のリンクはうまく接続できないかもしれません。その場合は URL をブラウザにコピペしてみてください。</strong>）</p>
 
 <!--more-->
 
@@ -871,126 +1051,6 @@ Received at 2015-07-28 23:34:04.
 
 <p>当方、一度に並列で処理をされては困るような場合に、この仕組みを応用して順次処理を行うようにしています。<br/>
 （インターネット上からデータが配信されたら処理を行うようなシステムの場合に、データが集中的に配信されてもマシンに負荷をかけないようにするため）</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby - dRuby で分散処理！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/08/25/ruby-distributed-processing-by-druby/"/>
-    <updated>2015-08-25T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/08/25/ruby-distributed-processing-by-druby</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>dRuby とは、 Ruby で分散オブジェクトプログラミングするためのライブラリです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>Linux Mint 17.2(64bit) での作業を想定。</li>
-<li>Ruby 2.2.3-p173 での作業を想定。</li>
-<li>本来は複数のマシンで実行することが多いと思うが、今回は１つのマシンでテストする。</li>
-<li>特に別途インストールの必要なライブラリ等はない。</li>
-</ul>
-
-
-<h3>1. サーバ側スクリプトの作成例</h3>
-
-<p>日付・時刻の文字列を返すだけの簡単な例。</p>
-
-<pre><code class="ruby druby_server.rb">#!/usr/local/bin/ruby
-# coding: utf-8
-require 'drb/drb'
-
-# 通信を待ち受ける URI
-URI="druby://localhost:8787"
-
-class DrubyServer
-  def get_cur_time
-    cur_time = Time.now.strftime("%Y年%m月%d日 %H時%M分%S秒")
-    msg = "ただいま #{cur_time} です。"
-    puts msg
-    return msg
-  end
-end
-
-# リクエストを受け付けるオブジェクト
-obj = DrubyServer.new
-# サーバの起動
-DRb.start_service(URI, obj, safe_level: 1)
-# DRb スレッド終了の待ち受け
-DRb.thread.join
-</code></pre>
-
-<ul>
-<li><code>start_service</code> の <code>safe_level</code> を <code>1</code> に設定しているのは、 <code>instance_eval</code> による危険性を防ぐための処置。</li>
-</ul>
-
-
-<h3>2. クライアント側スクリプトの作成例</h3>
-
-<p>サーバのメソットを呼び出す簡単な例。</p>
-
-<pre><code class="ruby druby_client.rb">#!/usr/local/bin/ruby
-# coding: utf-8
-require 'drb/drb'
-
-# 接続先 URI
-URI="druby://localhost:8787"
-
-# リモートオブジェクトの取得
-obj = DRbObject.new_with_uri(URI)
-# リモートメソッドの呼び出し
-puts obj.get_cur_time
-</code></pre>
-
-<h3>3. 動作確認</h3>
-
-<p>まず、１つ目の端末を立ち上げて、サーバ側スクリプトを実行する。</p>
-
-<pre><code class="text">$ ./druby_server.rb
-</code></pre>
-
-<p>そして、もう１つ端末を立ち上げて、クライアント側スクリプトを実行する。</p>
-
-<pre><code class="text">$ ./druby_client.rb
-ただいま 2015年07月22日 24時31分16秒 です。
-$ ./druby_client.rb
-ただいま 2015年07月22日 24時32分30秒 です。
-</code></pre>
-
-<p>クライアント側スクリプトを実行する度にサーバ側で処理した結果が出力されるはずである。<br/>
-また、この時サーバ側の端末にも同じ出力がされるはずである。</p>
-
-<pre><code class="text">$ ./druby_server.rb
-ただいま 2015年07月22日 24時31分16秒 です。
-ただいま 2015年07月22日 24時32分30秒 です。
-</code></pre>
-
-<h3>4. 注意</h3>
-
-<ul>
-<li>dRuby で構築したサーバをインターネットで外部に公開すべきではない。</li>
-<li>ローカルで使用する際もセキュリティ面に注意する。</li>
-</ul>
-
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="http://docs.ruby-lang.org/ja/2.2.0/library/drb.html" title="library drb (Ruby 2.2.0)">library drb (Ruby 2.2.0)</a></li>
-</ul>
-
-
-<hr />
-
-<p>この dRuby による分散処理をいろいろ応用できそうです。</p>
-
-<p>実際、目論んでいることもありますし。</p>
 
 <p>以上。</p>
 ]]></content>

@@ -122,6 +122,446 @@
       
   <header class="page-header">
     
+      <h1 class="entry-title"><a href="/blog/2009/04/06/06002020/">* 玄箱ＨＧ・Ｆｅｄｏｒａ１０にミラーリングツール！</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-06T00:20:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:20</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>, <a class='category' href='/blog/categories/玄箱/'>玄箱</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんばんは。</p>
+
+<p>前回は実サーバの完全バックアップ（クローン化）のために ＶＭｗａｒｅＰｌａｙｅｒ に Ｆｅｄｏｒａ１０ をインストールして、ミラーリングするようにしました。</p>
+
+<p>でも、今のところ ＶＭｗａｒｅ は常時稼働させているわけでもありません。やっぱり、常時稼働の別マシンへのミラーリングを試みてみようと考えました。</p>
+
+<p>うちの稼動中のサーバとは別に、ほぼ録画＆バックアップ専用の玄箱ＨＧ（Ｆｅｄｏｒａ１０導入済み＆２４時間稼動中）があるんで、そいつをミラー先としてやってみることにしました。</p>
+
+<h3>導入手順</h3>
+
+<p>※またまた <a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a> の <a href="http://fedorasrv.com/lsyncd.shtml" title="リアルタイムミラーリングツール導入(lsyncd+rsyncd)">リアルタイムミラーリングツール導入(lsyncd+rsyncd)</a> を参考にさせてもらってます。</p>
+
+<p>【前提条件】
+・実サーバはＦｅｄｏｒａ１０でＷｅｂサーバ、メールサーバ、ＦＴＰサーバ等が稼動中。
+・バックアップ側もＦｅｄｏｒａ１０で、ＮＴＰサーバ、Ｓａｍｂａサーバが稼動中。
+・実サーバのＩＰアドレスは 192.168.11.3 、バックアップ側（玄箱ＨＧ）のＩＰアドレスは 192.168.11.2 。
+・実サーバ、バックアップ側（玄箱）どちらも「 Poderosa 」によるリモート接続による操作。
+（実サーバはＳＳＨ２接続・鍵認証、バックアップ側（玄箱ＨＧ）はＳＳＨ２接続・パスワード認証）</p>
+
+<h4>１．ミラー先（玄箱ＨＧ）の起動</h4>
+
+<p>ミラー先となる 玄箱ＨＧ・Ｆｅｄｏｒａ１０ が起動していることを確認。</p>
+
+<h4>２．ミラー先にrsyncサーバー設定</h4>
+
+<p>「 Poderosa 」により 玄箱ＨＧ・Ｆｅｄｏｒａ１０ にリモート接続し、rootユーザになっておく。
+そして以下のように設定。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# mkdir /tmp/mirror　←　ミラー先ディレクトリの作成
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# chown nobody:nobody /tmp/mirror　←　ミラー先ディレクトリ所有者をnobodyに変更
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# vi /etc/rsyncd.conf　←　rsyncサーバ設定ファイルの作成
+</span><span class='line'>[mirror]　←　任意のモジュール名(ミラー元から接続時の名前)
+</span><span class='line'>    path = /tmp/mirror　←　ミラー先ディレクトリ
+</span><span class='line'>    hosts allow = 192.168.11.0/24　←　接続許可ホスト
+</span><span class='line'>    read only = false　←　更新許可</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>３．ミラー先のrsyncサーバー起動</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# yum -y install xinetd　←　xinetdインストール
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# /etc/rc.d/init.d/xinetd start　←　xinetd起動
+</span><span class='line'>xinetd を起動中:                                           [  OK  ]
+</span><span class='line'>
+</span><span class='line'>[root@KURO-BOX ~]# chkconfig rsync on　←　rsyncサーバ自動起動設定</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>４．ミラー元（実サーバ）へlsyncdインストール</h4>
+
+<p>「 Poderosa 」により 実サーバ・Ｆｅｄｏｒａ１０ にリモート接続し、rootユーザになっておく。
+そして、以下のようにして lsyncd をインストール。
+実際には以下の作業は前回終了しているので、今回は省略。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# yum -y install libxml2-devel　←　lsyncdインストールに必要なパッケージをインストール
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# wget http://lsyncd.googlecode.com/files/lsyncd-1.26.tar.gz　←　lsyncdダウンロード
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# tar zxvf lsyncd-1.26.tar.gz　←　lsyncd展開
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# cd lsyncd-1.26　←　lsyncd展開先ディレクトリへ移動
+</span><span class='line'>
+</span><span class='line'>[root@noah lsyncd-1.26]# ./configure && make && make install　←　lsyncdインストール
+</span><span class='line'>
+</span><span class='line'>[root@noah lsyncd-1.26]# cd　←　lsyncd展開先ディレクトリを抜ける
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# rm -rf lsyncd-1.26　←　lsyncd展開先ディレクトリを削除
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# rm -rf lsyncd-1.26.tar.gz　←　ダウンロードしたファイルを削除</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>５．ミラー元のlsyncd設定</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# vi /etc/lsyncd.conf　←　lsyncd設定ファイルの作成
+</span><span class='line'>/ 192.168.11.2 mirror　←　「 ミラー元ディレクトリ  ミラー先(rsyncサーバ)IPアドレス  ミラー先モジュール名 」の順に指定
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# vi /etc/logrotate.d/lsyncd　←　lsyncdログローテーション設定ファイルの作成
+</span><span class='line'>/var/log/lsyncd {
+</span><span class='line'>    missingok
+</span><span class='line'>    notifempty
+</span><span class='line'>    sharedscripts
+</span><span class='line'>    postrotate
+</span><span class='line'>        /etc/rc.d/init.d/lsyncd restart 2>&1 > /dev/null || true
+</span><span class='line'>    endscript
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>６．ミラー元のlsyncd起動</h4>
+
+<p>実際には既に起動しているので、再起動した。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# vi /etc/rc.d/init.d/lsyncd　←　lsyncd起動スクリプト作成
+</span><span class='line'>#!/bin/bash
+</span><span class='line'>#
+</span><span class='line'># lsyncd
+</span><span class='line'>#
+</span><span class='line'># chkconfig: - 99 20
+</span><span class='line'># description: lsyncd auto start script
+</span><span class='line'>
+</span><span class='line'>start() {
+</span><span class='line'>    IFS=
+</span><span class='line'>    for i in `cat /etc/lsyncd.conf`
+</span><span class='line'>    do
+</span><span class='line'>        src=`echo $i|awk '{print $1}'`
+</span><span class='line'>        dest=`echo $i|awk '{print $3}'`
+</span><span class='line'>        remort=`echo $i|awk '{print $2}'`
+</span><span class='line'>        /usr/local/bin/lsyncd $src $remort::$dest/
+</span><span class='line'>    done
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>stop() {
+</span><span class='line'>    /bin/kill -9 `/sbin/pidof lsyncd`
+</span><span class='line'>    until [ -z $(/sbin/pidof lsyncd) ]; do :; done
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>case "$1" in
+</span><span class='line'>    start)
+</span><span class='line'>        start
+</span><span class='line'>        ;;
+</span><span class='line'>    stop)
+</span><span class='line'>        stop
+</span><span class='line'>        ;;
+</span><span class='line'>    restart)
+</span><span class='line'>        stop
+</span><span class='line'>        start
+</span><span class='line'>        ;;
+</span><span class='line'>    status)
+</span><span class='line'>        pid=`pidof lsyncd`
+</span><span class='line'>        if [ $? -eq 0 ]; then
+</span><span class='line'>            echo "lsyncd (pid $pid) is running..."
+</span><span class='line'>        else
+</span><span class='line'>            echo "lsyncd is not running"
+</span><span class='line'>        fi
+</span><span class='line'>        ;;
+</span><span class='line'>    *)
+</span><span class='line'>        echo "Usage: lsyncd {start|stop|restart|status}"
+</span><span class='line'>        exit 1
+</span><span class='line'>esac
+</span><span class='line'>
+</span><span class='line'>exit $?
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chmod +x /etc/rc.d/init.d/lsyncd　←　lsyncd起動スクリプトへ実行権限付加
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# /etc/rc.d/init.d/lsyncd start　←　lsyncd起動
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chkconfig --add lsyncd　←　lsyncd起動スクリプトをchkconfigへ登録
+</span><span class='line'>
+</span><span class='line'>[root@noah ~]# chkconfig lsyncd on　←　lsyncd自動起動設定</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>７．動作確認</h4>
+
+<p>上記の「 lsyncd起動 」で処理が開始されているはずなので、しばらくしてからミラー先（ＶＭｗａｒｅ側Ｆｅｄｏｒａ）の指定したディレクトリにコピーされているか確認する。
+■ミラー元</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@noah ~]# ls -ll /
+</span><span class='line'>合計 122
+</span><span class='line'>drwxr-xr-x   8 root root  4096 2009-04-05 05:07 backup
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2009-03-29 05:11 bin
+</span><span class='line'>drwxr-xr-x   5 root root  1024 2009-04-04 07:15 boot
+</span><span class='line'>drwxr-xr-x  16 root root  4480 2009-04-05 11:04 dev
+</span><span class='line'>drwxr-xr-x 103 root root 12288 2009-04-05 10:55 etc
+</span><span class='line'>drwxr-xr-x   5 root root  4096 2009-01-06 09:46 home
+</span><span class='line'>drwxr-xr-x  16 root root 12288 2009-04-02 05:08 lib
+</span><span class='line'>drwx------   2 root root 16384 2008-12-09 08:55 lost+found
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 media
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 mnt
+</span><span class='line'>-rw-r--r--   1 root root   538 2009-03-02 11:20 mrtg-l.png
+</span><span class='line'>-rw-r--r--   1 root root   414 2009-03-02 11:20 mrtg-m.png
+</span><span class='line'>-rw-r--r--   1 root root  1759 2009-03-02 11:20 mrtg-r.png
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 opt
+</span><span class='line'>dr-xr-xr-x 151 root root     0 2009-03-23 07:01 proc
+</span><span class='line'>-rw-r--r--   1 root root   181 2008-12-09 23:03 razor-agent.log
+</span><span class='line'>drwxr-x---   9 root root  4096 2009-03-30 19:38 root
+</span><span class='line'>drwxr-xr-x   2 root root 12288 2009-04-02 05:08 sbin
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-12-09 08:57 selinux
+</span><span class='line'>drwxr-xr-x   2 root root  4096 2008-09-06 19:13 srv
+</span><span class='line'>drwxr-xr-x  12 root root     0 2009-03-23 07:01 sys
+</span><span class='line'>drwxrwxrwt  10 root root  4096 2009-04-05 11:03 tmp
+</span><span class='line'>drwxr-xr-x  13 root root  4096 2008-12-09 09:02 usr
+</span><span class='line'>drwxr-xr-x  23 root root  4096 2008-12-10 17:52 var
+</span><span class='line'>[root@noah ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<p>■ミラー先</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root@KURO-BOX ~]# ls -ll /tmp/mirror
+</span><span class='line'>合計 108
+</span><span class='line'>drwxr-xr-x   8 nobody nobody 4096 2009-04-05 05:07 backup
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2009-03-29 05:11 bin
+</span><span class='line'>drwxr-xr-x   5 nobody nobody 4096 2009-04-04 07:15 boot
+</span><span class='line'>drwxr-xr-x  16 nobody nobody 4096 2009-04-05 10:56 dev
+</span><span class='line'>drwxr-xr-x 103 nobody nobody 8192 2009-04-05 10:55 etc
+</span><span class='line'>drwxr-xr-x   5 nobody nobody 4096 2009-01-06 09:46 home
+</span><span class='line'>drwxr-xr-x  16 nobody nobody 8192 2009-04-02 05:08 lib
+</span><span class='line'>drwx------   2 nobody nobody 4096 2008-12-09 08:55 lost+found
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 media
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 mnt
+</span><span class='line'>-rw-r--r--   1 nobody nobody  538 2009-03-02 11:20 mrtg-l.png
+</span><span class='line'>-rw-r--r--   1 nobody nobody  414 2009-03-02 11:20 mrtg-m.png
+</span><span class='line'>-rw-r--r--   1 nobody nobody 1759 2009-03-02 11:20 mrtg-r.png
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 opt
+</span><span class='line'>dr-xr-xr-x 163 nobody nobody 4096 2009-03-23 07:01 proc
+</span><span class='line'>-rw-r--r--   1 nobody nobody  181 2008-12-09 23:03 razor-agent.log
+</span><span class='line'>drwxr-x---   9 nobody nobody 4096 2009-03-30 19:38 root
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 8192 2009-04-02 05:08 sbin
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-12-09 08:57 selinux
+</span><span class='line'>drwxr-xr-x   2 nobody nobody 4096 2008-09-06 19:13 srv
+</span><span class='line'>drwxr-xr-x  12 nobody nobody 4096 2009-03-23 07:01 sys
+</span><span class='line'>drwxrwxr-x  10 nobody nobody 4096 2009-04-05 10:50 tmp
+</span><span class='line'>drwxr-xr-x  13 nobody nobody 4096 2008-12-09 09:02 usr
+</span><span class='line'>drwxr-xr-x  23 nobody nobody 4096 2008-12-10 17:52 var
+</span><span class='line'>[root@KURO-BOX ~]#</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ファイル類も大体（？）コピーされている模様。</p>
+
+<hr />
+
+<p>設定は以上です。</p>
+
+<p>仮にミラー先が起動していない場合は、ミラー先が起動した後の最初のファイル更新時にミラーリングがされるみたいです。
+それはスゲー！</p>
+
+<p>今回は実際にミラー先を元にクローンを復元するところまではしません。</p>
+
+<p>ただ、気になるのは
+実サーバはｉ３８６カーネル
+ミラー先（玄箱ＨＧ）はｐｐｃカーネル
+という違いがあること。</p>
+
+<p>ま、だめなら、ＶＭ側でやることにします。</p>
+
+<p>とりあえず、ここまでできていれば、何とかなるでしょう！？</p>
+
+<p>それじゃ。</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
       <h1 class="entry-title"><a href="/blog/2009/04/05/05025423/">* まるごとＲｕｂｙ購入！</a></h1>
     
     
@@ -1806,78 +2246,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header class="page-header">
-    
-      <h1 class="entry-title"><a href="/blog/2009/03/27/27001021/">* LOTO6 No.438</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-03-27T00:10:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>00:10</span></time>
-        [ 
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/ロト６/'>ロト６</a>
-  
-</span>
-
- ]
-        [ 
-
- ]
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>まいどです。</p>
-
-<p>日付が変わってしまいましたが、
-昨日ののロト６（第４３８回）の
-結果です。</p>
-
-<p>私の結果は恥ずかしくて言えましぇーん！</p>
-
-<p>ま、というわけで、
-ダウンロード用ＣＳＶファイルを最新に更新しました。
-こちら - - - > <strong><a href="http://www.mk-mode.com/rails/loto/loto6" title="mk-mode SITE">mk-mode SITE</a></strong></p>
-
-<p><a href="http://www.mk-mode.com/rails/loto/LOTO6_ALL.csv" title="こちら">こちら</a> でもＯＫ。
-（右クリックで対象ファイルを保存！）</p>
-
-<p>どうぞ、ご活用下さい。</p>
-
-<p><strong><font color="red">※当方のデータは保証できるものではありません。
-　あくまでも、個人で分析するために活用しているだけです。</font></strong></p>
-
-<p><strong><font color="red">※正式なデータは「みずほ」宝くじコーナーでご確認ください。</font></strong></p>
-
-<p><strong><font color="red">※データに不具合があれば教えてください。</font></strong></p>
-
-<p>　　
-ではまた。</p>
-
-<p>　　</p>
-
-<hr />
-
-<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <ul class="pager">
     
     <li class="previous"><a href="page/132">&larr; Older</a></li>
@@ -1945,6 +2313,10 @@
     <li class="nav-header">Recent Posts</li>
     
       <li class="post">
+        <a href="/blog/2016/02/07/ruby-getting-airline-list-from-fr24/">Ruby - Flightradar24 から航空会社情報一覧取得！</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/02/06/ruby-getting-airport-list-from-fr24/">Ruby - Flightradar24 から空港情報一覧取得！</a>
       </li>
     
@@ -1960,29 +2332,25 @@
         <a href="/blog/2016/01/28/linuxmint-mysql-57-installation-by-src/">Linux Mint - MySQL 5.7 インストール（by ソースビルド）！</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/01/22/pandoc-md2pdf-conversion/">Pandoc で Markdown 文書を PDF に変換！</a>
-      </li>
-    
   </ul>
 </section>
 <section class="well">
   <ul id="category-list" class="nav nav-list">
     <li class="nav-header">Categories</li>
-    <li><a href='/blog/categories/pc-tips'>pc_tips (260)</a></li><li><a href='/blog/categories/sns'>sns (23)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (541)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (206)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (339)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (108)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (260)</a></li><li><a href='/blog/categories/sns'>sns (23)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (541)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (206)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (340)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (108)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
   </ul>
 </section>
 <section class="well">
   <ul id="category-list" class="nav nav-list">
     <li class="nav-header">Tag Cloud</li>
   </ul>
-  <a href='/blog/tags/ajax' style='font-size: 100.5607476635514%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.1214953271028%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.48598130841121%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.5607476635514%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.1214953271028%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.18691588785046%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.73831775700934%'>bash(20)</a> <a href='/blog/tags/bitly' style='font-size: 100.37383177570094%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.18691588785046%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.37383177570094%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.83177570093457%'>CentOS(181)</a> <a href='/blog/tags/cobol' style='font-size: 100.18691588785046%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.18691588785046%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.18691588785046%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.6822429906542%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 105.79439252336448%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.5233644859813%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.5607476635514%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.26168224299066%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.37383177570094%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.18691588785046%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.6822429906542%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.61682242990655%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.18691588785046%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.74766355140187%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.30841121495327%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.4018691588785%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 106.91588785046729%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.93457943925233%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.48598130841121%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.18691588785046%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.05607476635514%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.5607476635514%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.04672897196262%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.05607476635514%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.37383177570094%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.93457943925233%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.18691588785046%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.86915887850468%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 101.1214953271028%'>Groonga(6)</a> <a href='/blog/tags/heroku' style='font-size: 100.37383177570094%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.61682242990655%'>HTML(14)</a> <a href='/blog/tags/intel' style='font-size: 100.74766355140187%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.18691588785046%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.49532710280374%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.80373831775701%'>JavaScript(15)</a> <a href='/blog/tags/jekyll' style='font-size: 100.5607476635514%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.74766355140187%'>jQuery(4)</a> <a href='/blog/tags/json' style='font-size: 100.37383177570094%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.5607476635514%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 160.0%'>Linux(321)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.58878504672897%'>LinuxMint(62)</a> <a href='/blog/tags/lokka' style='font-size: 100.37383177570094%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 104.85981308411215%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 107.28971962616822%'>MariaDB(39)</a> <a href='/blog/tags/markdown' style='font-size: 101.1214953271028%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.5607476635514%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.74766355140187%'>Mroonga(4)</a> <a href='/blog/tags/munin' style='font-size: 102.80373831775701%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 132.14953271028037%'>MySQL(172)</a> <a href='/blog/tags/namazu' style='font-size: 100.18691588785046%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.3644859813084%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.1214953271028%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.35514018691589%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.37383177570094%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.30841121495327%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.74766355140187%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.18691588785046%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 112.14953271028037%'>Octopress(65)</a> <a href='/blog/tags/office' style='font-size: 100.18691588785046%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.18691588785046%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.1214953271028%'>P183(6)</a> <a href='/blog/tags/pdf' style='font-size: 100.18691588785046%'>PDF(1)</a> <a href='/blog/tags/perl' style='font-size: 100.18691588785046%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.16822429906541%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 105.98130841121495%'>Postfix(32)</a> <a href='/blog/tags/proxy' style='font-size: 100.37383177570094%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.37383177570094%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.1214953271028%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.6822429906542%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.24299065420561%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.21495327102804%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.37383177570094%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.18691588785046%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.18691588785046%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.1214953271028%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 159.06542056074767%'>Ruby(316)</a> <a href='/blog/tags/samba' style='font-size: 101.6822429906542%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.5607476635514%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.28971962616822%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.18691588785046%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.37383177570094%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.18691588785046%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.5607476635514%'>SMTP(3)</a> <a href='/blog/tags/sql' style='font-size: 100.18691588785046%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.1214953271028%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.86915887850468%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.74766355140187%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.18691588785046%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.93457943925233%'>TeX(5)</a> <a href='/blog/tags/tex' style='font-size: 100.37383177570094%'>tex(2)</a> <a href='/blog/tags/thin' style='font-size: 100.18691588785046%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.74766355140187%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.60747663551402%'>Twitter(30)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.37383177570094%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.93457943925233%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.49532710280374%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.18691588785046%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.6822429906542%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.93457943925233%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.30841121495327%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.5607476635514%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.74766355140187%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.18691588785046%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.30841121495327%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.05607476635514%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.18691588785046%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.86915887850468%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.13084112149532%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.06542056074767%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.5607476635514%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 108.03738317757009%'>XML(43)</a> <a href='/blog/tags/yahoo' style='font-size: 100.37383177570094%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.18691588785046%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.1214953271028%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.61682242990655%'>ウイルス対策(14)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.18691588785046%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.1214953271028%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.18691588785046%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.55140186915888%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.1214953271028%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.37383177570094%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.18691588785046%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.93457943925233%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.1214953271028%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.5607476635514%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.18691588785046%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.6822429906542%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.92523364485982%'>円周率(21)</a> <a href='/blog/tags/地図' style='font-size: 102.99065420560747%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.37383177570094%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.18691588785046%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.49532710280374%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.18691588785046%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.18691588785046%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.1214953271028%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.93457943925233%'>端末(5)</a> 
+  <a href='/blog/tags/ajax' style='font-size: 100.5607476635514%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.1214953271028%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.48598130841121%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.5607476635514%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.1214953271028%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.18691588785046%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.73831775700934%'>bash(20)</a> <a href='/blog/tags/bitly' style='font-size: 100.37383177570094%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.18691588785046%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.37383177570094%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.83177570093457%'>CentOS(181)</a> <a href='/blog/tags/cobol' style='font-size: 100.18691588785046%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.18691588785046%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.18691588785046%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.6822429906542%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 105.79439252336448%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.5233644859813%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.5607476635514%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.26168224299066%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.37383177570094%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.18691588785046%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.6822429906542%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.61682242990655%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.18691588785046%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.74766355140187%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.30841121495327%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.4018691588785%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 106.91588785046729%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.93457943925233%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.48598130841121%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.18691588785046%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.05607476635514%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.5607476635514%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.04672897196262%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.05607476635514%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.37383177570094%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.93457943925233%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.18691588785046%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.86915887850468%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 101.1214953271028%'>Groonga(6)</a> <a href='/blog/tags/heroku' style='font-size: 100.37383177570094%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.61682242990655%'>HTML(14)</a> <a href='/blog/tags/intel' style='font-size: 100.74766355140187%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.18691588785046%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.49532710280374%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.80373831775701%'>JavaScript(15)</a> <a href='/blog/tags/jekyll' style='font-size: 100.5607476635514%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.74766355140187%'>jQuery(4)</a> <a href='/blog/tags/json' style='font-size: 100.37383177570094%'>JSON(2)</a> <a href='/blog/tags/knoppix' style='font-size: 100.5607476635514%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 160.0%'>Linux(321)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.58878504672897%'>LinuxMint(62)</a> <a href='/blog/tags/lokka' style='font-size: 100.37383177570094%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 104.85981308411215%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 107.28971962616822%'>MariaDB(39)</a> <a href='/blog/tags/markdown' style='font-size: 101.1214953271028%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.5607476635514%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.74766355140187%'>Mroonga(4)</a> <a href='/blog/tags/munin' style='font-size: 102.80373831775701%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 132.14953271028037%'>MySQL(172)</a> <a href='/blog/tags/namazu' style='font-size: 100.18691588785046%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.3644859813084%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.1214953271028%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.35514018691589%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.37383177570094%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.30841121495327%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.74766355140187%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.18691588785046%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 112.14953271028037%'>Octopress(65)</a> <a href='/blog/tags/office' style='font-size: 100.18691588785046%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.18691588785046%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.1214953271028%'>P183(6)</a> <a href='/blog/tags/pdf' style='font-size: 100.18691588785046%'>PDF(1)</a> <a href='/blog/tags/perl' style='font-size: 100.18691588785046%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.16822429906541%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 105.98130841121495%'>Postfix(32)</a> <a href='/blog/tags/proxy' style='font-size: 100.37383177570094%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.37383177570094%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.1214953271028%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.6822429906542%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.24299065420561%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.21495327102804%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.37383177570094%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.18691588785046%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.18691588785046%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.1214953271028%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 159.25233644859813%'>Ruby(317)</a> <a href='/blog/tags/samba' style='font-size: 101.6822429906542%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.5607476635514%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.28971962616822%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.18691588785046%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.37383177570094%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.18691588785046%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.5607476635514%'>SMTP(3)</a> <a href='/blog/tags/sql' style='font-size: 100.18691588785046%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.1214953271028%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.86915887850468%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.74766355140187%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.18691588785046%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.93457943925233%'>TeX(5)</a> <a href='/blog/tags/tex' style='font-size: 100.37383177570094%'>tex(2)</a> <a href='/blog/tags/thin' style='font-size: 100.18691588785046%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.74766355140187%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.60747663551402%'>Twitter(30)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.37383177570094%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.93457943925233%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.49532710280374%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.18691588785046%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.6822429906542%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.93457943925233%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.30841121495327%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.5607476635514%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.74766355140187%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.18691588785046%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.30841121495327%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.05607476635514%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.18691588785046%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.86915887850468%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.13084112149532%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 119.06542056074767%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.5607476635514%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 108.03738317757009%'>XML(43)</a> <a href='/blog/tags/yahoo' style='font-size: 100.37383177570094%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.18691588785046%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.1214953271028%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.61682242990655%'>ウイルス対策(14)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.18691588785046%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.1214953271028%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.18691588785046%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.55140186915888%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.1214953271028%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.37383177570094%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.18691588785046%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.93457943925233%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.1214953271028%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.5607476635514%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.18691588785046%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.6822429906542%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.92523364485982%'>円周率(21)</a> <a href='/blog/tags/地図' style='font-size: 102.99065420560747%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.37383177570094%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.18691588785046%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.49532710280374%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.18691588785046%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.18691588785046%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.1214953271028%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.93457943925233%'>端末(5)</a> 
 </section>
 <section class="well">
   <ul id="month-list" class="nav nav-list">
     <li class="nav-header">Monthly Archives</li>
   </ul>
-  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2016/02/'>2016-02 (3)</option><option value='/2016/01/'>2016-01 (8)</option><option value='/2015/12/'>2015-12 (8)</option><option value='/2015/11/'>2015-11 (6)</option><option value='/2015/10/'>2015-10 (6)</option><option value='/2015/09/'>2015-09 (6)</option><option value='/2015/08/'>2015-08 (9)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1436 posts
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2016/02/'>2016-02 (4)</option><option value='/2016/01/'>2016-01 (8)</option><option value='/2015/12/'>2015-12 (8)</option><option value='/2015/11/'>2015-11 (6)</option><option value='/2015/10/'>2015-10 (6)</option><option value='/2015/09/'>2015-09 (6)</option><option value='/2015/08/'>2015-08 (9)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1437 posts
 </section>
 
 <section class="well">
