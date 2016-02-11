@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-08T00:07:41+09:00</updated>
+  <updated>2016-02-12T00:07:34+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -14,7 +14,100 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Flightradar24 飛行中の航空機情報を取得！]]></title>
+    <title type="html"><![CDATA[Linux - bash で古いファイルの削除！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/12/linux-bash-delete-old-files/"/>
+    <updated>2016-02-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/12/linux-bash-delete-old-files</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>サーバを運用していると、日々ログファイルが作成され続けてディレクトリが肥大化することがあります。（ログローテションが使えないような場合等）</p>
+
+<p>以下で、最終更新日から一定の日数を超えたファイルを削除する bash スクリプトを紹介します。（簡単すぎるので、記事にするほどのものでもないかも知れませんが）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7, Linux Mint 17.2 での作業を想定。（他の環境でも問題ないはず）</li>
+</ul>
+
+
+<h3>1. bash スクリプトの作成</h3>
+
+<figure class='code'><figcaption><span>del_oldlogs.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">DIR</span><span class="o">=</span>/path/to/target_dir
+</span><span class='line'><span class="nv">DAYS</span><span class="o">=</span>7
+</span><span class='line'>
+</span><span class='line'>find <span class="nv">$DIR</span> -mtime +<span class="nv">$DAYS</span> -a -type f -exec rm -f <span class="o">{}</span> <span class="se">\;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>-mtime</code> は更新日時を指定するオプション。（指定する値は「日」ベース）<br/>
+そして、以下に注意。
+
+<ul>
+<li><code>-mtime 1</code> で更新日時が1日（24時間以上48時間以下）のファイルを検索。</li>
+<li><code>-mtime +1</code> で更新日時が1日超（48時間超）のファイルを検索。</li>
+<li><code>-mtime -1</code> で更新日時が1日未満（24時間未満）のファイルを検索。</li>
+</ul>
+</li>
+<li><code>-type</code> はファイルタイプを指定するオプション。
+
+<ul>
+<li><code>-type f</code> でファイルを指定。</li>
+<li><code>-type d</code> でディレクトリを指定。</li>
+<li><code>-type l</code> でシンボリックリンクを指定。</li>
+</ul>
+</li>
+<li><code>-a</code> は AND 条件を指定するオプション。</li>
+<li><code>-exec</code> は以降に続くコマンドを実行するオプション。
+
+<ul>
+<li><code>{}</code> で検索結果を受け取る。</li>
+</ul>
+</li>
+<li><code>\</code> は <code>-exec</code> の終端であることを表す記号。</li>
+</ul>
+
+
+<p>ちなみに、上記の <code>find ...</code> の部分は以下のように書き換えることも可能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>find <span class="nv">$DIR</span> -mtime +<span class="nv">$DAYS</span> -a -type f <span class="p">|</span> xargs rm -f<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. bash スクリプトの実行</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ ./del_oldlogs.rb
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. 実際の運用</h3>
+
+<p>毎回手動で起動するのは面倒なので、実際には cron 登録して定期的に実行するようにする。</p>
+
+<hr />
+
+<p>後学のための備忘録でした。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JSON - Flightradar24 から飛行中の航空機情報を取得！]]></title>
     <link href="http://komasaru.github.io/blog/2016/02/08/fr24-getting-flight-info/"/>
     <updated>2016-02-08T00:20:00+09:00</updated>
     <id>http://komasaru.github.io/blog/2016/02/08/fr24-getting-flight-info</id>
@@ -6255,186 +6348,6 @@
 <hr />
 
 <p>意外とよく使用する機能だけど、使用方法について説明しているサイトがあまりないので、備忘録として残しておいた次第です。</p>
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MariaDB(MySQL) - ロールフォワード（ポイント・イン・タイム）リカバリ！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/12/03/mariadb-rollforward-recovery/"/>
-    <updated>2015-12-03T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/12/03/mariadb-rollforward-recovery</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MariaDB(MySQL) で障害発生時に、定期的に取得していたダンプファイルでリストアするだけでは、当然タイミングによっては古い状態になってしまいます。</p>
-
-<p>以下は、定期的に取得していたダンプファイルとそれより後のログファイルで障害発生直前の状態までリカバリする方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>MySQL 5.6 系、 MariaDB 10.0 系での作業を想定。<br/>
-（他のバージョンでもそれほど古くなければ同様）</li>
-<li>バイナリロギングが有効になっている。
-（設定ファイル &ldquo;my.cnf&rdquo; で <code>log-bin=...</code> の行がコメント化されていない、もしくはサーバ起動時に <code>--log-bin</code> オプションを使用している）</li>
-</ul>
-
-
-<h3>1. はじめに</h3>
-
-<ul>
-<li>ロールフォワードリカバリとは、簡単には、
-
-<ul>
-<li>バックアップファイルとジャーナルファイルを用いて、障害発生以前の状態に復元すること。（某国家試験で出題される基本的なこと）<br/>
-今回の MariaDB(MySQL) での作業では、ダンプファイルとバイナリログファイルがそれにあたる。</li>
-</ul>
-</li>
-<li>ポイント・イン・タイムリカバリ(Point-In-Time Recovery, PITR)とは、簡単には、
-
-<ul>
-<li>指定した時間の状態に戻すこと。</li>
-<li>障害が発生する直前の状態まで戻すこと。</li>
-<li>Oracle の「完全・不完全リカバリ」にあたるもの。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>2. 基本的な作業の流れ</h3>
-
-<ol>
-<li>ダンプ出力（<code>mysqldump</code> による定期バックアップ）</li>
-<li>通常運用</li>
-<li>障害発生</li>
-<li>ダンプファイルのリストア</li>
-<li>バイナリログの適用（ダンプリストア後〜障害発生直前）</li>
-<li>復元確認</li>
-</ol>
-
-
-<h3>3. 作業例</h3>
-
-<p>当然ながら、当作業中は整合性を保つためにデータベースサーバへのアクセスが発生しないようにしておくこと。（アプリの停止、Web サーバの停止等）</p>
-
-<h4>3-1. ダンプ出力（<code>mysqldump</code> による定期バックアップ）</h4>
-
-<p>以下のようなコマンドを cron 実行するなどして、定期的にバックアップを取る。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>mysqldump -u root -proot_password --single-transaction --master-data --flush-logs db_name &gt; db_name.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>--single-transaction</code> は、データの整合性を保つためにダンプをトランザクションで囲むオプション。</li>
-<li><code>--master-data</code> は、<code>CHANGE MASTER TO</code> 句（ポイント・イン・タイムリカバリを開始するバイナリファイル・ポイントの情報）を出力するオプション。</li>
-<li><code>--flush-logs</code> は、ダンプ出力後にバイナリログを新しく作成（フラッシュ）するオプション。 <code>-F</code> も同じ。</li>
-<li><code>--flush-logs</code> オプションを使用した場合は、ポイント・イン・タイムリカバリを開始するポイントは新しいバイナリファイルの先頭ポイントなので、 <code>--master-data</code> オプションを使用する不要はないかもしれない。</li>
-<li><code>--master-logs</code> オプションを使用した場合は、ポイント・イン・タイムリカバリを開始するポイントが明確に分かるので、敢えて <code>--flush-logs</code> オプションを使用する必要はないかもしれない。</li>
-<li>場合によっては、 <code>--quote-names</code>（or <code>-Q</code>）, <code>--skip-lock-tables</code> 等のオプションも使用。</li>
-<li>場合によっては、 <code>--all-databases</code>（or <code>-A</code>）オプションで全 DB をダンプ出力してもよいだろう。</li>
-</ul>
-
-
-<h4>3-2. 通常運用</h4>
-
-<p>当然ながら、ダンプ出力後も通常どおり運用されている。(INSERT, UPDATE, DELETE etc.)</p>
-
-<h4>3-3. 障害発生</h4>
-
-<p>通常運用時に何らかの障害が発生する。（今回は、人為的なミスで１テーブルを <code>DROP</code> してしまったことを想定）</p>
-
-<h4>3-4. ダンプファイルのリストア</h4>
-
-<p>障害発生時には、まず定期的に取っていたダンプファイルを使用してリストアする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysql -u root -p db_name &lt; db_name.sql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>3-5. バイナリログの適用（ダンプリストア後〜障害発生直前）</h4>
-
-<p>まず、ダンプファイルからポイント・イン・タイムリカバリを開始するバイナリログファイル・ポイントを確認する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># cat /path/to/db_name.sql | CHANGE
-</span><span class='line'>CHANGE MASTER TO MASTER_LOG_FILE=&#39;mysql-bin.004962&#39;, MASTER_LOG_POS=365;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>この例では、バイナリログファイル &ldquo;mysql-bin.004962&rdquo; の ポイント &ldquo;365&rdquo; より前まではダンプファイルでリストアできているということ。</p>
-
-<p>次に、障害が発生したポイントを最新のバイナリログから検索する。</p>
-
-<p>以下は、誤ってテーブル test_table を DROP してしまった場合にそのポイントを検索する例。<br/>
-該当行より３行くらい前にポイントが記載されているので、 <code>grep</code> コマンドに <code>-B 3</code> オプションを使用している。<br/>
-また、 &ldquo;my.cnf&rdquo; の <code>[client]</code> に <code>default-character-set</code> が存在すると <code>unknown variable</code> エラーが発生するため、<code>--no-defaults</code> オプションを使用している。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysqlbinlog --nodefaults --database=db_name /path/to/mysql-bin.004962 | grep -B 3 DROP
-</span><span class='line'># at 10923096
-</span><span class='line'>#151029 11:15:17 server id 1  end_log_pos 10923228      Query   thread_id=1124470       exec_time=0     error_code=0
-</span><span class='line'>SET TIMESTAMP=1446084917/*!*/;
-</span><span class='line'>DROP TABLE test_table
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>この場合、ポイントは <code>10923096</code> であるということ。</p>
-
-<p>いよいよ、バイナリログを適用する。<br/>
-以下は、バイナリログファイル &ldquo;mysql-bin.004962&rdquo; の先頭ポイントからポイント &ldquo;10923096&rdquo; の <code>--database</code> オプションで指定したデータベースのバイナリログを適用する例。
-（<code>--disable-log-bin</code>（or <code>-D</code>） オプションはバイナリログの出力を無効にするオプション。バイナリログ適用時にまでバイナリログを出力する必要はないので）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysqlbinlog --database=db_name --disable-log-bin --stop-position=10923096 /path/to/mysql-bin.004962 | mysql -u root -p
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに、ダンプ出力後のバイナリログファイルが複数ある場合は以下のように並べて記載する。<br/>
-この場合、<code>--stop-position</code> オプションは最後のバイナリログファイルに対してのみ有効。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># mysqlbinlog --database=db_name --disable-log-bin --stop-position=10923096 /path/to/mysql-bin.004960 /path/to/mysql-bin.004962 | mysql -u root -proot_password
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>仮にダンプ出力時に <code>--flush-logs</code> オプションを指定していなかった場合は開始ポイントが明確でないため、明示的に <code>--start-position</code> オプションで指定する必要がある。（バイナリログファイルが複数ある場合は <code>--start-position</code> は最初のバイナリログファイルに対してのみ有効）</p>
-
-<h4>3-6. 復元確認</h4>
-
-<p>後は、正常に復元されたか確認するだけ。</p>
-
-<h3>4. その他＆注意事項</h3>
-
-<ul>
-<li>今回はポジションを意識したリカバリを行なったが、状況によっては日付を意識したリカバリも可能。（<code>--start-datatime</code>, <code>--stop-datetim</code> オプションを使用）</li>
-<li><code>mysqlbinlog</code> コマンドでバイナリログファイルを複数指定する際は、一度に全て指定すること。（１ファイルずつ複数に分けて実行しない）</li>
-<li>バイナリログファイルが複数存在する場合は、１つにマージしてから <code>mysqlbinlog</code> を実行してもよい。</li>
-<li><code>mysqlbinlog ... binlog | mysql -u root -p</code> のようにパイプを使用せず、 <code>mysqlbinlog ... binlog &gt; statements.sql</code> 実行後に <code>mysql -u root -p &lt; statements.sql</code> を実行してもよい。</li>
-</ul>
-
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="https://dev.mysql.com/doc/refman/5.6/ja/point-in-time-recovery.html" title="MySQL :: MySQL 5.6 リファレンスマニュアル :: 7.5 バイナリログを使用したポイントインタイム (増分) リカバリ">MySQL :: MySQL 5.6 リファレンスマニュアル :: 7.5 バイナリログを使用したポイントインタイム (増分) リカバリ</a></li>
-</ul>
-
-
-<hr />
-
-<p>有事の際にしか行わない作業なので、記録として残しておいた次第です。</p>
 
 <p>以上。</p>
 ]]></content>

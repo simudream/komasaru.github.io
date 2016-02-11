@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-08T00:07:41+09:00</updated>
+  <updated>2016-02-12T00:07:34+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,88 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - bash で古いファイルの削除！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/12/linux-bash-delete-old-files/"/>
+    <updated>2016-02-12T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/12/linux-bash-delete-old-files</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>サーバを運用していると、日々ログファイルが作成され続けてディレクトリが肥大化することがあります。（ログローテションが使えないような場合等）</p>
+
+<p>以下で、最終更新日から一定の日数を超えたファイルを削除する bash スクリプトを紹介します。（簡単すぎるので、記事にするほどのものでもないかも知れませんが）</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7, Linux Mint 17.2 での作業を想定。（他の環境でも問題ないはず）</li>
+</ul>
+
+
+<h3>1. bash スクリプトの作成</h3>
+
+<pre><code class="bash del_oldlogs.sh">#!/bin/bash
+
+DIR=/path/to/target_dir
+DAYS=7
+
+find $DIR -mtime +$DAYS -a -type f -exec rm -f {} \;
+</code></pre>
+
+<ul>
+<li><code>-mtime</code> は更新日時を指定するオプション。（指定する値は「日」ベース）<br/>
+そして、以下に注意。
+
+<ul>
+<li><code>-mtime 1</code> で更新日時が1日（24時間以上48時間以下）のファイルを検索。</li>
+<li><code>-mtime +1</code> で更新日時が1日超（48時間超）のファイルを検索。</li>
+<li><code>-mtime -1</code> で更新日時が1日未満（24時間未満）のファイルを検索。</li>
+</ul>
+</li>
+<li><code>-type</code> はファイルタイプを指定するオプション。
+
+<ul>
+<li><code>-type f</code> でファイルを指定。</li>
+<li><code>-type d</code> でディレクトリを指定。</li>
+<li><code>-type l</code> でシンボリックリンクを指定。</li>
+</ul>
+</li>
+<li><code>-a</code> は AND 条件を指定するオプション。</li>
+<li><code>-exec</code> は以降に続くコマンドを実行するオプション。
+
+<ul>
+<li><code>{}</code> で検索結果を受け取る。</li>
+</ul>
+</li>
+<li><code>\</code> は <code>-exec</code> の終端であることを表す記号。</li>
+</ul>
+
+
+<p>ちなみに、上記の <code>find ...</code> の部分は以下のように書き換えることも可能。</p>
+
+<pre><code class="bash">find $DIR -mtime +$DAYS -a -type f | xargs rm -f;
+</code></pre>
+
+<h3>2. bash スクリプトの実行</h3>
+
+<pre><code class="text">$ ./del_oldlogs.rb
+</code></pre>
+
+<h3>3. 実際の運用</h3>
+
+<p>毎回手動で起動するのは面倒なので、実際には cron 登録して定期的に実行するようにする。</p>
+
+<hr />
+
+<p>後学のための備忘録でした。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux Mint - Mroonga インストール（by ソースビルド）！]]></title>
@@ -782,122 +864,6 @@ configure options: &lt; '--build=i686-redhat-linux-gnu' '--host=i686-redhat-linu
 
 <ul>
 <li><a href="http://groonga.org/ja/docs/install/centos.html#centos-6" title="2.5. CentOS — Groonga v5.1.0ドキュメント">2.5. CentOS — Groonga v5.1.0ドキュメント</a></li>
-</ul>
-
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS 6.7 - 全文検索ストレージエンジン Mroonga 導入（公式リポジトリ使用）！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/12/28/centos-mroonga-installation-on-mysql-56-by-yum/"/>
-    <updated>2015-12-28T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/12/28/centos-mroonga-installation-on-mysql-56-by-yum</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Mroonga は、全文検索エンジン Groonga をベースとした MySQL のストレージエンジンです。</p>
-
-<p>インストール済みの MySQL（5.6 系）に Mroonga ストレージエンジンを追加する方法についての記録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(i386) を Minimal で最小インストールしている。</li>
-<li>クライントマシンは Linux Mint 17.2(64bit) を想定。</li>
-<li>MySQL 5.6.27 での作業を想定。（5.5 系や 5.7 系では多少手順が異なるので注意）</li>
-<li>当記事執筆時点で最新版の Mroonga 5.0.9 をインストールする。</li>
-<li>MySQL データディレクトリ作成先は &ldquo;/var/lib/mysql&rdquo; を想定。</li>
-</ul>
-
-
-<h3>1. Yum リポジトリの追加</h3>
-
-<pre><code class="text"># rpm -Uvh http://packages.groonga.org/centos/groonga-release-1.1.0-1.noarch.rpm
-</code></pre>
-
-<h3>2. Yum リポジトリ設定ファイルの編集</h3>
-
-<p>今回のインストール先の OS は i386（32bit 版）である。<br/>
-しかし、サーバ用途には 64bit 用パッケージを使用するよう推奨されているので、リポジトリ設定ファイルを以下のように編集する。</p>
-
-<pre><code class="bash /etc/yum.repos.d/groonga.repo">[groonga]
-name=Groonga for CentOS $releasever - $basearch
-#baseurl=http://packages.groonga.org/centos/$releasever/$basearch/  # &lt;= コメント化
-baseurl=http://packages.groonga.org/centos/$releasever/x86_64/      # &lt;= 64bit 用パッケージを指定
-gpgcheck=1
-enabled=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-groonga
-</code></pre>
-
-<h3>3. Mroonga のインストール</h3>
-
-<pre><code class="text"># yum -y install mysql-community-mroonga
-</code></pre>
-
-<p>途中でパスワードを問われるので MySQL サーバの root パスワードで応答する。</p>
-
-<h3>4. トークナイザー MeCab のインストール</h3>
-
-<p>トークナイザーとして MeCab を使用したい場合は、以下のようにしてインストールする。</p>
-
-<pre><code class="text"># yum -y install groonga-tokenizer-mecab
-</code></pre>
-
-<h3>5. 動作確認</h3>
-
-<p>MySQL サーバにログインしてみる。</p>
-
-<pre><code class="text"># mysql -u root -p
-Enter password:
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 96
-Server version: 5.6.27 MySQL Community Server (GPL)
-
-Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
-
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
-mysql&gt; SHOW ENGINES;
-+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
-| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
-+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
-| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
-| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
-| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
-| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
-| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
-| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
-| Mroonga            | YES     | CJK-ready fulltext search, column store                        | NO           | NO   | NO         |
-| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
-| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
-| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
-+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
-10 rows in set (0.00 sec)
-</code></pre>
-
-<p>ストレージエンジン <code>Mroonga</code> が有効になっているか（<code>Mroonga</code> 行が存在するか）確認する。</p>
-
-<p>その他の Mroonga に関する動作確認は過去記事参照。</p>
-
-<ul>
-<li><a href="/2015/08/21/mariadb-mroonga-installation/" title="MariaDB 10.0.x - Mroonga プラグインの有効化！">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
-</ul>
-
-
-<h3>参考サイト</h3>
-
-<ul>
-<li><a href="http://mroonga.org/ja/docs/install/centos.html#centos-6-with-the-oracle-mysql-5-6-package" title="2.5. CentOS — Mroonga v5.09 documentation">2.5. CentOS — Mroonga v5.09 documentation</a></li>
 </ul>
 
 

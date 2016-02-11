@@ -4,7 +4,7 @@
   <title><![CDATA[Category: プログラミング | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/プログラミング/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-08T00:07:41+09:00</updated>
+  <updated>2016-02-12T00:07:34+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Flightradar24 飛行中の航空機情報を取得！]]></title>
+    <title type="html"><![CDATA[JSON - Flightradar24 から飛行中の航空機情報を取得！]]></title>
     <link href="http://komasaru.github.io/blog/2016/02/08/fr24-getting-flight-info/"/>
     <updated>2016-02-08T00:20:00+09:00</updated>
     <id>http://komasaru.github.io/blog/2016/02/08/fr24-getting-flight-info</id>
