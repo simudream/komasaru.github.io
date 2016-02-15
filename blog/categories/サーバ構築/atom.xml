@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-12T00:07:34+09:00</updated>
+  <updated>2016-02-16T00:06:46+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,178 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - rdiff-backup コマンドでリモートバックアップ！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/16/linux-rdiff-backup-remotely/"/>
+    <updated>2016-02-16T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/16/linux-rdiff-backup-remotely</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>手軽にバックアップ作業の行える rdiff-backup コマンドについての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>以下の環境を想定。（他の環境でも同様）
+
+<ul>
+<li>バックアップ元：Linux Mint 17.2（一般ユーザでの作業）</li>
+<li>バックアップ先：CentOS 6.7（root ユーザでの作業）<br/>
+（RPMForge リポジトリを使用するので、導入済みであること。参考：<a href="/2013/12/13/centos-6-5-first-setting/" title="CentOS 6.5 - 初期設定！">CentOS 6.5 - 初期設定！</a>）</li>
+<li>リモート接続に SSH 鍵認証を使用している。（参考：<a href="/2013/12/15/centos-6-5-ssh-connection-by-key-certificate/" title="CentOS 6.5 - SSH サーバ 鍵認証接続！">CentOS 6.5 - SSH サーバ 鍵認証接続！</a>）<br/>
+（SSH 鍵認証でないのなら、以下に登場する <code>--remote-schema</code> オプションを無視して考えればよい）</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>1. rdiff-backup コマンドのインストール</h3>
+
+<p>バックアップ元(Linux Mint)側で以下を実行。</p>
+
+<pre><code class="text">$ sudo apt-get install rdiff-backup
+</code></pre>
+
+<p>バックアップ先(CentOS)側で以下を実行。<br/>
+（標準リポジトリには存在しないので、RPMForge リポジトリを使用）</p>
+
+<pre><code class="text"># yum --enablerepo=rpmforge install rdiff-backup
+</code></pre>
+
+<h3>2. バックアップ除外リストの作成</h3>
+
+<p>バックアップ対象のディレクトリ内から除外したいファイルやディレクトリがあれば、それ用の一覧ファイルを作成する。（以下は一例）</p>
+
+<pre><code class="bash /path/to/exclude.lst">/home/hoge/path/to/data
+/home/hoge/path/to/log
+</code></pre>
+
+<h3>3. リモートバックアップの実行</h3>
+
+<p>以下のように実行する。<br/>
+最初は SSH のパスワードを問われるので、応答する。（２回目以降は問われない）</p>
+
+<pre><code class="text">$ rdiff-backup \
+--remote-schema 'ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server' \
+--exclude-filelist exclude.lst \
+--print \
+$HOME/path/to/source_dir 192.168.11.102::$HOME/path/to/remote_dir
+
+--------------[ Session statistics ]--------------
+StartTime 1452147922.00 (Thu Jan  7 23:25:22 2016)
+EndTime 1452147923.72 (Thu Jan  7 23:25:23 2016)
+ElapsedTime 1.72 (1.72 seconds)
+SourceFiles 285
+SourceFileSize 1610709 (1.54 MB)
+MirrorFiles 1
+MirrorFileSize 0 (0 bytes)
+NewFiles 284
+NewFileSize 1610709 (1.54 MB)
+DeletedFiles 0
+DeletedFileSize 0 (0 bytes)
+ChangedFiles 1
+ChangedSourceSize 0 (0 bytes)
+ChangedMirrorSize 0 (0 bytes)
+IncrementFiles 0
+IncrementFileSize 0 (0 bytes)
+TotalDestinationSizeChange 1610709 (1.54 MB)
+Errors 0
+--------------------------------------------------
+</code></pre>
+
+<ul>
+<li>SSH 鍵ファイルが <code>$HOME/.ssh/id_rsa</code> で、バックアップ先の SSH ポートが <code>9999</code> であることを想定。</li>
+<li>除外リストを使用しないのなら <code>--exclude-filelist exclude.lst</code> は不要。</li>
+<li>除外したいファイルやディレクトリが少ないのなら、<code>--exclude-filelist</code> オプションを使用せずに <code>--exclude xxxx</code> で１つずつ指定してもよい。</li>
+<li><code>--print</code> は処理終了時に結果を出力するオプション。</li>
+</ul>
+
+
+<p>バックアップが成功すると、バックアップ先にはコピーされたファイル・ディレクトリとは別に &ldquo;rdiff-backup-data&rdquo; というバックアップ履歴管理のディレクトリも作成される。</p>
+
+<h3>4. バックアップの自動化</h3>
+
+<p>このバックアップを自動化したければ、シェルスクリプトを作成して cron 登録すればよい。</p>
+
+<p>まず、前項のコマンドをシェルスクリプトにする。（<code>--print</code> オプションは不要なので削除）</p>
+
+<pre><code class="bash /home/hoge/rdiff_test.sh">#!/bin/bash
+rdiff-backup \
+--remote-schema 'ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server' \
+--exclude-filelist exclude.lst \
+$HOME/path/to/source_dir 192.168.11.102::$HOME/path/to/remote_dir
+</code></pre>
+
+<p>そして、実行権限を付与する。</p>
+
+<pre><code class="text">$ sudo chmod +x rdiff_test.sh
+</code></pre>
+
+<p>最後に cron に登録する。（以下は毎日午前２時に実行する例（エラー以外メール送信しない））</p>
+
+<pre><code class="bash /etc/cron.d/rdiff_test">0 2 * * * root /home/hoge/rdiff_test.sh &gt; /dev/null
+</code></pre>
+
+<h3>5. リストアの実行</h3>
+
+<p>最新の状態にリストアするなら以下のように <code>-r now</code> オプションを使用する。<br/>
+（バックアップ時とディレクトリ指定の順番が逆であること、既存のディレクトリをリストア先に指定できないことに注意）</p>
+
+<pre><code class="bash">$ rdiff-backup \
+--remote-schema 'ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server' \
+--exclude-filelist exclude.lst \
+-r now \
+192.168.11.102::$HOME/path/to/remote_dir $HOME/path/to/restore_dir
+</code></pre>
+
+<p>特定の時点の状態にリストアするなら、まず以下のように <code>-l</code> で確認する。</p>
+
+<pre><code class="text">$ rdiff-backup \
+--remote-schema 'ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server' \
+-l \
+192.168.11.102::$HOME/work/disaster
+
+Found 1 increments:
+    increments.2016-01-07T23:25:22+09:00.dir   Thu Jan  7 23:25:22 2016
+Current mirror: Thu Jan  7 23:48:57 2016
+</code></pre>
+
+<p>最新のバックアップが <code>Thu Jan  7 23:48:57 2016</code> で１つ前のバックアップが <code>Thu Jan  7 23:25:22 2016</code> であることが分かるので、以下のようにすることで１つ前の状態にリストアできる。</p>
+
+<pre><code class="bash">$ rdiff-backup \
+--remote-schema 'ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server' \
+--exclude-filelist exclude.lst \
+-r 2016-01-07T23:25:22+09:00 \
+192.168.11.102::$HOME/path/to/remote_dir $HOME/path/to/restore_dir2
+</code></pre>
+
+<h3>6. 古いバックアップの削除</h3>
+
+<p>古いバックアップを削除するには以下のようにする。（以下は１ケ月より古い履歴を削除する例。 単位は <code>s</code>, <code>m</code>, <code>h</code>, <code>D</code>, <code>W</code>, <code>M</code>, <code>Y</code> が指定可）</p>
+
+<pre><code class="text">$ rdiff-backup \
+--remote-schema 'ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server' \
+--remove-older-than 1M 192.168.11.102::$HOME/path/to/remote_dir
+</code></pre>
+
+<p><code>--remove-older-than 2016-01-07T23:25:22+09:00</code> のように指定することも可能。</p>
+
+<h3>7. 参考サイト</h3>
+
+<ul>
+<li><a href="http://www.nongnu.org/rdiff-backup/" title="rdiff-backup">rdiff-backup</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - bash で古いファイルの削除！]]></title>
@@ -786,84 +958,6 @@ root@localhost:(none) 16:52:28&gt;
 
 <ul>
 <li><a href="http://mroonga.org/ja/docs/install/others.html" title="2.7. その他 — Mroonga v5.10 documentation">2.7. その他 — Mroonga v5.10 documentation</a></li>
-</ul>
-
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS - Groonga インストール（by yum パッケージ）！]]></title>
-    <link href="http://komasaru.github.io/blog/2016/01/04/centos-groonga-installation-by-yum/"/>
-    <updated>2016-01-04T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2016/01/04/centos-groonga-installation-by-yum</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>カラムストア機能付き全文検索エンジン Groonga を、CentOS 6.7 に Groonga 公式 yum リポジトリを使用してインストールする方法についてです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(32bit) での作業を想定。</li>
-<li>当記事執筆時点で最新の Groonga 5.1.0 をインストールする。</li>
-</ul>
-
-
-<h3>1. yum リポジトリの導入</h3>
-
-<pre><code class="text"># rpm -ivh http://packages.groonga.org/centos/groonga-release-1.1.0-1.noarch.rpm
-# yum makecache
-</code></pre>
-
-<h3>2. Groonga のインストール</h3>
-
-<pre><code class="text"># yum -y install groonga
-</code></pre>
-
-<p>形態素解析エンジン MeCab をトークナイザとして使用するために groonga-tokenizer-mecab をインストールする。</p>
-
-<pre><code class="text"># yum -y install groonga-tokenizer-mecab
-</code></pre>
-
-<h3>3. Groonga インストールの確認</h3>
-
-<pre><code class="text"># groonga --version
-Groonga 5.1.0 [linux-gnu,i686,utf8,match-escalation-threshold=0,nfkc,mecab,mruby,onigmo,zlib,epoll]
-
-configure options: &lt; '--build=i686-redhat-linux-gnu' '--host=i686-redhat-linux-gnu'
- '--target=i686-redhat-linux-gnu' '--program-prefix=' '--prefix=/usr' '--exec-prefix=/usr'
- '--bindir=/usr/bin' '--sbindir=/usr/sbin' '--sysconfdir=/etc' '--datadir=/usr/share'
- '--includedir=/usr/include' '--libdir=/usr/lib' '--libexecdir=/usr/libexec'
- '--localstatedir=/var' '--sharedstatedir=/var/lib' '--mandir=/usr/share/man'
- '--infodir=/usr/share/info' '--disable-static' '--with-package-platform=redhat'
- '--with-mecab' '--with-munin-plugins' '--enable-mruby' 'build_alias=i686-redhat-linux-gnu'
- 'host_alias=i686-redhat-linux-gnu' 'target_alias=i686-redhat-linux-gnu'
- 'CFLAGS=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector
-  --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables'
- 'CXXFLAGS=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector
-  --param=ssp-buffer-size=4 -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables'
- 'PKG_CONFIG_PATH=:/usr/lib/pkgconfig:/usr/share/pkgconfig'&gt;
-</code></pre>
-
-<h3>4. 動作確認</h3>
-
-<p>以下の過去記事を参照。</p>
-
-<ul>
-<li><a href="/2015/08/09/linux-mint-groonga-installation-by-src/" title="Linux Mint - Groonga インストール（by ソースビルド）！">Linux Mint - Groonga インストール（by ソースビルド）！</a></li>
-</ul>
-
-
-<h3>5. 参考サイト</h3>
-
-<ul>
-<li><a href="http://groonga.org/ja/docs/install/centos.html#centos-6" title="2.5. CentOS — Groonga v5.1.0ドキュメント">2.5. CentOS — Groonga v5.1.0ドキュメント</a></li>
 </ul>
 
 

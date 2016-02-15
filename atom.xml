@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-12T00:07:34+09:00</updated>
+  <updated>2016-02-16T00:06:46+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,247 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - rdiff-backup コマンドでリモートバックアップ！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/16/linux-rdiff-backup-remotely/"/>
+    <updated>2016-02-16T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/16/linux-rdiff-backup-remotely</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>手軽にバックアップ作業の行える rdiff-backup コマンドについての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>以下の環境を想定。（他の環境でも同様）
+
+<ul>
+<li>バックアップ元：Linux Mint 17.2（一般ユーザでの作業）</li>
+<li>バックアップ先：CentOS 6.7（root ユーザでの作業）<br/>
+（RPMForge リポジトリを使用するので、導入済みであること。参考：<a href="http://komasaru.github.io/2013/12/13/centos-6-5-first-setting/" title="CentOS 6.5 - 初期設定！">CentOS 6.5 - 初期設定！</a>）</li>
+<li>リモート接続に SSH 鍵認証を使用している。（参考：<a href="http://komasaru.github.io/2013/12/15/centos-6-5-ssh-connection-by-key-certificate/" title="CentOS 6.5 - SSH サーバ 鍵認証接続！">CentOS 6.5 - SSH サーバ 鍵認証接続！</a>）<br/>
+（SSH 鍵認証でないのなら、以下に登場する <code>--remote-schema</code> オプションを無視して考えればよい）</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>1. rdiff-backup コマンドのインストール</h3>
+
+<p>バックアップ元(Linux Mint)側で以下を実行。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo apt-get install rdiff-backup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>バックアップ先(CentOS)側で以下を実行。<br/>
+（標準リポジトリには存在しないので、RPMForge リポジトリを使用）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># yum --enablerepo=rpmforge install rdiff-backup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. バックアップ除外リストの作成</h3>
+
+<p>バックアップ対象のディレクトリ内から除外したいファイルやディレクトリがあれば、それ用の一覧ファイルを作成する。（以下は一例）</p>
+
+<figure class='code'><figcaption><span>/path/to/exclude.lst</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/home/hoge/path/to/data
+</span><span class='line'>/home/hoge/path/to/log
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. リモートバックアップの実行</h3>
+
+<p>以下のように実行する。<br/>
+最初は SSH のパスワードを問われるので、応答する。（２回目以降は問われない）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ rdiff-backup \
+</span><span class='line'>--remote-schema &#39;ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server&#39; \
+</span><span class='line'>--exclude-filelist exclude.lst \
+</span><span class='line'>--print \
+</span><span class='line'>$HOME/path/to/source_dir 192.168.11.102::$HOME/path/to/remote_dir
+</span><span class='line'>
+</span><span class='line'>--------------[ Session statistics ]--------------
+</span><span class='line'>StartTime 1452147922.00 (Thu Jan  7 23:25:22 2016)
+</span><span class='line'>EndTime 1452147923.72 (Thu Jan  7 23:25:23 2016)
+</span><span class='line'>ElapsedTime 1.72 (1.72 seconds)
+</span><span class='line'>SourceFiles 285
+</span><span class='line'>SourceFileSize 1610709 (1.54 MB)
+</span><span class='line'>MirrorFiles 1
+</span><span class='line'>MirrorFileSize 0 (0 bytes)
+</span><span class='line'>NewFiles 284
+</span><span class='line'>NewFileSize 1610709 (1.54 MB)
+</span><span class='line'>DeletedFiles 0
+</span><span class='line'>DeletedFileSize 0 (0 bytes)
+</span><span class='line'>ChangedFiles 1
+</span><span class='line'>ChangedSourceSize 0 (0 bytes)
+</span><span class='line'>ChangedMirrorSize 0 (0 bytes)
+</span><span class='line'>IncrementFiles 0
+</span><span class='line'>IncrementFileSize 0 (0 bytes)
+</span><span class='line'>TotalDestinationSizeChange 1610709 (1.54 MB)
+</span><span class='line'>Errors 0
+</span><span class='line'>--------------------------------------------------
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>SSH 鍵ファイルが <code>$HOME/.ssh/id_rsa</code> で、バックアップ先の SSH ポートが <code>9999</code> であることを想定。</li>
+<li>除外リストを使用しないのなら <code>--exclude-filelist exclude.lst</code> は不要。</li>
+<li>除外したいファイルやディレクトリが少ないのなら、<code>--exclude-filelist</code> オプションを使用せずに <code>--exclude xxxx</code> で１つずつ指定してもよい。</li>
+<li><code>--print</code> は処理終了時に結果を出力するオプション。</li>
+</ul>
+
+
+<p>バックアップが成功すると、バックアップ先にはコピーされたファイル・ディレクトリとは別に &ldquo;rdiff-backup-data&rdquo; というバックアップ履歴管理のディレクトリも作成される。</p>
+
+<h3>4. バックアップの自動化</h3>
+
+<p>このバックアップを自動化したければ、シェルスクリプトを作成して cron 登録すればよい。</p>
+
+<p>まず、前項のコマンドをシェルスクリプトにする。（<code>--print</code> オプションは不要なので削除）</p>
+
+<figure class='code'><figcaption><span>/home/hoge/rdiff_test.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>rdiff-backup <span class="se">\</span>
+</span><span class='line'>--remote-schema <span class="s1">&#39;ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server&#39;</span> <span class="se">\</span>
+</span><span class='line'>--exclude-filelist exclude.lst <span class="se">\</span>
+</span><span class='line'><span class="nv">$HOME</span>/path/to/source_dir 192.168.11.102::<span class="nv">$HOME</span>/path/to/remote_dir
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、実行権限を付与する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo chmod +x rdiff_test.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最後に cron に登録する。（以下は毎日午前２時に実行する例（エラー以外メール送信しない））</p>
+
+<figure class='code'><figcaption><span>/etc/cron.d/rdiff_test</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="m">0</span> <span class="m">2</span> * * * root /home/hoge/rdiff_test.sh &gt; /dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. リストアの実行</h3>
+
+<p>最新の状態にリストアするなら以下のように <code>-r now</code> オプションを使用する。<br/>
+（バックアップ時とディレクトリ指定の順番が逆であること、既存のディレクトリをリストア先に指定できないことに注意）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rdiff-backup <span class="se">\</span>
+</span><span class='line'>--remote-schema <span class="s1">&#39;ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server&#39;</span> <span class="se">\</span>
+</span><span class='line'>--exclude-filelist exclude.lst <span class="se">\</span>
+</span><span class='line'>-r now <span class="se">\</span>
+</span><span class='line'>192.168.11.102::<span class="nv">$HOME</span>/path/to/remote_dir <span class="nv">$HOME</span>/path/to/restore_dir
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>特定の時点の状態にリストアするなら、まず以下のように <code>-l</code> で確認する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ rdiff-backup \
+</span><span class='line'>--remote-schema &#39;ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server&#39; \
+</span><span class='line'>-l \
+</span><span class='line'>192.168.11.102::$HOME/work/disaster
+</span><span class='line'>
+</span><span class='line'>Found 1 increments:
+</span><span class='line'>    increments.2016-01-07T23:25:22+09:00.dir   Thu Jan  7 23:25:22 2016
+</span><span class='line'>Current mirror: Thu Jan  7 23:48:57 2016
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最新のバックアップが <code>Thu Jan  7 23:48:57 2016</code> で１つ前のバックアップが <code>Thu Jan  7 23:25:22 2016</code> であることが分かるので、以下のようにすることで１つ前の状態にリストアできる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>rdiff-backup <span class="se">\</span>
+</span><span class='line'>--remote-schema <span class="s1">&#39;ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server&#39;</span> <span class="se">\</span>
+</span><span class='line'>--exclude-filelist exclude.lst <span class="se">\</span>
+</span><span class='line'>-r 2016-01-07T23:25:22+09:00 <span class="se">\</span>
+</span><span class='line'>192.168.11.102::<span class="nv">$HOME</span>/path/to/remote_dir <span class="nv">$HOME</span>/path/to/restore_dir2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. 古いバックアップの削除</h3>
+
+<p>古いバックアップを削除するには以下のようにする。（以下は１ケ月より古い履歴を削除する例。 単位は <code>s</code>, <code>m</code>, <code>h</code>, <code>D</code>, <code>W</code>, <code>M</code>, <code>Y</code> が指定可）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ rdiff-backup \
+</span><span class='line'>--remote-schema &#39;ssh -i $HOME/.ssh/id_rsa -p 9999 -C %s rdiff-backup --server&#39; \
+</span><span class='line'>--remove-older-than 1M 192.168.11.102::$HOME/path/to/remote_dir
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>--remove-older-than 2016-01-07T23:25:22+09:00</code> のように指定することも可能。</p>
+
+<h3>7. 参考サイト</h3>
+
+<ul>
+<li><a href="http://www.nongnu.org/rdiff-backup/" title="rdiff-backup">rdiff-backup</a></li>
+</ul>
+
+
+<hr />
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - bash で古いファイルの削除！]]></title>
@@ -6264,90 +6505,6 @@
 
 
 <hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux - マシン起動時にディレクトリ・ファイルを自動作成！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/12/08/linux-dir-file-automatic-creation-on-boot/"/>
-    <updated>2015-12-08T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/12/08/linux-dir-file-automatic-creation-on-boot</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Linux で、マシン起動時に自動でディレクトリやファイルを作成する方法についての備忘録です。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(i386) での作業を想定。（他の Linux ディストリビューションでも同様のはず）</li>
-</ul>
-
-
-<h3>1. はじめに</h3>
-
-<ul>
-<li>今回の作業は、 <code>/etc/tmpfiles.d/*.conf</code> ファイルを作成することで実現する。
-（環境によっては、 <code>/run/tmpfiles.d/*.conf</code>, <code>/usr/lib/tmpfiles.d/*.conf</code> ファイル）</li>
-<li><code>/etc/tmpfiles.d/*.conf</code> ファイル内の書式は以下のとおり。（詳細は「<a href="http://www.unix.com/man-page/centos/5/tmpfiles.d/" title="CentOS 7.0 - man page for tmpfiles.d (centos section 5) - Unix &amp; Linux Commands">参考サイト</a>」参照<br/>
-<code>Type Path Mode UID GID Age Argument</code></li>
-</ul>
-
-
-<h3>2. 作成例</h3>
-
-<p>当方が使用する頻度が高いもののみについて、作成例を挙げる。</p>
-
-<h4>2-1. ディレクトリが存在しなければ作成する例</h4>
-
-<p>「ディレクトリ：/tmp/test_dir, パーミッション：1777, 所有者：root, グループ：root, 有効期限：５日」でディレクトリを作成する例。</p>
-
-<figure class='code'><figcaption><span>/etc/tmpfiles.d/test_1.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>d /tmp/test_dir <span class="m">1777</span> root root 5d
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>2-2. ディレクトリが存在しなければ作成し、存在していれば空にする例</h4>
-
-<p>「ディレクトリ：/home/foo/test_dir, パーミッション：0755, 所有者：root, グループ：root, 有効期限：無限」でディレクトリを作成する例。</p>
-
-<figure class='code'><figcaption><span>/etc/tmpfiles.d/test_2.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>D /home/foo/test_dir <span class="m">0755</span> root root -
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>2-3. ファイルが存在しなければ作成する例</h4>
-
-<p>「ファイル：/home/foo/test.txt, パーミッション：0777, 所有者：root, グループ：root, 有効期限：無限、ファイル内容：空」でファイルを作成する例。</p>
-
-<figure class='code'><figcaption><span>/etc/tmpfiles.d/test_3.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>f /home/foo/test.txt <span class="m">0777</span> root root -
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>2-4. ファイルが存在しなければ作成し、存在していれば空にする例</h4>
-
-<p>「ファイル：/home/foo/test.txt, パーミッション：0777, 所有者：root, グループ：root, 有効期限：無限、ファイル内容："This is a tmpfiles.d test!&ldquo;」でファイルを作成する例。</p>
-
-<figure class='code'><figcaption><span>/etc/tmpfiles.d/test_4.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>F /home/foo/test.txt <span class="m">0777</span> root root - <span class="s2">&quot;This is a tmpfiles.d test!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. 参考サイト</h3>
-
-<ul>
-<li><a href="http://www.unix.com/man-page/centos/5/tmpfiles.d/" title="CentOS 7.0 - man page for tmpfiles.d (centos section 5) - Unix &amp; Linux Commands">CentOS 7.0 - man page for tmpfiles.d (centos section 5) - Unix &amp; Linux Commands</a></li>
-</ul>
-
-
-<hr />
-
-<p>意外とよく使用する機能だけど、使用方法について説明しているサイトがあまりないので、備忘録として残しておいた次第です。</p>
 
 <p>以上。</p>
 ]]></content>
