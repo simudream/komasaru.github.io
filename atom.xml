@@ -4,7 +4,7 @@
   <title><![CDATA[mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-16T00:06:46+09:00</updated>
+  <updated>2016-02-21T00:07:49+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,261 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - bash スクリプト二重起動チェック！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/21/linux-bash-check-double-start/"/>
+    <updated>2016-02-21T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/21/linux-bash-check-double-start</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux で bash スクリプトを起動する際に既に起動されていたら起動しないようにするための方法、さらには cron で実行しても二重起動チェックが機能するかについての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7 での作業を想定。（他の環境でも問題ないはず）</li>
+</ul>
+
+
+<h3>1. 作成例（その１）</h3>
+
+<p>自分自身のプロセスIDと起動済みのプロセスID（＝自分自身のプロセス名（相対パス）と同じプロセス名から取得）を比較する方法。</p>
+
+<figure class='code'><figcaption><span>test_1.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 二重起動チェック</span>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> <span class="nv">$$</span> !<span class="o">=</span> <span class="sb">`</span>pgrep -fo <span class="nv">$0</span><span class="sb">`</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="s2">&quot;Already running!&quot;</span> &gt;<span class="p">&amp;</span>2
+</span><span class='line'>  <span class="nb">exit </span>9
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># メイン処理</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;[`date &#39;+%Y/%m/%d %T&#39;`] Sleep 10 seconds...&quot;</span>
+</span><span class='line'>sleep 10
+</span><span class='line'>
+</span><span class='line'><span class="nb">exit </span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>$$</code> は、自分自身のプロセスID。</li>
+<li><code>$0</code> は、自分自身のプロセス名（相対パス）。</li>
+<li><code>pgrep -fo $0</code> は、自分自身のプロセスIDを取得。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron 実行しないのであればこれで充分である。</strong></li>
+<li><strong>デメリットは、cron で実行された場合にチェックが効かない。</strong><br/>
+理由は、<code>pgrep -fo $0</code> が cron で実行した際のプロセスIDとなってしまう（子プロセス（<code>$0</code>）のプロセスIDにならない）ため。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>2. 作成例（その２）</h3>
+
+<p>自分自身のプロセスIDと起動済みのプロセスID（＝自分自身のプロセス名（パスを除いたファイル名）と同じプロセス名から取得）を比較する方法。</p>
+
+<figure class='code'><figcaption><span>test_2.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 二重起動チェック</span>
+</span><span class='line'><span class="nv">_pname</span><span class="o">=</span><span class="sb">`</span>basename <span class="nv">$0</span><span class="sb">`</span>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> <span class="nv">$$</span> !<span class="o">=</span> <span class="sb">`</span>pgrep -fo <span class="nv">$_pname</span><span class="sb">`</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="s2">&quot;Already running!&quot;</span> &gt;<span class="p">&amp;</span>2
+</span><span class='line'>  <span class="nb">exit </span>9
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># メイン処理</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;[`date &#39;+%Y/%m/%d %T&#39;`] Sleep 10 seconds...&quot;</span>
+</span><span class='line'>sleep 10
+</span><span class='line'>
+</span><span class='line'><span class="nb">exit </span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>作例例（その１）と似ているが、<code>$0</code> からパスを除いてプロセスIDを取得している。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron 実行しないのであればこれで充分である。</strong></li>
+<li><strong>デメリットは、cron で実行された場合にチェックが効かない。</strong><br/>
+理由は、<code>pgrep -fo $0</code> が cron で実行した際のプロセスIDとなってしまう（子プロセス（<code>$0</code>）のプロセスIDにならない）ため。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>3. 作成例（その３）</h3>
+
+<p>自分自身のプロセスIDと起動済みのプロセスID（＝自分自身のプロセス名（引数も含めたフルパス）と同じプロセス名から取得）を比較する方法。</p>
+
+<figure class='code'><figcaption><span>test_3.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 二重起動チェック</span>
+</span><span class='line'><span class="nv">CMDLINE</span><span class="o">=</span><span class="k">$(</span>cat /proc/<span class="nv">$$</span>/cmdline <span class="p">|</span> xargs --null<span class="k">)</span>
+</span><span class='line'><span class="k">if</span> <span class="o">[[</span> <span class="nv">$$</span> -ne <span class="k">$(</span>pgrep -oxf <span class="s2">&quot;${CMDLINE}&quot;</span><span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="s2">&quot;Already running!&quot;</span> &gt;<span class="p">&amp;</span>2
+</span><span class='line'>  <span class="nb">exit </span>9
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># メイン処理</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;[`date &#39;+%Y/%m/%d %T&#39;`] Sleep 10 seconds...&quot;</span>
+</span><span class='line'>sleep 10
+</span><span class='line'>
+</span><span class='line'><span class="nb">exit </span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>$(cat /proc/$$/cmdline | xargs --null)</code> で起動時のコマンドラインを引数も含めてフルパスで取得。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron で実行された場合にもチェックが効く。</strong></li>
+<li><strong>デメリットは、初見では理解しにくいかもしれない。</strong></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>4. 作成例（その４）</h3>
+
+<p>ロックファイルが存在しない場合にロックファイル（実際にはシンボリックリンク）を作成して処理を行い、処理終了後にロックファイルを削除する方法。</p>
+
+<figure class='code'><figcaption><span>test_4.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 二重起動チェック</span>
+</span><span class='line'><span class="nv">_lock</span><span class="o">=</span><span class="s2">&quot;/tmp/`basename $0`.lock&quot;</span>
+</span><span class='line'>ln -s /dummy <span class="nv">$_lock</span> 2&gt; /dev/null
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="s2">&quot;Already running!&quot;</span> &gt;<span class="p">&amp;</span>2
+</span><span class='line'>  <span class="nb">exit </span>9<span class="p">;</span>
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'><span class="c"># 上記の `ln` と `if ... fi` は以下のように１行にまとめてもよい</span>
+</span><span class='line'><span class="c"># ln -s /dummy $_lock 2&gt; /dev/null || { echo &quot;Already running!&quot; &gt;&amp;2; exit 9; }</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># メイン処理</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;[`date &#39;+%Y/%m/%d %T&#39;`] Sleep 10 seconds...&quot;</span>
+</span><span class='line'>sleep 10
+</span><span class='line'>
+</span><span class='line'>rm -f <span class="nv">$_lock</span>
+</span><span class='line'><span class="nb">exit </span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>上記ではシンボリックリンクを作成しているが、<code>touch</code> コマンでロックファイルを作成してもよいだろう。（但し、問題があるかも？（問題があると説明しているサイトを見かけたが、当方は未確認））</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、理解しやすいスクリプトである。</strong></li>
+<li><strong>デメリットは、SIGKILL シグナルを受信して終了した場合にロックファイルが残ったままになり、次回起動時にロックファイルを削除する作業が必要になる。</strong><br/>
+二重起動チェックの最後に <code>trap "rm $_lockfile; exit" 1 2 3 15</code> のように記述して SIGKILL シグナル<code>1</code>（HUP：再起動）、<code>2</code>（INT：割り込み）、<code>3</code>（QUIT：終了）、<code>15</code>（TERM：終了）を捕捉するような説明をしているページもあったが、シェルスクリプト内では <code>trap</code> できないはずなので無意味。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>5. 作成例（その５）</h3>
+
+<p>cron 実行時に <code>flock</code> コマンドを使用する方法。（実際に実行する bash スクリプトは二重起動チェック機能を実装してないもの）</p>
+
+<figure class='code'><figcaption><span>/etc/cron.d/test</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>* * * * * root /usr/bin/flock -n /tmp/test_5.lock test_5.sh &gt; /dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>flock</code> コマンドの <code>-n</code> は、ロック中だった場合にロック解放を待たずにエラーにするオプション。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron で実行する際に既存の bash スクリプトを編集することなく二重起動の抑制が可能。</strong></li>
+<li><strong>デメリットは、bash スクリプトを cron でなく手動で実行する場合に二重起動チェックが機能しない。</strong></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>6. その他</h3>
+
+<ul>
+<li><code>pidof</code> コマンドを使用する方法も考えられるだろうが、当方は未確認。</li>
+<li>当方は、手動実行も cron 実行も行うことが多いので、 cron 実行時に問題がない（少ない）上記の「作成例（その３）」の方法を主に使用している。</li>
+</ul>
+
+
+<hr />
+
+<p>今回調査したことで、プロセスIDの取得方法や cron 実行時には親プロセス・子プロセスのことを考慮する必要があることが勉強になりました。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - rdiff-backup コマンドでリモートバックアップ！]]></title>
@@ -6376,131 +6631,6 @@
 <ul>
 <li><a href="http://dev.mysql.com/doc/mysql-yum-repo-quick-guide/en/" title="MySQL :: A Quick Guide to Using the MySQL Yum Repository">MySQL :: A Quick Guide to Using the MySQL Yum Repository</a></li>
 <li><a href="http://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html" title="MySQL :: MySQL 5.7 Reference Manual :: 5.1.4 Server System Variables">MySQL :: MySQL 5.7 Reference Manual :: 5.1.4 Server System Variables</a></li>
-</ul>
-
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS - Web/Proxy サーバ Nginx の最新版を yum インストール！]]></title>
-    <link href="http://komasaru.github.io/blog/2015/12/12/centos-nginx-installation-by-yum/"/>
-    <updated>2015-12-12T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2015/12/12/centos-nginx-installation-by-yum</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>Debian GNU/Linux や Linux Mint への公式 Apt を使用した Nginx のインストールは記録として残していましたが、 CentOS への公式 yum を使用したインストールについて記録として残してなかったので、今回記録しておくことにしました。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 7.1-1503(x86_64) での作業を想定。（CentOS 6 系、5系でも同様（起動方法、自動起動設定、ファイアウォール設定以外は））</li>
-</ul>
-
-
-<h3>1. yum リポジトリの登録</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以下のようなリポジトリ設定ファイルが作成される。<br/>
-（上記を実行せず、直接以下のようなファイルを作成してもよい）</p>
-
-<figure class='code'><figcaption><span>/etc/yum.repos.d/nginx.repo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># nginx.repo</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">[</span>nginx<span class="o">]</span>
-</span><span class='line'><span class="nv">name</span><span class="o">=</span>nginx repo
-</span><span class='line'><span class="nv">baseurl</span><span class="o">=</span>http://nginx.org/packages/OS/OSRELEASE/<span class="nv">$basearch</span>/
-</span><span class='line'><span class="nv">gpgcheck</span><span class="o">=</span>0
-</span><span class='line'><span class="nv">enabled</span><span class="o">=</span>1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>2. Nginx のインストール</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># yum -y install nginx
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. Ngins インストールの確認</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># nginx -v
-</span><span class='line'>nginx version: nginx/1.8.0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. Nginx 設定ファイルの編集</h3>
-
-<p>Nginx 設定ファイルが &ldquo;/etc/nginx&rdquo; ディレクトリ内にあるので、必要に応じて編集する。<br/>
-（取り急ぎ、今回は編集しない）</p>
-
-<h3>5. Nginx の起動</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl start nginx
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. Nginx 自動起動の設定</h3>
-
-<p>マシン起動時に Nginx が自動で起動するようにしたければ以下のようにする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># systemctl enable nginx
-</span><span class='line'>systemctl list-unit-files -t service | grep nginx
-</span><span class='line'>
-</span><span class='line'># systemctl list-unit-files -t service | grep nginx
-</span><span class='line'>nginx.service                             enabled  # &lt;= enabled であることを確認
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>7. ファイアウォールの設定</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'># firewall-cmd --add-service=http
-</span><span class='line'>success
-</span><span class='line'># firewall-cmd --add-service=http --permanent
-</span><span class='line'>success
-</span><span class='line'># firewall-cmd --list-services
-</span><span class='line'>dhcpv6-client dns ftp http nfs pop3s smtp ssh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>8. 動作確認</h3>
-
-<p>ブラウザで <code>http://＜サーバ名＞/</code> にアクセスしてみ &ldquo;Welcome to nginx! &hellip;&rdquo; と表示されればよい。</p>
-
-<h3>9. 参考サイト</h3>
-
-<ul>
-<li><a href="http://nginx.org/en/linux_packages.html" title="nginx - Linux packages">nginx - Linux packages</a></li>
 </ul>
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: サーバ構築 | mk-mode BLOG]]></title>
   <link href="http://komasaru.github.io/blog/categories/サーバ構築/atom.xml" rel="self"/>
   <link href="http://komasaru.github.io/"/>
-  <updated>2016-02-16T00:06:46+09:00</updated>
+  <updated>2016-02-21T00:07:49+09:00</updated>
   <id>http://komasaru.github.io/</id>
   <author>
     <name><![CDATA[mk-mode.com]]></name>
@@ -12,6 +12,196 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux - bash スクリプト二重起動チェック！]]></title>
+    <link href="http://komasaru.github.io/blog/2016/02/21/linux-bash-check-double-start/"/>
+    <updated>2016-02-21T00:20:00+09:00</updated>
+    <id>http://komasaru.github.io/blog/2016/02/21/linux-bash-check-double-start</id>
+    <content type="html"><![CDATA[<p>こんばんは。</p>
+
+<p>Linux で bash スクリプトを起動する際に既に起動されていたら起動しないようにするための方法、さらには cron で実行しても二重起動チェックが機能するかについての記録です。</p>
+
+<!--more-->
+
+
+<h3>0. 前提条件</h3>
+
+<ul>
+<li>CentOS 6.7 での作業を想定。（他の環境でも問題ないはず）</li>
+</ul>
+
+
+<h3>1. 作成例（その１）</h3>
+
+<p>自分自身のプロセスIDと起動済みのプロセスID（＝自分自身のプロセス名（相対パス）と同じプロセス名から取得）を比較する方法。</p>
+
+<pre><code class="bash test_1.sh">#!/bin/sh
+
+# 二重起動チェック
+if [ $$ != `pgrep -fo $0` ]; then
+  echo "Already running!" &gt;&amp;2
+  exit 9
+fi
+
+# メイン処理
+echo "[`date '+%Y/%m/%d %T'`] Sleep 10 seconds..."
+sleep 10
+
+exit 0
+</code></pre>
+
+<ul>
+<li><code>$$</code> は、自分自身のプロセスID。</li>
+<li><code>$0</code> は、自分自身のプロセス名（相対パス）。</li>
+<li><code>pgrep -fo $0</code> は、自分自身のプロセスIDを取得。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron 実行しないのであればこれで充分である。</strong></li>
+<li><strong>デメリットは、cron で実行された場合にチェックが効かない。</strong><br/>
+理由は、<code>pgrep -fo $0</code> が cron で実行した際のプロセスIDとなってしまう（子プロセス（<code>$0</code>）のプロセスIDにならない）ため。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>2. 作成例（その２）</h3>
+
+<p>自分自身のプロセスIDと起動済みのプロセスID（＝自分自身のプロセス名（パスを除いたファイル名）と同じプロセス名から取得）を比較する方法。</p>
+
+<pre><code class="bash test_2.sh">#!/bin/sh
+
+# 二重起動チェック
+_pname=`basename $0`
+if [ $$ != `pgrep -fo $_pname` ]; then
+  echo "Already running!" &gt;&amp;2
+  exit 9
+fi
+
+# メイン処理
+echo "[`date '+%Y/%m/%d %T'`] Sleep 10 seconds..."
+sleep 10
+
+exit 0
+</code></pre>
+
+<ul>
+<li>作例例（その１）と似ているが、<code>$0</code> からパスを除いてプロセスIDを取得している。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron 実行しないのであればこれで充分である。</strong></li>
+<li><strong>デメリットは、cron で実行された場合にチェックが効かない。</strong><br/>
+理由は、<code>pgrep -fo $0</code> が cron で実行した際のプロセスIDとなってしまう（子プロセス（<code>$0</code>）のプロセスIDにならない）ため。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>3. 作成例（その３）</h3>
+
+<p>自分自身のプロセスIDと起動済みのプロセスID（＝自分自身のプロセス名（引数も含めたフルパス）と同じプロセス名から取得）を比較する方法。</p>
+
+<pre><code class="bash test_3.sh">#!/bin/sh
+
+# 二重起動チェック
+CMDLINE=$(cat /proc/$$/cmdline | xargs --null)
+if [[ $$ -ne $(pgrep -oxf "${CMDLINE}") ]]; then
+  echo "Already running!" &gt;&amp;2
+  exit 9
+fi
+
+# メイン処理
+echo "[`date '+%Y/%m/%d %T'`] Sleep 10 seconds..."
+sleep 10
+
+exit 0
+</code></pre>
+
+<ul>
+<li><code>$(cat /proc/$$/cmdline | xargs --null)</code> で起動時のコマンドラインを引数も含めてフルパスで取得。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron で実行された場合にもチェックが効く。</strong></li>
+<li><strong>デメリットは、初見では理解しにくいかもしれない。</strong></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>4. 作成例（その４）</h3>
+
+<p>ロックファイルが存在しない場合にロックファイル（実際にはシンボリックリンク）を作成して処理を行い、処理終了後にロックファイルを削除する方法。</p>
+
+<pre><code class="bash test_4.sh">#!/bin/sh
+
+# 二重起動チェック
+_lock="/tmp/`basename $0`.lock"
+ln -s /dummy $_lock 2&gt; /dev/null
+if [ $? -ne 0 ]; then
+  echo "Already running!" &gt;&amp;2
+  exit 9;
+fi
+# 上記の `ln` と `if ... fi` は以下のように１行にまとめてもよい
+# ln -s /dummy $_lock 2&gt; /dev/null || { echo "Already running!" &gt;&amp;2; exit 9; }
+
+# メイン処理
+echo "[`date '+%Y/%m/%d %T'`] Sleep 10 seconds..."
+sleep 10
+
+rm -f $_lock
+exit 0
+</code></pre>
+
+<ul>
+<li>上記ではシンボリックリンクを作成しているが、<code>touch</code> コマンでロックファイルを作成してもよいだろう。（但し、問題があるかも？（問題があると説明しているサイトを見かけたが、当方は未確認））</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、理解しやすいスクリプトである。</strong></li>
+<li><strong>デメリットは、SIGKILL シグナルを受信して終了した場合にロックファイルが残ったままになり、次回起動時にロックファイルを削除する作業が必要になる。</strong><br/>
+二重起動チェックの最後に <code>trap "rm $_lockfile; exit" 1 2 3 15</code> のように記述して SIGKILL シグナル<code>1</code>（HUP：再起動）、<code>2</code>（INT：割り込み）、<code>3</code>（QUIT：終了）、<code>15</code>（TERM：終了）を捕捉するような説明をしているページもあったが、シェルスクリプト内では <code>trap</code> できないはずなので無意味。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>5. 作成例（その５）</h3>
+
+<p>cron 実行時に <code>flock</code> コマンドを使用する方法。（実際に実行する bash スクリプトは二重起動チェック機能を実装してないもの）</p>
+
+<pre><code class="bash /etc/cron.d/test">* * * * * root /usr/bin/flock -n /tmp/test_5.lock test_5.sh &gt; /dev/null
+</code></pre>
+
+<ul>
+<li><code>flock</code> コマンドの <code>-n</code> は、ロック中だった場合にロック解放を待たずにエラーにするオプション。</li>
+<li>メリット・デメリットについて
+
+<ul>
+<li><strong>メリットは、cron で実行する際に既存の bash スクリプトを編集することなく二重起動の抑制が可能。</strong></li>
+<li><strong>デメリットは、bash スクリプトを cron でなく手動で実行する場合に二重起動チェックが機能しない。</strong></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>6. その他</h3>
+
+<ul>
+<li><code>pidof</code> コマンドを使用する方法も考えられるだろうが、当方は未確認。</li>
+<li>当方は、手動実行も cron 実行も行うことが多いので、 cron 実行時に問題がない（少ない）上記の「作成例（その３）」の方法を主に使用している。</li>
+</ul>
+
+
+<hr />
+
+<p>今回調査したことで、プロセスIDの取得方法や cron 実行時には親プロセス・子プロセスのことを考慮する必要があることが勉強になりました。</p>
+
+<p>以上。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux - rdiff-backup コマンドでリモートバックアップ！]]></title>
@@ -842,122 +1032,6 @@ root@localhost:(none) 16:52:28&gt;
 
 <ul>
 <li><a href="http://dev.mysql.com/doc/refman/5.7/en/source-installation.html" title="MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source">MySQL :: MySQL 5.7 Reference Manual :: 2.9 Installing MySQL from Source</a></li>
-</ul>
-
-
-<hr />
-
-<p>以上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CentOS - Mroonga インストール（by ソースビルド）！]]></title>
-    <link href="http://komasaru.github.io/blog/2016/01/08/centos-mroonga-installation-by-src/"/>
-    <updated>2016-01-08T00:20:00+09:00</updated>
-    <id>http://komasaru.github.io/blog/2016/01/08/centos-mroonga-installation-by-src</id>
-    <content type="html"><![CDATA[<p>こんばんは。</p>
-
-<p>MySQL 5.7 に全文検索エンジン Groonga の機能を実現するストレージエンジン Mroonga をソースをビルドしてインストールする方法についてです。</p>
-
-<!--more-->
-
-
-<h3>0. 前提条件</h3>
-
-<ul>
-<li>CentOS 6.7(32bit) での作業を想定。</li>
-<li>当記事執筆時点で最新の Mroonga 5.10 をインストールする。</li>
-<li>Groonga 5.1.0 がインストール済みであることを想定。<br/>
-（参照：<a href="/2016/01/04/centos-groonga-installation-by-yum" title="CentOS - Groonga インストール（by yum パッケージ）！">CentOS - Groonga インストール（by yum パッケージ）！</a>）</li>
-<li>MySQL 5.7.9 をソースをビルドしてインストールしていること。（Mroonga のビルドに MySQL のソースが必要なため）<br/>
-（参照：<a href="/2015/12/20/centos-mysql-57-installation-by-src" title="CentOS - MySQL 5.7 インストール（ソースビルド）！">CentOS - MySQL 5.7 インストール（ソースビルド）！</a>）</li>
-<li>MySQL 5.7.9 は &ldquo;/usr/local/mysql&rdquo; ディレクトリにインストールされていることを想定。</li>
-<li>MySQL 5.7.9 のインストールに使用したソースは &ldquo;/usr/local/src/mysql-5.7.9&rdquo; ディレクトリに存在することを想定。</li>
-</ul>
-
-
-<h3>1. 必要ライブラリのインストール</h3>
-
-<pre><code class="text"># yum -y install groonga-devel groonga-normalizer-mysql
-</code></pre>
-
-<p>形態素解析エンジン MeCab をトークナイザとして使用するなら MeCab もインストールする。（groonga-tokenizer-mecab を yum インストールしていれば、依存性の関係でインストールされているはず）</p>
-
-<p>その他、ビルドに必要な <code>make</code> 等も未インストールならインストールしておく。</p>
-
-<h3>2. ソースの取得</h3>
-
-<p>アーカイブを取得・展開し、ディレクトリを移動する。</p>
-
-<pre><code class="text"># /usr/local/src
-# wget http://packages.groonga.org/source/mroonga/mroonga-5.10.tar.gz
-# tar zxvf mroonga-5.10.tar.gz
-# cd mroonga-5.10
-</code></pre>
-
-<h3>3. Makefile の生成</h3>
-
-<pre><code class="text"># ./configure \
---with-mysql-source=/usr/local/src/mysql-5.7.9 \
---with-mysql-build=/usr/local/src/mysql-5.7.9 \
---with-mysql-config=/usr/local/mysql/bin/mysql_config
-</code></pre>
-
-<h3>4. ビルド</h3>
-
-<pre><code class="text"># make
-</code></pre>
-
-<h3>5. インストール</h3>
-
-<pre><code class="text"># make install
-</code></pre>
-
-<h3>6. MySQL への Mroonga プラグインの適用</h3>
-
-<p>MySQL サーバが起動していることを確認してから以下を実行する。</p>
-
-<pre><code class="text"># mysql -u root &lt; /usr/local/share/mroonga/install.sql
-</code></pre>
-
-<p><code>... does not exist</code> のメッセージが出力されるかもしれないが問題ない。（おそらく）</p>
-
-<h3>7. Mroonga 導入の確認</h3>
-
-<p>MySQL サーバに root でログインして確認してみる。</p>
-
-<pre><code class="text">mysql&gt; SHOW ENGINES;
-+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
-| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
-+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
-| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
-| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
-| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
-| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
-| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
-| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
-| Mroonga            | YES     | CJK-ready fulltext search, column store                        | NO           | NO   | NO         |
-| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
-| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
-| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
-+--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
-10 rows in set (0.01 sec)
-</code></pre>
-
-<p><code>Mroonga</code> 行が存在することを確認する。</p>
-
-<p>その他、 Mroonga の簡単な使用方法は以下の過去記事等を参照。</p>
-
-<ul>
-<li><a href="/2015/08/21/mariadb-mroonga-installation" title="MariaDB 10.0.x - Mroonga プラグインの有効化！">MariaDB 10.0.x - Mroonga プラグインの有効化！</a></li>
-</ul>
-
-
-<h3>8. 参考サイト</h3>
-
-<ul>
-<li><a href="http://mroonga.org/ja/docs/install/others.html" title="2.7. その他 — Mroonga v5.10 documentation">2.7. その他 — Mroonga v5.10 documentation</a></li>
 </ul>
 
 

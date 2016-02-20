@@ -122,6 +122,74 @@
       
   <header class="page-header">
     
+      <h1 class="entry-title"><a href="/blog/2009/01/11/11234931/">* 携帯電話に保護シール。</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-01-11T23:49:00+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>23:49</span></time>
+        [ 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/日々の話題/'>日々の話題</a>
+  
+</span>
+
+ ]
+        [ 
+
+<span class="tags">
+  
+    <a class='tag' href='/blog/tags/モバイル/'>モバイル</a>
+  
+</span>
+
+ ]
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="/images/2009/01/picture-6.jpg"><img class="alignleft size-thumbnail wp-image-219" title="picture-6" src="/images/2009/01/picture-6-150x112.jpg" alt="picture-6" width="150" height="112" /></a>
+この間の年末に携帯電話を機種変更しました。</p>
+
+<p>docomo P901iS → P-01A（色はブラック） に。</p>
+
+<p>でも、ブラックはなんか手あかとか汚れが目立つような感じがするので、着せ替えシール＆液晶保護シールを探したら、いいのがありました。</p>
+
+<p>マックハリアーさんのものです。楽天に出てました。</p>
+
+<p>僕は、一番人気のレザー調の着せ替えシールにしました。</p>
+
+<p>貼り方も意外と簡単でした。</p>
+
+<p>出来上がった感じはまずまずといった感じ表面の肌触りは最高ですが、シールが硬いせいか角の部分が引っかかる感じ。。。</p>
+
+<p>でも、使っているうちになじんでいくんではないかと。</p>
+
+<p>仮にあきても、すぐ剥がせるようだし、違うデザインシールに変えてもいいし・・・</p>
+
+<hr />
+
+<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header class="page-header">
+    
       <h1 class="entry-title"><a href="/blog/2009/01/11/11125739/">* ブログデザイン修正！その２</a></h1>
     
     
@@ -624,462 +692,9 @@
 
     </article>
   
-  
-    <article>
-      
-  <header class="page-header">
-    
-      <h1 class="entry-title"><a href="/blog/2009/01/05/05165522/">* D945GCLF + Fedora10 サーバ構築メモ</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-01-05T16:55:00+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>16:55</span></time>
-        [ 
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/サーバ構築/'>サーバ構築</a>
-  
-</span>
-
- ]
-        [ 
-
-<span class="tags">
-  
-    <a class='tag' href='/blog/tags/fedora/'>Fedora</a>
-  
-</span>
-
- ]
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>『<a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a>』を参考にして構築したときのメモです。</p>
-
-<p>以前、Fedora9で構築しようとしましたが、カーネルがD945GCLFのLanカードドライバに非対応のようでインストール自体が失敗したため、Fedora８で構築し運用していました。</p>
-
-<p>しかし、新しい物好きの僕なので、Fedora10でのサーバ構築に挑んでみたのでした。</p>
-
-<p>幸い自分が必要としているサービスは何とか構築できたので、以下に記録として残しておくことにしました。</p>
-
-<p>ただし、基本は『<a href="http://fedorasrv.com/" title="Fedoraで自宅サーバー構築">Fedoraで自宅サーバー構築</a>』ですので、あしからず。。。</p>
-
-<h3>構築記録</h3>
-
-<p>（ ■：構築済み、□：未構築、△：不要と判断したもの ）</p>
-
-<h4>Fedoraインストール</h4>
-
-<p>■ Fedora 10 インストール
-→ Fedora 9 のインストールと同様の方法で Fedora 10 をインストール。</p>
-
-<h4>内部クライアント(Windows)からLinuxサーバーをリモート操作する</h4>
-
-<p>■ WindowsからSSHサーバーへリモート接続(Poderosaパスワード方式ログイン編)</p>
-
-<h4>Fedora初期設定</h4>
-
-<p>■ Fedora 9初期設定
-→ ネットワーク設定は kajuhome.com を参照。</p>
-
-<h4>仮想マシン構築</h4>
-
-<p>△ 仮想マシン構築
-△ ドメインＵディスクサイズ拡張</p>
-
-<h4>Perlモジュールを簡単にインストールできるようにする</h4>
-
-<p>■ Perlモジュールパッケージ管理システム導入(cpan2rpm)
-→ cpan2rpm はインストール完了。しかしperlモジュールのインストールはエラー。
-・以下のディレクトリがないとのエラーのようなので、mkdir で作成したら成功。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>/root/rpmbuild/SRPMS/SRPMS
-</span><span class='line'>/root/rpmbuild/SRPMS/BUILD
-</span><span class='line'>/root/rpmbuild/SRPMS/SOURCES
-</span><span class='line'>/root/rpmbuild/SRPMS/SPECS
-</span><span class='line'>/root/rpmbuild/SRPMS/RPMS</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>サーバー公開前のセキュリティ強化</h4>
-
-<p>■ ファイル改竄検知システム導入(Tripwire)
-■ rootkit検知ツール導入(chkrootkit)
-■ アンチウィルスソフト導入(Clam AntiVirus)
-■ ファイアウォール構築(iptables)</p>
-
-<h4>システム時刻を自動的に合わせる</h4>
-
-<p>■ NTPサーバー構築</p>
-
-<h4>外部クライアント(Windows)からLinuxサーバーをリモート操作する</h4>
-
-<p>△ SSHサーバー構築(OpenSSH)
-→ 次項の"OpenSSH+CHroot"をインストールするため。
-■ SSHサーバー構築(OpenSSH+Chroot)
-→ エラー。(configure: error: PAM headers not found)
-以下を実行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>yum -y install pam-devel</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh /usr/src/redhat/RPMS/i386/openssh-4.5p1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh rpmbuild/SRPMS/RPMS/i386/openssh-4.5p1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh /usr/src/redhat/RPMS/i386/openssh-server-4.5p1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh rpmbuild/SRPMS/RPMS/i386/openssh-server-4.5p1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh /usr/src/redhat/RPMS/i386/openssh-clients-4.5p1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh rpmbuild/SRPMS/RPMS/i386/openssh-clients-4.5p1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！
-よって、</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rm -f /usr/src/redhat/RPMS/i386/*</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rm -f rpmbuild/SRPMS/RPMS/i386/*</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！
-■ WindowsからSSHサーバーへリモート接続(Poderosa鍵方式ログイン編)</p>
-
-<h4>Linuxサーバーをルーターにする</h4>
-
-<p>△ PCルーター構築(PPPoE+iptables)</p>
-
-<h4>LAN内クライアントマシンへIPアドレスを自動で割当てる</h4>
-
-<p>△ DHCPサーバー構築(dhcp)</p>
-
-<h4>外部からドメイン名でサーバーにアクセスできるようにする</h4>
-
-<p>△ ドメイン名取得(ieServer.Net編)※無料
-△ ドメイン名取得(独自ドメイン編)※有料
-△ ドメイン名取得(jpドメイン編)※有料</p>
-
-<h4>内部からドメイン名でサーバーにアクセスできるようにする</h4>
-
-<p>■ DNSサーバー構築(BIND)</p>
-
-<h4>インターネットとフレッツ・スクウェアへ同時に接続できるようにする</h4>
-
-<p>△ PPPoEマルチセッション設定(PPPoE)</p>
-
-<h4>Linuxサーバーに接続したプリンタをLAN内で共有する</h4>
-
-<p>△ プリントサーバー構築(CUPS)</p>
-
-<h4>Webサーバーを公開する</h4>
-
-<p>■ Webサーバー構築(Apache)
-■ Webサーバー間通信内容暗号化(Apache+mod_SSL)
-△ ユーザディレクトリ作成(/~ユーザ名/)
-△ Webページパスワード制限(htpasswd)
-△ バーチャルホスト設定
-■ Webサーバー間通信内容圧縮(mod_deflate)</p>
-
-<h4>Windowsで作成したWebページをWebサーバーへアップロードする(SCP使用)</h4>
-
-<p>■ WindowsからSSHサーバーへファイル転送(WinSCP)</p>
-
-<h4>Windowsで作成したWebページをWebサーバーへアップロードする(FTP使用)</h4>
-
-<p>■ FTPサーバー構築(vsftpd)
-△ WindowsからFTPサーバーへファイル転送(FileZilla)</p>
-
-<h4>Webページへのアクセス統計をWebブラウザからみれるようにする</h4>
-
-<p>■ Apacheアクセスログ解析(AWStats)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cpan2rpm --no-sign --make-no-test --install Geo::IPfree</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cpan2rpm --no-sign --make-no-test --install Test::Simple</span></code></pre></td></tr></table></div></figure>
-
-
-<p>の後に、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cpan2rpm --no-sign --make-no-test --install Geo::IPfree</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！
-△ バーチャルホスト用アクセスログ解析(AWStats)
-■ リファラスパム対策</p>
-
-<h4>自宅サーバーのWebサイト内をGoogleのように検索できるようにする</h4>
-
-<p>■ サイト内検索システム構築(Namazu)</p>
-
-<h4>独自のメールアドレスをつくる(Postfix編)</h4>
-
-<p>■ メールサーバー構築(Postfix+Dovecot)
-■ メールサーバー間通信内容暗号化(OpenSSL+Postfix+Dovecot)
-→ 実際にはPOP(110),SMTP(25)で稼動。
-■ taRgreyによるスパム対策(taRgrey)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd rpmbuild/SOURCES/</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>cd /root/rpmbuild/SRPMS/SOURCES/</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpmbuild -bb --clean rpmbuild/SPECS/postfix.spec</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpmbuild -bb --clean /root/rpmbuild/SRPMS/SPECS/postfix.spec</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！
-(但し、依存性問題発生したので、必要なpackageインストール)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh --force rpmbuild/RPMS/i386/postfix-2.5.5-1.fc10.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーとなるので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh --force /root/rpmbuild/SRPMS/RPMS/i386/postfix-2.5.5-1.fc10.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！
-etc&hellip;
-■ メールサーバーでウィルス&amp;スパムチェック(Postfix+Clam AntiVirus+SpamAssassin)
-△ バーチャルドメイン設定(Postfix&amp;Dovecot+qmail&amp;vpopmail)
-△ vpopmail用メールアカウント&amp;メーリングリスト管理システム導入(Postfix+qmailadmin)
-△ メール自動返信機能導入(Vacation)
-△ メーリングリストサーバー構築(Postfix+Mailman)
-■ Postfixログ解析ツール導入(pflogsumm)</p>
-
-<h4>独自のメールアドレスをつくる(qmail編)</h4>
-
-<p>△ メールサーバー構築(qmail+Dovecot)
-△ メールサーバー間通信内容暗号化(ucspi-tcp-ssl)
-△ メールサーバーでウィルス&amp;スパムチェック(Qmail-Scanner+Clam AntiVirus+SpamAssassin+maildrop)
-△ バーチャルドメイン設定(vpopmail)
-△ vpopmail用メールアカウント&amp;メーリングリスト管理システム導入(qmailadmin)
-△ qmailログ解析ツール導入(qmailanalog)</p>
-
-<h4>メールサーバー共通</h4>
-
-<p>■ OP25B(Outbound Port 25 Blocking)対策
-■ 複数ドメイン宛メールの集約(Fetchmail+hotwayd)
-■ メール格納形式変更</p>
-
-<h4>HotmailやYahoo!メールのようにWebブラウザ上でメールできるようにする</h4>
-
-<p>■ Webmailシステム構築(SquirrelMail)
-→ ログイン時、"このページにアクセスするにはアカウントが必要です。"
-のエラーになる。(/var/lib/php/session のオーナーをapache:apacheにしても）
-→ 再度 &ldquo;/var/www/webmail/config/conf.pl&rdquo; を設定しなおしたらOK。(?)
-△ バーチャルホスト設定(Virtual Host Domain Name Management)</p>
-
-<h4>HotmailやYahoo!メールのように携帯電話でメールできるようにする</h4>
-
-<p>■ 携帯用Webmailシステム構築(WebMailClient2 for Keitai)</p>
-
-<h4>LinuxサーバーをWindowsのファイルサーバーにする</h4>
-
-<p>■ Windowsファイルサーバー構築(Samba)</p>
-
-<h4>LinuxサーバーをiTunesのミュージックサーバーにする</h4>
-
-<p>△ DAAPサーバー構築(Firefly)</p>
-
-<h4>Linuxサーバーを内部／外部共用のWindowsのファイルサーバーにする</h4>
-
-<p>△ Webフォルダサーバー構築(WebDAV)</p>
-
-<h4>一般ユーザにWebブラウザ上での各種設定機能を提供する</h4>
-
-<p>△ Usermin導入(Usermin)
-△ UserminでVacation設定(Usermin::Vacation)</p>
-
-<h4>LinuxのパスワードとSambaのパスワードを同期する</h4>
-
-<p>△ Windowsネットワーク用統合認証サーバー構築(OpenLDAP+Samba)</p>
-
-<h4>データベースシステムを作る(MySQL編)</h4>
-
-<p>■ データベースサーバー構築(MySQL)
-■ MySQLデータベース自動バックアップ運用(mysqlhotcopy)
-→ DBのバックアップ、リストアは未確認。
-■ MySQL用GUI設定ツール導入(phpMyAdmin)</p>
-
-<h4>SNS(ソーシャルネットワーキングサイト)を作る</h4>
-
-<p>△ SNS構築(OpenPNE)</p>
-
-<h4>Weblog(ブログ)サイトを作る</h4>
-
-<p>■ ブログサイト構築(WordPress)</p>
-
-<h4>CMSでWebサイトを構築する(XOOPS編)</h4>
-
-<p>△ コミュニティサイト構築(XOOPS)</p>
-
-<h4>CMSでWebサイトを構築する(joomla!編)</h4>
-
-<p>△ CMSによるWebサイト構築(joomla!)</p>
-
-<h4>バージョン管理システムを構築する</h4>
-
-<p>△ バージョン管理システム構築(Subversion)</p>
-
-<h4>サーバーの状態をブラウザから監視する(Nagios編)</h4>
-
-<p>■ 統合監視システム構築(Nagios)
-→ インストールしたものの、不要と感じたため、サービスは停止。
-△ リモートホストサービス監視(Nagios+nrpe)</p>
-
-<h4>サーバーの状態をブラウザから監視する(RRDtool編)</h4>
-
-<p>■ サーバー監視システム構築(RRDtool+Cacti)
-■ Apacheアクセス統計監視グラフ追加(apachestats)
-△ BINDアクセス統計監視グラフ追加(bind9-snmp)</p>
-
-<h4>サーバーの状態をブラウザから監視する(MRTG編)</h4>
-
-<p>△ ネットワークトラフィック監視システム導入(NET-SNMP+MRTG)</p>
-
-<h4>Webブラウジングを高速化する</h4>
-
-<p>△ プロキシサーバー構築(Squid)
-△ プロキシサーバーでウィルスチェック(Squid+SquidClamAV+ClamAV)</p>
-
-<h4>LinuxをHDDビデオレコーダーにする</h4>
-
-<p>△ TV録画機能導入(GV-MVP/RX2+ivtv-1.0) kernel-2.6.22系
-△ TV録画機能導入(GV-MVP/RX2+ivtv-0.10) kernel-2.6.21系
-△ TV録画機能導入(GV-MVP/RX2+ivtv-0.10) kernel-2.6.20系
-△ TV録画機能導入(GV-MVP/RX2+ivtv-0.10) kernel-2.6.19系
-△ TV録画機能導入(GV-MVP/RX2+ivtv-0.8) kernel-2.6.18系
-△ TV録画機能導入(GV-MVP/RX2+ivtv-0.7) kernel-2.6.17系
-△ TV録画予約システム構築(vrs)
-△ 録画データの活用</p>
-
-<h4>サーバー公開後のセキュリティ強化</h4>
-
-<p>■ 不正アクセス検知システム導入(Snort+SnortSnarf+Oinkmaster)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh /usr/src/redhat/RPMS/i386/snort-2.8.0.1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ではエラーになる（Fedora10の場合）ので、以下を実行！</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -Uvh rpmbuild/SRPMS/RPMS/i386/snort-2.8.3.1-1.i386.rpm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>→　成功！
-■ iptablesログ解析(IPTables log analyzer)
-■ ログ監視ツール導入(SWATCH)</p>
-
-<h4>ユーザのホームディレクトリ容量を制限する</h4>
-
-<p>△ ホームディレクトリ容量制限(quota)</p>
-
-<h4>サーバーのファイルを自動的にバックアップする</h4>
-
-<p>■ 自動バックアップ運用(tar+GnuPG+rsync/ftp)
-△ リアルタイムミラーリングツール導入(lsyncd+rsyncd)</p>
-
-<h4>外部から安全にLANへ接続できるようにする</h4>
-
-<p>△ VPNサーバー構築(OpenVPN)
-△ Windows上にVNCサーバー導入(UltraVNC)</p>
-
-<h3>その他</h3>
-
-<h4>■ ハードディスクの温度設定</h4>
-
-<p>hddtempのインストール。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>yum install hddtemp</span></code></pre></td></tr></table></div></figure>
-
-
-<p>hddtemp の実行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>hddtemp /dev/sda</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<hr />
-
-<p>※この記事は WordPress に投稿した記事を変換したものです。一部不自然な表示があるかも知れません。ご了承ください。また、記事タイトル先頭の * は WordPress から移行した記事である印です。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <ul class="pager">
+    
+    <li class="previous"><a href="page/145">&larr; Older</a></li>
     
     <li><a href="/blog/archives">Blog Archives</a></li>
     
@@ -1144,6 +759,10 @@ etc&hellip;
     <li class="nav-header">Recent Posts</li>
     
       <li class="post">
+        <a href="/blog/2016/02/21/linux-bash-check-double-start/">Linux - bash スクリプト二重起動チェック！</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/02/16/linux-rdiff-backup-remotely/">Linux - rdiff-backup コマンドでリモートバックアップ！</a>
       </li>
     
@@ -1159,29 +778,25 @@ etc&hellip;
         <a href="/blog/2016/02/07/ruby-getting-airline-list-from-fr24/">Ruby - Flightradar24 から航空会社情報一覧取得！</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/02/06/ruby-getting-airport-list-from-fr24/">Ruby - Flightradar24 から空港情報一覧取得！</a>
-      </li>
-    
   </ul>
 </section>
 <section class="well">
   <ul id="category-list" class="nav nav-list">
     <li class="nav-header">Categories</li>
-    <li><a href='/blog/categories/pc-tips'>pc_tips (260)</a></li><li><a href='/blog/categories/sns'>sns (23)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (543)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (206)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (341)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (108)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
+    <li><a href='/blog/categories/pc-tips'>pc_tips (260)</a></li><li><a href='/blog/categories/sns'>sns (23)</a></li><li><a href='/blog/categories/%E3%82%B5%E3%83%BC%E3%83%90%E6%A7%8B%E7%AF%89'>サーバ構築 (544)</a></li><li><a href='/blog/categories/%E3%83%96%E3%83%AD%E3%82%B0'>ブログ (206)</a></li><li><a href='/blog/categories/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0'>プログラミング (341)</a></li><li><a href='/blog/categories/%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8'>ホームページ (100)</a></li><li><a href='/blog/categories/%E3%83%AB%E3%83%BC%E3%83%93%E3%83%83%E3%82%AF%E3%82%AD%E3%83%A5%E3%83%BC%E3%83%96'>ルービックキューブ (5)</a></li><li><a href='/blog/categories/%E3%83%AD%E3%83%88%EF%BC%96'>ロト６ (43)</a></li><li><a href='/blog/categories/%E6%95%B0%E5%AD%A6'>数学 (108)</a></li><li><a href='/blog/categories/%E6%97%A5%E3%80%85%E3%81%AE%E8%A9%B1%E9%A1%8C'>日々の話題 (62)</a></li><li><a href='/blog/categories/%E6%A0%AA%E5%BC%8F'>株式 (51)</a></li><li><a href='/blog/categories/%E7%8E%84%E7%AE%B1'>玄箱 (27)</a></li><li><a href='/blog/categories/%E8%87%AA%E4%BD%9Cpc'>自作pc (35)</a></li>
   </ul>
 </section>
 <section class="well">
   <ul id="category-list" class="nav nav-list">
     <li class="nav-header">Tag Cloud</li>
   </ul>
-  <a href='/blog/tags/ajax' style='font-size: 100.55727554179566%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.11455108359134%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.45820433436532%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.55727554179566%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.11455108359134%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.18575851393189%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 103.90092879256966%'>bash(21)</a> <a href='/blog/tags/bitly' style='font-size: 100.37151702786377%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.18575851393189%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.37151702786377%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.62229102167183%'>CentOS(181)</a> <a href='/blog/tags/cobol' style='font-size: 100.18575851393189%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.18575851393189%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.18575851393189%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.671826625387%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 105.75851393188854%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.44582043343654%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.55727554179566%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.1609907120743%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.37151702786377%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.18575851393189%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.671826625387%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.60061919504643%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.18575851393189%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.74303405572755%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.30030959752322%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.3312693498452%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 106.87306501547988%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.92879256965944%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.45820433436532%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.18575851393189%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.04334365325077%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.55727554179566%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.015479876161%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.04334365325077%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.37151702786377%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.92879256965944%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.18575851393189%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.85758513931889%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 101.11455108359134%'>Groonga(6)</a> <a href='/blog/tags/heroku' style='font-size: 100.37151702786377%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.60061919504643%'>HTML(14)</a> <a href='/blog/tags/intel' style='font-size: 100.74303405572755%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.18575851393189%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.48606811145511%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.78637770897834%'>JavaScript(15)</a> <a href='/blog/tags/jekyll' style='font-size: 100.55727554179566%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.74303405572755%'>jQuery(4)</a> <a href='/blog/tags/json' style='font-size: 100.55727554179566%'>JSON(3)</a> <a href='/blog/tags/knoppix' style='font-size: 100.55727554179566%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 160.0%'>Linux(323)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.51702786377709%'>LinuxMint(62)</a> <a href='/blog/tags/lokka' style='font-size: 100.37151702786377%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 104.82972136222911%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 107.24458204334366%'>MariaDB(39)</a> <a href='/blog/tags/markdown' style='font-size: 101.11455108359134%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.55727554179566%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.74303405572755%'>Mroonga(4)</a> <a href='/blog/tags/munin' style='font-size: 102.78637770897834%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 131.95046439628481%'>MySQL(172)</a> <a href='/blog/tags/namazu' style='font-size: 100.18575851393189%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.343653250774%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.11455108359134%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.3157894736842%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.37151702786377%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.30030959752322%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.74303405572755%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.18575851393189%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 112.07430340557275%'>Octopress(65)</a> <a href='/blog/tags/office' style='font-size: 100.18575851393189%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.18575851393189%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.11455108359134%'>P183(6)</a> <a href='/blog/tags/pdf' style='font-size: 100.18575851393189%'>PDF(1)</a> <a href='/blog/tags/perl' style='font-size: 100.18575851393189%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.13003095975232%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 105.94427244582043%'>Postfix(32)</a> <a href='/blog/tags/proxy' style='font-size: 100.37151702786377%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.37151702786377%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.11455108359134%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.671826625387%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.22910216718266%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.14551083591331%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.37151702786377%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.18575851393189%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.18575851393189%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.11455108359134%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 158.88544891640868%'>Ruby(317)</a> <a href='/blog/tags/samba' style='font-size: 101.671826625387%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.55727554179566%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.24458204334366%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.18575851393189%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.37151702786377%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.18575851393189%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.55727554179566%'>SMTP(3)</a> <a href='/blog/tags/sql' style='font-size: 100.18575851393189%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.11455108359134%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.85758513931889%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.74303405572755%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.18575851393189%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.92879256965944%'>TeX(5)</a> <a href='/blog/tags/tex' style='font-size: 100.37151702786377%'>tex(2)</a> <a href='/blog/tags/thin' style='font-size: 100.18575851393189%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.74303405572755%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.57275541795666%'>Twitter(30)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.37151702786377%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.92879256965944%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.48606811145511%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.18575851393189%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.671826625387%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.92879256965944%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.30030959752322%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.55727554179566%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.74303405572755%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.18575851393189%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.30030959752322%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.04334365325077%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.18575851393189%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.85758513931889%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 118.0185758513932%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 118.94736842105263%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.55727554179566%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.9876160990712%'>XML(43)</a> <a href='/blog/tags/yahoo' style='font-size: 100.37151702786377%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.18575851393189%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.11455108359134%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.60061919504643%'>ウイルス対策(14)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.18575851393189%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.11455108359134%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.18575851393189%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.52941176470588%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.11455108359134%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.37151702786377%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.18575851393189%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.92879256965944%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.11455108359134%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.55727554179566%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.18575851393189%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.671826625387%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.90092879256966%'>円周率(21)</a> <a href='/blog/tags/地図' style='font-size: 102.97213622291022%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.37151702786377%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.18575851393189%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.48606811145511%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.18575851393189%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.18575851393189%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.11455108359134%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.92879256965944%'>端末(5)</a> 
+  <a href='/blog/tags/ajax' style='font-size: 100.55555555555556%'>Ajax(3)</a> <a href='/blog/tags/antec' style='font-size: 101.11111111111111%'>Antec(6)</a> <a href='/blog/tags/apache' style='font-size: 104.44444444444444%'>Apache(24)</a> <a href='/blog/tags/asus' style='font-size: 100.55555555555556%'>ASUS(3)</a> <a href='/blog/tags/atom' style='font-size: 101.11111111111111%'>Atom(6)</a> <a href='/blog/tags/atom' style='font-size: 100.18518518518519%'>atom(1)</a> <a href='/blog/tags/bash' style='font-size: 104.07407407407408%'>bash(22)</a> <a href='/blog/tags/bitly' style='font-size: 100.37037037037037%'>bitly(2)</a> <a href='/blog/tags/bootstrap' style='font-size: 100.18518518518519%'>Bootstrap(1)</a> <a href='/blog/tags/c-' style='font-size: 100.37037037037037%'>C#(2)</a> <a href='/blog/tags/centos' style='font-size: 133.51851851851853%'>CentOS(181)</a> <a href='/blog/tags/cobol' style='font-size: 100.18518518518519%'>Cobol(1)</a> <a href='/blog/tags/core2duo' style='font-size: 100.18518518518519%'>Core2Duo(1)</a> <a href='/blog/tags/csrf' style='font-size: 100.18518518518519%'>CSRF(1)</a> <a href='/blog/tags/css' style='font-size: 101.66666666666667%'>CSS(9)</a> <a href='/blog/tags/cygwin' style='font-size: 105.74074074074073%'>Cygwin(31)</a> <a href='/blog/tags/c言語' style='font-size: 112.4074074074074%'>C言語(67)</a> <a href='/blog/tags/d945gclf' style='font-size: 100.55555555555556%'>D945GCLF(3)</a> <a href='/blog/tags/debian' style='font-size: 116.11111111111111%'>Debian(87)</a> <a href='/blog/tags/dirac' style='font-size: 100.37037037037037%'>Dirac(2)</a> <a href='/blog/tags/disqus' style='font-size: 100.18518518518519%'>Disqus(1)</a> <a href='/blog/tags/dns' style='font-size: 101.66666666666667%'>DNS(9)</a> <a href='/blog/tags/dovecot' style='font-size: 102.5925925925926%'>Dovecot(14)</a> <a href='/blog/tags/enermax' style='font-size: 100.18518518518519%'>ENERMAX(1)</a> <a href='/blog/tags/excel' style='font-size: 100.74074074074075%'>Excel(4)</a> <a href='/blog/tags/facebook' style='font-size: 101.29629629629629%'>Facebook(7)</a> <a href='/blog/tags/fedora' style='font-size: 111.29629629629629%'>Fedora(61)</a> <a href='/blog/tags/feed' style='font-size: 106.85185185185185%'>Feed(37)</a> <a href='/blog/tags/fortran' style='font-size: 100.92592592592592%'>Fortran(5)</a> <a href='/blog/tags/freebsd' style='font-size: 104.44444444444444%'>FreeBSD(24)</a> <a href='/blog/tags/freenas' style='font-size: 100.18518518518519%'>FreeNAS(1)</a> <a href='/blog/tags/ftp' style='font-size: 102.03703703703704%'>FTP(11)</a> <a href='/blog/tags/gcc' style='font-size: 100.55555555555556%'>GCC(3)</a> <a href='/blog/tags/gis' style='font-size: 105.0%'>GIS(27)</a> <a href='/blog/tags/git' style='font-size: 102.03703703703704%'>Git(11)</a> <a href='/blog/tags/github' style='font-size: 100.37037037037037%'>GitHub(2)</a> <a href='/blog/tags/gmt' style='font-size: 100.92592592592592%'>GMT(5)</a> <a href='/blog/tags/gnuplot' style='font-size: 100.18518518518519%'>gnuplot(1)</a> <a href='/blog/tags/google' style='font-size: 101.85185185185185%'>Google(10)</a> <a href='/blog/tags/groonga' style='font-size: 101.11111111111111%'>Groonga(6)</a> <a href='/blog/tags/heroku' style='font-size: 100.37037037037037%'>Heroku(2)</a> <a href='/blog/tags/html' style='font-size: 102.5925925925926%'>HTML(14)</a> <a href='/blog/tags/intel' style='font-size: 100.74074074074075%'>Intel(4)</a> <a href='/blog/tags/iso' style='font-size: 100.18518518518519%'>ISO(1)</a> <a href='/blog/tags/java' style='font-size: 101.48148148148148%'>Java(8)</a> <a href='/blog/tags/javascript' style='font-size: 102.77777777777777%'>JavaScript(15)</a> <a href='/blog/tags/jekyll' style='font-size: 100.55555555555556%'>jekyll(3)</a> <a href='/blog/tags/jquery' style='font-size: 100.74074074074075%'>jQuery(4)</a> <a href='/blog/tags/json' style='font-size: 100.55555555555556%'>JSON(3)</a> <a href='/blog/tags/knoppix' style='font-size: 100.55555555555556%'>Knoppix(3)</a> <a href='/blog/tags/linux' style='font-size: 160.0%'>Linux(324)</a> <a href='/blog/tags/linuxmint' style='font-size: 111.48148148148148%'>LinuxMint(62)</a> <a href='/blog/tags/lokka' style='font-size: 100.37037037037037%'>Lokka(2)</a> <a href='/blog/tags/mail' style='font-size: 104.81481481481481%'>Mail(26)</a> <a href='/blog/tags/mariadb' style='font-size: 107.22222222222223%'>MariaDB(39)</a> <a href='/blog/tags/markdown' style='font-size: 101.11111111111111%'>Markdown(6)</a> <a href='/blog/tags/mecab' style='font-size: 100.55555555555556%'>MeCab(3)</a> <a href='/blog/tags/mroonga' style='font-size: 100.74074074074075%'>Mroonga(4)</a> <a href='/blog/tags/munin' style='font-size: 102.77777777777777%'>munin(15)</a> <a href='/blog/tags/mysql' style='font-size: 131.85185185185185%'>MySQL(172)</a> <a href='/blog/tags/namazu' style='font-size: 100.18518518518519%'>Namazu(1)</a> <a href='/blog/tags/nanoc' style='font-size: 103.33333333333333%'>nanoc(18)</a> <a href='/blog/tags/nfs' style='font-size: 101.11111111111111%'>NFS(6)</a> <a href='/blog/tags/nginx' style='font-size: 106.29629629629629%'>Nginx(34)</a> <a href='/blog/tags/noah' style='font-size: 100.37037037037037%'>Noah(2)</a> <a href='/blog/tags/ntp' style='font-size: 101.29629629629629%'>NTP(7)</a> <a href='/blog/tags/oauth' style='font-size: 100.74074074074075%'>OAuth(4)</a> <a href='/blog/tags/objectivec' style='font-size: 100.18518518518519%'>ObjectiveC(1)</a> <a href='/blog/tags/octopress' style='font-size: 112.03703703703704%'>Octopress(65)</a> <a href='/blog/tags/office' style='font-size: 100.18518518518519%'>Office(1)</a> <a href='/blog/tags/ogp' style='font-size: 100.18518518518519%'>OGP(1)</a> <a href='/blog/tags/p183' style='font-size: 101.11111111111111%'>P183(6)</a> <a href='/blog/tags/pdf' style='font-size: 100.18518518518519%'>PDF(1)</a> <a href='/blog/tags/perl' style='font-size: 100.18518518518519%'>Perl(1)</a> <a href='/blog/tags/php' style='font-size: 106.11111111111111%'>PHP(33)</a> <a href='/blog/tags/postfix' style='font-size: 105.92592592592592%'>Postfix(32)</a> <a href='/blog/tags/proxy' style='font-size: 100.37037037037037%'>Proxy(2)</a> <a href='/blog/tags/pxe' style='font-size: 100.37037037037037%'>PXE(2)</a> <a href='/blog/tags/python' style='font-size: 101.11111111111111%'>Python(6)</a> <a href='/blog/tags/qgis' style='font-size: 101.66666666666667%'>QGIS(9)</a> <a href='/blog/tags/r' style='font-size: 102.22222222222223%'>R(12)</a> <a href='/blog/tags/rails' style='font-size: 111.11111111111111%'>Rails(60)</a> <a href='/blog/tags/redhatenterpriselinux' style='font-size: 100.37037037037037%'>RedHatEnterpriseLinux(2)</a> <a href='/blog/tags/rroonga' style='font-size: 100.18518518518519%'>Rroonga(1)</a> <a href='/blog/tags/rspec' style='font-size: 100.18518518518519%'>RSpec(1)</a> <a href='/blog/tags/rsync' style='font-size: 101.11111111111111%'>rsync(6)</a> <a href='/blog/tags/ruby' style='font-size: 158.7037037037037%'>Ruby(317)</a> <a href='/blog/tags/samba' style='font-size: 101.66666666666667%'>Samba(9)</a> <a href='/blog/tags/scala' style='font-size: 100.55555555555556%'>Scala(3)</a> <a href='/blog/tags/scientificlinux' style='font-size: 107.22222222222223%'>ScientificLinux(39)</a> <a href='/blog/tags/scythe' style='font-size: 100.18518518518519%'>SCYTHE(1)</a> <a href='/blog/tags/seo' style='font-size: 100.37037037037037%'>SEO(2)</a> <a href='/blog/tags/sinatra' style='font-size: 100.18518518518519%'>Sinatra(1)</a> <a href='/blog/tags/smtp' style='font-size: 100.55555555555556%'>SMTP(3)</a> <a href='/blog/tags/sql' style='font-size: 100.18518518518519%'>SQL(1)</a> <a href='/blog/tags/sqlserver' style='font-size: 101.11111111111111%'>SQLServer(6)</a> <a href='/blog/tags/ssh' style='font-size: 101.85185185185185%'>SSH(10)</a> <a href='/blog/tags/ssl' style='font-size: 100.74074074074075%'>SSL(4)</a> <a href='/blog/tags/tdiary' style='font-size: 100.18518518518519%'>tDiary(1)</a> <a href='/blog/tags/tex' style='font-size: 100.92592592592592%'>TeX(5)</a> <a href='/blog/tags/tex' style='font-size: 100.37037037037037%'>tex(2)</a> <a href='/blog/tags/thin' style='font-size: 100.18518518518519%'>thin(1)</a> <a href='/blog/tags/tmux' style='font-size: 100.74074074074075%'>tmux(4)</a> <a href='/blog/tags/twitter' style='font-size: 105.55555555555556%'>Twitter(30)</a> <a href='/blog/tags/ubuntu' style='font-size: 100.37037037037037%'>Ubuntu(2)</a> <a href='/blog/tags/unicorn' style='font-size: 100.92592592592592%'>Unicorn(5)</a> <a href='/blog/tags/unix' style='font-size: 101.48148148148148%'>Unix(8)</a> <a href='/blog/tags/vbscript' style='font-size: 100.18518518518519%'>VBScript(1)</a> <a href='/blog/tags/vim' style='font-size: 101.66666666666667%'>Vim(9)</a> <a href='/blog/tags/virtualbox' style='font-size: 100.92592592592592%'>VirtualBox(5)</a> <a href='/blog/tags/visualbasic' style='font-size: 101.29629629629629%'>VisualBasic(7)</a> <a href='/blog/tags/visualc-' style='font-size: 100.55555555555556%'>VisualC++(3)</a> <a href='/blog/tags/visualc-' style='font-size: 100.74074074074075%'>VisualC＃(4)</a> <a href='/blog/tags/visualstudio' style='font-size: 100.18518518518519%'>VisualStudio(1)</a> <a href='/blog/tags/vmware' style='font-size: 101.29629629629629%'>VMware(7)</a> <a href='/blog/tags/w3c' style='font-size: 102.03703703703704%'>W3C(11)</a> <a href='/blog/tags/webdeveloper' style='font-size: 100.18518518518519%'>WebDeveloper(1)</a> <a href='/blog/tags/webカメラ' style='font-size: 101.85185185185185%'>Webカメラ(10)</a> <a href='/blog/tags/windows' style='font-size: 117.96296296296296%'>Windows(97)</a> <a href='/blog/tags/wordpress' style='font-size: 118.88888888888889%'>WordPress(102)</a> <a href='/blog/tags/xhtml' style='font-size: 100.55555555555556%'>XHTML(3)</a> <a href='/blog/tags/xml' style='font-size: 107.96296296296296%'>XML(43)</a> <a href='/blog/tags/yahoo' style='font-size: 100.37037037037037%'>Yahoo(2)</a> <a href='/blog/tags/zsh' style='font-size: 100.18518518518519%'>zsh(1)</a> <a href='/blog/tags/アフィリエイト' style='font-size: 101.11111111111111%'>アフィリエイト(6)</a> <a href='/blog/tags/ウイルス対策' style='font-size: 102.5925925925926%'>ウイルス対策(14)</a> <a href='/blog/tags/エミュレータ' style='font-size: 100.18518518518519%'>エミュレータ(1)</a> <a href='/blog/tags/カレンダー' style='font-size: 101.11111111111111%'>カレンダー(6)</a> <a href='/blog/tags/サーバ構築' style='font-size: 100.18518518518519%'>サーバ構築(1)</a> <a href='/blog/tags/シェル' style='font-size: 103.51851851851852%'>シェル(19)</a> <a href='/blog/tags/スパム対策' style='font-size: 101.11111111111111%'>スパム対策(6)</a> <a href='/blog/tags/タグクラウド' style='font-size: 100.37037037037037%'>タグクラウド(2)</a> <a href='/blog/tags/テスト' style='font-size: 100.18518518518519%'>テスト(1)</a> <a href='/blog/tags/バッチ' style='font-size: 100.92592592592592%'>バッチ(5)</a> <a href='/blog/tags/ファイアウォール' style='font-size: 101.11111111111111%'>ファイアウォール(6)</a> <a href='/blog/tags/プラグイン' style='font-size: 100.55555555555556%'>プラグイン(3)</a> <a href='/blog/tags/モバイル' style='font-size: 100.18518518518519%'>モバイル(1)</a> <a href='/blog/tags/レジストリ' style='font-size: 101.66666666666667%'>レジストリ(9)</a> <a href='/blog/tags/円周率' style='font-size: 103.88888888888889%'>円周率(21)</a> <a href='/blog/tags/地図' style='font-size: 102.96296296296296%'>地図(16)</a> <a href='/blog/tags/形態素解析' style='font-size: 100.37037037037037%'>形態素解析(2)</a> <a href='/blog/tags/数学' style='font-size: 100.18518518518519%'>数学(1)</a> <a href='/blog/tags/正規表現' style='font-size: 101.48148148148148%'>正規表現(8)</a> <a href='/blog/tags/測地系' style='font-size: 100.18518518518519%'>測地系(1)</a> <a href='/blog/tags/物理' style='font-size: 100.18518518518519%'>物理(1)</a> <a href='/blog/tags/画像' style='font-size: 101.11111111111111%'>画像(6)</a> <a href='/blog/tags/端末' style='font-size: 100.92592592592592%'>端末(5)</a> 
 </section>
 <section class="well">
   <ul id="month-list" class="nav nav-list">
     <li class="nav-header">Monthly Archives</li>
   </ul>
-  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2016/02/'>2016-02 (7)</option><option value='/2016/01/'>2016-01 (8)</option><option value='/2015/12/'>2015-12 (8)</option><option value='/2015/11/'>2015-11 (6)</option><option value='/2015/10/'>2015-10 (6)</option><option value='/2015/09/'>2015-09 (6)</option><option value='/2015/08/'>2015-08 (9)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1440 posts
+  <select onchange="document.location.href=this.options[this.selectedIndex].value;" name="archive-dropdown">  <option value="">Select Month</option><option value='/2016/02/'>2016-02 (8)</option><option value='/2016/01/'>2016-01 (8)</option><option value='/2015/12/'>2015-12 (8)</option><option value='/2015/11/'>2015-11 (6)</option><option value='/2015/10/'>2015-10 (6)</option><option value='/2015/09/'>2015-09 (6)</option><option value='/2015/08/'>2015-08 (9)</option><option value='/2015/07/'>2015-07 (12)</option><option value='/2015/06/'>2015-06 (24)</option><option value='/2015/05/'>2015-05 (17)</option><option value='/2015/04/'>2015-04 (11)</option><option value='/2015/03/'>2015-03 (11)</option><option value='/2015/02/'>2015-02 (10)</option><option value='/2015/01/'>2015-01 (13)</option><option value='/2014/12/'>2014-12 (16)</option><option value='/2014/11/'>2014-11 (16)</option><option value='/2014/10/'>2014-10 (25)</option><option value='/2014/09/'>2014-09 (25)</option><option value='/2014/08/'>2014-08 (31)</option><option value='/2014/07/'>2014-07 (16)</option><option value='/2014/06/'>2014-06 (18)</option><option value='/2014/05/'>2014-05 (21)</option><option value='/2014/04/'>2014-04 (17)</option><option value='/2014/03/'>2014-03 (18)</option><option value='/2014/02/'>2014-02 (15)</option><option value='/2014/01/'>2014-01 (29)</option><option value='/2013/12/'>2013-12 (26)</option><option value='/2013/11/'>2013-11 (17)</option><option value='/2013/10/'>2013-10 (27)</option><option value='/2013/09/'>2013-09 (22)</option><option value='/2013/08/'>2013-08 (24)</option><option value='/2013/07/'>2013-07 (17)</option><option value='/2013/06/'>2013-06 (19)</option><option value='/2013/05/'>2013-05 (17)</option><option value='/2013/04/'>2013-04 (20)</option><option value='/2013/03/'>2013-03 (19)</option><option value='/2013/02/'>2013-02 (19)</option><option value='/2013/01/'>2013-01 (31)</option><option value='/2012/12/'>2012-12 (24)</option><option value='/2012/11/'>2012-11 (21)</option><option value='/2012/10/'>2012-10 (19)</option><option value='/2012/09/'>2012-09 (20)</option><option value='/2012/08/'>2012-08 (20)</option><option value='/2012/07/'>2012-07 (16)</option><option value='/2012/06/'>2012-06 (16)</option><option value='/2012/05/'>2012-05 (19)</option><option value='/2012/04/'>2012-04 (21)</option><option value='/2012/03/'>2012-03 (17)</option><option value='/2012/02/'>2012-02 (17)</option><option value='/2012/01/'>2012-01 (22)</option><option value='/2011/12/'>2011-12 (17)</option><option value='/2011/11/'>2011-11 (16)</option><option value='/2011/10/'>2011-10 (19)</option><option value='/2011/09/'>2011-09 (13)</option><option value='/2011/08/'>2011-08 (27)</option><option value='/2011/07/'>2011-07 (18)</option><option value='/2011/06/'>2011-06 (5)</option><option value='/2011/05/'>2011-05 (7)</option><option value='/2011/04/'>2011-04 (5)</option><option value='/2011/03/'>2011-03 (5)</option><option value='/2011/02/'>2011-02 (6)</option><option value='/2011/01/'>2011-01 (5)</option><option value='/2010/12/'>2010-12 (8)</option><option value='/2010/11/'>2010-11 (10)</option><option value='/2010/10/'>2010-10 (13)</option><option value='/2010/09/'>2010-09 (14)</option><option value='/2010/08/'>2010-08 (4)</option><option value='/2010/06/'>2010-06 (2)</option><option value='/2010/05/'>2010-05 (7)</option><option value='/2010/04/'>2010-04 (12)</option><option value='/2010/03/'>2010-03 (11)</option><option value='/2010/02/'>2010-02 (15)</option><option value='/2010/01/'>2010-01 (31)</option><option value='/2009/12/'>2009-12 (25)</option><option value='/2009/08/'>2009-08 (7)</option><option value='/2009/07/'>2009-07 (31)</option><option value='/2009/06/'>2009-06 (30)</option><option value='/2009/05/'>2009-05 (31)</option><option value='/2009/04/'>2009-04 (30)</option><option value='/2009/03/'>2009-03 (37)</option><option value='/2009/02/'>2009-02 (42)</option><option value='/2009/01/'>2009-01 (52)</option></select> Total: 1441 posts
 </section>
 
 <section class="well">
